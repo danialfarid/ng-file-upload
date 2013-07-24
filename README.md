@@ -35,9 +35,11 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 
 The **file** object contains **name, size, type** attributes.
 
-You also need to have **FileAPI.min.js** and **FileAPI.flash.swf** on your server. They will be loaded on demand for the browsers that do not support HTML5 FormData.
+You also need to have **FileAPI.min.js** and **FileAPI.flash.swf** on your server. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
+So they are just there for the polyfill of HTML5 and they will be ignored and not loaded if your browser already supports FormData.
 
-**If these two files are put in a different directory than where  angular-file-upload.js is you need this step:**
+*If these two files are put in a different directory than where  angular-file-upload.js is you need this step:*
+
 You can set the base directory that these 2 files are loaded from like this:
 ```script
 <script>
