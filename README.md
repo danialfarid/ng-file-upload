@@ -47,7 +47,7 @@ You can set the base directory that these two files are loaded from like this:
     }
 </script>
 ```
-This code needs to be before *<script src="angular-file-upload.js"></script>* and will load FileAPI from *<script src="../js/FileAPI.min.js"></script>*
+This code needs to be before `<script src="angular-file-upload.js"></script>` and will load FileAPI from `<script src="../js/FileAPI.min.js"></script>`
 
 
 For browsers not supporting HTML5 FormData, [FileAPI](https://github.com/mailru/FileAPI) polyfill is used to upload file with Flash. Two extra files will be loaded for these browsers: FileAPI.min.js and FileAPI.flash.swf.
