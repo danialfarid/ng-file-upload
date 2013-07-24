@@ -25,7 +25,7 @@ var angularFileUpload = angular.module('angularFileUpload', []);
         script.setAttribute('src', base + 'FileAPI.min.js');
         document.getElementsByTagName('head')[0].appendChild(script);
     }
-})()
+})();
 
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse, $http) {
     if ($http.uploadFile === undefined) {
