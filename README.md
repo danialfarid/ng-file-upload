@@ -52,7 +52,7 @@ The above code will load FileAPI from <script src="../js/FileAPI.min.js"></scrip
 
 
 If your browser is supporting HTML5 only the angular-file-upload.js is going to be loaded in the browser. You can merge it with your other js files to avoid an additional call to load this file if you wish.
-If your browser does not support HMLT5 FormData, [FileAPI](https://github.com/mailru/FileAPI FileAPI) polyfill will be used to upload file with Flash. Two extra files will be loaded for those browsers: FileAPI.min.js and FileAPI.flash.swf, make sure you have them on your server.
+If your browser does not support HMLT5 FormData, [FileAPI](https://github.com/mailru/FileAPI) polyfill will be used to upload file with Flash. Two extra files will be loaded for those browsers: FileAPI.min.js and FileAPI.flash.swf, make sure you have them on your server.
 
 On the server side the files will be send as multipart/form-data post request with parameter name **file** or **files** depending if you upload a single file or multiple files.
 
