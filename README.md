@@ -20,8 +20,6 @@ your js file:
 var app = angular.module('app', ['angularFileUpload']);
 
 var MyCtrl = [ '$scope', '$http', function($scope, $http) {
-  myModelObj = ...;
-
   $scope.onFileSelect = function($files, myModelObj) {
     $http.uploadFile({
       url: 'my/upload/url',
