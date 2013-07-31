@@ -24,7 +24,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
   $scope.onFileSelect = function($files, myModelObj) {
     $http.uploadFile({
       url: 'my/upload/url',
-      file: $file[0] // for single file
+      file: $files[0] // for single file
       //files: $files  // for multiple files
     }).then(function(data) {
      myModelObj.fileId = data;
