@@ -5,6 +5,7 @@ Lightweight Angular JS directive to upload files using regular input type file a
 
 your html file:
 ```html
+<script src="angular.min.js"></script>
 <script src="angular-file-upload.js"></script>
 
 <div ng-controller="MyCtrl">
