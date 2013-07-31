@@ -30,7 +30,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
      myModelObj.fileId = data;
     }); 
   }
-}
+}];
 ```
 
 The **file** object contains **name, size, type** attributes.
