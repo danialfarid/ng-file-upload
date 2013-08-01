@@ -40,18 +40,17 @@ You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be l
 So they are just there for the polyfill of HTML5 and they will be ignored and not loaded if your browser already supports FormData.
 
 If the above FileAPI files are put in a different path than angular-file-upload.js do the following step, unless they will be automatically loaded from the same location as angular-file-upload.js.
-You can set the base directory that these two files are loaded from like this:
 ```script
 <script>
     FileAPI = {
-        scriptBase: "../js/"
+        staticPath: "path/to/fileapi/"
     }
 </script>
 ```
-This code needs to be before `<script src="angular-file-upload.js"></script>` and will load FileAPI from `<script src="../js/FileAPI.min.js"></script>`
-
+This code needs to be before `<script src="angular-file-upload.js"></script>`
 
 For browsers not supporting HTML5 FormData, [FileAPI](https://github.com/mailru/FileAPI) polyfill is used to upload file with Flash. Two extra files will be loaded for these browsers: FileAPI.min.js and FileAPI.flash.swf.
+If JQuery is not included in your page then it will be loaded from google CDN for those browsers. 
 
 On the server side the files will be send as *multipart/form-data* post request with parameter name **file** or **files** depending if you upload a single file or multiple files.
 
