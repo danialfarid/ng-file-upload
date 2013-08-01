@@ -28,7 +28,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
       file: $files[0] // for single file
       //files: $files  // for multiple files
     }).then(function(data) {
-     myModelObj.fileId = data;
+      myModelObj.fileId = data;
     }); 
   }
 }];
