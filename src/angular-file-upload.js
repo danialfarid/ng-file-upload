@@ -13,7 +13,7 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 
     if (typeof FormData === 'undefined') {
         var script = document.createElement('script');
-        var base = FileAPI.scriptBase || '';
+        var base = typeof FileAPI === "undefined" ? (FileAPI.scriptBase || '') : '';
         var allScripts = document.getElementsByTagName('script');
         for(var i = 0; i < allScripts.length; i++) {
             var index = allScripts[i].src.indexOf('angular-file-upload.js')
@@ -25,7 +25,7 @@ var angularFileUpload = angular.module('angularFileUpload', []);
         script.setAttribute('src', base + 'FileAPI.min.js');
         document.getElementsByTagName('head')[0].appendChild(script);
     }
-})();
+})()
 
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse, $http) {
     if ($http.uploadFile === undefined) {
