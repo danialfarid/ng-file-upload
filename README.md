@@ -1,6 +1,8 @@
 angular-file-upload
 ===================
 
+**click here for <a href="http://angular-file-upload.appspot.com/">DEMO</a>**
+
 Lightweight Angular JS directive to upload files using regular input type file and ajax call.
 
 your html file:
