@@ -12,14 +12,14 @@ your html file:
 
 <div ng-controller="MyCtrl">
   <input type="file" ng-file-select="onFileSelect($files, myModelObj)" >
-  <input type="file" ng-file-select="onMultiFileSelect($files, myModelObj)" multiple>
+  <input type="file" ng-file-select="onFileSelect($files, myModelObj)" multiple>
 </div>
 ```
 
 your js file:
 ```js
 //inject angular file upload directive.
-var app = angular.module('app', ['angularFileUpload']);
+angular.module('myApp', ['angularFileUpload']);
 
 var MyCtrl = [ '$scope', '$http', function($scope, $http) {
   $scope.onFileSelect = function($files, myModelObj) {
@@ -34,7 +34,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 }];
 ```
 
-The **file** object contains **name, size, type** attributes.
+The **$files** object is an array of files that are uploaded and each file has **name, size, and type** attributes.
 
 You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
 So they are just there for the polyfill of HTML5 and they will be ignored and not loaded if your browser already supports FormData.
