@@ -34,7 +34,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 }];
 ```
 
-The **$files** object is an array of files that are uploaded and each file has **name, size, and type** attributes.
+The **$files** object is an array of files that are selected, each file has **name, size, and type** attributes.
 
 You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
 So they are just there for the polyfill of HTML5 and they will be ignored and not loaded if your browser already supports FormData.
