@@ -5,7 +5,7 @@ angular-file-upload
 
 Lightweight Angular JS directive to upload files using regular input type file and ajax call.
 
-your html file:
+HTML:
 ```html
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.js"></script>
@@ -16,7 +16,7 @@ your html file:
 </div>
 ```
 
-your js file:
+JS:
 ```js
 //inject angular file upload directive.
 angular.module('myApp', ['angularFileUpload']);
@@ -34,7 +34,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 }];
 ```
 
-The **$files** object is an array of files that are selected, each file has **name, size, and type** attributes.
+**$files** is an array of files that are selected, each file has **name, size, and type** attributes.
 
 You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
 So they are just there for as polyfill for HTML5 and they will be ignored and not loaded if your browser already supports FormData.
