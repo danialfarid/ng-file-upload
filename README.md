@@ -2,6 +2,7 @@ angular-file-upload
 ===================
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
+CDN: [http//cdn.jsdelivr.net/angular.file-upload/0.1/angular-file-upload.js](//cdn.jsdelivr.net/angular.file-upload/0.1/angular-file-upload.js)
 
 Lightweight Angular JS directive to upload files using regular input type file and ajax call.
 
