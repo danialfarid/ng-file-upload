@@ -25,6 +25,7 @@ angular.module('myApp', ['angularFileUpload']);
 
 var MyCtrl = [ '$scope', '$http', function($scope, $http) {
   $scope.onFileSelect = function($files, myModelObj) {
+    //$files: an array of files selected, each file has name, size, and type.
     $http.uploadFile({
       url: 'my/upload/url',
       file: $files[0] // for single file
@@ -36,7 +37,6 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 }];
 ```
 
-**$files** is an array of files that are selected, each file has **name, size, and type** attributes.
 
 You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
 So they are just there for as polyfill for HTML5 and they will be ignored and not loaded if your browser already supports FormData.
