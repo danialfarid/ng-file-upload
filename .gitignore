@@ -1,0 +1,17 @@
+.settings
+.metadata
+.backup
+*.war
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+.Spotlight-V100
+.Trashes
+/target/*
+classes/
+._*
+Servers
+.idea
+.project
+.classpath

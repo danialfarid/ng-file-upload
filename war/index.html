@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="common.css">
+    <title>Angular file upload sample</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+  </head>
+
+  <body>
+	<script src="js/angular-file-upload.js"></script>
+
+    <h1>Angular file upload sample</h1>
+    <h3>Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github</h3>
+    
+    <div ng-app="fileUpload" ng-controller="MyCtrl">
+      Input to be sent along with the file: <input type="text" ng-model="input">
+      <br/>
+      <input type="file" ng-file-select="onFileSelect($files)" >
+      <input type="file" ng-file-select="onFileSelect($files)" multiple>
+      <br/>
+      Selected Files:
+      <ol>
+        <li ng-repeat="f in selectedFiles">
+          {{f.name}} - size: {{f.size}}B - type: {{f.type}}
+        </li>
+      </ol>
+      <br/>
+      Server Response: 
+      <ul>
+      	<li style="font-size:smaller;color:grey" ng-repeat="result in uploadResult" ng-bind-html-unsafe="result"></li>
+      </ul>
+    </div>
+    
+    <script type="text/javascript">
+    	//if FileAPI.min.js is located somewhere different than angular-file-upload.js file add the following
+    	/*    	
+    	FileAPI = {
+    			staticPath: 'path/to/FileAPI.min.js/directory/'
+    	}
+    	*/
+	    angular.module('fileUpload', ['angularFileUpload']);
+		
+	    var MyCtrl = ['$scope', '$http', function ($scope, $http) {
+	    	
+	        $scope.selectedFiles = [];
+	        
+	        $scope.onFileSelect = function ($files) {
+	        	$scope.uploadResult = [];
+	            $scope.selectedFiles = $files;
+	            for (var i = 0; i < $files.length; i++) {
+	            	var $file =$files[i]; 
+		            $http.uploadFile({
+		                url: 'upload',
+		                data: {input: $scope.input},
+		                file: $file
+		            }).success(function (data, status, headers, config) {
+		                $scope.uploadResult.push(data.toString());
+		                // to fix IE not refreshing the model
+		                if (!$scope.$$phase) {
+		                    $scope.$apply();
+		                }
+		            });
+	            }
+	        }
+	    }];
+	</script>
+  </body>
+</html>
