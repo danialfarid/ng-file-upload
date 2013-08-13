@@ -3,7 +3,7 @@ angular-file-upload
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
-CDN: [http//cdn.jsdelivr.net/angular.file-upload/0.1/angular-file-upload.js](//cdn.jsdelivr.net/angular.file-upload/0.1/angular-file-upload.js)
+CDN: [http//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js](//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js)
 
 Lightweight Angular JS directive to upload files using regular input type file and ajax call.
 
@@ -57,9 +57,7 @@ If the above FileAPI files are put in a different path than angular-file-upload.
 This code needs to be before `<script src="angular-file-upload.js"></script>`
 
 For browsers not supporting HTML5 FormData, [FileAPI](https://github.com/mailru/FileAPI) polyfill is used to upload file with Flash. Two extra files will be loaded for these browsers: FileAPI.min.js and FileAPI.flash.swf.
-If JQuery is not included in your page then it will be loaded from google CDN for those browsers. 
-
-The file will be send as *multipart/form-data* post request with form param name **file**.
+If JQuery is not included in your page then it will be loaded from google CDN for those browsers.
 
 Let [me](mailto:danial.farid@gmail.com) know if you see any bug or open an [issue](https://github.com/danialfarid/angular-file-upload/issues).
 
