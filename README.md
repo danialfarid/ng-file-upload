@@ -61,4 +61,5 @@ If JQuery is not included in your page then it will be loaded from google CDN fo
 
 The file will be send as *multipart/form-data* post request with form param name **file**.
 
-Let [me](mailto:danial.farid@gmail.com) know if you see any bug or if you like to contribute.
+Let [me](mailto:danial.farid@gmail.com) know if you see any bug or open an [issue](https://github.com/danialfarid/angular-file-upload/issues).
+
