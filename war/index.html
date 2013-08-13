@@ -14,7 +14,7 @@
     <h3>Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github</h3>
     
     <div ng-app="fileUpload" ng-controller="MyCtrl">
-      Input to be sent along with the file: <input type="text" ng-model="input">
+      Model object to be sent to the server with the file: <input type="text" ng-model="myModel">
       <br/>
       <input type="file" ng-file-select="onFileSelect($files)" >
       <input type="file" ng-file-select="onFileSelect($files)" multiple>
@@ -49,10 +49,10 @@
 	        	$scope.uploadResult = [];
 	            $scope.selectedFiles = $files;
 	            for (var i = 0; i < $files.length; i++) {
-	            	var $file =$files[i]; 
+	            	var $file = $files[i]; 
 		            $http.uploadFile({
 		                url: 'upload',
-		                data: {input: $scope.input},
+		                data: {myModel: $scope.myModel},
 		                file: $file
 		            }).success(function (data, status, headers, config) {
 		                $scope.uploadResult.push(data.toString());
