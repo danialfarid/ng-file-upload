@@ -50,7 +50,7 @@ The js file **FileAPI.min.js** must be placed beside angular-file-upload.js. If 
 ```script
 <script>
     FileAPI = {
-        staticPath: "/swf/path/to/fileapi/swf/" //the path to load swf file (optional)
+        staticPath: "/flash/path/to/fileapi/swf/" //the path to load swf file (optional)
     }
 </script>
 ```
