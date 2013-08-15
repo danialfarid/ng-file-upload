@@ -5,12 +5,11 @@
     <link type="text/css" rel="stylesheet" href="common.css">
     <title>Angular file upload sample</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+	<script src="http://cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js"></script>
   </head>
 
   <body>
-	<script src="js/angular-file-upload.js"></script>
-
-    <h1>Angular file upload sample</h1>
+    <h1>Angular file upload Demo</h1>
     <h3>Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github</h3>
     
     <div ng-app="fileUpload" ng-controller="MyCtrl">
@@ -33,12 +32,6 @@
     </div>
     
     <script type="text/javascript">
-    	//if FileAPI.min.js is located somewhere different than angular-file-upload.js file add the following
-    	/*    	
-    	FileAPI = {
-    			staticPath: 'path/to/FileAPI.min.js/directory/'
-    	}
-    	*/
 	    angular.module('fileUpload', ['angularFileUpload']);
 		
 	    var MyCtrl = ['$scope', '$http', function ($scope, $http) {
