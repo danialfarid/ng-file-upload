@@ -59,10 +59,10 @@ If JQuery is not included in your page then it will be loaded from google CDN fo
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/src/com/df/angularfileupload/FileUpload.java).
 
-There is a CDN available here: [http//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js](//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js) 
- Only if you use this CDN you need to add a crossdomain.xml file to your root server in order for the Adbobe Flash to be able to upload the file for IE.
+If you wish to use CDN to include the script files you can use this CDN: [http//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js](//cdn.jsdelivr.net/angular.file-upload/0.1.1/angular-file-upload.js) 
+ If you use this CDN you need to add a crossdomain.xml file to your root server in order for the Adbobe Flash to be able to upload the file for IE.
 
-crossdomain.xml (Only needed if you are using CDN)
+crossdomain.xml (Only needed if you are using CDN instead of having the js/swf files on your server)
 ```crossdomain.xml
 <?xml version="1.0" ?>
 <cross-domain-policy>
