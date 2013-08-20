@@ -29,7 +29,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
       var $file = $files[i];
       $http.uploadFile({
         url: 'my/upload/url',
-        data: {myObj: $scope.myModelObj}
+        data: {myObj: $scope.myModelObj},
         file: $file
       }).then(function(data, status, headers, config) {
         // file is uploaded successfully
