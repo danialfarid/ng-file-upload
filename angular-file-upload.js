@@ -1,3 +1,8 @@
+/**!
+ * AngularJS file upload directive and http post
+ * @author  Danial  <danial.farid@gmail.com>
+ * version 0.1.1
+ */
 var angularFileUpload = angular.module('angularFileUpload', []);
 
 (function loadFileAPI() {
