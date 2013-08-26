@@ -41,8 +41,9 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 ```
 
 
-You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData. 
+You also need **FileAPI.min.js** and **FileAPI.flash.swf** files. They will be loaded on demand for the browsers that do not support HTML5 FormData but have support for Flash (For example IE9+)
 So they are just there for as polyfill for HTML5 and they will be ignored and not loaded if your browser already supports FormData.
+**Note**: IE8 is not supported by FileAPI.
 
 The js file **FileAPI.min.js** must be placed beside angular-file-upload.js. If the swf file **FileAPI.flash.swf** is placed in another directory on the server do the following step, unless they will be automatically loaded from the same location as angular-file-upload.js.
 ```script
