@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload directive and http post
  * @author  Danial  <danial.farid@gmail.com>
- * version 0.1.1
+ * version 0.1.2
  */
 var angularFileUpload = angular.module('angularFileUpload', []);
 
@@ -37,58 +37,53 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
     if ($http.uploadFile === undefined) {
         $http.uploadFile = function(config) {
             if (typeof FormData === 'undefined') {
-                var params = {
-                    url: config.url,
-                    data: config.data,
-                    complete: function (err, xhr) {
-                        var JSON_START = /^\s*(\[|\{[^\{])/,
-                              JSON_END = /[\}\]]\s*$/,
-                              PROTECTION_PREFIX = /^\)\]\}',?\n/;
-                        var data = xhr.responseText;
-                        if (typeof data == 'string') {
-                                // strip json vulnerability protection prefix
-                                data = data.replace(PROTECTION_PREFIX, '');
-                                if (JSON_START.test(data) && JSON_END.test(data))
-                                  data = (typeof data == 'string')
-                                               ? JSON.parse(data)
-                                               : data;
-                        }
-                        if (params.promiseThen != null) params.promiseThen(data, xhr.status, null, config);
-                        if (params.promiseError != null) params.promiseError(data, xhr.status, null, config);
-                        if (params.promiseSuccess != null) params.promiseSuccess(data, xhr.status, null, config);
+            	config.complete = function (err, xhr) {
+                    var JSON_START = /^\s*(\[|\{[^\{])/,
+                          JSON_END = /[\}\]]\s*$/,
+                          PROTECTION_PREFIX = /^\)\]\}',?\n/;
+                    var data = xhr.responseText;
+                    if (typeof data == 'string') {
+                            // strip json vulnerability protection prefix
+                            data = data.replace(PROTECTION_PREFIX, '');
+                            if (JSON_START.test(data) && JSON_END.test(data))
+                              data = (typeof data == 'string')
+                                           ? JSON.parse(data)
+                                           : data;
                     }
+                    if (config.promiseThen != null) config.promiseThen(data, xhr.status, null, config);
+                    if (config.promiseError != null) config.promiseError(data, xhr.status, null, config);
+                    if (config.promiseSuccess != null) config.promiseSuccess(data, xhr.status, null, config);
                 }
                 if (config.file != null) {
-                    params.files = {
+                    config.files = {
                         file: config.file
                     }
                 }
-                var xhr = FileAPI.upload(params);
+                var xhr = FileAPI.upload(config);
                 return {
                     then: function(func) {
-                        params.promiseThen = func;
+                    	config.promiseThen = func;
                     },
                     success: function(func) {
-                        params.promiseSuccess = func;
+                    	config.promiseSuccess = func;
                     },
                     error: function(func) {
-                        params.promiseError = func;
+                    	config.promiseError = func;
                     }
                 };
             } else {
-                return $http({
-                    method: 'POST',
-                    url: config.url,
-                    headers: { 'Content-Type': false },
-                    transformRequest: function (data) {
-                        var formData = new FormData();
-                          formData.append('file', config.file);
-                        for (key in config.data) {
-                        	formData.append(key, config.data[key]);
-                        }
-                        return formData;
+            	config.method = 'POST';
+            	config.headers = config.headers || {};
+            	config.headers['Content-Type'] = false;
+            	config.transformRequest = function (data) {
+                    var formData = new FormData();
+                    formData.append('file', config.file);
+                    for (key in config.data) {
+                    	formData.append(key, config.data[key]);
                     }
-                });
+                    return formData;
+            	} 
+                return $http(config);
             }
         };
     }
