@@ -21,7 +21,7 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 		for ( var i = 0; i < allScripts.length; i++) {
 			var index = allScripts[i].src.indexOf('angular-file-upload.js')
 			if (index == -1) {
-				allScripts[i].src.indexOf('angular-file-upload.min.js');
+				index = allScripts[i].src.indexOf('angular-file-upload.min.js');
 			}
 			if (index > -1) {
 				base = allScripts[i].src.substring(0, index);
