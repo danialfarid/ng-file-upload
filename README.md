@@ -71,6 +71,8 @@ crossdomain.xml (Only needed if you are using CDN instead of having the js/swf f
 </cross-domain-policy>
 ```
 
+If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
+
 Let [me](mailto:danial.farid@gmail.com) know if you see any bug or open an [issue](https://github.com/danialfarid/angular-file-upload/issues).
 
 
