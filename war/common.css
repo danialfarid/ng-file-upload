@@ -1,34 +1,36 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
+body {
+	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
+input[type="file"] {
+	width: 7em;
+	width: 6.2em \0/IE9;
+	height: 1.5em;
+	margin: 5px;
 }
 
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
+input[multiple] {
+	width: 7.5em;
+	width: 6.2em \0/IE9;
 }
 
-.dialogVPanel {
-  margin: 5px;
+.sel-file {
+	padding: 0 5px;
+	font-size: smaller;
+	color: grey;
 }
 
-.serverResponseLabelError {
-  color: red;
+.response {
+	padding-top: 30px;
 }
 
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
+.response li {
+	color: blue;
+	font-size: smaller; 
+}
+
+/* for IE*/
+.js-fileapi-wrapper {
+	display: inline-block;
+	vertical-align: middle;	
 }

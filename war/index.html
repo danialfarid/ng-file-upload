@@ -1,62 +1,69 @@
 <!doctype html>
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link type="text/css" rel="stylesheet" href="common.css">
-    <title>Angular file upload sample</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
-	<script src="http://cdn.jsdelivr.net/angular.file-upload/0.1.4/angular-file-upload.min.js"></script>
-  </head>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link type="text/css" rel="stylesheet" href="common.css">
+<title>Angular file upload sample</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+<!--script src="http://cdn.jsdelivr.net/angular.file-upload/0.1.4/angular-file-upload.min.js"></script-->
+<script src="js/angular-file-upload.js"></script>
+</head>
 
-  <body>
-    <h1>Angular file upload Demo</h1>
-    <h3>Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github</h3>
-    
-    <div ng-app="fileUpload" ng-controller="MyCtrl">
-      Model object to be sent to the server with the file: <input type="text" ng-model="myModel">
-      <br/>
-      <input type="file" ng-file-select="onFileSelect($files)" >
-      <input type="file" ng-file-select="onFileSelect($files)" multiple>
-      <br/>
-      Selected Files:
-      <ol>
-        <li ng-repeat="f in selectedFiles">
-          {{f.name}} - size: {{f.size}}B - type: {{f.type}}
-        </li>
-      </ol>
-      <br/>
-      Server Response: 
-      <ul>
-      	<li style="font-size:smaller;color:grey" ng-repeat="result in uploadResult" ng-bind-html-unsafe="result"></li>
-      </ul>
-    </div>
-    
-    <script type="text/javascript">
-	    angular.module('fileUpload', ['angularFileUpload']);
-		
-	    var MyCtrl = ['$scope', '$http', function ($scope, $http) {
-	    	
-	        $scope.selectedFiles = [];
-	        
-	        $scope.onFileSelect = function ($files) {
-	        	$scope.uploadResult = [];
-	            $scope.selectedFiles = $files;
-	            for (var i = 0; i < $files.length; i++) {
-	            	var $file = $files[i]; 
-		            $http.uploadFile({
-		                url: 'upload',
-		                data: {myModel: $scope.myModel},
-		                file: $file
-		            }).success(function (data, status, headers, config) {
-		                $scope.uploadResult.push(data.toString());
-		                // to fix IE not refreshing the model
-		                if (!$scope.$$phase) {
-		                    $scope.$apply();
-		                }
-		            });
-	            }
-	        }
-	    }];
+<body>
+	<h1>Angular file upload Demo</h1>
+	<h3>
+		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
+	</h3>
+
+	<div ng-app="fileUpload" ng-controller="MyCtrl">
+		Model object to be sent to the server with the file: <input type="text" ng-model="myModel"> <br />
+		Single file:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files, 1)">
+		<span class="sel-file" ng-show="selectedFile != null">{{selectedFile.name}} - size: {{selectedFile.size}}B - type: {{selectedFile.type}}</span>
+		<br/>
+		Multiple files: <input type="file" ng-file-select="onFileSelect($files, 2)" multiple>
+		<span ng-show="selectedFiles != null">
+			<span class="sel-file" ng-repeat="f in selectedFiles">
+				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
+				<span ng-show="$index < selectedFiles.length - 1">,</span>
+			</span>
+		</span>
+		<div class="response" ng-show="uploadResult.length > 0">
+			Server Response:
+			<ul>
+				<li ng-repeat="result in uploadResult" ng-bind-html-unsafe="result"></li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		angular.module('fileUpload', [ 'angularFileUpload' ]);
+
+		var MyCtrl = [ '$scope', '$http', function($scope, $http) {
+
+			$scope.selectedFiles = [];
+
+			$scope.onFileSelect = function($files, index) {
+				$scope.uploadResult = [];
+				$scope.selectedFile = index == 1 ? $files[0] : null;
+				$scope.selectedFiles = index == 1 ? null : $files;
+				for ( var i = 0; i < $files.length; i++) {
+					var $file = $files[i];
+					$http.uploadFile({
+						url : 'upload',
+						data : {
+							myModel : $scope.myModel
+						},
+						file : $file
+					}).success(function(data, status, headers, config) {
+						$scope.uploadResult.push(data.toString());
+						// to fix IE not refreshing the model
+						if (!$scope.$$phase) {
+							$scope.$apply();
+						}
+					});
+				}
+			}
+		} ];
 	</script>
-  </body>
+</body>
 </html>
