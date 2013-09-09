@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload directive and http post
  * @author  Danial  <danial.farid@gmail.com>
- * @version 0.1.3
+ * @version 0.1.4
  */
 var angularFileUpload = angular.module('angularFileUpload', []);
 
@@ -79,7 +79,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 					}
 				};
 			} else {
-				config.method = 'POST';
+				config.method = config.method || 'POST';
 				config.headers = config.headers || {};
 				config.headers['Content-Type'] = false;
 				config.transformRequest = function(data) {
