@@ -24,5 +24,8 @@
     "test",
     "tests", 
     "src", 
-    "war"  ]
+    "war"  ],
+    "dependencies": {
+        "angular": "~1.0.7"
+    }
 }
