@@ -79,7 +79,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 					}
 				};
 			} else {
-				config.method = 'POST';
+				config.method = config.method || 'POST';
 				config.headers = config.headers || {};
 				config.headers['Content-Type'] = false;
 				config.transformRequest = function(data) {
