@@ -72,6 +72,7 @@ crossdomain.xml (Only needed if you are using CDN instead of having the js/swf f
 ```
 
 If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
+The module is registered at bower with the name **"angularjs-file-upload"** (notice 'js' after angular): bower install angularjs-file-upload#0.1.4
 
 Let [me](mailto:danial.farid@gmail.com) know if you see any bug or open an [issue](https://github.com/danialfarid/angular-file-upload/issues).
 
