@@ -114,7 +114,7 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 			for (key in config.data) {
 				formData.append(key, config.data[key]);
 			}
-			xhr.open('POST', config.url, true);
+			xhr.open(config.method || 'POST', config.url, true);
 	
 			config.headers = config.headers || {};
 			for (key in config.headers) {
@@ -132,7 +132,7 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 							data = (typeof data == 'string') ? JSON.parse(data)
 									: data;
 					}
-					var responseHeaders = xhr.getAllResponseHeaders();
+					var responseHeaders = xhr.getAllResponseHeaders();					
 			        if (200 <= xhr.status && xhr.status < 300) {
 						if (then != null)
 							then(data, xhr.status, responseHeaders, config);							

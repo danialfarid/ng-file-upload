@@ -114,7 +114,7 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 			for (key in config.data) {
 				formData.append(key, config.data[key]);
 			}
-			xhr.open('POST', config.url, true);
+			xhr.open(config.method || 'POST', config.url, true);
 	
 			config.headers = config.headers || {};
 			for (key in config.headers) {

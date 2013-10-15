@@ -22,6 +22,10 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
-, "src", "war"  ]
+    "tests", 
+    "src", 
+    "war"  ],
+    "dependencies": {
+        "angular": "~1.0.7"
+    }
 }
