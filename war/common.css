@@ -2,7 +2,7 @@ body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
-input[type="file"] {
+input[type="file"] {	
 	width: 7em;
 	width: 6.2em \0/IE9;
 	height: 1.5em;
@@ -12,6 +12,30 @@ input[type="file"] {
 input[multiple] {
 	width: 7.5em;
 	width: 6.2em \0/IE9;
+}
+
+doesnotexist:-o-prefocus, input[type="file"] {
+  width: 5.5em;
+}
+
+doesnotexist:-o-prefocus, input[multiple] {
+	width: 5em;
+}
+
+@-moz-document url-prefix() {
+	input[type="file"] {	
+		width: 5.7em;
+	}
+	
+	input[multiple] {
+		width: 5.7em;
+	}
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+    ::i-block-chrome,input[multiple] {
+		width: 6.7em;
+    }
 }
 
 .sel-file {
@@ -27,6 +51,31 @@ input[multiple] {
 .response li {
 	color: blue;
 	font-size: smaller; 
+}
+
+.progress {
+	display: inline-block;
+	width: 100px;	
+	border: 3px groove #CCC;
+}
+
+.progress div {
+	font-size: smaller;
+	background: orange;
+	width: 0;
+}
+
+.drop-box {
+	background: #F8F8F8;
+	border: 5px dashed #DDD;
+	width: 200px;
+	height: 65px; 
+	text-align: center;
+	padding-top: 35px; 
+}
+
+.drop-box.dragover {
+	border: 5px dashed blue;
 }
 
 /* for IE*/

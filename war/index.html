@@ -5,7 +5,8 @@
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
-<script src="http://cdn.jsdelivr.net/angular.file-upload/0.1.4/angular-file-upload.min.js"></script>
+<!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
+<script src="js/angular-file-upload.min.js"></script>
 </head>
 
 <body>
@@ -16,10 +17,18 @@
 
 	<div ng-app="fileUpload" ng-controller="MyCtrl">
 		Model object to be sent to the server with the file: <input type="text" ng-model="myModel"> <br />
-		Single file:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files, 1)">
-		<span class="sel-file" ng-show="selectedFile != null">{{selectedFile.name}} - size: {{selectedFile.size}}B - type: {{selectedFile.type}}</span>
+		choose a single file: <input type="file" ng-file-select="onFileSelect($files)">
 		<br/>
-		Multiple files: <input type="file" ng-file-select="onFileSelect($files, 2)" multiple>
+		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
+		<br/>
+		<br/>
+		<div class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
+		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
+		<br/>
+		Progress: &nbsp;&nbsp;
+		<span class="progress">				
+			<div style="width:{{progress}}%">{{progress}}%</div>
+		</span>
 		<span ng-show="selectedFiles != null">
 			<span class="sel-file" ng-repeat="f in selectedFiles">
 				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
@@ -40,19 +49,26 @@
 		var MyCtrl = [ '$scope', '$http', function($scope, $http) {
 
 			$scope.selectedFiles = [];
-
-			$scope.onFileSelect = function($files, index) {
+			$scope.progress = 0;
+			
+			$scope.onFileSelect = function($files) {
 				$scope.uploadResult = [];
-				$scope.selectedFile = index == 1 ? $files[0] : null;
-				$scope.selectedFiles = index == 1 ? null : $files;
+				$scope.selectedFiles = $files;
 				for ( var i = 0; i < $files.length; i++) {
 					var $file = $files[i];
+					$scope.progress = 0;
 					$http.uploadFile({
 						url : 'upload',
+						headers: {'myHeaderKey': 'myHeaderVal'},
 						data : {
 							myModel : $scope.myModel
 						},
 						file : $file
+					}).progress(function(evt) {
+						$scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+						if (!$scope.$$phase) {
+							$scope.$apply();
+						}
 					}).success(function(data, status, headers, config) {
 						$scope.uploadResult.push(data.toString());
 						// to fix IE not refreshing the model
