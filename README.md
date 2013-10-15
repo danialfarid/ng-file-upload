@@ -2,8 +2,8 @@ angular-file-upload
 ===================
 
 New in version 1.0.0:
-Support file upload progress.
-Support file drag and drop. 
+* File upload progress support.
+* File drag and drop support. 
 
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
@@ -35,11 +35,12 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
       var $file = $files[i];
       $http.uploadFile({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url)
+        // headers: {'optional', 'value'}
         data: {myObj: $scope.myModelObj},
         file: $file
       }).progress(function(evt) {
-				console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-			}).then(function(data, status, headers, config) {
+        console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+      }).then(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
       }); 
