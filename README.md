@@ -1,6 +1,11 @@
 angular-file-upload
 ===================
 
+New in version 1.0.0:
+Support file upload progress.
+Support file drag and drop. 
+---------------
+
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
 Lightweight Angular JS directive to upload files using regular input type file and ajax call.
@@ -14,6 +19,7 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
+  <div class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
 </div>
 ```
 
@@ -31,7 +37,9 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
         url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url)
         data: {myObj: $scope.myModelObj},
         file: $file
-      }).then(function(data, status, headers, config) {
+      }).progress(function(evt) {
+				console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+			}).then(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
       }); 
