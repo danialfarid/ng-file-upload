@@ -73,7 +73,7 @@ crossdomain.xml (Only needed if you are using CDN instead of having the js/swf f
 ```crossdomain.xml
 <?xml version="1.0" ?>
 <cross-domain-policy>
-<allow-access-from domain="cdn.jsdelivr.net" />
+  <allow-access-from domain="cdn.jsdelivr.net" />
 </cross-domain-policy>
 ```
 
