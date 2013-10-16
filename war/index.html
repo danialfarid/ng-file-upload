@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 <script src="js/angular-file-upload.min.js"></script>
 </head>
@@ -38,7 +38,7 @@
 		<div class="response" ng-show="uploadResult.length > 0">
 			Server Response:
 			<ul>
-				<li ng-repeat="result in uploadResult" ng-bind-html-unsafe="result"></li>
+				<li ng-repeat="result in uploadResult" ng-bind-html-unsafe="result">{{result}}</li>
 			</ul>
 		</div>
 	</div>
@@ -46,7 +46,7 @@
 	<script type="text/javascript">
 		angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-		var MyCtrl = [ '$scope', '$http', function($scope, $http) {
+		var MyCtrl = [ '$scope', '$http', '$injector', function($scope, $http, $injector) {
 
 			$scope.selectedFiles = [];
 			$scope.progress = 0;
@@ -63,7 +63,8 @@
 						data : {
 							myModel : $scope.myModel
 						},
-						file : $file
+						file : $file,
+						//fileFormDataName: 'myFile'
 					}).progress(function(evt) {
 						$scope.progress = parseInt(100.0 * evt.loaded / evt.total);
 						if (!$scope.$$phase) {

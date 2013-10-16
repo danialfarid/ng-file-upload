@@ -1,51 +1,54 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  */
+(function() {
+	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.shouldLoadShim = typeof FormData === 'undefined';
-angularFileUpload.isShimLoaded = typeof FileAPI !== 'undefined';
+angularFileUpload.html5 = !!window.FormData;
 
-if (angularFileUpload.shouldLoadShim && !angularFileUpload.isShimLoaded) {
-	if (typeof jQuery === 'undefined') {
-		var script = document.createElement('script');
-		script.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
-		document.getElementsByTagName('head')[0].appendChild(script);
-	}
+if (!angularFileUpload.html5) {
+	(function() {
+		//load jquery
+		if (!window.jQuery) {
+			var script = document.createElement('script');
+			script.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
+			document.getElementsByTagName('head')[0].appendChild(script);
+		}
+	})();
 	
-	var base = '';
-
-	if (typeof FormData === 'undefined') {
-		var script = document.createElement('script');
-		var allScripts = document.getElementsByTagName('script');
-
-		for ( var i = 0; i < allScripts.length; i++) {
-			var index = allScripts[i].src.indexOf('angular-file-upload.js')
-			if (index == -1) {
-				index = allScripts[i].src.indexOf('angular-file-upload.min.js');
+	(function () {
+		//load FileAPI
+		if (!window.FormData) {
+			var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index;
+	
+			for (i = 0; i < allScripts.length; i++) {
+				index = allScripts[i].src.indexOf('angular-file-upload.js')
+				if (index == -1) {
+					index = allScripts[i].src.indexOf('angular-file-upload.min.js');
+				}
+				if (index > -1) {
+					base = allScripts[i].src.substring(0, index);
+					break;
+				}
 			}
-			if (index > -1) {
-				base = allScripts[i].src.substring(0, index);
-				break;
+	
+			if (!window.FileAPI || FileAPI.staticPath == null) {
+				FileAPI = {
+					staticPath : base
+				}
 			}
+	
+			script.setAttribute('src', base + 'FileAPI.min.js');
+			document.getElementsByTagName('head')[0].appendChild(script);
 		}
-
-		if (typeof FileAPI === "undefined" || FileAPI.staticPath == null) {
-			FileAPI = {
-				staticPath : base
-			}
-		}
-
-		script.setAttribute('src', base + 'FileAPI.min.js');
-		document.getElementsByTagName('head')[0].appendChild(script);
-		angularFileUpload.isShimLoaded = true;
-	}
+	})();
 }
 
 angularFileUpload.XMLHttpRequest = function() {
-	if (angularFileUpload.shouldLoadShim) {
+	if (!angularFileUpload.html5) {
 		window.FormData = FormData = function() {
 			return {
 				append: function(key, val) {
@@ -104,13 +107,11 @@ angularFileUpload.XMLHttpRequest = function() {
 };
 
 angularFileUpload.defineHttpUploadFile = function($http) {
-	if ($http.uploadFile === undefined) {
+	if (!$http.uploadFile) {
 		$http.uploadFile = function(config) {
-			var xhr = new angularFileUpload.XMLHttpRequest();
-			var then, success, error, progress;
-			
-			var formData = new FormData();
-			formData.append('file', config.file);
+			var xhr = new angularFileUpload.XMLHttpRequest(), then, success, error, progress, response, 
+				formData = new FormData();
+			formData.append(config.fileFormDataName || 'file', config.file);
 			for (key in config.data) {
 				formData.append(key, config.data[key]);
 			}
@@ -123,24 +124,19 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 	
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
-					var JSON_START = /^\s*(\[|\{[^\{])/, JSON_END = /[\}\]]\s*$/, PROTECTION_PREFIX = /^\)\]\}',?\n/;
-					var data = xhr.responseText;
+					var JSON_START = /^\s*(\[|\{[^\{])/, JSON_END = /[\}\]]\s*$/, PROTECTION_PREFIX = /^\)\]\}',?\n/, 
+						data = xhr.responseText, responseHeaders = xhr.getAllResponseHeaders(); 
 					if (typeof data == 'string') {
 						// strip json vulnerability protection prefix
 						data = data.replace(PROTECTION_PREFIX, '');
 						if (JSON_START.test(data) && JSON_END.test(data))
-							data = (typeof data == 'string') ? JSON.parse(data)
-									: data;
+							data = (typeof data === 'string') ? JSON.parse(data) : data;
 					}
-					var responseHeaders = xhr.getAllResponseHeaders();					
 			        if (200 <= xhr.status && xhr.status < 300) {
-						if (then != null)
-							then(data, xhr.status, responseHeaders, config);							
-						if (success != null)
-							success(data, xhr.status, responseHeaders, config);
+						if (then) then(data, xhr.status, responseHeaders, config);							
+						if (success) success(data, xhr.status, responseHeaders, config);
 					} else {
-						if (error != null)
-							error(data, xhr.status, responseHeaders, config);							
+						if (error) error(data, xhr.status, responseHeaders, config);							
 					}
 				}
 			}
@@ -149,7 +145,7 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 				if (progress) progress(e);
 			}, false);
 	
-			var response = {
+			response = {
 				then: function(func) {
 					then = func;
 					return response;
@@ -181,20 +177,20 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 	
 	return function(scope, elem, attr) {
 		var fn = $parse(attr['ngFileSelect']);
-		if (angularFileUpload.shouldLoadShim) {
+		if (!angularFileUpload.html5) {
 			elem.wrap('<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden">');
 		}
 		elem.bind('change', function(evt) {
-			var files = [];
-			if (!angularFileUpload.shouldLoadShim) {
-				var fileList = evt.target.files;
+			var files = [], fileList, i;
+			if (!angularFileUpload.html5) {
+				files = FileAPI.getFiles(evt);
+			} else {
+				fileList = evt.target.files;
 				if (fileList != null) {
-					for ( var i = 0; i < fileList.length; i++) {
+					for (i = 0; i < fileList.length; i++) {
 						files.push(fileList.item(i));
 					}
 				}
-			} else {
-				files = FileAPI.getFiles(evt);
 			}
 			scope.$apply(function() {
 				fn(scope, {
@@ -238,10 +234,9 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, 
 				evt.stopPropagation();
 				evt.preventDefault();
 				elem.removeClass("dragover");
-				var files = [];
-				var fileList = evt.dataTransfer.files;
+				var files = [], fileList = evt.dataTransfer.files, i;
 				if (fileList != null) {
-					for ( var i = 0; i < fileList.length; i++) {
+					for (i = 0; i < fileList.length; i++) {
 						files.push(fileList.item(i));
 					}
 				}
@@ -257,3 +252,5 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, 
 		}
 	};
 } ]);
+
+})();
