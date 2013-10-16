@@ -6,7 +6,7 @@
 <title>Angular file upload sample</title>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
-<script src="js/angular-file-upload.min.js"></script>
+<script src="js/angular-file-upload.js"></script>
 </head>
 
 <body>
@@ -46,7 +46,7 @@
 	<script type="text/javascript">
 		angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-		var MyCtrl = [ '$scope', '$http', '$injector', function($scope, $http, $injector) {
+		var MyCtrl = [ '$scope', '$http', '$timeout', function($scope, $http, $timeout) {
 
 			$scope.selectedFiles = [];
 			$scope.progress = 0;
@@ -72,7 +72,7 @@
 						}
 					}).success(function(data, status, headers, config) {
 						$scope.uploadResult.push(data.toString());
-						// to fix IE not refreshing the model
+						// to fix IE not updating the dom
 						if (!$scope.$$phase) {
 							$scope.$apply();
 						}

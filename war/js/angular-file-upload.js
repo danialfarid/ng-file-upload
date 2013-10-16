@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  */
 (function() {
 	
@@ -10,38 +10,34 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 angularFileUpload.html5 = !!window.FormData;
 
 if (!angularFileUpload.html5) {
-	(function() {
-		//load jquery
-		if (!window.jQuery) {
-			var script = document.createElement('script');
-			script.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
-			document.getElementsByTagName('head')[0].appendChild(script);
-		}
-	})();
-	
 	(function () {
 		//load FileAPI
-		var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index;
+		if (!window.FileAPI || !FileAPI.upload) {
+			var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index;
+			if (window.FileAPI && window.FileAPI.jsPath) {
+				base = window.FileAPI.jsPath;
+			} else {
+				for (i = 0; i < allScripts.length; i++) {
+					index = allScripts[i].src.indexOf('angular-file-upload.js')
+					if (index == -1) {
+						index = allScripts[i].src.indexOf('angular-file-upload.min.js');
+					}
+					if (index > -1) {
+						base = allScripts[i].src.substring(0, index);
+						break;
+					}
+				}
+			}
 
-		for (i = 0; i < allScripts.length; i++) {
-			index = allScripts[i].src.indexOf('angular-file-upload.js')
-			if (index == -1) {
-				index = allScripts[i].src.indexOf('angular-file-upload.min.js');
+			if (!window.FileAPI || FileAPI.staticPath == null) {
+				FileAPI = {
+					staticPath: base
+				}
 			}
-			if (index > -1) {
-				base = allScripts[i].src.substring(0, index);
-				break;
-			}
+	
+			script.setAttribute('src', base + 'FileAPI.min.js');
+			document.getElementsByTagName('head')[0].appendChild(script);
 		}
-
-		if (!window.FileAPI || FileAPI.staticPath == null) {
-			FileAPI = {
-				staticPath : base
-			}
-		}
-
-		script.setAttribute('src', base + 'FileAPI.min.js');
-		document.getElementsByTagName('head')[0].appendChild(script);
 	})();
 }
 
