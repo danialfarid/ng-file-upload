@@ -21,29 +21,27 @@ if (!angularFileUpload.html5) {
 	
 	(function () {
 		//load FileAPI
-		if (!window.FormData) {
-			var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index;
-	
-			for (i = 0; i < allScripts.length; i++) {
-				index = allScripts[i].src.indexOf('angular-file-upload.js')
-				if (index == -1) {
-					index = allScripts[i].src.indexOf('angular-file-upload.min.js');
-				}
-				if (index > -1) {
-					base = allScripts[i].src.substring(0, index);
-					break;
-				}
+		var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index;
+
+		for (i = 0; i < allScripts.length; i++) {
+			index = allScripts[i].src.indexOf('angular-file-upload.js')
+			if (index == -1) {
+				index = allScripts[i].src.indexOf('angular-file-upload.min.js');
 			}
-	
-			if (!window.FileAPI || FileAPI.staticPath == null) {
-				FileAPI = {
-					staticPath : base
-				}
+			if (index > -1) {
+				base = allScripts[i].src.substring(0, index);
+				break;
 			}
-	
-			script.setAttribute('src', base + 'FileAPI.min.js');
-			document.getElementsByTagName('head')[0].appendChild(script);
 		}
+
+		if (!window.FileAPI || FileAPI.staticPath == null) {
+			FileAPI = {
+				staticPath : base
+			}
+		}
+
+		script.setAttribute('src', base + 'FileAPI.min.js');
+		document.getElementsByTagName('head')[0].appendChild(script);
 	})();
 }
 
