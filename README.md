@@ -57,7 +57,7 @@ For the browsers not supporting HTML5 FormData you need [FileAPI](https://github
 You can put these two files beside angular-file-upload.js on your server to be loaded automatically on demand or use the following script to set the FileAPI load path:
 ```script
 <script>
-    //(optional)
+    // optional
     FileAPI = {
         jsPath: "/js/path/to/FileAPI.min.js,
         staticPath: "/flash/path/to/FileAPI.flash.swf"
