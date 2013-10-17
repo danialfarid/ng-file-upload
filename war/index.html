@@ -25,16 +25,16 @@
 		<div class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
-		Progress: &nbsp;&nbsp;
-		<span class="progress">				
-			<div style="width:{{progress}}%">{{progress}}%</div>
-		</span>
-		<span ng-show="selectedFiles != null">
-			<span class="sel-file" ng-repeat="f in selectedFiles">
+		Progress:
+		<br/>
+		<div ng-show="selectedFiles != null">
+			<div class="sel-file" ng-repeat="f in selectedFiles">
+				<span class="progress">						
+					<div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
+				</span>
 				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
-				<span ng-show="$index < selectedFiles.length - 1">,</span>
-			</span>
-		</span>
+			</div>
+		</div>
 		<div class="response" ng-show="uploadResult.length > 0">
 			Server Response:
 			<ul>
@@ -49,34 +49,37 @@
 		var MyCtrl = [ '$scope', '$http', '$timeout', function($scope, $http, $timeout) {
 
 			$scope.selectedFiles = [];
-			$scope.progress = 0;
+			$scope.progress = [];
 			
 			$scope.onFileSelect = function($files) {
 				$scope.uploadResult = [];
 				$scope.selectedFiles = $files;
 				for ( var i = 0; i < $files.length; i++) {
 					var $file = $files[i];
-					$scope.progress = 0;
-					$http.uploadFile({
-						url : 'upload',
-						headers: {'myHeaderKey': 'myHeaderVal'},
-						data : {
-							myModel : $scope.myModel
-						},
-						file : $file,
-						//fileFormDataName: 'myFile'
-					}).progress(function(evt) {
-						$scope.progress = parseInt(100.0 * evt.loaded / evt.total);
-						if (!$scope.$$phase) {
-							$scope.$apply();
-						}
-					}).success(function(data, status, headers, config) {
-						$scope.uploadResult.push(data.toString());
-						// to fix IE not updating the dom
-						if (!$scope.$$phase) {
-							$scope.$apply();
-						}
-					});
+					$scope.progress[i] = 0;
+					(function() {
+						var index = i; 
+						$http.uploadFile({
+							url : 'upload',
+							headers: {'myHeaderKey': 'myHeaderVal'},
+							data : {
+								myModel : $scope.myModel
+							},
+							file : $file,
+							//fileFormDataName: 'myFile'
+						}).progress(function(evt) {
+							$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+							if (!$scope.$$phase) {
+								$scope.$apply();
+							}
+						}).success(function(data, status, headers, config) {
+							$scope.uploadResult.push(data.toString());
+							// to fix IE not updating the dom
+							if (!$scope.$$phase) {
+								$scope.$apply();
+							}
+						});
+					})();
 				}
 			}
 		} ];

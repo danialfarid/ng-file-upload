@@ -39,9 +39,10 @@ doesnotexist:-o-prefocus, input[multiple] {
 }
 
 .sel-file {
-	padding: 0 5px;
+	padding: 1px 5px;
 	font-size: smaller;
 	color: grey;
+	
 }
 
 .response {
@@ -50,7 +51,8 @@ doesnotexist:-o-prefocus, input[multiple] {
 
 .response li {
 	color: blue;
-	font-size: smaller; 
+	font-size: smaller;
+	padding-bottom: 5px; 
 }
 
 .progress {
