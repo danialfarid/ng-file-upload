@@ -8,7 +8,7 @@ New in version 1.0.0:
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
-Lightweight Angular JS directive to upload files using regular input type file or drag&drop file and ajax call.
+Lightweight Angular JS directive to upload files using input type file or drag&drop with ajax call.
 
 HTML:
 ```html
@@ -19,7 +19,8 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
+  <div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
+  <div ng-show="!dropSupported" ng-file-drop-available="dropSupported=true">HTML5 Drop File is not supported on this browser</div>
 </div>
 ```
 
