@@ -35,7 +35,7 @@ var MyCtrl = [ '$scope', '$http', function($scope, $http) {
     for (var i = 0; i < $files.length; i++) {
       var $file = $files[i];
       $http.uploadFile({
-        url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url)
+        url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url
         // headers: {'optional', 'value'}
         data: {myObj: $scope.myModelObj},
         file: $file
