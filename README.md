@@ -19,8 +19,8 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
-  <div ng-show="!dropSupported" ng-file-drop-available="dropSupported=true">HTML5 Drop File is not supported!</div>
+  <div class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
+  <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
 </div>
 ```
 
