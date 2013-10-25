@@ -105,10 +105,10 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 		$http.uploadFile = function(config) {
 			var xhr = new angularFileUpload.XMLHttpRequest(), then, success, error, progress, response, 
 				formData = new FormData();
-			formData.append(config.fileFormDataName || 'file', config.file);
 			for (key in config.data) {
 				formData.append(key, config.data[key]);
 			}
+			formData.append(config.fileFormDataName || 'file', config.file);
 			xhr.open(config.method || 'POST', config.url, true);
 	
 			config.headers = config.headers || {};
