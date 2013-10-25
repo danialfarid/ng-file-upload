@@ -27,6 +27,7 @@ if (!angularFileUpload.html5) {
 						break;
 					}
 				}
+        base += "FileAPI.min.js"
 			}
 
 			if (!window.FileAPI || FileAPI.staticPath == null) {
@@ -35,7 +36,7 @@ if (!angularFileUpload.html5) {
 				}
 			}
 	
-			script.setAttribute('src', base + 'FileAPI.min.js');
+			script.setAttribute('src', base);
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
