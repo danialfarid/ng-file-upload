@@ -20,7 +20,7 @@ Lightweight Angular JS directive to upload files using input type file or drag&d
 
 HTML:
 ```html
-<script src="angular.file-upload-shim.min.js"></script> //only if you need to support upload progress or non HTML5 FormData browsers
+<script src="angular.file-upload-shim.min.js"></script> <!--only if you need to support upload progress or non HTML5 FormData browsers-->
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script>
 
@@ -28,8 +28,8 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div class="drop-box" ng-file-drop="onFileSelect($files);" ng-show="dropSupported">drop files here</div>
-  <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
+  <div class="drop-box" ng-file-drop="onFileSelect($files);" ng-show="ddSupported">drop files here</div>
+  <div ng-file-drop-available="dropSupported=true" ng-show="!ddSupported">HTML5 Drop File is not supported!</div>
 </div>
 ```
 
