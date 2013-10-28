@@ -62,11 +62,7 @@ if (!angularFileUpload.html5) {
 				}
 			}
 	
-<<<<<<< HEAD
-			script.setAttribute('src', base + "FileAPI.js");
-=======
 			script.setAttribute('src', base + "FileAPI.min.js");
->>>>>>> 20ca5c79183597eaac9c7f21c3894528ede17cb8
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
