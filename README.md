@@ -59,8 +59,8 @@ You can put these two files beside angular-file-upload.js on your server to be l
 <script>
     //optional
     FileAPI = {
-        jsPath: "/js/path/to/FileAPI.min.js,
-        staticPath: "/flash/path/to/FileAPI.flash.swf"
+        jsPath: '/js/FileAPI.min.js/folder/',
+        staticPath: '/flash/FileAPI.flash.swf/folder/'
     }
 </script>
 ```

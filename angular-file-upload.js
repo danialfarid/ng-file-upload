@@ -10,6 +10,33 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 angularFileUpload.html5 = !!window.FormData;
 
 if (!angularFileUpload.html5) {
+	HTMLInputElement.prototype.realAddEventListener = HTMLInputElement.prototype.addEventListener;
+
+	HTMLInputElement.prototype.addEventListener = function(e, fn, b, d) {
+		if (e === 'change' && this.getAttribute('type') == 'file') {
+			if (!this.__isWrapped && (this.getAttribute('ng-file-select') != null || this.getAttribute('data-ng-file-select') != null)) {
+				var wrap = document.createElement('div');
+				wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
+				wrap = wrap.firstChild;
+				var parent = this.parentNode;
+				parent.insertBefore(wrap, this);
+				parent.removeChild(this);
+				wrap.appendChild(this);
+				this.__isWrapped = true;
+			}
+			this.realAddEventListener(e, 
+					function(evt) {
+						evt.target.files = FileAPI.getFiles(evt);
+						evt.target.files.item = function(i) {
+							return evt.target.files[i] || null;
+						}
+						fn(evt);
+					}, b, d); 
+		} else {
+			this.realAddEventListener(e, fn, b, d);
+		}
+	};
+	
 	(function () {
 		//load FileAPI
 		if (!window.FileAPI || !FileAPI.upload) {
@@ -27,7 +54,6 @@ if (!angularFileUpload.html5) {
 						break;
 					}
 				}
-        base += "FileAPI.min.js"
 			}
 
 			if (!window.FileAPI || FileAPI.staticPath == null) {
@@ -36,7 +62,7 @@ if (!angularFileUpload.html5) {
 				}
 			}
 	
-			script.setAttribute('src', base);
+			script.setAttribute('src', base + "FileAPI.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
@@ -167,26 +193,27 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 }
 
 
+
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse, $http) {
 	angularFileUpload.defineHttpUploadFile($http);
 	
 	return function(scope, elem, attr) {
 		var fn = $parse(attr['ngFileSelect']);
-		if (!angularFileUpload.html5) {
-			elem.wrap('<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden">');
-		}
+//		if (!angularFileUpload.html5) {
+//			elem.wrap('<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden">');
+//		}
 		elem.bind('change', function(evt) {
 			var files = [], fileList, i;
-			if (!angularFileUpload.html5) {
-				files = FileAPI.getFiles(evt);
-			} else {
+//			if (!angularFileUpload.html5) {
+//				files = FileAPI.getFiles(evt);
+//			} else {
 				fileList = evt.target.files;
 				if (fileList != null) {
 					for (i = 0; i < fileList.length; i++) {
 						files.push(fileList.item(i));
 					}
 				}
-			}
+//			}
 			scope.$apply(function() {
 				fn(scope, {
 					$files : files,

@@ -38,6 +38,10 @@ doesnotexist:-o-prefocus, input[multiple] {
     }
 }
 
+html[data-useragent*='MSIE 10.0'] input[type="file"] {
+	width: 7.5em;
+}
+
 .sel-file {
 	padding: 1px 5px;
 	font-size: smaller;

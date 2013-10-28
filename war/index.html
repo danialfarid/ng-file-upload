@@ -4,7 +4,8 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<script src="js/angular-file-upload-shim.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 <script src="js/angular-file-upload.js"></script>
 </head>
@@ -22,7 +23,7 @@
 		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
 		<br/>
 		<br/>
-		<div class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
+		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
 		Progress:
@@ -46,7 +47,7 @@
 	<script type="text/javascript">
 		angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-		var MyCtrl = [ '$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+		var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
 
 			$scope.selectedFiles = [];
 			$scope.progress = [];
@@ -59,18 +60,19 @@
 					$scope.progress[i] = 0;
 					(function() {
 						var index = i; 
-						$http.uploadFile({
+						$upload.upload({
 							url : 'upload',
 							headers: {'myHeaderKey': 'myHeaderVal'},
 							data : {
 								myModel : $scope.myModel
 							},
 							file : $file,
-							//fileFormDataName: 'myFile'
-						}).progress(function(evt) {
-							$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
-							if (!$scope.$$phase) {
-								$scope.$apply();
+							//fileFormDataName: 'myFile',
+							progress: function(evt) {
+								$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+								if (!$scope.$$phase) {
+									$scope.$apply();
+								}
 							}
 						}).success(function(data, status, headers, config) {
 							$scope.uploadResult.push(data.toString());
