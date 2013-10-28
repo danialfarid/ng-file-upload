@@ -1,10 +1,18 @@
 angular-file-upload
 ===================
 
+New in version 1.1.0:
+* upload is now done with regular angular $http.post for HTML5 browsers so all angular $http features are available.
+* Added $upload as an angular service.
+* All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. 
+* angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
+* progress event is part of the upload config params instead of promise call.
+
 New in version 1.0.0:
 * File upload progress support.
 * File drag and drop support. 
 
+=====================
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
@@ -12,39 +20,42 @@ Lightweight Angular JS directive to upload files using input type file or drag&d
 
 HTML:
 ```html
+<script src="angular.file-upload-shim.min.js"></script> <!--only if you need to support upload progress or non HTML5 FormData browsers-->
 <script src="angular.min.js"></script>
-<script src="angular-file-upload.js"></script>
+<script src="angular-file-upload.min.js"></script>
 
 <div ng-controller="MyCtrl">
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div class="drop-box" ng-file-drop="onFileSelect($files);">drop files here</div>
-  <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
+  <div class="drop-box" ng-file-drop="onFileSelect($files);" ng-show="ddSupported">drop files here</div>
+  <div ng-file-drop-available="dropSupported=true" ng-show="!ddSupported">HTML5 Drop File is not supported!</div>
 </div>
 ```
 
 JS:
 ```js
-//inject angular file upload directive.
+//inject angular file upload directives and service.
 angular.module('myApp', ['angularFileUpload']);
 
-var MyCtrl = [ '$scope', '$http', function($scope, $http) {
+var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
   $scope.onFileSelect = function($files) {
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
       var $file = $files[i];
-      $http.uploadFile({
+      $upload.uploadFile({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url
-        // headers: {'optional', 'value'}
+        // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
-        file: $file
-      }).progress(function(evt) {
-        console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-      }).then(function(data, status, headers, config) {
+        file: $file,
+        progress: function(evt) {
+          console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+        }
+      }).success(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
-      }); 
+      })
+      //.error(...).then(...); 
     }
   }
 }];
