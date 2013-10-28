@@ -65,7 +65,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 For the browsers not supporting HTML5 FormData you need [FileAPI](https://github.com/mailru/FileAPI) files **FileAPI.min.js** and **FileAPI.flash.swf** as a polyfill. These files will not be loaded to the client if the browser supports HTML5 FormData (no extra load).
 **Note**: Flash needs to be installed on the client browser if it doesn't support HTML5. 
 
-You can put these two files beside angular-file-upload.js on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
+You can put these two files beside angular-file-upload-shim(.min).js on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
 ```script
 <script>
     //optional
@@ -75,7 +75,7 @@ You can put these two files beside angular-file-upload.js on your server to be l
     }
 </script>
 ```
-This needs to be loaded before angular-file-upload.js (place before `<script src="angular-file-upload.js"></script>`)
+This needs to be loaded before angular-file-upload-shim(.min).js (place before `<script src="angular-file-upload.min.js"></script>`)
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/src/com/df/angularfileupload/FileUpload.java).
 
