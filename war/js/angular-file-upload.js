@@ -18,7 +18,9 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 			formData.append(key, config.data[key]);
 		}
 		formData.append('file', config.file);
-		config.headers['__uploadProgress_'] = config.progress;
+		config.headers['__uploadProgress_'] = function(e) {
+			if (e) config.progress(e);
+		};
 		
 		var response = $http.post(config.url, formData, config);
 		return response;
