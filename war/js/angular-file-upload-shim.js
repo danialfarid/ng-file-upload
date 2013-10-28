@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.0
+ * @version 1.1.1
  */
 (function() {
 
@@ -11,19 +11,19 @@ if (window.XMLHttpRequest) {
 		XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
-				if (xhr.upload) {
-					xhr.setRequestHeader = (function(orig) {
-						return function(h, v) {
-							if (h === '__uploadProgress_') {
+				xhr.send = (function(orig) {
+					return function() {
+						if (arguments[0] instanceof FormData) {
+							var formData = arguments[0];
+							if (formData.__uploadProgress_) {
 								xhr.upload.addEventListener('progress', function(e) {
-									v(e);
-								}, false);			
-							} else {
-								orig.apply(xhr, [h, v]);
+									formData.__uploadProgress_(e);
+								}, false);
 							}
 						}
-					})(xhr.setRequestHeader);
-				}
+						orig.apply(xhr, arguments);
+					}
+				})(xhr.send);
 				return xhr;
 			}
 		})(XMLHttpRequest);
@@ -33,16 +33,6 @@ if (window.XMLHttpRequest) {
 				var xhr = new origXHR();
 				var origSend = xhr.send;
 				xhr.__requestHeaders = [];
-				xhr.setRequestHeader = (function (orig) {
-					return function(h, v) {
-						if (h === '__uploadProgress_') {
-							xhr.__progress = v;			
-						} else {
-							orig.apply(xhr, [h, v]);
-							xhr.__requestHeaders[h] = v;
-						}
-					}
-				})(xhr.setRequestHeader);
 				xhr.open = (function(orig) {
 					xhr.upload = {
 						addEventListener: function(t, fn, b) {
@@ -67,13 +57,15 @@ if (window.XMLHttpRequest) {
 					}
 				})(xhr.getAllResponseHeaders);
 				xhr.send = function() {
-					if (arguments[0].__formData) {
+					if (FormData.__isShim) {
 						var formData = arguments[0];
+						if (formData.__uploadProgress_) {
+							xhr.upload.addEventListener('progress', function(e) {
+								formData.__uploadProgress_(e);
+							}, false);
+						}
 						var config = {
 							url: xhr.__url,
-							files: {
-								file : formData.file
-							},
 							complete: function(err, fileApiXHR) {
 								Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
 								Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
@@ -89,9 +81,13 @@ if (window.XMLHttpRequest) {
 							headers: xhr.__requestHeaders
 						}
 						config.data = {};
-						for (key in formData) {
-							if (key != 'file' && key != 'append' && key != '__formData') {
-								config.data[key] = formData[key];
+						config.files = {}
+						for (var i = 0; i < formData.data.length; i++) {
+							var item = formData.data[i];
+							if (item.val.name && item.val.size && item.val.type) {
+								config.files[item.key] = item.val;
+							} else {
+								config.data[item.key] = item.val;
 							}
 						}
 						FileAPI.upload(config);				
@@ -139,12 +135,17 @@ if (!window.FormData) {
 
 	window.FormData = FormData = function() {
 		return {
-			append: function(key, val) {
-				this[key] = val;
+			append: function(key, val, name) {
+				this.data.push({
+					key: key,
+					val: val,
+					name: name
+				});
 			},
-			__formData: true
+			data: []
 		};
 	};
+	FormData.__isShim = true;
 		
 	(function () {
 		//load FileAPI

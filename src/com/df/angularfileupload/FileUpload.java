@@ -19,32 +19,33 @@ public class FileUpload extends HttpServlet {
 	private static final long serialVersionUID = -8244073279641189889L;
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
 			ServletFileUpload upload = new ServletFileUpload();
 
 			FileItemIterator iterator = upload.getItemIterator(req);
 
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder("{\"result\": [");
 
 			while (iterator.hasNext()) {
+				sb.append("{");
 				FileItemStream item = iterator.next();
-				sb.append(item.getFieldName());
+				sb.append("\"fieldName\":\"").append(item.getFieldName()).append("\",");
 				if (item.getName() != null) {
-					sb.append(" - ").append(item.getName());
-
+					sb.append("\"name\":\"").append(item.getName()).append("\",");
 				}
-				sb.append(" : ");
 				if (item.getName() != null) {
-					sb.append("file size on the server: ").append(
-							fileSize(item.openStream()));
+					sb.append("\"size\":\"").append(fileSize(item.openStream())).append("\"");
 				} else {
-					sb.append(read(item.openStream()));
+					sb.append("\"value\":\"").append(read(item.openStream())).append("\"");
 				}
-				sb.append("<br/>");
+				sb.append("}");
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
 			}
-			res.setContentType("text/plain");
+			sb.append("]}");
+			res.setContentType("application/json");
 			PrintWriter printWriter = new PrintWriter(res.getOutputStream());
 			try {
 				printWriter.print(sb.toString());
@@ -74,8 +75,7 @@ public class FileUpload extends HttpServlet {
 
 	protected String read(InputStream stream) {
 		StringBuilder sb = new StringBuilder();
-		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(stream));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		try {
 			String line;
 			while ((line = reader.readLine()) != null) {

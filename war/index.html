@@ -5,7 +5,7 @@
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
 <script src="js/angular-file-upload-shim.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 <script src="js/angular-file-upload.js"></script>
 </head>
@@ -39,7 +39,16 @@
 		<div class="response" ng-show="uploadResult.length > 0">
 			Server Response:
 			<ul>
-				<li ng-repeat="result in uploadResult" ng-bind-html-unsafe="result">{{result}}</li>
+				<li ng-repeat="result in uploadResult">
+					<ul>
+						<li ng-repeat="item in result">
+							<div data-ng-show="item.name">file name: {{item.name}}</div>
+							<div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
+							<div data-ng-show="item.size">size on the serve: {{item.size}}</div>
+							<div data-ng-show="item.value">value: {{item.value}}</div>
+						</li>
+					</ul>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -67,7 +76,7 @@
 								myModel : $scope.myModel
 							},
 							file : $file,
-							//fileFormDataName: 'myFile',
+							fileFormDataName: 'myFile',
 							progress: function(evt) {
 								$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
 								if (!$scope.$$phase) {
@@ -75,7 +84,7 @@
 								}
 							}
 						}).success(function(data, status, headers, config) {
-							$scope.uploadResult.push(data.toString());
+							$scope.uploadResult.push(data.result);
 							// to fix IE not updating the dom
 							if (!$scope.$$phase) {
 								$scope.$apply();

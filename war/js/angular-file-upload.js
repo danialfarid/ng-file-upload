@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.0
+ * @version 1.1.1
  */
 (function() {
 	
@@ -14,11 +14,13 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
-		for (key in config.data) {
-			formData.append(key, config.data[key]);
+		if (config.data) {
+			for (key in config.data) {
+				formData.append(key, config.data[key]);
+			}
 		}
-		formData.append('file', config.file);
-		config.headers['__uploadProgress_'] = function(e) {
+		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
+		formData['__uploadProgress_'] = function(e) {
 			if (e) config.progress(e);
 		};
 		
@@ -44,6 +46,9 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 					$event : evt
 				});
 			});
+		});
+		elem.bind('click', function(){
+			this.value = null;
 		});
 	};
 } ]);

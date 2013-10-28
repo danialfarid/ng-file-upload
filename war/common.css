@@ -53,6 +53,10 @@ html[data-useragent*='MSIE 10.0'] input[type="file"] {
 	padding-top: 30px;
 }
 
+.response>ul {
+	list-style-type: decimal;
+}
+
 .response li {
 	color: blue;
 	font-size: smaller;
