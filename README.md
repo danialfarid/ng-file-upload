@@ -35,7 +35,7 @@ HTML:
 
 JS:
 ```js
-//inject angular file upload directive.
+//inject angular file upload directives and service.
 angular.module('myApp', ['angularFileUpload']);
 
 var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
