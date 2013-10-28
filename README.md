@@ -47,6 +47,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
         file: $file,
+        //fileFormDataName: myFile, //(optional) sets 'Content-Desposition' formData name for file
         progress: function(evt) {
           console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
         }
