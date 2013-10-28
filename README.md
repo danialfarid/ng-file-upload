@@ -2,7 +2,7 @@ angular-file-upload
 ===================
 
 New in version 1.1.0:
-* upload is now done with regular angular $http.post for HTML5 browsers so all angular $http features are available.
+* upload is now done with regular angular $http.post (with shim for non-HTML5 browsers) so all angular $http features are available.
 * Added $upload as an angular service.
 * All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
 * progress event is part of the upload config params instead of promise call.
