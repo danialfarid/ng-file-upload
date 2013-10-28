@@ -12,7 +12,7 @@ New in version 1.0.0:
 * File upload progress support.
 * File drag and drop support. 
 
---------------------------------------
+===========================
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
