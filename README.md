@@ -2,10 +2,9 @@ angular-file-upload
 ===================
 
 New in version 1.1.0:
-* upload is now done with regular angular $http.post for HTML5 browsers so all angular $http features are available.
+* upload is now done with regular angular $http.post (with shim for non-HTML5 browsers) so all angular $http features are available.
 * Added $upload as an angular service.
-* All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. 
-* angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
+* All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
 * progress event is part of the upload config params instead of promise call.
 
 New in version 1.0.0:
@@ -43,11 +42,12 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
       var $file = $files[i];
-      $upload.uploadFile({
+      $upload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
         file: $file,
+        //fileFormDataName: myFile, //(optional) sets 'Content-Desposition' formData name for file
         progress: function(evt) {
           console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
         }
@@ -65,7 +65,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 For the browsers not supporting HTML5 FormData you need [FileAPI](https://github.com/mailru/FileAPI) files **FileAPI.min.js** and **FileAPI.flash.swf** as a polyfill. These files will not be loaded to the client if the browser supports HTML5 FormData (no extra load).
 **Note**: Flash needs to be installed on the client browser if it doesn't support HTML5. 
 
-You can put these two files beside angular-file-upload.js on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
+You can put these two files beside angular-file-upload-shim(.min).js on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
 ```script
 <script>
     //optional
@@ -75,7 +75,7 @@ You can put these two files beside angular-file-upload.js on your server to be l
     }
 </script>
 ```
-This needs to be loaded before angular-file-upload.js (place before `<script src="angular-file-upload.js"></script>`)
+This needs to be loaded before angular-file-upload-shim(.min).js (place before `<script src="angular-file-upload.min.js"></script>`)
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/src/com/df/angularfileupload/FileUpload.java).
 
