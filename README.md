@@ -3,7 +3,7 @@ angular-file-upload
 
 New in version 1.1.2:
 * upload.abort() to cancel the upload in progress.
-* issues #34 #35 #36
+* Allow PUT method for HTML5
 
 New in version 1.1.0:
 * upload is now done with regular angular $http.post (with shim for non-HTML5 browsers) so all angular $http features are available.
