@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.1
+ * @version 1.1.2
  */
 (function() {
 	
@@ -23,8 +23,16 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		formData['__uploadProgress_'] = function(e) {
 			if (e) config.progress(e);
 		};
+
+		config.data = formData;
 		
-		var response = $http.post(config.url, formData, config);
+		var response = $http(config);
+
+		response.abort = function(){throw "upload is not started yet"};
+		formData['__setAbortFunction_'] = function(fn) {
+			response.abort = fn;
+		}
+		
 		return response;
 	};
 }]);

@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.1
+ * @version 1.1.2
  */
 (function() {
 
@@ -13,12 +13,18 @@ if (window.XMLHttpRequest) {
 				var xhr = new origXHR();
 				xhr.send = (function(orig) {
 					return function() {
-						if (arguments[0] instanceof FormData) {
+						if (arguments[0] instanceof FormData && arguments[0].__uploadProgress_) {
 							var formData = arguments[0];
 							if (formData.__uploadProgress_) {
 								xhr.upload.addEventListener('progress', function(e) {
 									formData.__uploadProgress_(e);
 								}, false);
+							}
+							if (formData.__setAbortFunction_) {
+								var thisXHR = xhr;
+								formData.__setAbortFunction_(function() {
+									thisXHR.abort();
+								})
 							}
 						}
 						orig.apply(xhr, arguments);
@@ -56,13 +62,24 @@ if (window.XMLHttpRequest) {
 						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getAllResponseHeaders() : orig.apply(xhr); 
 					}
 				})(xhr.getAllResponseHeaders);
+				xhr.abort = (function(orig) {
+					return function() {
+						return xhr.__fileApiXHR ? xhr.__fileApiXHR.abort() : (orig == null ? null : orig.apply(xhr)); 
+					}
+				})(xhr.abort);
 				xhr.send = function() {
-					if (FormData.__isShim) {
+					if (arguments[0].__isShim && arguments[0].__uploadProgress_) {
 						var formData = arguments[0];
 						if (formData.__uploadProgress_) {
 							xhr.upload.addEventListener('progress', function(e) {
 								formData.__uploadProgress_(e);
 							}, false);
+						}
+						if (formData.__setAbortFunction_) {
+							var thisXHR = xhr;
+							formData.__setAbortFunction_(function() {
+								thisXHR.__fileApiXHR.abort();
+							})
 						}
 						var config = {
 							url: xhr.__url,
@@ -84,13 +101,13 @@ if (window.XMLHttpRequest) {
 						config.files = {}
 						for (var i = 0; i < formData.data.length; i++) {
 							var item = formData.data[i];
-							if (item.val.name && item.val.size && item.val.type) {
+							if (item.val != null && item.val.name != null && item.val.size != null && item.val.type != null) {
 								config.files[item.key] = item.val;
 							} else {
 								config.data[item.key] = item.val;
 							}
 						}
-						FileAPI.upload(config);				
+						xhr.__fileApiXHR = FileAPI.upload(config);				
 					} else {
 						origSend.apply(xhr, arguments);
 					}
@@ -142,10 +159,10 @@ if (!window.FormData) {
 					name: name
 				});
 			},
-			data: []
+			data: [],
+			__isShim: true
 		};
 	};
-	FormData.__isShim = true;
 		
 	(function () {
 		//load FileAPI

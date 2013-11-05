@@ -5,7 +5,7 @@
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
 <script src="js/angular-file-upload-shim.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 <script src="js/angular-file-upload.js"></script>
 </head>
@@ -32,7 +32,9 @@
 			<div class="sel-file" ng-repeat="f in selectedFiles">
 				<span class="progress">						
 					<div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
-				</span>
+				</span>				
+				<button class="button" ng-click="upload[$index].abort(); upload[$index]=null" 
+					ng-show="upload[$index] && progress[$index] < 100">Abort</button>
 				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
 			</div>
 		</div>
@@ -58,10 +60,16 @@
 
 		var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
 
-			$scope.selectedFiles = [];
-			$scope.progress = [];
-			
 			$scope.onFileSelect = function($files) {
+				$scope.selectedFiles = [];
+				$scope.progress = [];
+				if ($scope.upload && $scope.upload.length > 0) {
+					for (var i = 0; i < $scope.upload.length; i++) {
+						$scope.upload[i].abort();
+						$scope.upload[i].success = null;
+					}
+				}
+				$scope.upload = [];
 				$scope.uploadResult = [];
 				$scope.selectedFiles = $files;
 				for ( var i = 0; i < $files.length; i++) {
@@ -69,7 +77,7 @@
 					$scope.progress[i] = 0;
 					(function() {
 						var index = i; 
-						$upload.upload({
+						$scope.upload[index] = $upload.upload({
 							url : 'upload',
 							headers: {'myHeaderKey': 'myHeaderVal'},
 							data : {

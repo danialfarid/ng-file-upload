@@ -4,7 +4,7 @@ body {
 
 input[type="file"] {	
 	width: 7em;
-	width: 6.2em \0/IE9;
+	width: 6.3em \0/IE9;
 	height: 1.5em;
 	margin: 5px;
 }
@@ -92,4 +92,10 @@ html[data-useragent*='MSIE 10.0'] input[type="file"] {
 .js-fileapi-wrapper {
 	display: inline-block;
 	vertical-align: middle;	
+}
+
+button {
+	padding: 1px 5px;
+	font-size: smaller;
+	margin: 0; 
 }
