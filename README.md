@@ -1,6 +1,10 @@
 angular-file-upload
 ===================
 
+New in version 1.1.2:
+upload.abort() to cancel the upload in progress.
+issues #34 #35 #36
+
 New in version 1.1.0:
 * upload is now done with regular angular $http.post (with shim for non-HTML5 browsers) so all angular $http features are available.
 * Added $upload as an angular service.
@@ -29,6 +33,7 @@ HTML:
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
   <div ng-file-drop="onFileSelect($files);" ng-show="dropSupported">drop files here</div>
   <div ng-file-drop-available="dropSupported=true" ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
+  <button ng-click="upload.abort()">Cancel Upload</button>
 </div>
 ```
 
@@ -42,7 +47,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
       var $file = $files[i];
-      $upload.upload({
+      $scope.upload = $upload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
