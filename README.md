@@ -6,7 +6,7 @@ New in version 1.1.2:
 * Allow PUT method for HTML5
 
 New in version 1.1.0:
-* upload is now done with regular angular $http.post (with shim for non-HTML5 browsers) so all angular $http features are available.
+* upload is now done with regular angular $http.post 
 * Added $upload as an angular service.
 * All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
 * progress event is part of the upload config params instead of promise call.
@@ -19,13 +19,20 @@ New in version 1.0.0:
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
-Lightweight Angular JS directive to upload files using input type file or drag&drop with ajax call.
+Lightweight Angular JS directive to upload files. Features:
+* File upload for HTML5 and non HTML5 browsers with Flash polyfill. Allows client side validation before uploading the file.
+* Sends the file with regular angular $http (with shim for non-HTML5 browsers) so all angular $http features are available.
+* Supports upload progress
+* Supports cancel/abort upload while in progress
+* Supports File drag and drop
+* All non-HTML5 code is in a separate shim file so you can easily remove it if you only supports HTML5.
+* Flash FileAPI will be loaded on demand so it won't add extra load for HTML5 browsers.
 
 HTML:
 ```html
-<script src="angular.file-upload-shim.min.js"></script> <!--only if you need to support upload progress or non HTML5 FormData browsers. Most be placed before angular.js-->
+<script src="angular.file-upload-shim.min.js"></script> <!--only needed if you support upload progress/abort or non HTML5 FormData browsers. Most be placed before angular.js-->
 <script src="angular.min.js"></script>
-<script src="angular-file-upload.min.js"></script>
+<script src="angular-file-upload.min.js"></script> <!--place after angular.js-->
 
 <div ng-controller="MyCtrl">
   <input type="text" ng-model="myModelObj">
