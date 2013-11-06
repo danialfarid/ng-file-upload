@@ -83,15 +83,15 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, 
 			elem[0].addEventListener("dragover", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
-				elem.addClass("dragover");
+				elem.addClass(attr['ngFileDragOverClass'] || "dragover");
 			}, false);
 			elem[0].addEventListener("dragleave", function(evt) {
-				elem.removeClass("dragover");
+				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 			}, false);
 			elem[0].addEventListener("drop", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
-				elem.removeClass("dragover");
+				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				var files = [], fileList = evt.dataTransfer.files, i;
 				if (fileList != null) {
 					for (i = 0; i < fileList.length; i++) {
