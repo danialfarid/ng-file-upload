@@ -1,21 +1,6 @@
 angular-file-upload
 ===================
 
-New in version 1.1.2:
-* upload.abort() to cancel the upload in progress.
-* Allow PUT method for HTML5
-
-New in version 1.1.0:
-* upload is now done with regular angular $http.post 
-* Added $upload as an angular service.
-* All the code for non HTML5 browsers and upload progress are moved to a separate shim file, the actual directive just uses html5 code. So if you only suppost HTML5 browsers you don't need to load shim js file. angular-file-upload-shim.js needs to be loaded before angular.js if you need to support upload progress or browsers not supporting HTML5 FormData.
-* progress event is part of the upload config params instead of promise call.
-
-New in version 1.0.0:
-* File upload progress support.
-* File drag and drop support. 
-
-=====================
 
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
@@ -27,6 +12,7 @@ Lightweight Angular JS directive to upload files. Features:
 * Supports File drag and drop
 * All non-HTML5 code is in a separate shim file so you can easily remove it if you only supports HTML5.
 * Flash FileAPI will be loaded on demand so it won't add extra load for HTML5 browsers.
+* You can configure $http method to be either POST or PUT for HTML5 browsers.
 
 HTML:
 ```html
