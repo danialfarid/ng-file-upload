@@ -31,7 +31,7 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-drag-over-class"
+  <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class"
         ng-show="dropSupported">drop files here</div>
   <div ng-file-drop-available="dropSupported=true" 
         ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
