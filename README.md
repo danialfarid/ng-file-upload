@@ -23,7 +23,7 @@ Lightweight Angular JS directive to upload files using input type file or drag&d
 
 HTML:
 ```html
-<script src="angular.file-upload-shim.min.js"></script> <!--only if you need to support upload progress or non HTML5 FormData browsers-->
+<script src="angular.file-upload-shim.min.js"></script> <!--only if you need to support upload progress or non HTML5 FormData browsers. Most be placed before angular.js-->
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script>
 
@@ -82,7 +82,7 @@ You can put these two files beside angular-file-upload-shim(.min).js on your ser
     }
 </script>
 ```
-This needs to be loaded before angular-file-upload-shim(.min).js (place before `<script src="angular-file-upload.min.js"></script>`)
+This needs to be loaded before angular-file-upload-shim(.min).js (before `<script src="angular-file-upload-shim.min.js"></script>`)
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/src/com/df/angularfileupload/FileUpload.java).
 
