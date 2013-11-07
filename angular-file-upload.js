@@ -15,7 +15,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
-			for (key in config.data) {
+			for (var key in config.data) {
 				formData.append(key, config.data[key]);
 			}
 		}
