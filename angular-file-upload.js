@@ -9,14 +9,13 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 
 angularFileUpload.service('$upload', ['$http', function($http) {
 	this.upload = function(config) {
-		var key;
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
-			for (key in config.data) {
+			for (var key in config.data) {
 				formData.append(key, config.data[key]);
 			}
 		}
