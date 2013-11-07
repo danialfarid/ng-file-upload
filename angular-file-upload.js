@@ -9,6 +9,7 @@ var angularFileUpload = angular.module('angularFileUpload', []);
 
 angularFileUpload.service('$upload', ['$http', function($http) {
 	this.upload = function(config) {
+		var key;
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
