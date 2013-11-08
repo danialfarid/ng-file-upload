@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.3
+ * @version 1.1.4
  */
 (function() {
 	
@@ -16,7 +16,8 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		var formData = new FormData();
 		if (config.data) {
 			for (var key in config.data) {
-				formData.append(key, config.data[key]);
+				var val = config.data[key];
+				formData.append(key, val instanceof Object ? JSON.stringify(val) : val);
 			}
 		}
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
