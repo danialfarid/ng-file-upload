@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.2
+ * @version 1.1.3
  */
 (function() {
 	
@@ -15,7 +15,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
-			for (key in config.data) {
+			for (var key in config.data) {
 				formData.append(key, config.data[key]);
 			}
 		}
@@ -83,15 +83,15 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, 
 			elem[0].addEventListener("dragover", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
-				elem.addClass("dragover");
+				elem.addClass(attr['ngFileDragOverClass'] || "dragover");
 			}, false);
 			elem[0].addEventListener("dragleave", function(evt) {
-				elem.removeClass("dragover");
+				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 			}, false);
 			elem[0].addEventListener("drop", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
-				elem.removeClass("dragover");
+				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				var files = [], fileList = evt.dataTransfer.files, i;
 				if (fileList != null) {
 					for (i = 0; i < fileList.length; i++) {

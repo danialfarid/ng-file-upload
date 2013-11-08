@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.2
+ * @version 1.1.3
  */
 (function() {
 
