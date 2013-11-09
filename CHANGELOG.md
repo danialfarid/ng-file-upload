@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.4 2013-11-08
+Fixed #38 #40
+
+## 1.1.3 2013-11-07
+Fixed #37 #39
+
 ## 1.1.2 - 2013-11-05
 upload.abort() to cancel the upload in progress.
 issue #34
