@@ -44,12 +44,13 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
     for (var i = 0; i < $files.length; i++) {
       var $file = $files[i];
       $scope.upload = $upload.upload({
-        url: 'server/upload/url', //upload.php script, node.js route, or servlet upload url
+        url: 'server/upload/url', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
         file: $file,
-        //fileFormDataName: myFile, //(optional) sets 'Content-Desposition' formData name for file
+        //(optional) set 'Content-Desposition' formData name for file
+        //fileFormDataName: myFile,
         progress: function(evt) {
           console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
         }
