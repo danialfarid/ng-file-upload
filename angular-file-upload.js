@@ -17,7 +17,20 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		if (config.data) {
 			for (var key in config.data) {
 				var val = config.data[key];
-				formData.append(key, val instanceof Object ? JSON.stringify(val) : val);
+				if (config.transformRequest) {
+					if (typeof config.transformRequest == 'function') {
+						val = config.transformRequest(val);
+					} else {
+						for (fn in config.transformRequest) {
+							if (typeof fn == 'function') {
+								val = fn(val);
+							}
+						}
+					}
+				} else {
+					val = $http.defaults.transformRequest[0](val);
+				}
+				formData.append(key, val);
 			}
 		}
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
