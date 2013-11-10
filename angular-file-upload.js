@@ -12,7 +12,6 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
-		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
 			for (var key in config.data) {
@@ -33,6 +32,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 				formData.append(key, val);
 			}
 		}
+		config.transformRequest =  angular.identity;
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
 		formData['__uploadProgress_'] = function(e) {
 			if (e) config.progress(e);
