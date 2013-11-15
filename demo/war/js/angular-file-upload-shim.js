@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.4
+ * @version 1.1.5
  */
 (function() {
 
@@ -13,19 +13,9 @@ if (window.XMLHttpRequest) {
 				var xhr = new origXHR();
 				xhr.send = (function(orig) {
 					return function() {
-						if (arguments[0] instanceof FormData && arguments[0].__uploadProgress_) {
+						if (arguments[0] instanceof FormData && arguments[0].__setXHR_) {
 							var formData = arguments[0];
-							if (formData.__uploadProgress_) {
-								xhr.upload.addEventListener('progress', function(e) {
-									formData.__uploadProgress_(e);
-								}, false);
-							}
-							if (formData.__setAbortFunction_) {
-								var thisXHR = xhr;
-								formData.__setAbortFunction_(function() {
-									thisXHR.abort();
-								})
-							}
+							formData.__setXHR_(xhr);
 						}
 						orig.apply(xhr, arguments);
 					}
@@ -68,18 +58,11 @@ if (window.XMLHttpRequest) {
 					}
 				})(xhr.abort);
 				xhr.send = function() {
-					if (arguments[0].__isShim && arguments[0].__uploadProgress_) {
+					if (arguments[0].__isShim && arguments[0].__setXHR_) {
 						var formData = arguments[0];
-						if (formData.__uploadProgress_) {
-							xhr.upload.addEventListener('progress', function(e) {
-								formData.__uploadProgress_(e);
-							}, false);
-						}
-						if (formData.__setAbortFunction_) {
-							var thisXHR = xhr;
-							formData.__setAbortFunction_(function() {
-								thisXHR.__fileApiXHR.abort();
-							})
+						if (arguments[0].__setXHR_) {
+							var formData = arguments[0];
+							formData.__setXHR_(xhr);
 						}
 						var config = {
 							url: xhr.__url,
@@ -107,7 +90,9 @@ if (window.XMLHttpRequest) {
 								config.data[item.key] = item.val;
 							}
 						}
-						xhr.__fileApiXHR = FileAPI.upload(config);				
+						setTimeout(function() {
+							xhr.__fileApiXHR = FileAPI.upload(config);
+						}, 1);
 					} else {
 						origSend.apply(xhr, arguments);
 					}

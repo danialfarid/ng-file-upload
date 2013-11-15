@@ -1,40 +1,78 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.4
+ * @version 1.1.5
  */
 (function() {
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.service('$upload', ['$http', function($http) {
+angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $rootScope) {
 	this.upload = function(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
-		config.transformRequest =  angular.identity;
+		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
 		if (config.data) {
 			for (var key in config.data) {
 				var val = config.data[key];
-				formData.append(key, val instanceof Object ? JSON.stringify(val) : val);
+				if (!config.formDataAppender) {
+					if (typeof config.transformRequest == 'function') {
+						val = config.transformRequest(val);
+					} else {
+						for (var i = 0; i < config.transformRequest.length; i++) {
+							var fn = config.transformRequest[i];
+							if (typeof fn == 'function') {
+								val = fn(val);
+							}
+						}
+					}
+					formData.append(key, val);
+				} else {
+					config.formDataAppender(formData, key, val);
+				}
 			}
 		}
+		config.transformRequest =  angular.identity;
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
-		formData['__uploadProgress_'] = function(e) {
-			if (e) config.progress(e);
+
+		formData['__setXHR_'] = function(xhr) {
+			config.__XHR = xhr;
+			xhr.upload.addEventListener('progress', function(e) {
+				if (config.progress) {
+					config.progress(e);
+					if (!$rootScope.$$phase) {
+						$rootScope.$apply();
+					}
+				}
+			}, false);
 		};
 
 		config.data = formData;
 		
-		var response = $http(config);
-
-		response.abort = function(){throw "upload is not started yet"};
-		formData['__setAbortFunction_'] = function(fn) {
-			response.abort = fn;
-		}
+		var promise = $http(config);
 		
-		return response;
+		promise.progress = function(fn) {
+			config.progress = fn;
+			return promise;
+		};
+		
+		promise.abort = function() {
+			if (config.__XHR) {
+				config.__XHR.abort();
+			}
+			return promise;
+		};		
+		promise.then = (function(promise, origThen) {
+			return function(s, e, p) {
+				config.progress = p || config.progress;
+				origThen.apply(promise, [s, e, p]);
+				return promise;
+			};
+		})(promise, promise.then);
+		
+		return promise;
 	};
 }]);
 

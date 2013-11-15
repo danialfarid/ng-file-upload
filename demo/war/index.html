@@ -5,7 +5,7 @@
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
 <script src="js/angular-file-upload-shim.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 <script src="js/angular-file-upload.js"></script>
 </head>
@@ -65,8 +65,9 @@
 				$scope.progress = [];
 				if ($scope.upload && $scope.upload.length > 0) {
 					for (var i = 0; i < $scope.upload.length; i++) {
-						$scope.upload[i].abort();
-						$scope.upload[i].success = null;
+						if ($scope.upload[i] != null) {
+							$scope.upload[i].abort();
+						}
 					}
 				}
 				$scope.upload = [];
@@ -75,30 +76,30 @@
 				for ( var i = 0; i < $files.length; i++) {
 					var $file = $files[i];
 					$scope.progress[i] = 0;
-					(function() {
-						var index = i; 
+					(function(index) {
 						$scope.upload[index] = $upload.upload({
 							url : 'upload',
 							headers: {'myHeaderKey': 'myHeaderVal'},
 							data : {
 								myModel : $scope.myModel
 							},
+							/* formDataAppender: function(fd, key, val) {
+								if (angular.isArray(val)) {
+			                        angular.forEach(val, function(v) {
+			                          fd.append(key, v);
+			                        });
+			                      } else {
+			                        fd.append(key, val);
+			                      }
+							}, */
 							file : $file,
-							fileFormDataName: 'myFile',
-							progress: function(evt) {
-								$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
-								if (!$scope.$$phase) {
-									$scope.$apply();
-								}
-							}
-						}).success(function(data, status, headers, config) {
-							$scope.uploadResult.push(data.result);
-							// to fix IE not updating the dom
-							if (!$scope.$$phase) {
-								$scope.$apply();
-							}
+							fileFormDataName: 'myFile'
+						}).then(function(response) {
+							$scope.uploadResult.push(response.data.result);
+						}, null, function(evt) {
+							$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
 						});
-					})();
+					})(i);
 				}
 			}
 		} ];
