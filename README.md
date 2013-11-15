@@ -78,15 +78,15 @@ For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.fla
 You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
 ```html
 <script>
-    //optional
+    //optional needs to be loaded before angular-file-upload-shim(.min).js
     FileAPI = {
         jsPath: '/js/FileAPI.min.js/folder/',
         staticPath: '/flash/FileAPI.flash.swf/folder/'
     }
 </script>
-```
-This needs to be loaded before `angular-file-upload-shim(.min).js`.
 
+<script src="angular.file-upload-shim.min.js"></script>
+```
 
 ## Install
 
