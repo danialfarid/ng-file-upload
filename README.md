@@ -67,7 +67,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 Note: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need the support for upload progress or cancel.
 
 
-For the browsers not supporting HTML5 FormData you need [FileAPI](https://github.com/mailru/FileAPI) files **`FileAPI.min.js`** and **`FileAPI.flash.swf`** as a polyfill. These files will not be loaded to the client if the browser supports HTML5 FormData (no extra load).
+For the browsers not supporting HTML5 FormData you need [FileAPI](https://github.com/mailru/FileAPI) files `FileAPI.min.js` and `FileAPI.flash.swf` as a polyfill. These files will not be loaded to the client if the browser supports HTML5 FormData (no extra load).
 **Note**: Flash needs to be installed on the client browser if it doesn't support HTML5. 
 
 You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
