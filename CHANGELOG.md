@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.5 2013-11-08
+Fixed #46 #40 #38, moved demo to a separate folder
+
 ## 1.1.4 2013-11-08
 Fixed #38 #40
 
