@@ -18,7 +18,7 @@ Lightweight Angular JS directive to upload files. Features:
 
 HTML:
 ```html
-<script src="angular.file-upload-shim.min.js"></script> <!--only needed if you support upload progress/abort or non HTML5 FormData browsers.-->
+<script src="angular-file-upload-shim.min.js"></script> <!--only needed if you support upload progress/abort or non HTML5 FormData browsers.-->
 <!-- NOTE: angular.file-upload-shim.js MUST BE PLACED BEFORE angular.js-->
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script> <!--place after angular.js-->
@@ -59,9 +59,9 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       }).success(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
-      })
+      });
       //.error(...).then(...); 
-    }
+    };
   }
 }];
 ```
