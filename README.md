@@ -97,7 +97,7 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 
 If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
 
-Let [me](mailto:danial.farid@gmail.com) know if you have any questions. Bug report: [issue](https://github.com/danialfarid/angular-file-upload/issues).
+Let [me](mailto:danial.farid@gmail.com) know if you have any questions. Bug report, feature request: [issue](https://github.com/danialfarid/angular-file-upload/issues).
 
 
 
