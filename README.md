@@ -2,7 +2,7 @@ angular-file-upload
 ===================
 
 
-**Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
+**Here is the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
 Lightweight Angular JS directive to upload files. Features:
 * File upload for HTML5 and non-HTML5 browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
@@ -18,10 +18,11 @@ Lightweight Angular JS directive to upload files. Features:
 
 HTML:
 ```html
-<script src="angular-file-upload-shim.min.js"></script> <!--only needed if you support upload progress/abort or non HTML5 FormData browsers.-->
-<!-- NOTE: angular.file-upload-shim.js MUST BE PLACED BEFORE angular.js-->
+<!-- angular-file-upload-shim is only needed for upload progress/abort or non-HTML5 FormData support-->
+<!-- NOTE: MUST BE PLACED BEFORE angular.js-->
+<script src="angular-file-upload-shim.min.js"></script> 
 <script src="angular.min.js"></script>
-<script src="angular-file-upload.min.js"></script> <!--place after angular.js-->
+<script src="angular-file-upload.min.js"></script> 
 
 <div ng-controller="MyCtrl">
   <input type="text" ng-model="myModelObj">
@@ -51,15 +52,18 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
         file: $file,
-        //(optional) set 'Content-Desposition' formData name for file
+        /* set file formData name for 'Content-Desposition' header. Default: 'file' */
         //fileFormDataName: myFile,
+        /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
+        //formDataAppender: function(formData, key, val){} 
       }).progress(function(evt) {
         console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
       }).success(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
       });
-      //.error(...).then(...); 
+      //.error(...)
+      //.then(success, error, progress); 
     }
   };
 }];
