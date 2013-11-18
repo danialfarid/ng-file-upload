@@ -89,9 +89,9 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 
 ## Install
 
-The module is registered at bower with the name **`angularjs-file-upload`** (notice 'js' after angular): 
+The module is registered at bower with the name **`ng-file-upload`** (notice 'ng' at the beginning not 'angular'): 
 ```sh
-bower install angularjs-file-upload
+bower install ng-file-upload
 ```
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/src/com/df/angularfileupload/FileUpload.java).
