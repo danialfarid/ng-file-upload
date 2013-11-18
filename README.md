@@ -5,14 +5,14 @@ angular-file-upload
 **Click here for <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
 Lightweight Angular JS directive to upload files. Features:
-* File upload for HTML5 and non HTML5 browsers with Flash polyfill. Allows client side validation before uploading the file.
-* Sends the file with regular angular `$http` (with shim for non-HTML5 browsers) so all angular `$http` features are available.
+* File upload for HTML5 and non-HTML5 browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
+* Uses regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 * Supports upload progress
 * Supports cancel/abort upload while in progress
 * Supports File drag and drop
-* All non-HTML5 code is in a separate shim file so you can easily remove it if you only supports HTML5.
-* Flash FileAPI will be loaded on demand so it won't add extra load for HTML5 browsers.
-* You can configure `$http` method to be either `POST` or `PUT` for HTML5 browsers.
+* All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5
+* Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
+* `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
 
 ## Usage
 
@@ -53,16 +53,15 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
         file: $file,
         //(optional) set 'Content-Desposition' formData name for file
         //fileFormDataName: myFile,
-        progress: function(evt) {
-          console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-        }
+      }).progress(function(evt) {
+        console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
       }).success(function(data, status, headers, config) {
         // file is uploaded successfully
         console.log(data);
       });
       //.error(...).then(...); 
-    };
-  }
+    }
+  };
 }];
 ```
 
