@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.5
+ * @version 1.1.6
  */
 (function() {
 	
@@ -41,6 +41,15 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $ro
 			config.__XHR = xhr;
 			xhr.upload.addEventListener('progress', function(e) {
 				if (config.progress) {
+					config.progress(e);
+					if (!$rootScope.$$phase) {
+						$rootScope.$apply();
+					}
+				}
+			}, false);
+			//fix for firefox not firing upload progress end
+			xhr.upload.addEventListener('load', function(e) {
+				if (e.lengthComputable) {
 					config.progress(e);
 					if (!$rootScope.$$phase) {
 						$rootScope.$apply();
