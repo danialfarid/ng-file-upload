@@ -21,7 +21,7 @@ HTML:
 <!-- shim is needed to support upload progress/abort and non-HTML5 FormData browsers-->
 <!-- NOTE: MUST BE PLACED BEFORE angular.js-->
 <script src="angular-file-upload-shim.min.js"></script> 
-<!-- use html5-shim instead of the above shim to support upload progress/abort for only html5 browsers-->
+<!-- use html5-shim instead to support upload progress/abort for only html5 browsers-->
 <!--script src="angular-file-upload-html5-shim.min.js"></script--> 
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script> 
