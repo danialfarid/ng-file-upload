@@ -1,3 +1,8 @@
+/**!
+ * AngularJS file upload shim for angular XHR HTML5 browsers
+ * @author  Danial  <danial.farid@gmail.com>
+ * @version 1.1.6
+ */
 if (window.XMLHttpRequest) {
         if (window.FormData) {
                 // allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
