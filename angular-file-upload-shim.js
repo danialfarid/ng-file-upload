@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.7
+ * @version 1.1.8
  */
 (function() {
 
@@ -58,7 +58,7 @@ if (window.XMLHttpRequest) {
 					}
 				})(xhr.abort);
 				xhr.send = function() {
-					if (arguments[0].__isShim && arguments[0].__setXHR_) {
+					if (arguments[0] = null && arguments[0].__isShim && arguments[0].__setXHR_) {
 						var formData = arguments[0];
 						if (arguments[0].__setXHR_) {
 							var formData = arguments[0];
