@@ -1,7 +1,7 @@
 .settings
 .metadata
-.backup
 *.war
+RemoteSystemsTempFiles/
 .DS_Store
 .DS_Store?
 ehthumbs.db
@@ -11,7 +11,4 @@ Thumbs.db
 /target/*
 classes/
 ._*
-Servers
-.idea
-.project
-.classpath
+/node_modules

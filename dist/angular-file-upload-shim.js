@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.8
+ * @version 1.1.9
  */
 (function() {
 
@@ -104,36 +104,58 @@ if (window.XMLHttpRequest) {
 }
 
 if (!window.FormData) {
-	HTMLInputElement.prototype.addEventListener = HTMLInputElement.prototype.attachEvent = (function(origAddEventListener) {
-		return function(e, fn, b, d) {
-			if ((e.toLowerCase() === 'change' || e.toLowerCase() === 'onchange') && this.getAttribute('type') == 'file') {
-				if (!this.__isWrapped && (this.getAttribute('ng-file-select') != null || this.getAttribute('data-ng-file-select') != null)) {
-					var wrap = document.createElement('div');
-					wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
-					wrap = wrap.firstChild;
-					var parent = this.parentNode;
-					parent.insertBefore(wrap, this);
-					parent.removeChild(this);
-					wrap.appendChild(this);
-					this.__isWrapped = true;
-				}
-				origAddEventListener.apply(this, [e, 
-						function(evt) {
-							var files = FileAPI.getFiles(evt);
-							if (!evt.target) {
-								evt.target = {};
-							}
-							evt.target.files = files;
-							evt.target.files.item = function(i) {
-								return evt.target.files[i] || null;
-							}
-							fn(evt);
-						}, b, d]); 
-			} else {
-				origAddEventListener.apply(this, [e, fn, b, d]);
-			}
+	var wrapFileApi = function(elem) {
+		if (!elem.__isWrapped && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
+			var wrap = document.createElement('div');
+			wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
+			wrap = wrap.firstChild;
+			var parent = elem.parentNode;
+			parent.insertBefore(wrap, elem);
+			parent.removeChild(elem);
+			wrap.appendChild(elem);
+			elem.__isWrapped = true;
 		}
-	})(HTMLInputElement.prototype.addEventListener || HTMLInputElement.prototype.attachEvent);
+	};
+	var changeFnWrapper = function(fn) {
+		return function(evt) {
+			var files = FileAPI.getFiles(evt);
+			if (!evt.target) {
+				evt.target = {};
+			}
+			evt.target.files = files;
+			evt.target.files.item = function(i) {
+				return evt.target.files[i] || null;
+			}
+			fn(evt);
+		};
+	};
+	var isFileChange = function(elem, e) {
+		return (e.toLowerCase() === 'change' || e.toLowerCase() === 'onchange') && elem.getAttribute('type') == 'file';
+	}
+	if (HTMLInputElement.prototype.addEventListener) {
+		HTMLInputElement.prototype.addEventListener = (function(origAddEventListener) {
+			return function(e, fn, b, d) {
+				if (isFileChange(this, e)) {
+					wrapFileApi(this);
+					origAddEventListener.apply(this, [e, changeFnWrapper(fn), b, d]); 
+				} else {
+					origAddEventListener.apply(this, [e, fn, b, d]);
+				}
+			}
+		})(HTMLInputElement.prototype.addEventListener);		
+	}
+	if (HTMLInputElement.prototype.attachEvent) {
+		HTMLInputElement.prototype.attachEvent = (function(origAttachEvent) {
+			return function(e, fn) {
+				if (isFileChange(this, e)) {
+					wrapFileApi(this);
+					origAttachEvent.apply(this, [e, changeFnWrapper(fn)]); 
+				} else {
+					origAttachEvent.apply(this, [e, fn]);
+				}
+			}
+		})(HTMLInputElement.prototype.attachEvent);
+	}
 
 	window.FormData = FormData = function() {
 		return {
