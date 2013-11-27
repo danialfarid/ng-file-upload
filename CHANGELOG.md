@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.9 2013-11-27
+directory structure changes and Fixed #57
+
+## 1.1.8 2013-11-21
+Fixed #54
+
+## 1.1.7 2013-11-19
+Fixed #51
+
+## 1.1.6 2013-11-18
+Fixed #50 firefox progress event not firing at the end.
+
 ## 1.1.5 2013-11-08
 Fixed #46 #40 #38, moved demo to a separate folder
 
