@@ -93,7 +93,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 
 ## Install
 
-Download files from [/dist](https://github.com/danialfarid/angular-file-upload/blob/master/dist) or use bower: 
+Download files from [/dist](https://github.com/danialfarid/angular-file-upload/blob/master/dist) or 
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
