@@ -1,7 +1,8 @@
 # Changelog
 
 ## 1.1.9 2013-11-27
-directory structure changes and Fixed #57
+Directory structure changes and adding Grunt to build.
+Fixed #57 
 
 ## 1.1.8 2013-11-21
 Fixed #54
