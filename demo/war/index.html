@@ -137,8 +137,8 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 	                        fd.append(key, val);
 	                      }
 					}, */
-					file: [$scope.selectedFiles[index], $scope.selectedFiles[index + 1]],
-					//fileFormDataName: 'myFile'
+					file: $scope.selectedFiles[index],
+					fileFormDataName: 'myFile'
 				}).then(function(response) {
 					$scope.uploadResult.push(response.data.result);
 				}, null, function(evt) {
