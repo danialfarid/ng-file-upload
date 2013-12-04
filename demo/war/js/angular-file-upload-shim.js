@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.9
+ * @version 1.1.10
  */
 (function() {
 
@@ -90,6 +90,7 @@ if (window.XMLHttpRequest) {
 								config.data[item.key] = item.val;
 							}
 						}
+						
 						setTimeout(function() {
 							xhr.__fileApiXHR = FileAPI.upload(config);
 						}, 1);
@@ -104,6 +105,13 @@ if (window.XMLHttpRequest) {
 }
 
 if (!window.FormData) {
+	var hasFlash = false;
+	try {
+	  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	  if (fo) hasFlash = true;
+	} catch(e) {
+	  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) hasFlash = true;
+	}
 	var wrapFileApi = function(elem) {
 		if (!elem.__isWrapped && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
 			var wrap = document.createElement('div');
@@ -113,6 +121,9 @@ if (!window.FormData) {
 			parent.insertBefore(wrap, elem);
 			parent.removeChild(elem);
 			wrap.appendChild(elem);
+			if (!hasFlash) {
+				wrap.appendChild(document.createTextNode('Flash is required'));
+			}
 			elem.__isWrapped = true;
 		}
 	};
@@ -170,7 +181,7 @@ if (!window.FormData) {
 			__isShim: true
 		};
 	};
-		
+	
 	(function () {
 		//load FileAPI
 		if (!window.FileAPI || !FileAPI.upload) {

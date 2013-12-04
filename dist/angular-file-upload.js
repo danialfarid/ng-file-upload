@@ -1,13 +1,13 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.9
+ * @version 1.1.10
  */
 (function() {
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $rootScope) {
+angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', function($http, $rootScope, $timeout) {
 	this.upload = function(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
@@ -41,19 +41,17 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $ro
 			config.__XHR = xhr;
 			xhr.upload.addEventListener('progress', function(e) {
 				if (config.progress) {
-					config.progress(e);
-					if (!$rootScope.$$phase) {
-						$rootScope.$apply();
-					}
+					$timeout(function() {
+						config.progress(e);
+					});
 				}
 			}, false);
 			//fix for firefox not firing upload progress end
 			xhr.upload.addEventListener('load', function(e) {
 				if (e.lengthComputable) {
-					config.progress(e);
-					if (!$rootScope.$$phase) {
-						$rootScope.$apply();
-					}
+					$timeout(function() {
+						config.progress(e);
+					});
 				}
 			}, false);
 		};
@@ -69,7 +67,9 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $ro
 		
 		promise.abort = function() {
 			if (config.__XHR) {
-				config.__XHR.abort();
+				$timeout(function() {
+					config.__XHR.abort();
+				});
 			}
 			return promise;
 		};		
@@ -85,7 +85,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', function($http, $ro
 	};
 }]);
 
-angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse, $http) {
+angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
 	return function(scope, elem, attr) {
 		var fn = $parse(attr['ngFileSelect']);
 		elem.bind('change', function(evt) {
@@ -96,7 +96,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 					files.push(fileList.item(i));
 				}
 			}
-			scope.$apply(function() {
+			$timeout(function() {
 				fn(scope, {
 					$files : files,
 					$event : evt
@@ -109,22 +109,18 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 	};
 } ]);
 
-angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$http', function($parse, $http) {
+angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
 	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var fn = $parse(attr['ngFileDropAvailable']);
-			if(!scope.$$phase) {
-				scope.$apply(function() {
-					fn(scope);
-				});
-			} else {
-				fn(scope)
-			}
+			$timeout(function() {
+				fn(scope);
+			});
 		}
 	};
 } ]);
 
-angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, $http) {
+angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
 	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var fn = $parse(attr['ngFileDrop']);
@@ -146,7 +142,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', function($parse, 
 						files.push(fileList.item(i));
 					}
 				}
-				scope.$apply(function() {
+				$timeout(function() {
 					fn(scope, {
 						$files : files,
 						$event : evt

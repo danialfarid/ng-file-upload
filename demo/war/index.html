@@ -5,18 +5,26 @@
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
 <script src="js/angular-file-upload-shim.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.js"></script>
-<!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
+<script type="text/javascript">
+// load angularjs specific version
+var angularVersion = window.location.hash.substring(1);
+document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + (angularVersion || '1.2.0') + '/angular.js"><\/script>');
+</script>
 <script src="js/angular-file-upload.js"></script>
+<!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 </head>
 
-<body>
+<body ng-app="fileUpload" ng-controller="MyCtrl">
+	<div class="ng-v">
+		Angular Version: <input type="text" ng-model="angularVersion"> 
+		<input type="button" data-ng-click="changeAngularVersion()" value="Go">
+	</div>
 	<h1>Angular file upload Demo</h1>
 	<h3>
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
 
-	<div ng-app="fileUpload" ng-controller="MyCtrl">
+	<div>		
 		Model object to be sent to the server with the file: <input type="text" ng-model="myModel"> <br />
 		choose a single file: <input type="file" ng-file-select="onFileSelect($files)">
 		<br/>
@@ -26,15 +34,20 @@
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
+		<input type="checkbox" ng-model="uploadRightAway">Upload right away
+		<br/>
+		<br/>
 		Progress:
+		<br/>
 		<br/>
 		<div ng-show="selectedFiles != null">
 			<div class="sel-file" ng-repeat="f in selectedFiles">
-				<span class="progress">						
+				<img ng-show="dataUrls[$index]" src="{{dataUrls[$index]}}">
+				<button class="button" ng-click="start($index)" ng-show="progress[$index] < 0">Start</button>
+				<span class="progress" ng-show="progress[$index] >= 0">						
 					<div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
 				</span>				
-				<button class="button" ng-click="upload[$index].abort(); upload[$index]=null" 
-					ng-show="upload[$index] && progress[$index] < 100">Abort</button>
+				<button class="button" ng-click="abort($index)" ng-show="hasUploader($index) && progress[$index] < 100">Abort</button>
 				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
 			</div>
 		</div>
@@ -58,8 +71,20 @@
 	<script type="text/javascript">
 		angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-		var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
-
+		var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http, $timeout, $upload) {
+			$scope.uploadRightAway = true;
+			$scope.changeAngularVersion = function() {
+				window.location.hash = $scope.angularVersion;
+				window.location.reload(true);
+			}
+			$scope.hasUploader = function(index) {
+				return $scope.upload[index] != null;
+			};
+			$scope.abort = function(index) {
+				$scope.upload[index].abort(); 
+				$scope.upload[index] = null;
+			};
+			$scope.angularVersion = window.location.hash.length > 1 ? window.location.hash.substring(1) : '1.2.0';
 			$scope.onFileSelect = function($files) {
 				$scope.selectedFiles = [];
 				$scope.progress = [];
@@ -73,34 +98,52 @@
 				$scope.upload = [];
 				$scope.uploadResult = [];
 				$scope.selectedFiles = $files;
+				$scope.dataUrls = [];
 				for ( var i = 0; i < $files.length; i++) {
 					var $file = $files[i];
-					$scope.progress[i] = 0;
-					(function(index) {
-						$scope.upload[index] = $upload.upload({
-							url : 'upload',
-							headers: {'myHeaderKey': 'myHeaderVal'},
-							data : {
-								myModel : $scope.myModel
-							},
-							/* formDataAppender: function(fd, key, val) {
-								if (angular.isArray(val)) {
-			                        angular.forEach(val, function(v) {
-			                          fd.append(key, v);
-			                        });
-			                      } else {
-			                        fd.append(key, val);
-			                      }
-							}, */
-							file : $file,
-							fileFormDataName: 'myFile'
-						}).then(function(response) {
-							$scope.uploadResult.push(response.data.result);
-						}, null, function(evt) {
-							$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
-						});
-					})(i);
+					if (window.FileReader && $file.type.indexOf('image') > -1) {
+					  	var fileReader = new FileReader();
+				        fileReader.readAsDataURL($files[i]);
+				        function setPreview(fileReader, index) {
+				            fileReader.onload = function(e) {
+				                $timeout(function() {
+				                	$scope.dataUrls[index] = e.target.result;
+				                });
+				            }
+				        }
+				        setPreview(fileReader, i);
+					}
+					$scope.progress[i] = -1;
+					if ($scope.uploadRightAway) {
+						$scope.start(i);
+					}
 				}
+			}
+			
+			$scope.start = function(index) {
+				$scope.progress[index] = 0;
+				$scope.upload[index] = $upload.upload({
+					url : 'upload',
+					headers: {'myHeaderKey': 'myHeaderVal'},
+					data : {
+						myModel : $scope.myModel
+					},
+					/* formDataAppender: function(fd, key, val) {
+						if (angular.isArray(val)) {
+	                        angular.forEach(val, function(v) {
+	                          fd.append(key, v);
+	                        });
+	                      } else {
+	                        fd.append(key, val);
+	                      }
+					}, */
+					file: [$scope.selectedFiles[index], $scope.selectedFiles[index + 1]],
+					//fileFormDataName: 'myFile'
+				}).then(function(response) {
+					$scope.uploadResult.push(response.data.result);
+				}, null, function(evt) {
+					$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+				});
 			}
 		} ];
 	</script>

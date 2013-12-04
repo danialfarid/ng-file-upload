@@ -97,5 +97,16 @@ html[data-useragent*='MSIE 10.0'] input[type="file"] {
 button {
 	padding: 1px 5px;
 	font-size: smaller;
-	margin: 0; 
+	margin: 0 3px; 
+}
+
+.ng-v {
+	float: right;
+}
+
+.sel-file img {
+	float: left;
+	width: 18px;
+	height: 18px;
+	padding-right: 10px;
 }
