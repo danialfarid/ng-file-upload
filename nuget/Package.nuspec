@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>angular-file-upload</id>
+    <title>Angular file upload</title>
+    <version>1.1.9</version>
+    <authors>Danial Farid</authors>
+    <owners>Danial Farid</owners>
+    <!-- licenseUrl>????</licenseUrl -->
+    <projectUrl>https://github.com/danialfarid/angular-file-upload</projectUrl>
+    <iconUrl>http://angularjs.org/favicon.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lightweight Angular JS directive to upload files.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>angularjs upload</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>
