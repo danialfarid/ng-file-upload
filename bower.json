@@ -6,7 +6,7 @@
   "authors": [
     "danialf <danial.farid@gmail.com>"
   ],
-  "description": "An AngularJS directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers",
+  "description": "Light-weight HTML5 and cross-browser AngularJS directives for file upload, progress, abort and drag&drop",
   "keywords": [
     "AngularJS.",
     "angular",
@@ -14,7 +14,11 @@
     "file-upload",
     "upload",
     "FileAPI",
-    "ajax-file-upload"
+    "ajax-file-upload",
+    "upload-progress",
+    "upload-abort",
+    "file-drag&drop",
+    "upload-preview"
   ],
   "license": "MIT",
   "ignore": [
