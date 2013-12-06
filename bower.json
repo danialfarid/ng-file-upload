@@ -4,7 +4,7 @@
   "version": "1.1.10",
   "homepage": "https://github.com/danialfarid/angular-file-upload",
   "authors": [
-    "danialf <danial.farid@gmail.com>"
+    "Danial Farid <danial.farid@gmail.com>"
   ],
   "description": "Light-weight HTML5 and cross-browser AngularJS directives for file upload, progress, abort and drag&drop",
   "keywords": [
