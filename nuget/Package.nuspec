@@ -3,18 +3,18 @@
   <metadata>
     <id>angular-file-upload</id>
     <title>Angular file upload</title>
-    <version>1.1.9</version>
-    <authors>Danial Farid</authors>
-    <owners>Danial Farid</owners>
-    <!-- licenseUrl>????</licenseUrl -->
+    <version>1.1.10</version>
+    <authors>Danial Farid <danial.farid@gmail.com>, nuget: Georgios Diamantopoulos</authors>
+    <owners>Danial Farid <danial.farid@gmail.com></owners>
+    <licenseUrl>https://github.com/danialfarid/angular-file-upload/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/danialfarid/angular-file-upload</projectUrl>
-    <iconUrl>http://angularjs.org/favicon.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Lightweight Angular JS directive to upload files.</description>
+    <description>Light-weight HTML5 and cross-browser AngularJS directives for file upload, progress, abort and drag&drop</description>
     <releaseNotes>Initial release</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>angularjs upload</tags>
     <dependencies>
+      <dependency id="angularjs" version="1.0.7" />
     </dependencies>
   </metadata>
 </package>
