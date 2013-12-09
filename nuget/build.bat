@@ -2,7 +2,8 @@ NuGet Update -self
 
 rmdir /s /q content
 mkdir content
-copy ..\dist\* content
+mkdir content\scripts
+copy ..\dist\* content\scripts
 del angular-file-upload.*
 
 NuGet Pack Package.nuspec
