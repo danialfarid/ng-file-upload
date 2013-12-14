@@ -73,7 +73,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 
 **Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need the support for upload progress or cancel.
 
-** Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. The formData file name will have the index appended to it (i.e. `file0`, `file1`, etc.). If you want it cross browser you need to iterate through files and upload them one by one like the code above.
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. The formData file name will have the index appended to it (i.e. `file0`, `file1`, etc.). If you want it cross browser you need to iterate through files and upload them one by one like the code above.
 
 ## Old browsers
 
