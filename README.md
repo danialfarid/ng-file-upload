@@ -46,13 +46,13 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
   $scope.onFileSelect = function($files) {
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
-      var $file = $files[i];
+      var file = $files[i];
       $scope.upload = $upload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
         // headers: {'headerKey': 'headerValue'}, withCredential: true,
         data: {myObj: $scope.myModelObj},
-        file: $file,
+        file: file,
         // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
         /* set file formData name for 'Content-Desposition' header. Default: 'file' */
         //fileFormDataName: myFile,
