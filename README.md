@@ -91,7 +91,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
         staticPath: '/flash/FileAPI.flash.swf/folder/'
     }
 </script>
-<script src="angular.file-upload-shim.min.js"></script>...
+<script src="angular-file-upload-shim.min.js"></script>...
 ```
 
 ## Install
