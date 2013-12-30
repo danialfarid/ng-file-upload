@@ -76,7 +76,8 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. The formData file name will have the index appended to it (i.e. `file0`, `file1`, etc.). If you want it cross browser you need to iterate through files and upload them one by one like the code above.
 
-You can also use `$upload.http` to send the file content or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+This enables angular $http() to listen to progress event for HTML5 browsers.
 
 ## Old browsers
 
