@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.1.11
+ * @version 1.2.0
  */
 (function() {
 
@@ -11,15 +11,15 @@ if (window.XMLHttpRequest) {
 		XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
-				xhr.send = (function(orig) {
-					return function() {
-						if (arguments[0] instanceof FormData && arguments[0].__setXHR_) {
-							var formData = arguments[0];
-							formData.__setXHR_(xhr);
+				xhr.setRequestHeader = (function(orig) {
+					return function(header, value) {
+						if (header === '__setXHR_') {
+							value(xhr);
+						} else {
+							orig.apply(xhr, arguments);
 						}
-						orig.apply(xhr, arguments);
 					}
-				})(xhr.send);
+				})(xhr.setRequestHeader);
 				return xhr;
 			}
 		})(XMLHttpRequest);
@@ -32,8 +32,11 @@ if (window.XMLHttpRequest) {
 				xhr.open = (function(orig) {
 					xhr.upload = {
 						addEventListener: function(t, fn, b) {
-							if (t == 'progress') {
+							if (t === 'progress') {
 								xhr.__progress = fn;
+							}
+							if (t === 'load') {
+								xhr.__load = fn;
 							}
 						}
 					};
@@ -57,16 +60,23 @@ if (window.XMLHttpRequest) {
 						return xhr.__fileApiXHR ? xhr.__fileApiXHR.abort() : (orig == null ? null : orig.apply(xhr)); 
 					}
 				})(xhr.abort);
-				xhr.send = function() {
-					if (arguments[0] != null && arguments[0].__isShim && arguments[0].__setXHR_) {
-						var formData = arguments[0];
-						if (arguments[0].__setXHR_) {
-							var formData = arguments[0];
-							formData.__setXHR_(xhr);
+				xhr.setRequestHeader = (function(orig) {
+					return function(header, value) {
+						if (header === '__setXHR_') {
+							value(xhr);
+						} else {
+							orig.apply(xhr, arguments);
 						}
+					}
+				})(xhr.setRequestHeader);
+			
+				xhr.send = function() {
+					if (arguments[0] && arguments[0].__isShim) {
+						var formData = arguments[0];
 						var config = {
 							url: xhr.__url,
 							complete: function(err, fileApiXHR) {
+								xhr.__load({type: 'load', loaded: xhr.__total, total: xhr.__total, target: xhr, lengthComputable: true});
 								Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
 								Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
 								Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
@@ -76,7 +86,9 @@ if (window.XMLHttpRequest) {
 								xhr.onreadystatechange();
 							},
 							progress: function(e) {
+								e.target = xhr;
 								xhr.__progress(e);
+								xhr.__total = e.total;
 							},
 							headers: xhr.__requestHeaders
 						}
@@ -212,4 +224,67 @@ if (!window.FormData) {
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
-}})();
+}
+
+if (!window.FileReader) {
+	window.FileReader = function() {
+		var _this = this, loadStarted = false;
+		this.listeners = {};
+		this.addEventListener = function(type, fn) {
+			_this.listeners[type] = _this.listeners[type] || []; 
+			_this.listeners[type].push(fn);
+		};
+		this.removeEventListener = function(type, fn) {
+			_this.listeners[type] && _this.listeners[type].splice(_this.listeners[type].indexOf(fn), 1);
+		};
+		this.dispatchEvent = function(evt) {
+			var list = _this.listeners[evt.type];
+			if (list) {
+				for (var i = 0; i < list.length; i++) {
+					list[i].call(_this, evt);
+				}
+			}
+		};
+		this.onabort = this.onerror = this.onload = this.onloadstart = this.onloadend = this.onprogress = null;
+		
+		function constructEvent(type, evt) {
+			var e = {type: type, target: _this, loaded: evt.loaded, total: evt.total, error: evt.error};
+			if (evt.result != null) e.target.result = evt.result;
+			return e;
+		};
+		var listener = function(evt) {
+			if (!loadStarted) {
+				loadStarted = true;
+				_this.onloadstart && this.onloadstart(constructEvent('loadstart', evt));
+			}
+			if (evt.type === 'load') {
+				_this.onloadend && _this.onloadend(constructEvent('loadend', evt));
+				var e = constructEvent('load', evt);
+				_this.onload && _this.onload(e);
+				_this.dispatchEvent(e);
+			} else if (evt.type === 'progress') {
+				var e = constructEvent('progress', evt);
+				_this.onprogress && _this.onprogress(e);
+				_this.dispatchEvent(e);
+			} else {
+				var e = constructEvent('error', evt);
+				_this.onerror && _this.onerror(e);
+				_this.dispatchEvent(e);
+			}
+		};
+		this.readAsArrayBuffer = function(file) {
+			FileAPI.readAsArrayBuffer(file, listener);
+		}
+		this.readAsBinaryString = function(file) {
+			FileAPI.readAsBinaryString(file, listener);
+		}
+		this.readAsDataURL = function(file) {
+			FileAPI.readAsDataURL(file, listener);
+		}
+		this.readAsText = function(file) {
+			FileAPI.readAsText(file, listener);
+		}
+	}
+}
+
+})();

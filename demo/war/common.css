@@ -3,50 +3,19 @@ body {
 }
 
 input[type="file"] {	
-	width: 7em;
 	width: 6.3em \0/IE9;
 	height: 1.5em;
 	margin: 5px;
 }
 
 input[multiple] {
-	width: 7.5em;
 	width: 6.2em \0/IE9;
-}
-
-doesnotexist:-o-prefocus, input[type="file"] {
-  width: 5.5em;
-}
-
-doesnotexist:-o-prefocus, input[multiple] {
-	width: 5em;
-}
-
-@-moz-document url-prefix() {
-	input[type="file"] {	
-		width: 5.7em;
-	}
-	
-	input[multiple] {
-		width: 5.7em;
-	}
-}
-
-@media screen and (-webkit-min-device-pixel-ratio:0) { 
-    ::i-block-chrome,input[multiple] {
-		width: 6.7em;
-    }
-}
-
-html[data-useragent*='MSIE 10.0'] input[type="file"] {
-	width: 7.5em;
 }
 
 .sel-file {
 	padding: 1px 5px;
 	font-size: smaller;
 	color: grey;
-	
 }
 
 .response {
@@ -109,4 +78,11 @@ button {
 	width: 18px;
 	height: 18px;
 	padding-right: 10px;
+}
+
+.sub {
+	font-size: smaller;
+	color: #777;
+	padding-top: 5px;
+	padding-left: 30px;
 }

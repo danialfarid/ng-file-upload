@@ -11,6 +11,7 @@ var angularVersion = window.location.hash.substring(1);
 document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + (angularVersion || '1.2.0') + '/angular.js"><\/script>');
 </script>
 <script src="js/angular-file-upload.js"></script>
+<script src="js/upload.js"></script>
 <!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 </head>
 
@@ -23,9 +24,14 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 	<h3>
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
-
-	<div>		
-		Model object to be sent to the server with the file: <input type="text" ng-model="myModel"> <br />
+	<div class="upload-div">
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">model object to be sent as data to the server with the file: <input type="text" ng-model="myModel"></label> <br/>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!dropSupported">or send the file binary as data with a POST/PUT request instead of multipart/form-data upload. </label>
+		<div class="sub">For <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
+			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc. 
+			Only HTML5 FileReader browsers, cross browser support will be added around Feb 2014 when FileAPI FileReader support is available.
+		</div><br/><br/>
+		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT'/>put<br/>
 		choose a single file: <input type="file" ng-file-select="onFileSelect($files)">
 		<br/>
 		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
@@ -42,7 +48,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		<br/>
 		<div ng-show="selectedFiles != null">
 			<div class="sel-file" ng-repeat="f in selectedFiles">
-				<img ng-show="dataUrls[$index]" src="{{dataUrls[$index]}}">
+				<img ng-show="dataUrls[$index]" ng-src="{{dataUrls[$index]}}">
 				<button class="button" ng-click="start($index)" ng-show="progress[$index] < 0">Start</button>
 				<span class="progress" ng-show="progress[$index] >= 0">						
 					<div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
@@ -67,85 +73,5 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
-
-	<script type="text/javascript">
-		angular.module('fileUpload', [ 'angularFileUpload' ]);
-
-		var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http, $timeout, $upload) {
-			$scope.uploadRightAway = true;
-			$scope.changeAngularVersion = function() {
-				window.location.hash = $scope.angularVersion;
-				window.location.reload(true);
-			}
-			$scope.hasUploader = function(index) {
-				return $scope.upload[index] != null;
-			};
-			$scope.abort = function(index) {
-				$scope.upload[index].abort(); 
-				$scope.upload[index] = null;
-			};
-			$scope.angularVersion = window.location.hash.length > 1 ? window.location.hash.substring(1) : '1.2.0';
-			$scope.onFileSelect = function($files) {
-				$scope.selectedFiles = [];
-				$scope.progress = [];
-				if ($scope.upload && $scope.upload.length > 0) {
-					for (var i = 0; i < $scope.upload.length; i++) {
-						if ($scope.upload[i] != null) {
-							$scope.upload[i].abort();
-						}
-					}
-				}
-				$scope.upload = [];
-				$scope.uploadResult = [];
-				$scope.selectedFiles = $files;
-				$scope.dataUrls = [];
-				for ( var i = 0; i < $files.length; i++) {
-					var $file = $files[i];
-					if (window.FileReader && $file.type.indexOf('image') > -1) {
-					  	var fileReader = new FileReader();
-				        fileReader.readAsDataURL($files[i]);
-				        function setPreview(fileReader, index) {
-				            fileReader.onload = function(e) {
-				                $timeout(function() {
-				                	$scope.dataUrls[index] = e.target.result;
-				                });
-				            }
-				        }
-				        setPreview(fileReader, i);
-					}
-					$scope.progress[i] = -1;
-					if ($scope.uploadRightAway) {
-						$scope.start(i);
-					}
-				}
-			}
-			
-			$scope.start = function(index) {
-				$scope.progress[index] = 0;
-				$scope.upload[index] = $upload.upload({
-					url : 'upload',
-					headers: {'myHeaderKey': 'myHeaderVal'},
-					data : {
-						myModel : $scope.myModel
-					},
-					/* formDataAppender: function(fd, key, val) {
-						if (angular.isArray(val)) {
-	                        angular.forEach(val, function(v) {
-	                          fd.append(key, v);
-	                        });
-	                      } else {
-	                        fd.append(key, val);
-	                      }
-					}, */
-					file: $scope.selectedFiles[index],
-					fileFormDataName: 'myFile'
-				}).then(function(response) {
-					$scope.uploadResult.push(response.data.result);
-				}, null, function(evt) {
-					$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
-				});
-			}
-		} ];
-	</script>
 </body>
 </html>

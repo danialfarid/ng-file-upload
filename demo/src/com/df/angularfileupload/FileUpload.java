@@ -19,46 +19,57 @@ public class FileUpload extends HttpServlet {
 	private static final long serialVersionUID = -8244073279641189889L;
 
 	@Override
-	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
-			ServletFileUpload upload = new ServletFileUpload();
+			if (req.getHeader("Content-Type").startsWith("multipart/form-data")) {
+				ServletFileUpload upload = new ServletFileUpload();
 
-			FileItemIterator iterator = upload.getItemIterator(req);
+				FileItemIterator iterator = upload.getItemIterator(req);
 
-			StringBuilder sb = new StringBuilder("{\"result\": [");
+				StringBuilder sb = new StringBuilder("{\"result\": [");
 
-			while (iterator.hasNext()) {
-				sb.append("{");
-				FileItemStream item = iterator.next();
-				sb.append("\"fieldName\":\"").append(item.getFieldName()).append("\",");
-				if (item.getName() != null) {
-					sb.append("\"name\":\"").append(item.getName()).append("\",");
+				while (iterator.hasNext()) {
+					sb.append("{");
+					FileItemStream item = iterator.next();
+					sb.append("\"fieldName\":\"").append(item.getFieldName()).append("\",");
+					if (item.getName() != null) {
+						sb.append("\"name\":\"").append(item.getName()).append("\",");
+					}
+					if (item.getName() != null) {
+						sb.append("\"size\":\"").append(size(item.openStream())).append("\"");
+					} else {
+						sb.append("\"value\":\"").append(read(item.openStream())).append("\"");
+					}
+					sb.append("}");
+					if (iterator.hasNext()) {
+						sb.append(",");
+					}
 				}
-				if (item.getName() != null) {
-					sb.append("\"size\":\"").append(fileSize(item.openStream())).append("\"");
-				} else {
-					sb.append("\"value\":\"").append(read(item.openStream())).append("\"");
+				sb.append("]}");
+				res.setContentType("application/json");
+				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
+				try {
+					printWriter.print(sb.toString());
+					printWriter.flush();
+				} finally {
+					printWriter.close();
 				}
-				sb.append("}");
-				if (iterator.hasNext()) {
-					sb.append(",");
+			} else {
+				res.setContentType("application/json");
+				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
+				try {
+					printWriter.print("{\"result\":[{\"size\":" + size(req.getInputStream()) + "}]}");
+					printWriter.flush();
+				} finally {
+					printWriter.close();
 				}
-			}
-			sb.append("]}");
-			res.setContentType("application/json");
-			PrintWriter printWriter = new PrintWriter(res.getOutputStream());
-			try {
-				printWriter.print(sb.toString());
-				printWriter.flush();
-			} finally {
-				printWriter.close();
 			}
 		} catch (Exception ex) {
 			throw new ServletException(ex);
 		}
 	}
 
-	protected int fileSize(InputStream stream) {
+	protected int size(InputStream stream) {
 		int length = 0;
 		try {
 			byte[] buffer = new byte[2048];
