@@ -31,6 +31,16 @@ module.exports = function(grunt) {
 					flatten : true,
 					filter : 'isFile'
 				} ]
+			},
+			bower : {
+				files : [ {
+					expand : true,
+					cwd : 'dist/',
+					src : '*',
+					dest : '../angular-file-upload-bower/',
+					flatten : true,
+					filter : 'isFile'
+				} ]
 			}
 		},
 		uglify : {
@@ -52,6 +62,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	// Default task(s).
-	grunt.registerTask('default', [ 'copy', 'uglify' ]);
+	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:bower' ]);
 
 };
