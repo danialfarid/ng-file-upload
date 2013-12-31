@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.2
+ * @version 1.2.3
  */
 (function() {
 	
@@ -66,7 +66,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		return promise;
 	};
 	this.upload = function(config) {
-        config.headers = config.headers || {};
+		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
