@@ -16,7 +16,10 @@ module.exports = function(grunt) {
 					dest : 'dist/',
 					flatten : true,
 					filter : 'isFile'
-				}, {
+				}]
+			},
+			fileapi: {
+				files: [{
 					expand : true,
 					cwd : 'demo/war/js/',
 					src : 'FileAPI.flash.swf',
@@ -62,6 +65,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	// Default task(s).
-	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:bower' ]);
+	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower' ]);
 
 };
