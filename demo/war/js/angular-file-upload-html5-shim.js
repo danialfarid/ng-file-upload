@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for angular XHR HTML5 browsers
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.1
+ * @version <%= pkg.version %>
  */
 if (window.XMLHttpRequest) {
 	if (window.FormData) {
@@ -25,5 +25,6 @@ if (window.XMLHttpRequest) {
 				return xhr;
 			}
 		})(XMLHttpRequest);
+		window.XMLHttpRequest.__isShim = true;
 	}
 }

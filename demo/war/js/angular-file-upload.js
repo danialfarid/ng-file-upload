@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.1
+ * @version <%= pkg.version %>
  */
 (function() {
 	
@@ -18,27 +18,29 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 			return $http.defaults.transformRequest[0](data);
 		};
 		
-		config.headers['__setXHR_'] = function() {
-			return function(xhr) {
-				config.__XHR = xhr;
-				xhr.upload.addEventListener('progress', function(e) {
-					if (config.progress) {
-						$timeout(function() {
-							config.progress(e);
-						});
-					}
-				}, false);
-				//fix for firefox not firing upload progress end, also IE8-9
-				xhr.upload.addEventListener('load', function(e) {
-					if (e.lengthComputable) {
-						$timeout(function() {
-							config.progress(e);
-						});
-					}
-				}, false);
-			}
-		};
-		
+		if (window.XMLHttpRequest.__isShim) {
+			config.headers['__setXHR_'] = function() {
+				return function(xhr) {
+					config.__XHR = xhr;
+					xhr.upload.addEventListener('progress', function(e) {
+						if (config.progress) {
+							$timeout(function() {
+								config.progress(e);
+							});
+						}
+					}, false);
+					//fix for firefox not firing upload progress end, also IE8-9
+					xhr.upload.addEventListener('load', function(e) {
+						if (e.lengthComputable) {
+							$timeout(function() {
+								config.progress(e);
+							});
+						}
+					}, false);
+				}
+			};
+		}
+			
 		var promise = $http(config);
 		
 		promise.progress = function(fn) {

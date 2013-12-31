@@ -1,14 +1,14 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.1
+ * @version <%= pkg.version %>
  */
 (function() {
 
 if (window.XMLHttpRequest) {
 	if (window.FormData) {
 		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
-		XMLHttpRequest = (function(origXHR) {
+		window.XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
 				xhr.setRequestHeader = (function(orig) {
@@ -26,9 +26,9 @@ if (window.XMLHttpRequest) {
 				})(xhr.setRequestHeader);
 				return xhr;
 			}
-		})(XMLHttpRequest);
+		})(window.XMLHttpRequest);
 	} else {
-		XMLHttpRequest = (function(origXHR) {
+		window.XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
 				var origSend = xhr.send;
@@ -120,8 +120,9 @@ if (window.XMLHttpRequest) {
 				}
 				return xhr;
 			}
-		})(XMLHttpRequest);
+		})(window.XMLHttpRequest);
 	}
+	window.XMLHttpRequest.__isShim = true;
 }
 
 if (!window.FormData) {
@@ -234,6 +235,7 @@ if (!window.FormData) {
 	})();
 }
 
+/*
 if (!window.FileReader) {
 	window.FileReader = function() {
 		var _this = this, loadStarted = false;
@@ -294,5 +296,5 @@ if (!window.FileReader) {
 		}
 	}
 }
-
+*/
 })();
