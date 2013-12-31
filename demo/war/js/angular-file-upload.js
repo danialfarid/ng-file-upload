@@ -12,7 +12,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.transformRequest = config.transformRequest || function(data) {
-			if (data instanceof ArrayBuffer) {
+			if (window.ArrayBuffer && data instanceof ArrayBuffer) {
 				return data;
 			}
 			return $http.defaults.transformRequest[0](data);
