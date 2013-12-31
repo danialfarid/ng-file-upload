@@ -87,7 +87,8 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 				}).then(function(response) {
 					$scope.uploadResult.push(response.data.result);
 				}, null, function(evt) {
-					$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+					// Math.min is to fix IE which reports 200% sometimes
+					$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
             }
 		}
