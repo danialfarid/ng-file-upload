@@ -25,13 +25,17 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
 	<div class="upload-div">
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">model object to be sent as data to the server with the file: <input type="text" ng-model="myModel"></label> <br/>
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!dropSupported">or send the file binary as data with a POST/PUT request instead of multipart/form-data upload. </label>
-		<div class="sub">For <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
-			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc. 
-			Only HTML5 FileReader browsers, cross browser support will be added around Feb 2014 when FileAPI FileReader support is available.
-		</div><br/><br/>
 		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT'/>put<br/>
+		<br/>
+		How to upload:<br/>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multupart/form-data upload using $upload.upload() service cross browser</label>
+		<br/>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!dropSupported">File binary content with the file type as Content-Type header using $upload.http() service</label>
+		<div class="sub">The second option could be used to upload files to <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
+			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
+			Option 2 cross browser FileReader and image preview will be added around Feb 2014 when FileAPI FileReader support is available.<br/>
+		</div><br/>
+		 myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
 		choose a single file: <input type="file" ng-file-select="onFileSelect($files)">
 		<br/>
 		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
@@ -73,5 +77,6 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
+	<div style="position:absolute;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2013-12-30</div>
 </body>
 </html>
