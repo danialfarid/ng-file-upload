@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for angular XHR HTML5 browsers
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.0
+ * @version 1.2.1
  */
 if (window.XMLHttpRequest) {
 	if (window.FormData) {
@@ -12,7 +12,11 @@ if (window.XMLHttpRequest) {
 				xhr.setRequestHeader = (function(orig) {
 					return function(header, value) {
 						if (header === '__setXHR_') {
-							value(xhr);
+							var val = value(xhr);
+							// fix for angular < 1.2.0
+							if (val instanceof Function) {
+								val(xhr);
+							}
 						} else {
 							orig.apply(xhr, arguments);
 						}
