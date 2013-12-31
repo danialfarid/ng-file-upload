@@ -21,7 +21,8 @@ public class FileUpload extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
-			if (req.getHeader("Content-Type").startsWith("multipart/form-data")) {
+			if (req.getHeader("Content-Type") != null
+					&& req.getHeader("Content-Type").startsWith("multipart/form-data")) {
 				ServletFileUpload upload = new ServletFileUpload();
 
 				FileItemIterator iterator = upload.getItemIterator(req);
