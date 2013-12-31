@@ -14,7 +14,11 @@ if (window.XMLHttpRequest) {
 				xhr.setRequestHeader = (function(orig) {
 					return function(header, value) {
 						if (header === '__setXHR_') {
-							value(xhr);
+							var val = value(xhr);
+							// fix for angular < 1.2.0
+							if (val instanceof Function) {
+								val(xhr);
+							}
 						} else {
 							orig.apply(xhr, arguments);
 						}
@@ -63,7 +67,11 @@ if (window.XMLHttpRequest) {
 				xhr.setRequestHeader = (function(orig) {
 					return function(header, value) {
 						if (header === '__setXHR_') {
-							value(xhr);
+							var val = value(xhr);
+							// fix for angular < 1.2.0
+							if (val instanceof Function) {
+								val(xhr);
+							}
 						} else {
 							orig.apply(xhr, arguments);
 						}
