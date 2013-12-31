@@ -13,6 +13,7 @@ Lightweight Angular JS directive to upload files. Features:
 * All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5
 * Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
+* `$upload.http` progress event for normal http `POST` or `PUT` request with the file content or any data. (HTML5 only)
 
 ## Usage
 
@@ -74,6 +75,9 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 **Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need the support for upload progress or cancel.
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. The formData file name will have the index appended to it (i.e. `file0`, `file1`, etc.). If you want it cross browser you need to iterate through files and upload them one by one like the code above.
+
+You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+This enables angular $http() to listen to progress event for HTML5 browsers.
 
 ## Old browsers
 
