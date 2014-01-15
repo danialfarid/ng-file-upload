@@ -1,5 +1,27 @@
 # Changelog
 
+##1.2.3
+fixed #90
+
+##1.2.2
+fixed #89
+
+##1.2.1
+Fixed progress event for older angular version < 1.2.0
+
+##1.2.0
+Fixed #88 #87 
+Added $upload.http service method to be able to send a normal POST/PUT and listen to progress event.
+File binary content can be send as data to the server like this.
+ 
+##1.1.11
+Added support for multiple files upload with the same call for HTML5 only browsers.
+Fixed #69
+
+## 1.1.10
+Fixed #68 #70 #65 #62 #64 #58
+
+
 ## 1.1.9 2013-11-27
 Directory structure changes and adding Grunt to build.
 Fixed #57 
