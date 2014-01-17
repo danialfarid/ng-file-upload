@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.3
+ * @version 1.2.4
  */
 (function() {
 	
@@ -12,7 +12,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
 		config.transformRequest = config.transformRequest || function(data) {
-			if (data instanceof ArrayBuffer) {
+			if (window.ArrayBuffer && data instanceof ArrayBuffer) {
 				return data;
 			}
 			return $http.defaults.transformRequest[0](data);
@@ -92,19 +92,15 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		}
 		config.transformRequest =  angular.identity;
 		
-		var filename, fileFromName = config.fileFormDataName || 'file';
+		var fileFormName = config.fileFormDataName || 'file';
 		
-    if (Object.prototype.toString.call(config.file) === '[object Array]') {
-			for (var i = 0; i < config.file.length; i++) {
-        filename = (Object.prototype.toString.call(fileFromName) === '[object Array]')
-          ? (fileFromName.length == 1) ? fileFromName[0] + i
-          : (!!fileFromName[i]) ? fileFromName[i]
-          : fileFromName[fileFromName.length - 1] + i
-          : fileFromName + i
-				formData.append(filename, config.file[i], config.file[i].name);
+		if (Object.prototype.toString.call(config.file) === '[object Array]') {
+			var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
+			for (var i = 0; i < config.file.length; i++) {						         
+				formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
 			}
 		} else {
-			formData.append(fileFromName, config.file, config.file.name);
+			formData.append(fileFormName, config.file, config.file.name);
 		}
 		
 		config.data = formData;
