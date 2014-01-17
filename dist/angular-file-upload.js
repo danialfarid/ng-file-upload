@@ -92,11 +92,16 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		}
 		config.transformRequest =  angular.identity;
 		
-		var fileFromName = config.fileFormDataName || 'file';
+		var filename, fileFromName = config.fileFormDataName || 'file';
 		
-		if (Object.prototype.toString.call(config.file) === '[object Array]') {
+    if (Object.prototype.toString.call(config.file) === '[object Array]') {
 			for (var i = 0; i < config.file.length; i++) {
-				formData.append(fileFromName + i, config.file[i], config.file[i].name);
+        filename = (Object.prototype.toString.call(fileFromName) === '[object Array]')
+          ? (fileFromName.length == 1) ? fileFromName[0] + i
+          : (!!fileFromName[i]) ? fileFromName[i]
+          : fileFromName[fileFromName.length - 1] + i
+          : fileFromName + i
+				formData.append(filename, config.file[i], config.file[i].name);
 			}
 		} else {
 			formData.append(fileFromName, config.file, config.file.name);
