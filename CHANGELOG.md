@@ -1,5 +1,8 @@
 # Changelog
 
+##1.2.4
+Fixed #100 Custom names when uploading multiple files
+
 ##1.2.3
 fixed #90
 
