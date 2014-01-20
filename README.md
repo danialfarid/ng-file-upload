@@ -56,7 +56,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
         file: file,
         // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
         /* set file formData name for 'Content-Desposition' header. Default: 'file' */
-        //fileFormDataName: myFile,
+        //fileFormDataName: myFile, //OR for HTML5 multiple upload only a list: ['name1', 'name2', ...]
         /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
         //formDataAppender: function(formData, key, val){} 
       }).progress(function(evt) {
@@ -72,12 +72,12 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 }];
 ```
 
-**Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need the support for upload progress or cancel.
+**Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need to support upload progress or cancel.
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. The formData file name will have the index appended to it (i.e. `file0`, `file1`, etc.). If you want it cross browser you need to iterate through files and upload them one by one like the code above.
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string which would have the index appended to it (i.e. `file0`, `file1`, etc.). If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
 
 You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
-This enables angular $http() to listen to progress event for HTML5 browsers.
+This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
 ## Old browsers
 
