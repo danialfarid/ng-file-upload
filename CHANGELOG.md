@@ -1,5 +1,8 @@
 # Changelog
 
+##1.2.5
+Fixed #109 Angular 1.2.8 Data returned in success callback is null/undefined
+
 ##1.2.4
 Fixed #100 Custom names when uploading multiple files
 

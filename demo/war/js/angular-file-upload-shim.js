@@ -85,10 +85,10 @@ if (window.XMLHttpRequest) {
 							url: xhr.__url,
 							complete: function(err, fileApiXHR) {
 								xhr.__load({type: 'load', loaded: xhr.__total, total: xhr.__total, target: xhr, lengthComputable: true});
-								Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
-								Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
+								if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
+								if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
 								Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
-								Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
+								if (fileApiXHR.response !== undefined) Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
 								Object.defineProperty(xhr, 'responseText', {get: function() {return fileApiXHR.responseText}});
 								xhr.__fileApiXHR = fileApiXHR;
 								xhr.onreadystatechange();
