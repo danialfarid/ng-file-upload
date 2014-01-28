@@ -51,7 +51,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       $scope.upload = $upload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
-        // headers: {'headerKey': 'headerValue'}, //Only for HTML5 
+        // headers: {'headerKey': 'headerValue'},
         // withCredential: true,
         data: {myObj: $scope.myModelObj},
         file: file,
