@@ -26,7 +26,7 @@ input[multiple] {
 	list-style-type: decimal;
 }
 
-.response li {
+.response li, .response .reqh {
 	color: blue;
 	font-size: smaller;
 	padding-bottom: 5px; 

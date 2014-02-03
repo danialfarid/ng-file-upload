@@ -66,13 +66,14 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			<ul>
 				<li ng-repeat="result in uploadResult">
 					<ul>
-						<li ng-repeat="item in result">
+						<li ng-repeat="item in result.result">
 							<div data-ng-show="item.name">file name: {{item.name}}</div>
 							<div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
 							<div data-ng-show="item.size">size on the serve: {{item.size}}</div>
 							<div data-ng-show="item.value">value: {{item.value}}</div>
 						</li>
 					</ul>
+					<div data-ng-show="result.requestHeaders" class="reqh">request headers: {{result.requestHeaders}}</div>
 				</li>
 			</ul>
 		</div>

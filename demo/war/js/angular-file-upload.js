@@ -25,7 +25,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 					xhr.upload.addEventListener('progress', function(e) {
 						if (config.progress) {
 							$timeout(function() {
-								config.progress(e);
+								if(config.progress) config.progress(e);
 							});
 						}
 					}, false);
@@ -33,11 +33,11 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 					xhr.upload.addEventListener('load', function(e) {
 						if (e.lengthComputable) {
 							$timeout(function() {
-								config.progress(e);
+								if(config.progress) config.progress(e);
 							});
 						}
 					}, false);
-				}
+				}	
 			};
 		}
 			

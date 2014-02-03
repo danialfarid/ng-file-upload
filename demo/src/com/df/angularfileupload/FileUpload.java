@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,7 +47,19 @@ public class FileUpload extends HttpServlet {
 						sb.append(",");
 					}
 				}
-				sb.append("]}");
+				sb.append("]");
+				sb.append(", \"requestHeaders\": {");
+				@SuppressWarnings("unchecked")
+				Enumeration<String> headerNames = req.getHeaderNames();
+				while (headerNames.hasMoreElements()) {
+					String header = headerNames.nextElement();
+					sb.append("\"").append(header).append("\":\"").append(req.getHeader(header)).append("\"");
+					if (headerNames.hasMoreElements()) {
+						sb.append(",");
+					}
+				}
+				sb.append("}}");
+
 				res.setContentType("application/json");
 				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
 				try {

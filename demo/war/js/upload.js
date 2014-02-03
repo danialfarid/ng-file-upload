@@ -72,7 +72,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 				file: $scope.selectedFiles[index],
 				fileFormDataName: 'myFile'
 			}).then(function(response) {
-				$scope.uploadResult.push(response.data.result);
+				$scope.uploadResult.push(response.data);
 			}, null, function(evt) {
 				$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
 			});
