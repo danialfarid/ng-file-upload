@@ -1,5 +1,12 @@
 # Changelog
 
+##1.2.7
+Fixed #122 
+Added request headers to the demo page
+
+##1.2.6
+Fixed bower main js files
+
 ##1.2.5
 Fixed #109 Angular 1.2.8 Data returned in success callback is null/undefined
 
