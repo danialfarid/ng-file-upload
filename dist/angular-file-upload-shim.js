@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.7
+ * @version 1.2.8
  */
 (function() {
 
@@ -28,20 +28,26 @@ if (window.XMLHttpRequest) {
 			}
 		})(window.XMLHttpRequest);
 	} else {
+		var hasFlash = false;
+		try {
+		  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+		  if (fo) hasFlash = true;
+		} catch(e) {
+		  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) hasFlash = true;
+		}
 		window.XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
 				var origSend = xhr.send;
 				xhr.__requestHeaders = [];
 				xhr.open = (function(orig) {
-					xhr.upload = {
-						addEventListener: function(t, fn, b) {
-							if (t === 'progress') {
-								xhr.__progress = fn;
-							}
-							if (t === 'load') {
-								xhr.__load = fn;
-							}
+					if (!xhr.upload) xhr.upload = {};
+					xhr.upload.addEventListener = function(t, fn, b) {
+						if (t === 'progress') {
+							xhr.__progress = fn;
+						}
+						if (t === 'load') {
+							xhr.__load = fn;
 						}
 					};
 					return function(m, url, b) {
@@ -112,6 +118,9 @@ if (window.XMLHttpRequest) {
 						}
 						
 						setTimeout(function() {
+							if (!hasFlash) {
+								alert('Please install Adode Flash Player to upload files.');
+							}
 							xhr.__fileApiXHR = FileAPI.upload(config);
 						}, 1);
 					} else {
@@ -121,30 +130,21 @@ if (window.XMLHttpRequest) {
 				return xhr;
 			}
 		})(window.XMLHttpRequest);
+		window.XMLHttpRequest.__hasFlash = hasFlash;
 	}
 	window.XMLHttpRequest.__isShim = true;
 }
 
 if (!window.FormData) {
-	var hasFlash = false;
-	try {
-	  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-	  if (fo) hasFlash = true;
-	} catch(e) {
-	  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) hasFlash = true;
-	}
 	var wrapFileApi = function(elem) {
 		if (!elem.__isWrapped && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
 			var wrap = document.createElement('div');
-			wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
+			wrap.innerHTML = '<div class="js-fileapi-wrapper" /*style="position:relative; overflow:hidden"*/></div>';
 			wrap = wrap.firstChild;
 			var parent = elem.parentNode;
 			parent.insertBefore(wrap, elem);
 			parent.removeChild(elem);
 			wrap.appendChild(elem);
-			if (!hasFlash) {
-				wrap.appendChild(document.createTextNode('Flash is required'));
-			}
 			elem.__isWrapped = true;
 		}
 	};
