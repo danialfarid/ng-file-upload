@@ -57,17 +57,17 @@ if (window.XMLHttpRequest) {
 				})(xhr.open);
 				xhr.getResponseHeader = (function(orig) {
 					return function(h) {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getResponseHeader(h) : orig.apply(xhr, [h]); 
+						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getResponseHeader(h) : orig.apply(xhr, [h]);
 					}
 				})(xhr.getResponseHeader);
 				xhr.getAllResponseHeaders = (function(orig) {
 					return function() {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getAllResponseHeaders() : orig.apply(xhr); 
+						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getAllResponseHeaders() : orig.apply(xhr);
 					}
 				})(xhr.getAllResponseHeaders);
 				xhr.abort = (function(orig) {
 					return function() {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.abort() : (orig == null ? null : orig.apply(xhr)); 
+						return xhr.__fileApiXHR ? xhr.__fileApiXHR.abort() : (orig == null ? null : orig.apply(xhr));
 					}
 				})(xhr.abort);
 				xhr.setRequestHeader = (function(orig) {
@@ -83,7 +83,7 @@ if (window.XMLHttpRequest) {
 						}
 					}
 				})(xhr.setRequestHeader);
-			
+
 				xhr.send = function() {
 					if (arguments[0] && arguments[0].__isShim) {
 						var formData = arguments[0];
@@ -116,7 +116,7 @@ if (window.XMLHttpRequest) {
 								config.data[item.key] = item.val;
 							}
 						}
-						
+
 						setTimeout(function() {
 							if (!hasFlash) {
 								alert('Please install Adode Flash Player to upload files.');
@@ -169,19 +169,19 @@ if (!window.FormData) {
 			return function(e, fn, b, d) {
 				if (isFileChange(this, e)) {
 					wrapFileApi(this);
-					origAddEventListener.apply(this, [e, changeFnWrapper(fn), b, d]); 
+					origAddEventListener.apply(this, [e, changeFnWrapper(fn), b, d]);
 				} else {
 					origAddEventListener.apply(this, [e, fn, b, d]);
 				}
 			}
-		})(HTMLInputElement.prototype.addEventListener);		
+		})(HTMLInputElement.prototype.addEventListener);
 	}
 	if (HTMLInputElement.prototype.attachEvent) {
 		HTMLInputElement.prototype.attachEvent = (function(origAttachEvent) {
 			return function(e, fn) {
 				if (isFileChange(this, e)) {
 					wrapFileApi(this);
-					origAttachEvent.apply(this, [e, changeFnWrapper(fn)]); 
+					origAttachEvent.apply(this, [e, changeFnWrapper(fn)]);
 				} else {
 					origAttachEvent.apply(this, [e, fn]);
 				}
@@ -202,7 +202,7 @@ if (!window.FormData) {
 			__isShim: true
 		};
 	};
-	
+
 	(function () {
 		//load FileAPI
 		if (!window.FileAPI || !FileAPI.upload) {
@@ -228,7 +228,7 @@ if (!window.FormData) {
 					staticPath: base
 				}
 			}
-	
+
 			script.setAttribute('src', base + "FileAPI.min.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
@@ -241,7 +241,7 @@ if (!window.FileReader) {
 		var _this = this, loadStarted = false;
 		this.listeners = {};
 		this.addEventListener = function(type, fn) {
-			_this.listeners[type] = _this.listeners[type] || []; 
+			_this.listeners[type] = _this.listeners[type] || [];
 			_this.listeners[type].push(fn);
 		};
 		this.removeEventListener = function(type, fn) {
@@ -256,7 +256,7 @@ if (!window.FileReader) {
 			}
 		};
 		this.onabort = this.onerror = this.onload = this.onloadstart = this.onloadend = this.onprogress = null;
-		
+
 		function constructEvent(type, evt) {
 			var e = {type: type, target: _this, loaded: evt.loaded, total: evt.total, error: evt.error};
 			if (evt.result != null) e.target.result = evt.result;
