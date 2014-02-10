@@ -206,9 +206,11 @@ if (!window.FormData) {
 	(function () {
 		//load FileAPI
 		if (!window.FileAPI || !FileAPI.upload) {
-			var base = '', script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
+			var base = '', fullUrl = false, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
 			if (window.FileAPI && window.FileAPI.jsPath) {
 				base = window.FileAPI.jsPath;
+			} else if (window.FileAPI && window.FileAPI.fullUrl){
+				fullUrl = window.FileAPI.fullUrl
 			} else {
 				for (i = 0; i < allScripts.length; i++) {
 					src = allScripts[i].src;
@@ -229,7 +231,9 @@ if (!window.FormData) {
 				}
 			}
 
-			script.setAttribute('src', base + "FileAPI.min.js");
+			fullUrl = fullUrl || base + "FileAPI.min.js";
+
+			script.setAttribute('src', fullUrl);
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
