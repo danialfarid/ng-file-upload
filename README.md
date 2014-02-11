@@ -13,7 +13,7 @@ Lightweight Angular JS directive to upload files. Features:
 * All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5
 * Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
-* `$upload.http` HTML5 progress event for normal http `POST`/`PUT` requests with the file content or any data.
+* `$upload.http` HTML5 progress event for normal http `POST`/`PUT` requests with the file content or any data. Could be used to upload files to CouchDB, imgur, etc... for HTML5 FileReader browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 
 ## Usage
 
