@@ -206,11 +206,11 @@ if (!window.FormData) {
 	(function () {
 		//load FileAPI
 		if (!window.FileAPI || !FileAPI.upload) {
-			var base = '', fullUrl = false, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
+			var base = '', jsUrl = null, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
 			if (window.FileAPI && window.FileAPI.jsPath) {
 				base = window.FileAPI.jsPath;
-			} else if (window.FileAPI && window.FileAPI.fullUrl){
-				fullUrl = window.FileAPI.fullUrl
+			} else if (window.FileAPI && window.FileAPI.jsUrl){
+				jsUrl = window.FileAPI.jsUrl
 			} else {
 				for (i = 0; i < allScripts.length; i++) {
 					src = allScripts[i].src;
@@ -231,9 +231,7 @@ if (!window.FormData) {
 				}
 			}
 
-			fullUrl = fullUrl || base + "FileAPI.min.js";
-
-			script.setAttribute('src', fullUrl);
+			script.setAttribute('src', jsUrl || base + "FileAPI.min.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
