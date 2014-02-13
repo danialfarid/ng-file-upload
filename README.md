@@ -19,9 +19,9 @@ Lightweight Angular JS directive to upload files. Features:
 
 HTML:
 ```html
-<!-- shim to support upload progress/abort and non-HTML5 FormData browsers.-->
-<!-- use html5-shim.min.js instead for progress/abort for html5 browsers only-->
-<!-- Note: MUST BE PLACED BEFORE angular.js-->
+<!-- shim is needed to support upload progress/abort for HTML5 and non-HTML5 FormData browsers.-->
+<!-- use html5-shim.js instead if you just support HTML5 browsers and you need progress event-->
+<!-- Note: shim.js MUST BE PLACED BEFORE angular.js and agular-file-upload.js AFTER angular.js-->
 <script src="angular-file-upload-shim.min.js"></script> 
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script> 
