@@ -99,6 +99,17 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
 
+If you are using a CDN to host your files you can aslso specify the specific location of FileAPI.min.js and FileAPI.flash.swf by using jsUrl and flashUrl:
+```html
+<script>
+    FileAPI = {
+        jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+        flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+    }
+</script>
+<script src="angular-file-upload-shim.min.js"></script>...
+```
+
 ## Install
 
 Download files from [/dist](https://github.com/danialfarid/angular-file-upload/blob/master/dist) or 
