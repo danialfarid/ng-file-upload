@@ -87,23 +87,17 @@ For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.fla
 
 **Note**: Flash needs to be installed on the client browser since `FileAPI` uses Flash to upload files.
 
-You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or use the following script to set the FileAPI load path (optional):
+You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or use the following script to set the FileAPI load path for example if you are using CDN (optional):
 ```html
 <script>
     //optional need to be loaded before angular-file-upload-shim(.min).js
     FileAPI = {
-        jsPath: '/js/FileAPI.min.js/folder/',
-        staticPath: '/flash/FileAPI.flash.swf/folder/'
-    }
-</script>
-<script src="angular-file-upload-shim.min.js"></script>...
-```
-
-If you are using a CDN to host your files you can aslso specify the specific location of FileAPI.min.js and FileAPI.flash.swf by using jsUrl and flashUrl:
-```html
-<script>
-    FileAPI = {
+        //only one of jsPath or jsUrl.
+        jsPath: '/js/FileAPI.min.js/folder/', 
         jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+        
+        //only one of staticPath or flashUrl.
+        staticPath: '/flash/FileAPI.flash.swf/folder/'
         flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
     }
 </script>
