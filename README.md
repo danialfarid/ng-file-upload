@@ -52,7 +52,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
         url: 'server/upload/url', //upload.php script, node.js route, or servlet url
         // method: POST or PUT,
         // headers: {'headerKey': 'headerValue'},
-        // withCredential: true,
+        // withCredentials: true,
         data: {myObj: $scope.myModelObj},
         file: file,
         // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
