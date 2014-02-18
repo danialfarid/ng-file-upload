@@ -58,8 +58,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		promise.then = (function(promise, origThen) {
 			return function(s, e, p) {
 				config.progress = p || config.progress;
-				origThen.apply(promise, [s, e, p]);
-				return promise;
+				return origThen.apply(promise, [s, e, p]);
 			};
 		})(promise, promise.then);
 		
