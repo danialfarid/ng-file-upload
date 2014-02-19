@@ -139,7 +139,7 @@ if (!window.FormData) {
 	var wrapFileApi = function(elem) {
 		if (!elem.__isWrapped && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
 			var wrap = document.createElement('div');
-			wrap.innerHTML = '<div class="js-fileapi-wrapper" /*style="position:relative; overflow:hidden"*/></div>';
+			wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
 			wrap = wrap.firstChild;
 			var parent = elem.parentNode;
 			parent.insertBefore(wrap, elem);
@@ -205,12 +205,15 @@ if (!window.FormData) {
 
 	(function () {
 		//load FileAPI
-		if (!window.FileAPI || !FileAPI.upload) {
-			var base = '', jsUrl = null, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
-			if (window.FileAPI && window.FileAPI.jsPath) {
-				base = window.FileAPI.jsPath;
-			} else if (window.FileAPI && window.FileAPI.jsUrl){
-				jsUrl = window.FileAPI.jsUrl
+		if (!window.FileAPI) {
+			window.FileAPI = {};
+		}
+		if (!FileAPI.upload) {
+			var jsUrl, basePath, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
+			if (window.FileAPI.jsUrl) {
+				jsUrl = window.FileAPI.jsUrl;
+			} else if (window.FileAPI.jsPath) {
+				basePath = window.FileAPI.jsPath;
 			} else {
 				for (i = 0; i < allScripts.length; i++) {
 					src = allScripts[i].src;
@@ -219,25 +222,21 @@ if (!window.FormData) {
 						index = src.indexOf('angular-file-upload-shim.min.js');
 					}
 					if (index > -1) {
-						base = src.substring(0, index);
+						basePath = src.substring(0, index);
 						break;
 					}
 				}
 			}
 
-			if (!window.FileAPI || FileAPI.staticPath == null) {
-				FileAPI = {
-					staticPath: base
-				}
-			}
-
-			script.setAttribute('src', jsUrl || base + "FileAPI.min.js");
+			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
+			FileAPI.debug = true;
+			script.setAttribute('src', jsUrl || basePath + "FileAPI.min.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
 	})();
 }
 
-/*
+
 if (!window.FileReader) {
 	window.FileReader = function() {
 		var _this = this, loadStarted = false;
@@ -285,7 +284,7 @@ if (!window.FileReader) {
 			}
 		};
 		this.readAsArrayBuffer = function(file) {
-			FileAPI.readAsArrayBuffer(file, listener);
+			FileAPI.readAsBinaryString(file, listener);
 		}
 		this.readAsBinaryString = function(file) {
 			FileAPI.readAsBinaryString(file, listener);
@@ -298,5 +297,5 @@ if (!window.FileReader) {
 		}
 	}
 }
-*/
+
 })();
