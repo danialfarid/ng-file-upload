@@ -78,19 +78,20 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 			});
 		} else {
 			var fileReader = new FileReader();
-	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
             fileReader.onload = function(e) {
 		        $scope.upload[index] = $upload.http({
 		        	url: 'upload',
 					headers: {'Content-Type': $scope.selectedFiles[index].type},
 					data: e.target.result
 				}).then(function(response) {
-					$scope.uploadResult.push(response.data.result);
+					$scope.uploadResult.push(response.data);
 				}, null, function(evt) {
 					// Math.min is to fix IE which reports 200% sometimes
 					$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
             }
+	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
+
 		}
 	}
 } ];

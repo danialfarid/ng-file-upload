@@ -12,7 +12,6 @@
     <description>Light-weight HTML5 and cross-browser AngularJS directives for file upload, progress, abort, drag and drop</description>
     <tags>angularjs upload</tags>
     <dependencies>
-      <dependency id="angularjs" version="1.0.7" />
     </dependencies>
   </metadata>
 </package>

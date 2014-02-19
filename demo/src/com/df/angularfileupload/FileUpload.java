@@ -22,13 +22,13 @@ public class FileUpload extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
+			StringBuilder sb = new StringBuilder("{\"result\": [");
+
 			if (req.getHeader("Content-Type") != null
 					&& req.getHeader("Content-Type").startsWith("multipart/form-data")) {
 				ServletFileUpload upload = new ServletFileUpload();
 
 				FileItemIterator iterator = upload.getItemIterator(req);
-
-				StringBuilder sb = new StringBuilder("{\"result\": [");
 
 				while (iterator.hasNext()) {
 					sb.append("{");
@@ -47,36 +47,37 @@ public class FileUpload extends HttpServlet {
 						sb.append(",");
 					}
 				}
-				sb.append("]");
-				sb.append(", \"requestHeaders\": {");
-				@SuppressWarnings("unchecked")
-				Enumeration<String> headerNames = req.getHeaderNames();
-				while (headerNames.hasMoreElements()) {
-					String header = headerNames.nextElement();
-					sb.append("\"").append(header).append("\":\"").append(req.getHeader(header)).append("\"");
-					if (headerNames.hasMoreElements()) {
-						sb.append(",");
-					}
-				}
-				sb.append("}}");
-
-				res.setContentType("application/json");
-				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
-				try {
-					printWriter.print(sb.toString());
-					printWriter.flush();
-				} finally {
-					printWriter.close();
-				}
 			} else {
 				res.setContentType("application/json");
 				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
 				try {
-					printWriter.print("{\"result\":[{\"size\":" + size(req.getInputStream()) + "}]}");
+					sb.append("{\"size\":\"" + size(req.getInputStream()) + "\"}");
 					printWriter.flush();
 				} finally {
 					printWriter.close();
 				}
+			}
+
+			sb.append("]");
+			sb.append(", \"requestHeaders\": {");
+			@SuppressWarnings("unchecked")
+			Enumeration<String> headerNames = req.getHeaderNames();
+			while (headerNames.hasMoreElements()) {
+				String header = headerNames.nextElement();
+				sb.append("\"").append(header).append("\":\"").append(req.getHeader(header)).append("\"");
+				if (headerNames.hasMoreElements()) {
+					sb.append(",");
+				}
+			}
+			sb.append("}}");
+
+			res.setContentType("application/json");
+			PrintWriter printWriter = new PrintWriter(res.getOutputStream());
+			try {
+				printWriter.print(sb.toString());
+				printWriter.flush();
+			} finally {
+				printWriter.close();
 			}
 		} catch (Exception ex) {
 			throw new ServletException(ex);
@@ -90,6 +91,9 @@ public class FileUpload extends HttpServlet {
 			int size;
 			while ((size = stream.read(buffer)) != -1) {
 				length += size;
+				// for (int i = 0; i < size; i++) {
+				// System.out.print((char) buffer[i]);
+				// }
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
