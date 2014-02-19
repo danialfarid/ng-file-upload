@@ -1,7 +1,7 @@
 # Changelog
 
 ##1.2.8
-Fixed #138 #133 #114 #130
+Fixed #138 #133 #114 #130 #128 
 fixed progress end for ie8	
 
 ##1.2.7
