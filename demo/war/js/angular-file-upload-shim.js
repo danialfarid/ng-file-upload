@@ -90,7 +90,7 @@ if (window.XMLHttpRequest) {
 						var config = {
 							url: xhr.__url,
 							complete: function(err, fileApiXHR) {
-								xhr.__load({type: 'load', loaded: xhr.__total, total: xhr.__total, target: xhr, lengthComputable: true});
+								if (!err) xhr.__load({type: 'load', loaded: xhr.__total, total: xhr.__total, target: xhr, lengthComputable: true});
 								if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
 								if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
 								Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
@@ -229,7 +229,6 @@ if (!window.FormData) {
 			}
 
 			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-			FileAPI.debug = true;
 			script.setAttribute('src', jsUrl || basePath + "FileAPI.min.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}

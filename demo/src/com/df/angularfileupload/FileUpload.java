@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -48,14 +47,7 @@ public class FileUpload extends HttpServlet {
 					}
 				}
 			} else {
-				res.setContentType("application/json");
-				PrintWriter printWriter = new PrintWriter(res.getOutputStream());
-				try {
-					sb.append("{\"size\":\"" + size(req.getInputStream()) + "\"}");
-					printWriter.flush();
-				} finally {
-					printWriter.close();
-				}
+				sb.append("{\"size\":\"" + size(req.getInputStream()) + "\"}");
 			}
 
 			sb.append("]");
@@ -71,14 +63,7 @@ public class FileUpload extends HttpServlet {
 			}
 			sb.append("}}");
 
-			res.setContentType("application/json");
-			PrintWriter printWriter = new PrintWriter(res.getOutputStream());
-			try {
-				printWriter.print(sb.toString());
-				printWriter.flush();
-			} finally {
-				printWriter.close();
-			}
+			res.getWriter().write(sb.toString());
 		} catch (Exception ex) {
 			throw new ServletException(ex);
 		}
