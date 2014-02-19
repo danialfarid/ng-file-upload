@@ -1,5 +1,9 @@
 # Changelog
 
+##1.2.8
+Fixed #138 #133 #114 #130
+fixed progress end for ie8	
+
 ##1.2.7
 Fixed #122 
 Added request headers to the demo page
