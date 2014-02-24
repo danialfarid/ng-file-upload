@@ -69,6 +69,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       //.error(...)
       //.then(success, error, progress); 
     }
+    // $scope.upload = $upload.upload({...}) alternative way of uploading, sends the the file content directly with the same content-type of the file. Could be used to upload files to CouchDB, imgur, etc... for HTML5 FileReader browsers. 
   };
 }];
 ```
