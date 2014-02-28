@@ -21,7 +21,7 @@ HTML:
 ```html
 <!-- shim is needed to support upload progress/abort for HTML5 and non-HTML5 FormData browsers.-->
 <!-- use html5-shim.js instead if you just support HTML5 browsers and you need progress event-->
-<!-- Note: shim.js MUST BE PLACED BEFORE angular.js and agular-file-upload.js AFTER angular.js-->
+<!-- Note: shim.js MUST BE PLACED BEFORE angular.js and angular-file-upload.js AFTER angular.js-->
 <script src="angular-file-upload-shim.min.js"></script> 
 <script src="angular.min.js"></script>
 <script src="angular-file-upload.min.js"></script> 
