@@ -5,6 +5,16 @@
  */
 (function() {
 
+var hasFlash = function() {
+	try {
+	  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	  if (fo) return true;
+	} catch(e) {
+	  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) return true;
+	}
+	return false;
+}
+	
 if (window.XMLHttpRequest) {
 	if (window.FormData) {
 		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
@@ -28,13 +38,6 @@ if (window.XMLHttpRequest) {
 			}
 		})(window.XMLHttpRequest);
 	} else {
-		var hasFlash = false;
-		try {
-		  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-		  if (fo) hasFlash = true;
-		} catch(e) {
-		  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) hasFlash = true;
-		}
 		window.XMLHttpRequest = (function(origXHR) {
 			return function() {
 				var xhr = new origXHR();
@@ -118,8 +121,8 @@ if (window.XMLHttpRequest) {
 						}
 
 						setTimeout(function() {
-							if (!hasFlash) {
-								alert('Please install Adode Flash Player to upload files.');
+							if (!hasFlash()) {
+								throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
 							}
 							xhr.__fileApiXHR = FileAPI.upload(config);
 						}, 1);
@@ -130,13 +133,16 @@ if (window.XMLHttpRequest) {
 				return xhr;
 			}
 		})(window.XMLHttpRequest);
-		window.XMLHttpRequest.__hasFlash = hasFlash;
+		window.XMLHttpRequest.__hasFlash = hasFlash();
 	}
 	window.XMLHttpRequest.__isShim = true;
 }
 
 if (!window.FormData) {
 	var wrapFileApi = function(elem) {
+		if (!hasFlash()) {
+			throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
+		}
 		if (!elem.__isWrapped && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
 			var wrap = document.createElement('div');
 			wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
@@ -231,6 +237,7 @@ if (!window.FormData) {
 			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
 			script.setAttribute('src', jsUrl || basePath + "FileAPI.min.js");
 			document.getElementsByTagName('head')[0].appendChild(script);
+			FileAPI.hasFlash = hasFlash();
 		}
 	})();
 }

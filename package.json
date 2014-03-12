@@ -1,6 +1,6 @@
 {
   "name": "angular-file-upload",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-uglify": "~0.2.7",
