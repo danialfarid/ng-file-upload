@@ -10,10 +10,10 @@ Lightweight Angular JS directive to upload files. Features:
 * Supports upload progress
 * Supports cancel/abort upload while in progress
 * Supports File drag and drop
-* All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5
+* All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5. (It is needed for progress event though)
 * Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
-* `$upload.http` HTML5 progress event for normal http `POST`/`PUT` requests with the file content or any data. Could be used to upload files to CouchDB, imgur, etc... for HTML5 FileReader browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the Content-Type of the file to CouchDB, imgur, etc... for HTML5 FileReader browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 
 ## Usage
 
@@ -107,7 +107,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 
 ## Install
 
-Download files from [/dist](https://github.com/danialfarid/angular-file-upload/blob/master/dist) or 
+Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or 
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
