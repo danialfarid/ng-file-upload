@@ -105,6 +105,9 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
 
+##Amazon S3 Upload
+[nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
+
 ## Install
 
 Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or 
