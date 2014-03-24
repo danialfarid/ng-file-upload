@@ -67,6 +67,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       });
       //.error(...)
       //.then(success, error, progress); 
+      //.xhr(function(xhr){xhr.upload.addEventListener(...)})// access and attach any arbitrary event listener to XMLHttpRequest.
     }
     /* alternative way of uploading, send the file binary with the file's content-type.
        Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
