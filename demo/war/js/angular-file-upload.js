@@ -72,6 +72,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
+        var i;
 		if (config.data) {
 			for (var key in config.data) {
 				var val = config.data[key];
@@ -79,7 +80,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 					if (typeof config.transformRequest == 'function') {
 						val = config.transformRequest(val);
 					} else {
-						for (var i = 0; i < config.transformRequest.length; i++) {
+						for (i = 0; i < config.transformRequest.length; i++) {
 							var fn = config.transformRequest[i];
 							if (typeof fn == 'function') {
 								val = fn(val);
@@ -98,7 +99,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		
 		if (Object.prototype.toString.call(config.file) === '[object Array]') {
 			var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
-			for (var i = 0; i < config.file.length; i++) {						         
+			for (i = 0; i < config.file.length; i++) {
 				formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
 			}
 		} else {
