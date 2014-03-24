@@ -56,7 +56,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 			$scope.upload[index] = $upload.upload({
 				url : 'upload',
 				method: $scope.httpMethod,
-				headers: {'myHeaderKey': 'myHeaderVal'},
+				headers: {'my-header': 'my-header-value'},
 				data : {
 					myModel : $scope.myModel
 				},
@@ -69,12 +69,17 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
                         fd.append(key, val);
                       }
 				}, */
+				/* transformRequest: [function(val, h) {
+					console.log(val, h('my-header')); return val + 'aaaaa';
+				}], */
 				file: $scope.selectedFiles[index],
 				fileFormDataName: 'myFile'
 			}).then(function(response) {
 				$scope.uploadResult.push(response.data);
 			}, null, function(evt) {
 				$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+			}).xhr(function(xhr){
+				xhr.upload.addEventListener('abort', function(){console.log('aborted complete')}, false);
 			});
 		} else {
 			var fileReader = new FileReader();

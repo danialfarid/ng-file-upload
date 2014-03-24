@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.9
+ * @version 1.2.10
  */
 (function() {
 
@@ -45,13 +45,9 @@ if (window.XMLHttpRequest) {
 				xhr.__requestHeaders = [];
 				xhr.open = (function(orig) {
 					if (!xhr.upload) xhr.upload = {};
+					xhr.__listeners = [];
 					xhr.upload.addEventListener = function(t, fn, b) {
-						if (t === 'progress') {
-							xhr.__progress = fn;
-						}
-						if (t === 'load') {
-							xhr.__load = fn;
-						}
+						xhr.__listeners[t] = fn;
 					};
 					return function(m, url, b) {
 						orig.apply(xhr, [m, url, b]);
@@ -93,7 +89,12 @@ if (window.XMLHttpRequest) {
 						var config = {
 							url: xhr.__url,
 							complete: function(err, fileApiXHR) {
-								if (!err) xhr.__load({type: 'load', loaded: xhr.__total, total: xhr.__total, target: xhr, lengthComputable: true});
+								if (!err && xhr.__listeners['load']) 
+									xhr.__listeners['load']({type: 'load', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+								if (!err && xhr.__listeners['loadend']) 
+									xhr.__listeners['loadend']({type: 'loadend', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+								if (err === 'abort' && xhr.__listeners['abort']) 
+									xhr.__listeners['abort']({type: 'abort', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
 								if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
 								if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
 								Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
@@ -104,8 +105,9 @@ if (window.XMLHttpRequest) {
 							},
 							progress: function(e) {
 								e.target = xhr;
-								xhr.__progress(e);
+								xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
 								xhr.__total = e.total;
+								xhr.__loaded = e.loaded;
 							},
 							headers: xhr.__requestHeaders
 						}

@@ -12,3 +12,4 @@ Thumbs.db
 classes/
 ._*
 /node_modules
+*.jar
