@@ -7,7 +7,7 @@
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', function($http, $rootScope, $timeout) {
+angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
@@ -66,12 +66,13 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		})(promise, promise.then);
 		
 		return promise;
-	};
+	}
 	this.upload = function(config) {
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
+        var i;
 		if (config.data) {
 			for (var key in config.data) {
 				var val = config.data[key];
@@ -79,7 +80,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 					if (typeof config.transformRequest == 'function') {
 						val = config.transformRequest(val);
 					} else {
-						for (var i = 0; i < config.transformRequest.length; i++) {
+						for (i = 0; i < config.transformRequest.length; i++) {
 							var fn = config.transformRequest[i];
 							if (typeof fn == 'function') {
 								val = fn(val);
@@ -98,7 +99,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		
 		if (Object.prototype.toString.call(config.file) === '[object Array]') {
 			var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
-			for (var i = 0; i < config.file.length; i++) {						         
+			for (i = 0; i < config.file.length; i++) {
 				formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
 			}
 		} else {
@@ -114,7 +115,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 	}
 }]);
 
-angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
+angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($parse, $timeout) {
 	return function(scope, elem, attr) {
 		var fn = $parse(attr['ngFileSelect']);
 		elem.bind('change', function(evt) {
@@ -138,7 +139,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', fun
 	};
 } ]);
 
-angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
+angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$timeout', function($parse, $timeout) {
 	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var fn = $parse(attr['ngFileDropAvailable']);
@@ -149,7 +150,7 @@ angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$http', '$timeou
 	};
 } ]);
 
-angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
+angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($parse, $timeout) {
 	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var cancel = null;
