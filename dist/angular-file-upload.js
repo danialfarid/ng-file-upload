@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.10
+ * @version 1.2.11
  */
 (function() {
 	
@@ -79,17 +79,16 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
-		if (config.data) {
-			if (config.formDataAppender) {
-				for (var key in config.data) {
-					var val = config.data[key];
-					config.formDataAppender(formData, key, val);
-				}
-				config.transformRequest = angular.identity;
-			} else {
-				var origTransformRequest = config.transformRequest;
-				var origData = config.data;
-				config.transformRequest = function(formData, headerGetter) {
+		var origTransformRequest = config.transformRequest;
+		var origData = config.data;
+		config.transformRequest = function(formData, headerGetter) {
+			if (origData) {
+				if (config.formDataAppender) {
+					for (var key in origData) {
+						var val = origData[key];
+						config.formDataAppender(formData, key, val);
+					}
+				} else {
 					for (var key in origData) {
 						var val = origData[key];
 						if (typeof origTransformRequest == 'function') {
@@ -104,23 +103,23 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 						}
 						formData.append(key, val);
 					}
-					return formData;
-				};
-			}
-		}
-
-		if (config.file != null) {
-			var fileFormName = config.fileFormDataName || 'file';
-
-			if (Object.prototype.toString.call(config.file) === '[object Array]') {
-				var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
-				for (var i = 0; i < config.file.length; i++) {
-					formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
 				}
-			} else {
-				formData.append(fileFormName, config.file, config.file.name);
+
+				if (config.file != null) {
+					var fileFormName = config.fileFormDataName || 'file';
+
+					if (Object.prototype.toString.call(config.file) === '[object Array]') {
+						var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
+						for (var i = 0; i < config.file.length; i++) {
+							formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
+						}
+					} else {
+						formData.append(fileFormName, config.file, config.file.name);
+					}
+				}
 			}
-		}
+			return formData;
+		};
 
 		config.data = formData;
 
