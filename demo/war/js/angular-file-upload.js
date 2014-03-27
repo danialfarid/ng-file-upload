@@ -208,11 +208,16 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 				evt.preventDefault();
 				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				var files = [], items = evt.dataTransfer.items;
-				for (var i = 0; i < items.length; i++) {
-					if (items[i].webkitGetAsEntry) {
+				if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+					for (var i = 0; i < items.length; i++) {
 						traverseFileTree(files, items[i].webkitGetAsEntry());
-					} else {
-						files.push(items[i]);
+					}
+				} else {
+					var fileList = evt.dataTransfer.files;
+					if (fileList != null) {
+						for (var i = 0; i < fileList.length; i++) {
+							files.push(fileList.item(i));
+						}
 					}
 				}
 				(function callback(delay) {
