@@ -120,7 +120,7 @@ Download latest release from [here](https://github.com/danialfarid/angular-file-
 bower install ng-file-upload 
 ```
 
-Make sure you have the scripts in the EXACT same order: 
+Make sure you load the scripts EXACTLY in this order: 
 ```
 ...
 <script src="angular-file-upload-shim(.min).js"></script> 
