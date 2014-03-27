@@ -51,6 +51,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		<br/>
 		<div ng-show="selectedFiles != null">
 			<div class="sel-file" ng-repeat="f in selectedFiles">
+				{{($index + 1) + '.'}}
 				<img ng-show="dataUrls[$index]" ng-src="{{dataUrls[$index]}}">
 				<button class="button" ng-click="start($index)" ng-show="progress[$index] < 0">Start</button>
 				<span class="progress" ng-show="progress[$index] >= 0">						

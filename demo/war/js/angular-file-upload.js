@@ -167,7 +167,7 @@ angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$timeout', funct
 } ]);
 
 angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($parse, $timeout) {
-	return function(scope, elem, attr) {
+	return function(scope, elem, attr) {		
 		if ('draggable' in document.createElement('span')) {
 			var cancel = null;
 			var fn = $parse(attr['ngFileDrop']);
@@ -182,22 +182,51 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 					elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				});
 			}, false);
+			
+			var processing = 0;
+			function traverseFileTree(files, item) {
+				if (item.isDirectory) {
+					var dirReader = item.createReader();
+					processing++;
+					dirReader.readEntries(function(entries) {
+						for (var i = 0; i < entries.length; i++) {
+							traverseFileTree(files, entries[i]);
+						}
+						processing--;
+					});
+				} else {
+					processing++;
+		    	    item.file(function(file) {
+		    	    	processing--;
+		    	    	files.push(file);
+		    	    });
+	    	  }
+			}
+			
 			elem[0].addEventListener("drop", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
 				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
-				var files = [], fileList = evt.dataTransfer.files, i;
-				if (fileList != null) {
-					for (i = 0; i < fileList.length; i++) {
-						files.push(fileList.item(i));
+				var files = [], items = evt.dataTransfer.items;
+				for (var i = 0; i < items.length; i++) {
+					if (items[i].webkitGetAsEntry) {
+						traverseFileTree(files, items[i].webkitGetAsEntry());
+					} else {
+						files.push(items[i]);
 					}
 				}
-				$timeout(function() {
-					fn(scope, {
-						$files : files,
-						$event : evt
-					});
-				});
+				(function callback(delay) {
+					$timeout(function() {
+						if (!processing) {
+							fn(scope, {
+								$files : files,
+								$event : evt
+							});
+						} else {
+							callback(10);
+						}
+					}, delay || 0)
+				})();
 			}, false);
 		}
 	};
