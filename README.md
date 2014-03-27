@@ -120,6 +120,17 @@ Download latest release from [here](https://github.com/danialfarid/angular-file-
 bower install ng-file-upload 
 ```
 
+Make sure you have the scripts in the EXACT same order: 
+```
+...
+<script src="angular-file-upload-shim(.min).js"></script> 
+...
+<script src="angular(.min).js"></script>
+...
+<script src="angular-file-upload(.min).js"></script> 
+...
+```
+
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java).
 
 If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
