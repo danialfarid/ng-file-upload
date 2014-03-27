@@ -9,7 +9,8 @@ Lightweight Angular JS directive to upload files. Features:
 * Uses regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 * Supports upload progress
 * Supports cancel/abort upload while in progress
-* Supports File drag and drop
+* Supports File drag and drop (HTML5 only)
+* Supports Directory drag and drop (webkit only)
 * All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5. (It is needed for progress event though)
 * Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
@@ -117,6 +118,13 @@ Download latest release from [here](https://github.com/danialfarid/angular-file-
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
+```
+
+Make sure you to load the scripts in this order as described in the Usage: 
+```
+<script src="angular-file-upload-shim(.min).js"></script> 
+<script src="angular(.min).js"></script>
+<script src="angular-file-upload(.min).js"></script> 
 ```
 
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java).
