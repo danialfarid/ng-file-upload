@@ -32,16 +32,15 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 		for ( var i = 0; i < $files.length; i++) {
 			var $file = $files[i];
 			if (window.FileReader && $file.type.indexOf('image') > -1) {
-			  	var fileReader = new FileReader();
-		        fileReader.readAsDataURL($files[i]);
-		        function setPreview(fileReader, index) {
-		            fileReader.onload = function(e) {
-		                $timeout(function() {
-		                	$scope.dataUrls[index] = e.target.result;
-		                });
-		            }
-		        }
-		        setPreview(fileReader, i);
+				var fileReader = new FileReader();
+				fileReader.readAsDataURL($files[i]);
+				var loadFile = function(fileReader, index) {
+					fileReader.onload = function(e) {
+						$timeout(function() {
+							$scope.dataUrls[index] = e.target.result;
+						});
+					}
+				}(fileReader, i);
 			}
 			$scope.progress[i] = -1;
 			if ($scope.uploadRightAway) {
