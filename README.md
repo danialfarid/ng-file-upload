@@ -120,6 +120,8 @@ Download latest release from [here](https://github.com/danialfarid/angular-file-
 bower install ng-file-upload 
 ```
 
+If you are using bower automatic include you can include bower component `ng-file-upload-shim` before `angular.js` and then `ng-file-upload` after.
+
 Make sure to load the scripts in this order as described in the Usage: 
 ```
 <script src="angular-file-upload-shim(.min).js"></script> 
