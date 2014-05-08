@@ -21,6 +21,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		if (window.XMLHttpRequest.__isShim) {
 			config.headers['__setXHR_'] = function() {
 				return function(xhr) {
+					if (!xhr) return;
 					config.__XHR = xhr;
 					config.xhrFn && config.xhrFn(xhr);
 					xhr.upload.addEventListener('progress', function(e) {
