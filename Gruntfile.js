@@ -43,6 +43,13 @@ module.exports = function(grunt) {
 					dest : '../angular-file-upload-bower/',
 					flatten : true,
 					filter : 'isFile'
+				}, {
+					expand : true,
+					cwd : 'dist/',
+					src : '*',
+					dest : '../angular-file-upload-shim-bower/',
+					flatten : true,
+					filter : 'isFile'
 				} ]
 			}
 		},
