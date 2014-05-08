@@ -108,6 +108,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
+**Note**: Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
 
 ##Amazon S3 Upload
 [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
