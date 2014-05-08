@@ -14,128 +14,135 @@ var hasFlash = function() {
 	}
 	return false;
 }
-	
+
+var patchXHR = function(fnName, newFn) {
+	window.XMLHttpRequest.prototype[fnName] = newFn(window.XMLHttpRequest.prototype[fnName]);
+};
+
 if (window.XMLHttpRequest) {
 	if (window.FormData) {
 		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
-		window.XMLHttpRequest = (function(origXHR) {
-			return function() {
-				var xhr = new origXHR();
-				xhr.setRequestHeader = (function(orig) {
-					return function(header, value) {
-						if (header === '__setXHR_') {
-							var val = value(xhr);
-							// fix for angular < 1.2.0
-							if (val instanceof Function) {
-								val(xhr);
-							}
-						} else {
-							orig.apply(xhr, arguments);
-						}
+		patchXHR("setRequestHeader", function(orig) {
+			return function(header, value) {
+				if (header === '__setXHR_') {
+					var val = value(this);
+					// fix for angular < 1.2.0
+					if (val instanceof Function) {
+						val(this);
 					}
-				})(xhr.setRequestHeader);
-				return xhr;
-			}
-		})(window.XMLHttpRequest);
-	} else {
-		window.XMLHttpRequest = (function(origXHR) {
-			return function() {
-				var xhr = new origXHR();
-				var origSend = xhr.send;
-				xhr.__requestHeaders = [];
-				xhr.open = (function(orig) {
-					if (!xhr.upload) xhr.upload = {};
-					xhr.__listeners = [];
-					xhr.upload.addEventListener = function(t, fn, b) {
-						xhr.__listeners[t] = fn;
-					};
-					return function(m, url, b) {
-						orig.apply(xhr, [m, url, b]);
-						xhr.__url = url;
-					}
-				})(xhr.open);
-				xhr.getResponseHeader = (function(orig) {
-					return function(h) {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getResponseHeader(h) : orig.apply(xhr, [h]);
-					}
-				})(xhr.getResponseHeader);
-				xhr.getAllResponseHeaders = (function(orig) {
-					return function() {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.getAllResponseHeaders() : orig.apply(xhr);
-					}
-				})(xhr.getAllResponseHeaders);
-				xhr.abort = (function(orig) {
-					return function() {
-						return xhr.__fileApiXHR ? xhr.__fileApiXHR.abort() : (orig == null ? null : orig.apply(xhr));
-					}
-				})(xhr.abort);
-				xhr.setRequestHeader = (function(orig) {
-					return function(header, value) {
-						if (header === '__setXHR_') {
-							var val = value(xhr);
-							// fix for angular < 1.2.0
-							if (val instanceof Function) {
-								val(xhr);
-							}
-						} else {
-							orig.apply(xhr, arguments);
-						}
-					}
-				})(xhr.setRequestHeader);
-
-				xhr.send = function() {
-					if (arguments[0] && arguments[0].__isShim) {
-						var formData = arguments[0];
-						var config = {
-							url: xhr.__url,
-							complete: function(err, fileApiXHR) {
-								if (!err && xhr.__listeners['load']) 
-									xhr.__listeners['load']({type: 'load', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-								if (!err && xhr.__listeners['loadend']) 
-									xhr.__listeners['loadend']({type: 'loadend', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-								if (err === 'abort' && xhr.__listeners['abort']) 
-									xhr.__listeners['abort']({type: 'abort', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-								if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
-								if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
-								Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
-								if (fileApiXHR.response !== undefined) Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
-								Object.defineProperty(xhr, 'responseText', {get: function() {return fileApiXHR.responseText}});
-								xhr.__fileApiXHR = fileApiXHR;
-								xhr.onreadystatechange();
-							},
-							progress: function(e) {
-								e.target = xhr;
-								xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
-								xhr.__total = e.total;
-								xhr.__loaded = e.loaded;
-							},
-							headers: xhr.__requestHeaders
-						}
-						config.data = {};
-						config.files = {}
-						for (var i = 0; i < formData.data.length; i++) {
-							var item = formData.data[i];
-							if (item.val != null && item.val.name != null && item.val.size != null && item.val.type != null) {
-								config.files[item.key] = item.val;
-							} else {
-								config.data[item.key] = item.val;
-							}
-						}
-
-						setTimeout(function() {
-							if (!hasFlash()) {
-								throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
-							}
-							xhr.__fileApiXHR = FileAPI.upload(config);
-						}, 1);
-					} else {
-						origSend.apply(xhr, arguments);
-					}
+				} else {
+					orig.apply(this, arguments);
 				}
-				return xhr;
 			}
-		})(window.XMLHttpRequest);
-		window.XMLHttpRequest.__hasFlash = hasFlash();
+		});
+	} else {
+		function initializeUploadListener(xhr) {
+			if (!xhr.__listeners) {
+				if (!xhr.upload) xhr.upload = {};
+				xhr.__listeners = [];
+				var origAddEventListener = xhr.upload.addEventListener;
+				xhr.upload.addEventListener = function(t, fn, b) {
+					xhr.__listeners[t] = fn;
+					origAddEventListener && origAddEventListener.apply(this, arguments);
+				};
+			}
+		}
+		
+		patchXHR("open", function(orig) {
+			return function(m, url, b) {
+				initializeUploadListener(this);
+				this.__url = url;
+				orig.apply(this, [m, url, b]);
+			}
+		});
+
+		patchXHR("getResponseHeader", function(orig) {
+			return function(h) {
+				return this.__fileApiXHR ? this.__fileApiXHR.getResponseHeader(h) : orig.apply(this, [h]);
+			};
+		});
+
+		patchXHR("getAllResponseHeaders", function(orig) {
+			return function() {
+				return this.__fileApiXHR ? this.__fileApiXHR.abort() : (orig == null ? null : orig.apply(this));
+			}
+		});
+
+		patchXHR("abort", function(orig) {
+			return function() {
+				return this.__fileApiXHR ? this.__fileApiXHR.abort() : (orig == null ? null : orig.apply(this));
+			}
+		});
+
+		patchXHR("setRequestHeader", function(orig) {
+			return function(header, value) {
+				if (header === '__setXHR_') {
+					initializeUploadListener(this);
+					var val = value(this);
+					// fix for angular < 1.2.0
+					if (val instanceof Function) {
+						val(this);
+					}
+				} else {
+					this.__requestHeaders = this.__requestHeaders || {};
+					this.__requestHeaders[header] = value;
+					orig.apply(this, arguments);
+				}
+			}
+		});
+
+		patchXHR("send", function(orig) {
+			return function() {
+				var xhr = this;
+				if (arguments[0] && arguments[0].__isShim) {
+					var formData = arguments[0];
+					var config = {
+						url: xhr.__url,
+						complete: function(err, fileApiXHR) {
+							if (!err && xhr.__listeners['load']) 
+								xhr.__listeners['load']({type: 'load', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+							if (!err && xhr.__listeners['loadend']) 
+								xhr.__listeners['loadend']({type: 'loadend', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+							if (err === 'abort' && xhr.__listeners['abort']) 
+								xhr.__listeners['abort']({type: 'abort', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+							if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return fileApiXHR.status}});
+							if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
+							Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
+							if (fileApiXHR.response !== undefined) Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
+							Object.defineProperty(xhr, 'responseText', {get: function() {return fileApiXHR.responseText}});
+							xhr.__fileApiXHR = fileApiXHR;
+							xhr.onreadystatechange();
+						},
+						fileprogress: function(e) {
+							e.target = xhr;
+							xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
+							xhr.__total = e.total;
+							xhr.__loaded = e.loaded;
+						},
+						headers: xhr.__requestHeaders
+					}
+					config.data = {};
+					config.files = {}
+					for (var i = 0; i < formData.data.length; i++) {
+						var item = formData.data[i];
+						if (item.val != null && item.val.name != null && item.val.size != null && item.val.type != null) {
+							config.files[item.key] = item.val;
+						} else {
+							config.data[item.key] = item.val;
+						}
+					}
+
+					setTimeout(function() {
+						if (!hasFlash()) {
+							throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
+						}
+						xhr.__fileApiXHR = FileAPI.upload(config);
+					}, 1);
+				} else {
+					orig.apply(xhr, arguments);
+				}
+			}
+		});
 	}
 	window.XMLHttpRequest.__isShim = true;
 }

@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.3.1
+ * @version 1.4.0
  */
 (function() {
 	
@@ -21,7 +21,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		if (window.XMLHttpRequest.__isShim) {
 			config.headers['__setXHR_'] = function() {
 				return function(xhr) {
-					if ( ! xhr) return;
+					if (!xhr) return;
 					config.__XHR = xhr;
 					config.xhrFn && config.xhrFn(xhr);
 					xhr.upload.addEventListener('progress', function(e) {
@@ -34,12 +34,10 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 					//fix for firefox not firing upload progress end, also IE8-9
 					xhr.upload.addEventListener('load', function(e) {
 						if (e.lengthComputable) {
-							$timeout(function() {
-								if(config.progress) config.progress(e);
-							});
+							if(config.progress) config.progress(e);
 						}
 					}, false);
-				}	
+				};
 			};
 		}
 
@@ -68,6 +66,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 				result.abort = promise.abort;
 				result.progress = promise.progress;
 				result.xhr = promise.xhr;
+				result.then = promise.then;
 				return result;
 			};
 		})(promise, promise.then);
@@ -150,9 +149,19 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 				});
 			});
 		});
-		elem.bind('click', function(){
-			this.value = null;
-		});
+		// removed this since it was confusing if the user click on browse and then cancel #181
+//		elem.bind('click', function(){
+//			this.value = null;
+//		});
+		
+		// touch screens
+		if (('ontouchstart' in window) ||
+				(navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
+			elem.bind('touchend', function(e) {
+				e.preventDefault();
+				e.target.click();
+			});
+		}
 	};
 } ]);
 

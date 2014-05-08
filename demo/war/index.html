@@ -35,9 +35,9 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
 		</div><br/>
 		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
-		choose a single file: <input type="file" ng-file-select="onFileSelect($files)">
+		choose a single file: <input type="file" ng-file-select="onFileSelect($files)" ng-click="resetInputFile()">
 		<br/>
-		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
+		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple ng-click="resetInputFile()">
 		<br/>
 		<br/>
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
@@ -45,6 +45,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		<br/>
 		<input type="checkbox" ng-model="uploadRightAway">Upload right away
 		<br/>
+		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
 		<br/>
 		Progress:
 		<br/>
@@ -78,6 +79,6 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
-	<div style="position:absolute;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-03-27</div>
+	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-05-08</div>
 </body>
 </html>

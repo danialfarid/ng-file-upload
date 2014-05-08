@@ -1,3 +1,5 @@
+"use strict";
+
 angular.module('fileUpload', [ 'angularFileUpload' ]);
 
 var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http, $timeout, $upload) {
@@ -6,7 +8,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 	$scope.changeAngularVersion = function() {
 		window.location.hash = $scope.angularVersion;
 		window.location.reload(true);
-	}
+	};
 	$scope.hasUploader = function(index) {
 		return $scope.upload[index] != null;
 	};
@@ -47,10 +49,11 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 				$scope.start(i);
 			}
 		}
-	}
+	};
 	
 	$scope.start = function(index) {
 		$scope.progress[index] = 0;
+		$scope.errorMsg = null;
 		if ($scope.howToSend == 1) {
 			$scope.upload[index] = $upload.upload({
 				url : 'upload',
@@ -75,10 +78,13 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 				fileFormDataName: 'myFile'
 			}).then(function(response) {
 				$scope.uploadResult.push(response.data);
-			}, null, function(evt) {
-				$scope.progress[index] = parseInt(100.0 * evt.loaded / evt.total);
+			}, function(response) {
+				if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
+			}, function(evt) {
+				// Math.min is to fix IE which reports 200% sometimes
+				$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 			}).xhr(function(xhr){
-				xhr.upload.addEventListener('abort', function(){console.log('aborted complete')}, false);
+				xhr.upload.addEventListener('abort', function() {console.log('abort complete')}, false);
 			});
 		} else {
 			var fileReader = new FileReader();
@@ -87,15 +93,25 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 		        	url: 'upload',
 					headers: {'Content-Type': $scope.selectedFiles[index].type},
 					data: e.target.result
-				}).then(function(response) {
+		        }).then(function(response) {
 					$scope.uploadResult.push(response.data);
-				}, null, function(evt) {
+				}, function(response) {
+					if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
+				}, function(evt) {
 					// Math.min is to fix IE which reports 200% sometimes
 					$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
 				});
             }
 	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
-
 		}
-	}
+	};
+	
+	$scope.resetInputFile = function() {
+		var elems = document.getElementsByTagName('input');
+		for (var i = 0; i < elems.length; i++) {
+			if (elems[i].type == 'file') {
+				elems[i].value = null;
+			}
+		}
+	};
 } ];

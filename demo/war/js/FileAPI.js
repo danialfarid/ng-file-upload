@@ -1,5 +1,5 @@
-/*! fileapi 2.0.2 - BSD | git://github.com/mailru/FileAPI.git
- * FileAPI â€” a set of  javascript tools for working with files. Multiupload, drag'n'drop and chunked file upload. Images: crop, resize and auto orientation by EXIF.
+/*! fileapi 2.0.3 - BSD | git://github.com/mailru/FileAPI.git
+ * FileAPI a set of  javascript tools for working with files. Multiupload, drag'n'drop and chunked file upload. Images: crop, resize and auto orientation by EXIF.
  */
 
 /*
@@ -277,7 +277,7 @@
 		 * FileAPI (core object)
 		 */
 		api = {
-			version: '2.0.2',
+			version: '2.0.3',
 
 			cors: false,
 			html5: true,
@@ -1007,7 +1007,8 @@
 
 			upload: function (options){
 				options = _extend({
-					  prepare: api.F
+					  jsonp: 'callback'
+					, prepare: api.F
 					, beforeupload: api.F
 					, upload: api.F
 					, fileupload: api.F
@@ -1070,7 +1071,7 @@
 
 					if( _file && _file.name === api.expando ){
 						_file = null;
-						api.log('[warn] FileAPI.upload() â€” called without files');
+						api.log('[warn] FileAPI.upload() - called without files');
 					}
 
 					if( ( proxyXHR.statusText != 'abort' || proxyXHR.current ) && data ){
@@ -1098,6 +1099,9 @@
 
 								progress: _file ? function (evt){
 									if( !_fileLoaded ){
+										// For ignore the double calls.
+										_fileLoaded = (evt.loaded === evt.total);
+
 										// emit "fileprogress" event
 										options.fileprogress({
 											  type:   'progress'
@@ -1115,18 +1119,19 @@
 								} : noop,
 
 								complete: function (err){
-									// fixed throttle event
-									_fileLoaded = true;
-
 									_each(_xhrPropsExport, function (name){
 										proxyXHR[name] = xhr[name];
 									});
 
 									if( _file ){
+										data.total = (data.total || data.size);
 										data.loaded	= data.total;
 
 										// emulate 100% "progress"
 										this.progress(data);
+
+										// fixed throttle event
+										_fileLoaded = true;
 
 										// bytes loaded
 										_loaded += data.size; // data.size != data.total, it's desirable fix this
@@ -1797,6 +1802,8 @@
 		}
 
 		this.file   = file;
+		this.size   = file.size || 100;
+
 		this.matrix	= {
 			sx: 0,
 			sy: 0,
@@ -1832,13 +1839,13 @@
 			return	this.set({ sx: x, sy: y, sw: w, sh: h || w });
 		},
 
-		resize: function (w, h, type){
-			if( typeof h == 'string' ){
-				type = h;
+		resize: function (w, h, strategy){
+			if( /min|max/.test(h) ){
+				strategy = h;
 				h = w;
 			}
 
-			return	this.set({ dw: w, dh: h, resize: type });
+			return	this.set({ dw: w, dh: h || w, resize: strategy });
 		},
 
 		preview: function (w, h){
@@ -1990,10 +1997,10 @@
 				, dw = m.dw = m.dw || sw
 				, dh = m.dh = m.dh || sh
 				, sf = sw/sh, df = dw/dh
-				, type = m.resize
+				, strategy = m.resize
 			;
 
-			if( type == 'preview' ){
+			if( strategy == 'preview' ){
 				if( dw != sw || dh != sh ){
 					// Make preview
 					var w, h;
@@ -2014,12 +2021,12 @@
 					}
 				}
 			}
-			else if( type ){
+			else if( strategy ){
 				if( !(sw > dw || sh > dh) ){
 					dw = sw;
 					dh = sh;
 				}
-				else if( type == 'min' ){
+				else if( strategy == 'min' ){
 					dw = round(sf < df ? min(sw, dw) : dh*sf);
 					dh = round(sf < df ? dw/sf : min(sh, dh));
 				}
@@ -2043,7 +2050,12 @@
 					fn(err);
 				}
 				else {
-					this._apply(image, fn);
+					try {
+						this._apply(image, fn);
+					} catch (err){
+						api.log('[err] FileAPI.Image.fn._apply:', err);
+						fn(err);
+					}
 				}
 			});
 		},
@@ -2067,11 +2079,13 @@
 			else {
 				fn('not_support_transform');
 			}
+
+			return this;
 		},
 
 
 		toData: function (fn){
-			this.get(fn);
+			return this.get(fn);
 		}
 
 	};
@@ -2099,7 +2113,7 @@
 							params(img, ImgTrans);
 						}
 						else if( params.width ){
-							ImgTrans[params.preview ? 'preview' : 'resize'](params.width, params.height, params.type);
+							ImgTrans[params.preview ? 'preview' : 'resize'](params.width, params.height, params.strategy);
 						}
 						else {
 							if( params.maxWidth && (img.width > params.maxWidth || img.height > params.maxHeight) ){
@@ -2143,7 +2157,7 @@
 		}
 
 
-		// @todo: ÐžÐ»Ð¾-Ð»Ð¾, Ð½ÑƒÐ¶Ð½Ð¾ Ñ€ÐµÑ„Ð°ÐºÑ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ ÑÑ‚Ð¾ Ð¼ÐµÑÑ‚Ð¾
+		// @todo: 
 		if( file.width ){
 			_transform(false, file);
 		} else {
@@ -2711,31 +2725,27 @@
 			}
 
 			if( data.nodeName ){
+				var jsonp = options.jsonp;
+
+				// prepare callback in GET
+				url = url.replace(/([a-z]+)=(\?)/i, '$1='+uid);
+
 				// legacy
 				options.upload(options, _this);
 
 				xhr = document.createElement('div');
 				xhr.innerHTML = '<form target="'+ uid +'" action="'+ url +'" method="POST" enctype="multipart/form-data" style="position: absolute; top: -1000px; overflow: hidden; width: 1px; height: 1px;">'
 							+ '<iframe name="'+ uid +'" src="javascript:false;"></iframe>'
-							+ '<input value="'+ uid +'" name="callback" type="hidden"/>'
+							+ (jsonp && (options.url.indexOf('=?') == -1) ? '<input value="'+ uid +'" name="'+jsonp+'" type="hidden"/>' : '')
 							+ '</form>'
 				;
 
-				_this.xhr.abort = function (){
-					var transport = xhr.getElementsByTagName('iframe')[0];
-					if( transport ){
-						try {
-							if( transport.stop ){ transport.stop(); }
-							else if( transport.contentWindow.stop ){ transport.contentWindow.stop(); }
-							else { transport.contentWindow.document.execCommand('Stop'); }
-						}
-						catch (er) {}
-					}
-					xhr = null;
-				};
+				// get form-data & transport
+				var
+					  form = xhr.getElementsByTagName('form')[0]
+					, transport = xhr.getElementsByTagName('iframe')[0]
+				;
 
-				// append form-data
-				var form = xhr.getElementsByTagName('form')[0];
 				form.appendChild(data);
 
 				api.log(form.parentNode.innerHTML);
@@ -2746,12 +2756,52 @@
 				// keep a reference to node-transport
 				_this.xhr.node = xhr;
 
-				// jsonp-callack
-				window[uid] = function (status, statusText, response){
-					_this.readyState	= 4;
-					_this.responseText	= response;
-					_this.end(status, statusText);
-					xhr = null;
+				var
+					onPostMessage = function (evt){
+						if( url.indexOf(evt.origin) != -1 ){
+							try {
+								var result = api.parseJSON(evt.data);
+								if( result.id == uid ){
+									complete(result.status, result.statusText, result.response);
+								}
+							} catch( err ){
+								complete(0, err.message);
+							}
+						}
+					},
+
+					// jsonp-callack
+					complete = window[uid] = function (status, statusText, response){
+						_this.readyState	= 4;
+						_this.responseText	= response;
+						_this.end(status, statusText);
+
+						api.event.off(window, 'message', onPostMessage);
+						window[uid] = xhr = transport = transport.onload = null;
+					}
+				;
+
+				_this.xhr.abort = function (){
+					try {
+						if( transport.stop ){ transport.stop(); }
+						else if( transport.contentWindow.stop ){ transport.contentWindow.stop(); }
+						else { transport.contentWindow.document.execCommand('Stop'); }
+					}
+					catch (er) {}
+					complete(0, "abort");
+				};
+
+				api.event.on(window, 'message', onPostMessage);
+
+				transport.onload = function (){
+					try {
+						var
+							  win = transport.contentWindow
+							, doc = win.document
+							, result = win.result || api.parseJSON(doc.body.innerHTML)
+						;
+						complete(result.status, result.statusText, result.response);
+					} catch (e){}
 				};
 
 				// send
@@ -2760,6 +2810,9 @@
 				form = null;
 			}
 			else {
+				// Clean url
+				url = url.replace(/([a-z]+)=(\?)&?/i, '');
+
 				// html5
 				if (this.xhr && this.xhr.aborted) {
 					api.log("Error: already aborted");
@@ -2789,7 +2842,7 @@
 				if ( options._chunked ) {
 					// chunked upload
 					if( xhr.upload ){
-						xhr.upload.addEventListener('progress', function (/**Event*/evt){
+						xhr.upload.addEventListener('progress', api.throttle(function (/**Event*/evt){
 							if (!data.retry) {
 							    // show progress only for correct chunk uploads
 								options.progress({
@@ -2799,7 +2852,7 @@
 									, totalSize:	data.size
 								}, _this, options);
 							}
-						}, false);
+						}, 100), false);
 					}
 
 					xhr.onreadystatechange = function (){
@@ -2834,6 +2887,9 @@
 										data.end = lkb;
 									} else {
 										data.end = data.start - 1;
+										if (416 == xhr.status) {
+											data.end = data.end - options.chunkSize;
+										}
 									}
 
 									setTimeout(function () {
@@ -2865,24 +2921,34 @@
 									}, 0);
 								}
 							}
+
 							xhr = null;
 						}
 					};
 
 					data.start = data.end + 1;
-					data.end = Math.max(Math.min(data.start + options.chunkSize, data.size ) - 1, data.start);
+					data.end = Math.max(Math.min(data.start + options.chunkSize, data.size) - 1, data.start);
                     
-					var slice;
-					(slice = 'slice') in data.file || (slice = 'mozSlice') in data.file || (slice = 'webkitSlice') in data.file;
+					// Retrieve a slice of file
+					var
+						  file = data.file
+						, slice = (file.slice || file.mozSlice || file.webkitSlice)(data.start, data.end + 1)
+					;
 
-					xhr.setRequestHeader("Content-Range", "bytes " + data.start + "-" + data.end + "/" + data.size);
-					xhr.setRequestHeader("Content-Disposition", 'attachment; filename=' + encodeURIComponent(data.name));
-					xhr.setRequestHeader("Content-Type", data.type || "application/octet-stream");
-                    
-					slice = data.file[slice](data.start, data.end + 1);
-                 
+					if( data.size && !slice.size ){
+						setTimeout(function (){
+							_this.end(-1);
+						});
+					} else {
+						xhr.setRequestHeader("Content-Range", "bytes " + data.start + "-" + data.end + "/" + data.size);
+						xhr.setRequestHeader("Content-Disposition", 'attachment; filename=' + encodeURIComponent(data.name));
+						xhr.setRequestHeader("Content-Type", data.type || "application/octet-stream");
+
+						xhr.send(slice);
+					}
+
 					xhr.send(slice);
-					slice = null;
+					file = slice = null;
 				} else {
 					// single piece upload
 					if( xhr.upload ){
@@ -3353,9 +3419,9 @@
 
 						if( api.multiFlash ){
 							// check state:
-							//   i â€” published
-							//   i â€” initialization
-							//   r â€” ready
+							//   i - published
+							//   i - initialization
+							//   r - ready
 							if( state == 'i' || state == 'r' ){
 								// publish fail
 								return	false;
@@ -3541,7 +3607,7 @@
 
 
 							if( !files ){
-								// Ð¤Ð°Ð¹Ð»Ð¾Ð² Ð½ÐµÑ‚Ñƒ, Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÐ¼ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ð¹ Ð¼ÐµÑ‚Ð¾Ð´
+								// 
 								return	this.parent.apply(this, arguments);
 							}
 
@@ -3589,7 +3655,7 @@
 					api.Image && _inherit(api.Image.prototype, {
 						get: function (fn, scaleMode){
 							this.set({ scaleMode: scaleMode || 'noScale' }); // noScale, exactFit
-							this.parent(fn);
+							return this.parent(fn);
 						},
 
 						_load: function (file, fn){
