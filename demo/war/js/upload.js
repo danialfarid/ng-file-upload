@@ -105,13 +105,4 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
 		}
 	};
-	
-	$scope.resetInputFile = function() {
-		var elems = document.getElementsByTagName('input');
-		for (var i = 0; i < elems.length; i++) {
-			if (elems[i].type == 'file') {
-				elems[i].value = null;
-			}
-		}
-	};
 } ];
