@@ -35,9 +35,9 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
 		</div><br/>
 		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
-		choose a single file: <input type="file" ng-file-select="onFileSelect($files)" ng-click="resetInputFile()">
+		choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
 		<br/>
-		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple ng-click="resetInputFile()">
+		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
 		<br/>
 		<br/>
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
