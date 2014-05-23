@@ -127,7 +127,7 @@ Make sure to load the scripts in your html file exactly in this order as describ
 <script src="angular-file-upload(.min).js"></script> 
 ```
 
-For yeoman with bower automatic include:
+Or for yeoman with bower automatic include:
 ```
 bower install ng-file-upload -save
 bower install ng-file-upload-shim -save
