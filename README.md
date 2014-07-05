@@ -85,6 +85,8 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
+If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
+
 ## Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
@@ -108,6 +110,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
+**Note**: Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
 
 ##Amazon S3 Upload
 [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
@@ -126,7 +129,7 @@ Make sure to load the scripts in your html file exactly in this order as describ
 <script src="angular-file-upload(.min).js"></script> 
 ```
 
-For yeoman with bower automatic include:
+Or for yeoman with bower automatic include:
 ```
 bower install ng-file-upload -save
 bower install ng-file-upload-shim -save
