@@ -72,19 +72,21 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
                       }
 				}, */
 				/* transformRequest: [function(val, h) {
-					console.log(val, h('my-header')); return val + 'aaaaa';
+					console.log(val, h('my-header')); return val + '-modified';
 				}], */
 				file: $scope.selectedFiles[index],
 				fileFormDataName: 'myFile'
-			}).then(function(response) {
+			});
+			$scope.upload[index].then(function(response) {
 				$scope.uploadResult.push(response.data);
 			}, function(response) {
 				if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
 			}, function(evt) {
 				// Math.min is to fix IE which reports 200% sometimes
 				$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-			}).xhr(function(xhr){
-				xhr.upload.addEventListener('abort', function() {console.log('abort complete')}, false);
+			});
+			$scope.upload[index].xhr(function(xhr){
+//				xhr.upload.addEventListener('abort', function() {console.log('abort complete')}, false);
 			});
 		} else {
 			var fileReader = new FileReader();

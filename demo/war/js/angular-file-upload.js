@@ -7,7 +7,7 @@
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $timeout) {
+angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
@@ -17,6 +17,8 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 			}
 			return $http.defaults.transformRequest[0](data, headersGetter);
 		};
+		var deferred = $q.defer();
+		var promise = deferred.promise;
 
 		if (window.XMLHttpRequest.__isShim) {
 			config.headers['__setXHR_'] = function() {
@@ -25,26 +27,40 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 					config.__XHR = xhr;
 					config.xhrFn && config.xhrFn(xhr);
 					xhr.upload.addEventListener('progress', function(e) {
-						if (config.progress) {
-							$timeout(function() {
-								if(config.progress) config.progress(e);
-							});
-						}
+						$timeout(function() {
+							deferred.notify(e);
+						});
 					}, false);
 					//fix for firefox not firing upload progress end, also IE8-9
 					xhr.upload.addEventListener('load', function(e) {
 						if (e.lengthComputable) {
-							if(config.progress) config.progress(e);
+							deferred.notify(e);
 						}
 					}, false);
 				};
 			};
 		}
 
-		var promise = $http(config);
+		$http(config).then(function(r){deferred.resolve(r)}, function(e){deferred.reject(e)}, function(n){deferred.notify(n)});
+
+		promise.success = function(fn) {
+			promise.then(function(response) {
+				fn(response.data, response.status, response.headers, config);
+			});
+			return promise;
+		};
+
+		promise.error = function(fn) {
+			promise.then(null, function(response) {
+				fn(response.data, response.status, response.headers, config);
+			});
+			return promise;
+		};
 
 		promise.progress = function(fn) {
-			config.progress = fn;
+			promise.then(null, null, function(update) {
+				fn(update);
+			});
 			return promise;
 		};
 		promise.abort = function() {
@@ -56,20 +72,14 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 			return promise;
 		};
 		promise.xhr = function(fn) {
-			config.xhrFn = fn;
+			config.xhrFn = (function(origXhrFn) {
+				return function() {
+					origXhrFn && origXhrFn.apply(promise, arguments); 
+					fn.apply(promise, arguments);
+				}
+			})(config.xhrFn);
 			return promise;
 		};
-		promise.then = (function(promise, origThen) {
-			return function(s, e, p) {
-				config.progress = p || config.progress;
-				var result = origThen.apply(promise, [s, e, p]);
-				result.abort = promise.abort;
-				result.progress = promise.progress;
-				result.xhr = promise.xhr;
-				result.then = promise.then;
-				return result;
-			};
-		})(promise, promise.then);
 		
 		return promise;
 	}
@@ -112,7 +122,8 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 				if (Object.prototype.toString.call(config.file) === '[object Array]') {
 					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
 					for (var i = 0; i < config.file.length; i++) {
-						formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
+						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i], 
+								(config.fileNames && config.fileNames[i]) || config.file[i].name);
 					}
 				} else {
 					formData.append(fileFormName, config.file, config.file.name);
