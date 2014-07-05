@@ -123,10 +123,10 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
 					for (var i = 0; i < config.file.length; i++) {
 						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i], 
-								(config.fileNames && config.fileNames[i]) || config.file[i].name);
+								(config.fileName && config.fileName[i]) || config.file[i].name);
 					}
 				} else {
-					formData.append(fileFormName, config.file, config.file.name);
+					formData.append(fileFormName, config.file, config.fileName || config.file.name);
 				}
 			}
 			return formData;
