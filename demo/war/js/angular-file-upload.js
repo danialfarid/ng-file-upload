@@ -198,6 +198,10 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 				evt.preventDefault();
 				elem.addClass(attr['ngFileDragOverClass'] || "dragover");
 			}, false);
+			elem[0].addEventListener("dragenter", function(evt) {
+				evt.stopPropagation();
+				evt.preventDefault();
+			}, false);
 			elem[0].addEventListener("dragleave", function(evt) {
 				cancel = $timeout(function() {
 					elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
