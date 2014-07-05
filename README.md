@@ -85,7 +85,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
-If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#88](https://github.com/danialfarid/angular-file-upload/issues/207)
+If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
 ## Old browsers
 
