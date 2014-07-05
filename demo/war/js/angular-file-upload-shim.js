@@ -20,7 +20,7 @@ var patchXHR = function(fnName, newFn) {
 };
 
 if (window.XMLHttpRequest) {
-	if (window.FormData) {
+	if (window.FormData && (!window.FileAPI || !FileAPI.forceLoad)) {
 		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
 		patchXHR("setRequestHeader", function(orig) {
 			return function(header, value) {
@@ -147,7 +147,7 @@ if (window.XMLHttpRequest) {
 	window.XMLHttpRequest.__isShim = true;
 }
 
-if (!window.FormData) {
+if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 	var wrapFileApi = function(elem) {
 		if (!hasFlash()) {
 			throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
@@ -166,6 +166,12 @@ if (!window.FormData) {
 	var changeFnWrapper = function(fn) {
 		return function(evt) {
 			var files = FileAPI.getFiles(evt);
+			//just a double check for #233
+			for (var i = 0; i < files.length; i++) {
+				if (files[i].size === undefined) files[i].size = 0;
+				if (files[i].name === undefined) files[i].name = 'file';
+				if (files[i].type === undefined) files[i].type = 'undefined';
+			}
 			if (!evt.target) {
 				evt.target = {};
 			}

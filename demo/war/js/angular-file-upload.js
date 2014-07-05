@@ -187,7 +187,7 @@ angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$timeout', funct
 	};
 } ]);
 
-angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($parse, $timeout) {
+angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', function($parse, $timeout, $location) {
 	return function(scope, elem, attr) {		
 		if ('draggable' in document.createElement('span')) {
 			var cancel = null;
@@ -210,22 +210,24 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 			
 			var processing = 0;
 			function traverseFileTree(files, item) {
-				if (item.isDirectory) {
-					var dirReader = item.createReader();
-					processing++;
-					dirReader.readEntries(function(entries) {
-						for (var i = 0; i < entries.length; i++) {
-							traverseFileTree(files, entries[i]);
-						}
-						processing--;
-					});
-				} else {
-					processing++;
-		    	    item.file(function(file) {
-		    	    	processing--;
-		    	    	files.push(file);
-		    	    });
-	    	  }
+				if (item != null) {
+					if (item.isDirectory) {
+						var dirReader = item.createReader();
+						processing++;
+						dirReader.readEntries(function(entries) {
+							for (var i = 0; i < entries.length; i++) {
+								traverseFileTree(files, entries[i]);
+							}
+							processing--;
+						});
+					} else {
+						processing++;
+			    	    item.file(function(file) {
+			    	    	processing--;
+			    	    	files.push(file);
+			    	    });
+					}
+				}
 			}
 			
 			elem[0].addEventListener("drop", function(evt) {
@@ -233,7 +235,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 				evt.preventDefault();
 				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				var files = [], items = evt.dataTransfer.items;
-				if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+				if (items && items.length > 0 && items[0].webkitGetAsEntry && $location.protocol() != 'file') {
 					for (var i = 0; i < items.length; i++) {
 						traverseFileTree(files, items[i].webkitGetAsEntry());
 					}
