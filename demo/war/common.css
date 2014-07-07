@@ -57,6 +57,10 @@ input[multiple] {
 	border: 5px dashed blue;
 }
 
+.drop-box.dragover-err {
+	border: 5px dashed red;
+}
+
 /* for IE*/
 .js-fileapi-wrapper {
 	display: inline-block;

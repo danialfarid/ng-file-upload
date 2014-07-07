@@ -40,7 +40,8 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
 		<br/>
 		<br/>
-		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
+		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drop-available="dropSupported=true"
+			ng-file-drag-over-class="dragOverClass($event)">or drop files <div>here</div></div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
 		<input type="checkbox" ng-model="uploadRightAway">Upload right away
@@ -79,6 +80,6 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
-	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-05-08</div>
+	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-07-07</div>
 </body>
 </html>

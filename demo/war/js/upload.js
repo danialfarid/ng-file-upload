@@ -1,8 +1,9 @@
 "use strict";
 
+
 angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http, $timeout, $upload) {
+var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
 	$scope.fileReaderSupported = window.FileReader != null;
 	$scope.uploadRightAway = true;
 	$scope.changeAngularVersion = function() {
@@ -106,5 +107,21 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
             }
 	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
 		}
+	};
+	
+	$scope.dragOverClass = function($event) {
+		var items = $event.dataTransfer.items;
+		var hasFile = false;
+		if (items != null) {
+			for (var i = 0 ; i < items.length; i++) {
+				if (items[i].kind == 'file') {
+					hasFile = true;
+					break;
+				}
+			}
+		} else {
+			hasFile = true;
+		}
+		return hasFile ? "dragover" : "dragover-err";
 	};
 } ];
