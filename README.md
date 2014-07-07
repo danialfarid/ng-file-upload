@@ -31,7 +31,7 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
-  <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-default-dragover"
+  <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
         ng-show="dropSupported">drop files here</div>
   <div ng-file-drop-available="dropSupported=true" 
         ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
@@ -88,6 +88,8 @@ You can also use `$upload.http()` to send the file binary or any data to the ser
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
 If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
+
+For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
 
 ## Old browsers
 
