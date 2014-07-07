@@ -150,7 +150,9 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 
 If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
 
-Let [me](https://github.com/danialfarid) know if you have any questions. Bug report, feature request: [issue](https://github.com/danialfarid/angular-file-upload/issues).
+Let [me](https://github.com/danialfarid) know if you have any questions. Bug report, feature request: [issue](https://github.com/danialfarid/angular-file-upload/issues).  
+  If you like the plugin buy me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> to encourage me to add more features and fixes.
+
 
 
 
