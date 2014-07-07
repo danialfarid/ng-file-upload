@@ -79,7 +79,9 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 				fileFormDataName: 'myFile'
 			});
 			$scope.upload[index].then(function(response) {
-				$scope.uploadResult.push(response.data);
+				$timeout(function() {
+					$scope.uploadResult.push(response.data);
+				});
 			}, function(response) {
 				if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
 			}, function(evt) {
