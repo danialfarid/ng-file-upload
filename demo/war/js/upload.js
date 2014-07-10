@@ -17,7 +17,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.upload[index].abort(); 
 		$scope.upload[index] = null;
 	};
-	$scope.angularVersion = window.location.hash.length > 1 ? window.location.hash.substring(1) : '1.2.0';
+	$scope.angularVersion = window.location.hash.length > 1 ? window.location.hash.substring(1) : '1.2.11';
 	$scope.onFileSelect = function($files) {
 		$scope.selectedFiles = [];
 		$scope.progress = [];
