@@ -82,7 +82,9 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 
 **Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need to support upload progress or cancel.
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string which would have the index appended to it (i.e. `file0`, `file1`, etc.). If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. If you use a single string, you may want to append square brackets to the end (i.e. `file[]`), depending on how your server parses arguments.
+
+If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
 
 You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
