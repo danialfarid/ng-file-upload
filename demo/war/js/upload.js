@@ -3,8 +3,12 @@
 
 angular.module('fileUpload', [ 'angularFileUpload' ]);
 
+var uploadUrl = 'http://angular-file-upload-cors-srv.appspot.com/upload';
+window.uploadUrl = window.uploadUrl || 'upload';
+	
 var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
-	$scope.fileReaderSupported = window.FileReader != null;
+	$scope.usingFlash = FileAPI && FileAPI.upload != null;
+	$scope.fileReaderSupported = window.FileReader != null && (window.FileAPI == null || FileAPI.html5 != false);
 	$scope.uploadRightAway = true;
 	$scope.changeAngularVersion = function() {
 		window.location.hash = $scope.angularVersion;
@@ -17,7 +21,8 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.upload[index].abort(); 
 		$scope.upload[index] = null;
 	};
-	$scope.angularVersion = window.location.hash.length > 1 ? window.location.hash.substring(1) : '1.2.11';
+	$scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ? 
+			window.location.hash.substring(2): window.location.hash.substring(1)) : '1.2.20';
 	$scope.onFileSelect = function($files) {
 		$scope.selectedFiles = [];
 		$scope.progress = [];
@@ -34,7 +39,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.dataUrls = [];
 		for ( var i = 0; i < $files.length; i++) {
 			var $file = $files[i];
-			if (window.FileReader && $file.type.indexOf('image') > -1) {
+			if ($scope.fileReaderSupported && $file.type.indexOf('image') > -1) {
 				var fileReader = new FileReader();
 				fileReader.readAsDataURL($files[i]);
 				var loadFile = function(fileReader, index) {
@@ -57,7 +62,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.errorMsg = null;
 		if ($scope.howToSend == 1) {
 			$scope.upload[index] = $upload.upload({
-				url : 'upload',
+				url: uploadUrl,
 				method: $scope.httpMethod,
 				headers: {'my-header': 'my-header-value'},
 				data : {
@@ -95,7 +100,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 			var fileReader = new FileReader();
             fileReader.onload = function(e) {
 		        $scope.upload[index] = $upload.http({
-		        	url: 'upload',
+		        	url: uploadUrl,
 					headers: {'Content-Type': $scope.selectedFiles[index].type},
 					data: e.target.result
 		        }).then(function(response) {

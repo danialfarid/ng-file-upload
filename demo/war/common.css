@@ -2,14 +2,26 @@ body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
-input[type="file"] {	
+.upload-buttons input[type="file"] {	
 	width: 6.3em \0/IE9;
 	height: 1.5em;
 	margin: 5px;
 }
 
-input[multiple] {
+.upload-buttons input[multiple] {
 	width: 6.2em \0/IE9;
+}
+
+.upload-button {
+	width: 160px;
+	Height: 30px;
+	display: inline-block;
+	line-height: 30px;
+	padding: 0 10px;
+	background: #CCC;
+	appearance: button;
+	-moz-appearance: button; /* Firefox */
+	-webkit-appearance: button; /* Safari and Chrome */
 }
 
 .sel-file {

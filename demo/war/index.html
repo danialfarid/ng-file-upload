@@ -4,15 +4,28 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
+<script type="text/javascript">
+FileAPI = {
+	debug: true,
+	//forceLoad: true, html5: false //to debug flash in HTML5 browsers
+	//only one of jsPath or jsUrl.
+    //jsPath: '/js/FileAPI.min.js/folder/', 
+    //jsUrl: 'yourcdn.com/js/FileAPI.min.js',
+
+    //only one of staticPath or flashUrl.
+    //staticPath: '/flash/FileAPI.flash.swf/folder/'
+    //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+};
+</script>
 <script src="js/angular-file-upload-shim.js"></script>
 <script type="text/javascript">
 // load angularjs specific version
 var angularVersion = window.location.hash.substring(1);
-document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + (angularVersion || '1.2.11') + '/angular.js"><\/script>');
+if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1); 
+document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + (angularVersion || '1.2.20') + '/angular.js"><\/script>');
 </script>
 <script src="js/angular-file-upload.js"></script>
 <script src="js/upload.js"></script>
-<!-- <script src="http://cdn.jsdelivr.net/angular.file-upload/1.0.0/angular-file-upload.min.js"></script> -->
 </head>
 
 <body ng-app="fileUpload" ng-controller="MyCtrl">
@@ -25,19 +38,23 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
 	<div class="upload-div">
-		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT'/>put<br/>
+		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT' ng-disabled="usingFlash"/>put<br/>
 		<br/>
 		How to upload:<br/>
 		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multupart/form-data upload using $upload.upload() service cross browser</label>
 		<br/>
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!dropSupported">File binary content with the file type as Content-Type header using $upload.http() service</label>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!fileReaderSupported || usingFlash">File binary content with the file type as Content-Type header using $upload.http() service</label>
 		<div class="sub">The second option could be used to upload files to <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
 			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
 		</div><br/>
 		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
-		choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
-		<br/>
-		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
+		<div class="upload-buttons">
+			choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
+			<br/>
+			or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
+			<br/>
+		</div>
+		You can have any element as an upload button: <div ng-file-select="onFileSelect($files)" data-multiple="true" title="aaaa" onclick="this.value = null" class="upload-button">Click here to select file</div>
 		<br/>
 		<br/>
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drop-available="dropSupported=true"
@@ -80,6 +97,6 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
-	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-07-07</div>
+	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-07-20</div>
 </body>
 </html>

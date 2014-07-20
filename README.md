@@ -11,6 +11,7 @@ Lightweight Angular JS directive to upload files. Features:
 * Supports cancel/abort upload while in progress
 * Supports File drag and drop (HTML5 only)
 * Supports Directory drag and drop (webkit only)
+* Supports CORS
 * All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5. (It is needed for progress event though)
 * Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
@@ -82,16 +83,15 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 
 **Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need to support upload progress or cancel.
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. If you use a single string, you may want to append square brackets to the end (i.e. `file[]`), depending on how your server parses arguments.
-
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
 If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
 
-You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+**$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
-If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
+**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
-For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
+**ng-file-drag-over-class**: For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
 
 ## Old browsers
 
@@ -112,14 +112,22 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
         //only one of staticPath or flashUrl.
         staticPath: '/flash/FileAPI.flash.swf/folder/'
         flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+
+        //to debug flash in HTML5 browsers
+        //forceLoad: true, html5: false
     }
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
-**Note**: Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
+**Known issues**: 
+*Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
+*Custom headers will not work due to Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 
 ##Amazon S3 Upload
 [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
+
+##Node.js
+Sample wiki page provided by [chovy](https://github.com/chovy)
 
 ## Install
 
