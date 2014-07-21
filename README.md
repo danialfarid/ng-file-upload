@@ -5,7 +5,7 @@ angular-file-upload
 **Here is the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
 
 Lightweight Angular JS directive to upload files. Features:
-* File upload for HTML5 and non-HTML5 browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
+* File upload for `HTML5` and `non-HTML5` browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
 * Uses regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 * Supports upload progress
 * Supports cancel/abort upload while in progress
