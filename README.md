@@ -111,11 +111,10 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
         jsUrl: 'yourcdn.com/js/FileAPI.min.js',
         
         //only one of staticPath or flashUrl.
-        staticPath: '/flash/FileAPI.flash.swf/folder/'
-        flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
+        staticPath: '/flash/FileAPI.flash.swf/folder/',
+        flashUrl: 'yourcdn.com/js/FileAPI.flash.swf',
 
-        //to debug flash in HTML5 browsers
-        //forceLoad: true, html5: false
+        //forceLoad: true, html5: false //to debug flash in HTML5 browsers
     }
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
