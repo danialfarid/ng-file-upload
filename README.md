@@ -32,6 +32,7 @@ HTML:
   <input type="text" ng-model="myModelObj">
   <input type="file" ng-file-select="onFileSelect($files)" >
   <input type="file" ng-file-select="onFileSelect($files)" multiple>
+  <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
   <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
         ng-show="dropSupported">drop files here</div>
   <div ng-file-drop-available="dropSupported=true" 
@@ -81,7 +82,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 }];
 ```
 
-**Note**: `angular.file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need to support upload progress or cancel.
+**Order of scripts**: `angular-file-upload-shim.js` must be loaded before `angular.js` and is only needed if you are supporting non-HTML5 FormData browsers or you need to support upload progress or cancel.
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
 If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
@@ -91,7 +92,7 @@ This equivalent to angular $http() but allow you to listen to progress event for
 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
-**ng-file-drag-over-class**: For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
+**drag and drop styling**: For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
 
 ## Old browsers
 
