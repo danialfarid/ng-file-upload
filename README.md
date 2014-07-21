@@ -12,10 +12,10 @@ Lightweight Angular JS directive to upload files. Features:
 * Supports File drag and drop (HTML5 only)
 * Supports Directory drag and drop (webkit only)
 * Supports CORS
-* All non-HTML5 code is in a separate shim file and could be easily removed if you only supports HTML5. (It is needed for progress event though)
-* Flash FileAPI will be loaded on demand for non-HTML5 FormData browsers so no extra load for HTML5 browsers.
+* All `non-HTML5` code is in a separate shim file and could be easily removed if you only supports `HTML5`. (It is needed for `progress` event though)
+* Flash `FileAPI` will be loaded on demand for `non-HTML5` FormData browsers so no extra load for `HTML5` browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
-* `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the Content-Type of the file to CouchDB, imgur, etc... for HTML5 FileReader browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the `Content-Type` of the file to CouchDB, imgur, etc... for `HTML5` `FileReader` browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 
 ## Usage
 
