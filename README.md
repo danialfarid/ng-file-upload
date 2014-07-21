@@ -120,8 +120,9 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
 **Known issues**: 
-*Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
-*Custom headers will not work due to Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
+* Because of the Flash limitation/bug there need to be a response body coming back from the server in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
+* Custom headers will not work due to Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
+* Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
 ##Amazon S3 Upload
 [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
