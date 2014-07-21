@@ -251,7 +251,8 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 
 			function extractFiles(evt, callback) {
 				var files = [], items = evt.dataTransfer.items;
-				if (items && items.length > 0 && items[0].webkitGetAsEntry && $location.protocol() != 'file') {
+				if (items && items.length > 0 && items[0].webkitGetAsEntry && $location.protocol() != 'file' && 
+						items[0].webkitGetAsEntry().isDirectory) {
 					for (var i = 0; i < items.length; i++) {
 						var entry = items[i].webkitGetAsEntry();
 						if (entry != null) {

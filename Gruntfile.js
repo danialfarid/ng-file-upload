@@ -64,14 +64,31 @@ module.exports = function(grunt) {
 					'dist/<%= pkg.name %>-html5-shim.min.js' : 'dist/<%= pkg.name %>-html5-shim.js'
 				} ]
 			}
-		}
+		},
+		replace : {
+			version : {
+				src: ['nuget/Package.nuspec', '../angular-file-upload-bower/bower.json',
+					'../angular-file-upload-shim-bower/bower.json', 'aaaa.txt'
+					], 
+    			overwrite: true,
+    			replacements: [{
+      				from: /"version" *: *".*"/g,
+      				to: '"version": "<%= pkg.version %>"'
+    			}, {
+      				from: /<version>.*<\/version>/g,
+      				to: '<version><%= pkg.version %></version>'
+    			}]
+			}	
+		}	
 	});
 
 	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-text-replace');
+
 
 	// Default task(s).
-	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower' ]);
+	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower', 'replace:version' ]);
 
 };
