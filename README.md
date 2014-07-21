@@ -52,16 +52,15 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       var file = $files[i];
       $scope.upload = $upload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet url
-        // method: 'POST' or 'PUT',
-        // headers: {'header-key': 'header-value'},
-        // withCredentials: true,
+        //method: 'POST' or 'PUT',
+        //headers: {'header-key': 'header-value'},
+        //withCredentials: true,
         data: {myObj: $scope.myModelObj},
-        file: file, // or list of files: $files for html5 only
-        // fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file
-	/* customize file formData name ('Content-Desposition'), server side file variable name. 
-		Default is 'file' */
-        //fileFormDataName: myFile, //or a list of names for multiple files (html5).
-        /* customize how data is added to formData. See #40#issuecomment-28612000 for sample code */
+        file: file, // or list of files ($files) for html5 only
+        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
+	// customize file formData name ('Content-Desposition'), server side file variable name. 
+        //fileFormDataName: myFile, //or a list of names for multiple files (html5). Default is 'file' 
+        // customize how data is added to formData. See #40#issuecomment-28612000 for sample code
         //formDataAppender: function(formData, key, val){}
       }).progress(function(evt) {
         console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
@@ -71,7 +70,8 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
       });
       //.error(...)
       //.then(success, error, progress); 
-      //.xhr(function(xhr){xhr.upload.addEventListener(...)})// access and attach any event listener to XMLHttpRequest.
+      // access or attach event listeners to the underlying XMLHttpRequest.
+      //.xhr(function(xhr){xhr.upload.addEventListener(...)})
     }
     /* alternative way of uploading, send the file binary with the file's content-type.
        Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
@@ -124,11 +124,9 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 * Custom headers will not work due to Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
-##Amazon S3 Upload
-[nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
-
-##Node.js
-Sample wiki page provided by [chovy](https://github.com/chovy)
+##Server side samples
+* **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
+* **Node.js**: Sample wiki page provided by [chovy](https://github.com/chovy)
 
 ## Install
 
