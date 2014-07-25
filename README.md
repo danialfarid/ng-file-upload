@@ -30,8 +30,8 @@ HTML:
 
 <div ng-controller="MyCtrl">
   <input type="text" ng-model="myModelObj">
-  <input type="file" ng-file-select="onFileSelect($files)" >
-  <input type="file" ng-file-select="onFileSelect($files)" multiple>
+  <input type="file" ng-file-select="onFileSelect($files)">
+  <input type="file" ng-file-select="onFileSelect($files)" multiple accept="image/*">
   <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
   <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
         ng-show="dropSupported">drop files here</div>
