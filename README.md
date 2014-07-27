@@ -92,7 +92,8 @@ This equivalent to angular $http() but allow you to listen to progress event for
 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
-**drag and drop styling**: For file drag and drop, ng-file-drag-over-class can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone. 
+**drag and drop styling**: For file drag and drop, `ng-file-drag-over-class` can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone.
+You can also specify `ng-file-drag-over-delay` to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 ## Old browsers
 
