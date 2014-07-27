@@ -19,11 +19,11 @@ public class CORSFilter implements Filter {
 		HttpServletResponse httpResp = (HttpServletResponse) resp;
 		HttpServletRequest httpReq = (HttpServletRequest) req;
 
-		httpResp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTION");
+		httpResp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
 		httpResp.setHeader("Access-Control-Allow-Origin", "*");
 		if (httpReq.getMethod().equalsIgnoreCase("OPTIONS")) {
 			httpResp.setHeader("Access-Control-Allow-Headers",
-					((HttpServletRequest) req).getHeader("Access-Control-Request-Headers"));
+					httpReq.getHeader("Access-Control-Request-Headers"));
 		}
 		chain.doFilter(req, resp);
 	}

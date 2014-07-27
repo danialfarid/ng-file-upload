@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for HTML5 FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.1
+ * @version 1.6.2
  */
 (function() {
 
@@ -161,14 +161,17 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 		}
 		var el = angular.element(elem);
 		if (!el.hasClass('js-fileapi-wrapper') && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
-//			var wrap = document.createElement('div');
-//			wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
-//			wrap = wrap.firstChild;
-//			var parent = elem.parentNode;
-//			parent.insertBefore(wrap, elem);
-//			parent.removeChild(elem);
-//			wrap.appendChild(elem);
-			el.addClass('js-fileapi-wrapper');
+			if (FileAPI.wrapInsideDiv) {
+				var wrap = document.createElement('div');
+				wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
+				wrap = wrap.firstChild;
+				var parent = elem.parentNode;
+				parent.insertBefore(wrap, elem);
+				parent.removeChild(elem);
+				wrap.appendChild(elem);
+			} else {
+				el.addClass('js-fileapi-wrapper');
+			}
 		}
 	};
 	var changeFnWrapper = function(fn) {

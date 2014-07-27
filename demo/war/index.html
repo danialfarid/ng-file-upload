@@ -6,8 +6,9 @@
 <title>Angular file upload sample</title>
 <script type="text/javascript">
 FileAPI = {
-	//debug: true,
+	debug: true,
 	//forceLoad: true, html5: false //to debug flash in HTML5 browsers
+	//wrapInsideDiv: true, //experimental for fixing css issues
 	//only one of jsPath or jsUrl.
     //jsPath: '/js/FileAPI.min.js/folder/', 
     //jsUrl: 'yourcdn.com/js/FileAPI.min.js',
@@ -53,12 +54,14 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			<br/>
 			or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
 			<br/>
+			or only images: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null" accept="image/*">
 		</div>
-		You can have any element as an upload button: <div ng-file-select="onFileSelect($files)" data-multiple="true" title="aaaa" onclick="this.value = null" class="upload-button">Click here to select file</div>
+		You can have any element as an upload button: <div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button">Click here to select file</div>
 		<br/>
 		<br/>
+		<!-- ng-file-drag-over-class and ng-file-drag-over-delay are optional for styling and css transition handling #277 -->
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drop-available="dropSupported=true"
-			ng-file-drag-over-class="dragOverClass($event)">or drop files <div>here</div></div>
+			ng-file-drag-over-class="dragOverClass($event)" ng-file-drag-over-delay="100">or drop files <div>here</div></div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
 		<input type="checkbox" ng-model="uploadRightAway">Upload right away
