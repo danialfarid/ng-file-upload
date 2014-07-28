@@ -118,7 +118,7 @@ if (window.XMLHttpRequest) {
 							Object.defineProperty(xhr, 'responseText', {get: function() {return fileApiXHR.responseText}});
 							Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.responseText}});
 							xhr.__fileApiXHR = fileApiXHR;
-							xhr.onreadystatechange();
+							if (xhr.onreadystatechange) xhr.onreadystatechange();
 						},
 						fileprogress: function(e) {
 							e.target = xhr;
@@ -194,7 +194,15 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			(evt.__files_ || evt.target.files).item = function(i) {
 				return (evt.__files_ || evt.target.files)[i] || null;
 			}
-			fn(evt);
+			if (fn) {
+				fn.apply(this, [evt]);
+			} else {
+				// fix for #281 jQuery on IE8
+				var handlers = jQuery._data(this, "events").change;
+				for (var i = 1; i < handlers.length; i++) {
+					handlers[i].handler.apply(this, [evt]);
+				}
+			}
 		};
 	};
 	var isFileChange = function(elem, e) {
@@ -217,7 +225,12 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			return function(e, fn) {
 				if (isFileChange(this, e)) {
 					addFlash(this);
-					origAttachEvent.apply(this, [e, changeFnWrapper(fn)]);
+					if (jQuery) {
+						// fix for #281 jQuery on IE8
+						angular.element(this).bind("change", changeFnWrapper(null));
+					} else {
+						origAttachEvent.apply(this, [e, changeFnWrapper(fn)]);
+					}
 				} else {
 					origAttachEvent.apply(this, [e, fn]);
 				}

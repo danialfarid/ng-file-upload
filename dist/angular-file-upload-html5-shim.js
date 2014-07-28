@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload shim for angular XHR HTML5 browsers
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.2
+ * @version 1.6.3
  */
 if (window.XMLHttpRequest) {
 	if (window.FormData) {

@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.2
+ * @version 1.6.3
  */
 (function() {
 
