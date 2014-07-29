@@ -194,15 +194,7 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			(evt.__files_ || evt.target.files).item = function(i) {
 				return (evt.__files_ || evt.target.files)[i] || null;
 			}
-			if (fn) {
-				fn.apply(this, [evt]);
-			} else {
-				// fix for #281 jQuery on IE8
-				var handlers = jQuery._data(this, "events").change;
-				for (var i = 1; i < handlers.length; i++) {
-					handlers[i].handler.apply(this, [evt]);
-				}
-			}
+			if (fn) fn.apply(this, [evt]);
 		};
 	};
 	var isFileChange = function(elem, e) {
@@ -225,7 +217,7 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			return function(e, fn) {
 				if (isFileChange(this, e)) {
 					addFlash(this);
-					if (jQuery) {
+					if (window.jQuery) {
 						// fix for #281 jQuery on IE8
 						angular.element(this).bind("change", changeFnWrapper(null));
 					} else {
