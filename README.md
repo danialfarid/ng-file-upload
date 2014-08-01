@@ -1,10 +1,17 @@
 angular-file-upload
 ===================
 
+Lightweight Angular JS directive to upload files.<br/>**See the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**
 
-**Here is the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a>**
+Table of Content:
+* [Features](#features)
+* [Usage](#usage)
+* [Old Browsers](#old_browsers)
+* [Server Side](#server)
+* [Install (Bower)](#install)
+* [Questions, Issues and Contribution](#contrib)
 
-Lightweight Angular JS directive to upload files. Features:
+##<a name="features"></a> Features
 * File upload for `HTML5` and `non-HTML5` browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
 * Uses regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 * Supports upload progress
@@ -12,12 +19,12 @@ Lightweight Angular JS directive to upload files. Features:
 * Supports File drag and drop (HTML5 only)
 * Supports Directory drag and drop (webkit only)
 * Supports CORS
-* All `non-HTML5` code is in a separate shim file and could be easily removed if you only supports `HTML5`. (It is needed for `progress` event though)
+* All `non-HTML5` code is in a separate shim file and could be easily removed if you only supports `HTML5`. (html5-shim.js is needed for `progress` event though)
 * Flash `FileAPI` will be loaded on demand for `non-HTML5` FormData browsers so no extra load for `HTML5` browsers.
 * `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
 * `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the `Content-Type` of the file to CouchDB, imgur, etc... for `HTML5` `FileReader` browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 
-## Usage
+##<a name="usage"></a> Usage
 
 HTML:
 ```html
@@ -95,7 +102,7 @@ This equivalent to angular $http() but allow you to listen to progress event for
 **drag and drop styling**: For file drag and drop, `ng-file-drag-over-class` can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone.
 You can also specify `ng-file-drag-over-delay` to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
-## Old browsers
+##<a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
 For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.flash.swf`** which will be loaded if the browser does not supports HTML5 FormData (no extra load for HTML5 browsers).
@@ -125,13 +132,14 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
-##Server side samples
+##<a name="server"></a>Server side samples
 * **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
 * **Node.js**: Sample wiki page provided by [chovy](https://github.com/chovy)
+* **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java)
 
-## Install
+##<a name="install"></a> Install
 
-Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or 
+Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or if you are using bower
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
@@ -155,13 +163,12 @@ bower.json
 }
 ```
 
-
-You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java).
-
-If you use this module you can give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
+##<a name="contrib"></a> Issues & Contribution
 
 Let [me](https://github.com/danialfarid) know if you have any questions. Bug report, feature request: [issue](https://github.com/danialfarid/angular-file-upload/issues).  
-  If you like the plugin get me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
+
+If you like the plugin give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload),
+<br/>also get me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
 
 
 
