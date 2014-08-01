@@ -167,8 +167,8 @@ bower.json
 
 Let [me](https://github.com/danialfarid) know if you have any questions. Bug report, feature request: [issue](https://github.com/danialfarid/angular-file-upload/issues).  
 
-If you like the plugin get me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
-  Also give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
+If you like the plugin give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload).
+Also get me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
 
 
 
