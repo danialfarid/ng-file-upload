@@ -1,7 +1,7 @@
 angular-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files. **See the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**
+Lightweight Angular JS directive to upload files.<br/>**See the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**
 
 Table of Content:
 * [Features](#features)
