@@ -109,8 +109,8 @@ For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://git
 For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.flash.swf`** which will be loaded if the browser does not supports HTML5 FormData (no extra load for HTML5 browsers).
 
 **Note**: Flash needs to be installed on the client browser since `FileAPI` uses Flash to upload files.
-
-You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or use the following script to set the FileAPI load path for example if you are using CDN (optional):
+**CORS**: To enable CORS
+You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or optionally you can use the following script to set the FileAPI load path if they are not at the same location:
 ```html
 <script>
     //optional need to be loaded before angular-file-upload-shim(.min).js
@@ -133,7 +133,26 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
-##<a name="server"></a>Server side samples
+##<a name="server"></a>Server Side
+###CORS
+To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
+([sample java code](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
+```java
+httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
+httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
+httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
+```
+For non-HTML5 IE8-9 browsers you would also need a crossdomain.xml at the root of your server to allow CORS for flash:
+([sample xml](http://angular-file-upload.appspot.com/crossdomain.xml))
+```xml
+<cross-domain-policy>
+  <site-control permitted-cross-domain-policies="all"/>
+  <allow-access-from domain="angular-file-upload.appspot.com"/>
+  <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
+</cross-domain-policy>
+```
+
+###Samples
 * **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
 * **Node.js**: Sample wiki page provided by [chovy](https://github.com/chovy)
 * **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java)
