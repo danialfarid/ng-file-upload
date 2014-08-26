@@ -142,7 +142,7 @@ httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
 httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
 httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
 ```
-For non-HTML5 IE8-9 browsers you would also need a crossdomain.xml at the root of your server to allow CORS for flash:
+For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
 ([sample xml](http://angular-file-upload.appspot.com/crossdomain.xml))
 ```xml
 <cross-domain-policy>
