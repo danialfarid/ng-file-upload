@@ -134,7 +134,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
 ##<a name="server"></a>Server Side
-###CORS
+####CORS
 To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
 ([sample java code](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
 ```java
@@ -152,10 +152,10 @@ For non-HTML5 IE8-9 browsers you would also need a crossdomain.xml at the root o
 </cross-domain-policy>
 ```
 
-###Samples
+####Samples
 * **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
 * **Node.js**: Sample wiki page provided by [chovy](https://github.com/chovy)
-* **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/FileUpload.java)
+* **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 
 ##<a name="install"></a> Install
 
