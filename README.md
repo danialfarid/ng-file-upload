@@ -130,6 +130,7 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 ```
 **Old browsers known issues**: 
 * Because of a Flash limitation/bug the server needs to send a response body in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
+* In case of an error response (http code >= 400) the response body or error message will not be available. Flash just provide a generic code and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 
