@@ -22,7 +22,9 @@ public class FileUpload extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
 			StringBuilder sb = new StringBuilder("{\"result\": [");
-
+			int errorCode = 0;
+			String errorMsg = null;
+			
 			if (req.getHeader("Content-Type") != null
 					&& req.getHeader("Content-Type").startsWith("multipart/form-data")) {
 				ServletFileUpload upload = new ServletFileUpload();
@@ -30,8 +32,20 @@ public class FileUpload extends HttpServlet {
 				FileItemIterator iterator = upload.getItemIterator(req);
 
 				while (iterator.hasNext()) {
-					sb.append("{");
 					FileItemStream item = iterator.next();
+					if (item.getFieldName() != null && item.getFieldName().equals("errorCode")) {
+						String val = read(item.openStream());
+						try {
+							errorCode = Integer.parseInt(val);
+						} catch(NumberFormatException e) {}
+						continue;
+					}
+					if (item.getFieldName() != null && item.getFieldName().equals("errorMessage")) {
+						String val = read(item.openStream());
+						errorMsg = val;
+						continue;
+					}
+					sb.append("{");
 					sb.append("\"fieldName\":\"").append(item.getFieldName()).append("\",");
 					if (item.getName() != null) {
 						sb.append("\"name\":\"").append(item.getName()).append("\",");
@@ -62,8 +76,13 @@ public class FileUpload extends HttpServlet {
 				}
 			}
 			sb.append("}}");
-
-			res.getWriter().write(sb.toString());
+			
+			if (errorCode != 0) {
+				res.setStatus(errorCode);
+				res.getWriter().write(errorMsg);
+			} else {
+				res.getWriter().write(sb.toString());
+			}
 		} catch (Exception ex) {
 			throw new ServletException(ex);
 		}

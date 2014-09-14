@@ -18,6 +18,7 @@ FileAPI = {
     //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
 };
 </script>
+<!-- <script src="//code.jquery.com/jquery-1.9.0.min.js"></script> -->
 <script src="js/angular-file-upload-shim.js"></script>
 <script type="text/javascript">
 // load angularjs specific version
@@ -66,6 +67,8 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		<br/>
 		<input type="checkbox" ng-model="uploadRightAway">Upload right away
 		<br/>
+		<input type="checkbox" ng-model="generateErrorOnServer">Make server return error code: <input type="text" ng-model="serverErrorCode"> message: <input type="text" ng-model="serverErrorMsg">
+		<br/>
 		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
 		<br/>
 		Progress:
@@ -100,6 +103,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			</ul>
 		</div>
 	</div>
-	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2014-07-29</div>
+	<a style="position:fixed;bottom:10px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
+	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2014-07-29</div>
 </body>
 </html>

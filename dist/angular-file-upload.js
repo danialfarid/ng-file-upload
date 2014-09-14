@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.5
+ * @version 1.6.6
  */
 (function() {
 
@@ -152,6 +152,13 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 			fileElem.css("top", 0).css("bottom", 0).css("left", 0).css("right", 0).css("width", "100%").
 					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)');
 			elem.append(fileElem);
+//			if (fileElem.parent()[0] != elem[0]) {
+//				//fix #298
+//				elem.wrap('<span>');
+//				elem.css("z-index", "-1000")
+//				elem.parent().append(fileElem);
+//				elem = elem.parent();
+//			}
 			if (elem.css("position") === '' || elem.css("position") === 'static') {
 				elem.css("position", "relative");
 			}
@@ -205,11 +212,10 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 		if ('draggable' in document.createElement('span')) {
 			var leaveTimeout = null;
 			elem[0].addEventListener("dragover", function(evt) {
-				evt.stopPropagation();
 				evt.preventDefault();
 				$timeout.cancel(leaveTimeout);
 				if (!elem[0].__drag_over_class_) {
-					if ((attr['ngFileDragOverClass'])&&(attr['ngFileDragOverClass'].search(/\) *$/) > -1)) {
+					if (attr['ngFileDragOverClass'] && attr['ngFileDragOverClass'].search(/\) *$/) > -1) {
 						dragOverClassFn = $parse(attr['ngFileDragOverClass']);
 						var dragOverClass = dragOverClassFn(scope, {
 							$event : evt
@@ -222,7 +228,6 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 				elem.addClass(elem[0].__drag_over_class_);
 			}, false);
 			elem[0].addEventListener("dragenter", function(evt) {
-				evt.stopPropagation();
 				evt.preventDefault();
 			}, false);
 			elem[0].addEventListener("dragleave", function(evt) {
@@ -233,7 +238,6 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 			}, false);
 			var fn = $parse(attr['ngFileDrop']);
 			elem[0].addEventListener("drop", function(evt) {
-				evt.stopPropagation();
 				evt.preventDefault();
 				elem.removeClass(elem[0].__drag_over_class_);
 				elem[0].__drag_over_class_ = null;
@@ -251,7 +255,8 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 
 			function extractFiles(evt, callback) {
 				var files = [], items = evt.dataTransfer.items;
-				if (items && items.length > 0 && items[0].webkitGetAsEntry && $location.protocol() != 'file') {
+				if (items && items.length > 0 && items[0].webkitGetAsEntry && $location.protocol() != 'file' && 
+						items[0].webkitGetAsEntry().isDirectory) {
 					for (var i = 0; i < items.length; i++) {
 						var entry = items[i].webkitGetAsEntry();
 						if (entry != null) {

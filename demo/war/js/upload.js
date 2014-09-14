@@ -3,7 +3,7 @@
 
 angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-//var uploadUrl = 'http://angular-file-upload-cors-srv.appspot.com/upload';
+var uploadUrl = 'http://angular-file-upload-cors-srv.appspot.com/upload';
 window.uploadUrl = window.uploadUrl || 'upload';
 	
 var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
@@ -66,7 +66,9 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 				method: $scope.httpMethod,
 				headers: {'my-header': 'my-header-value'},
 				data : {
-					myModel : $scope.myModel
+					myModel : $scope.myModel,
+					errorCode: $scope.generateErrorOnServer && $scope.serverErrorCode,
+					errorMessage: $scope.generateErrorOnServer && $scope.serverErrorMsg
 				},
 				/* formDataAppender: function(fd, key, val) {
 					if (angular.isArray(val)) {
@@ -131,4 +133,5 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		}
 		return hasFile ? "dragover" : "dragover-err";
 	};
+	
 } ];
