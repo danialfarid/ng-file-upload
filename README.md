@@ -155,7 +155,7 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 
 ####Samples
 * **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
-* **Node.js**: Sample wiki page provided by [chovy](https://github.com/chovy)
+* **Node.js**: [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 * **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 
 ##<a name="install"></a> Install
