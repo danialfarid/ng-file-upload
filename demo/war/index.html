@@ -43,7 +43,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT' ng-disabled="usingFlash"/>put<br/>
 		<br/>
 		How to upload:<br/>
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multupart/form-data upload using $upload.upload() service cross browser</label>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multipart/form-data upload using $upload.upload() service cross browser</label>
 		<br/>
 		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!fileReaderSupported || usingFlash">File binary content with the file type as Content-Type header using $upload.http() service</label>
 		<div class="sub">The second option could be used to upload files to <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
