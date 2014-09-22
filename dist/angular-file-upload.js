@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.6
+ * @version 1.6.7
  */
 (function() {
 
@@ -148,7 +148,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 			for (var i = 0; i < elem[0].attributes.length; i++) {
 				fileElem.attr(elem[0].attributes[i].name, elem[0].attributes[i].value);
 			}
-			if (elem.attr("data-multiple")) fileElem.attr("multiple", "true");
+			if (attr["multiple"]) fileElem.attr("multiple", "true");
 			fileElem.css("top", 0).css("bottom", 0).css("left", 0).css("right", 0).css("width", "100%").
 					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)');
 			elem.append(fileElem);
@@ -193,6 +193,21 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 //				e.target.click();
 //			});
 //		}
+		// temporary fix for FileAPI disabled input #331
+		if (attr["ngDisabled"]) {
+			var disabledFn = $parse(attr["ngDisabled"])(scope);
+			if (typeof disabledFn === "boolean") {
+				window.FileAPI && FileAPI.disableFileInput && FileAPI.disableFileInput(elem, disabledFn);
+			} else  {
+				scope.$watch(
+					function() {
+						return $parse(attr["ngDisabled"])(scope)
+					}, function(newVal) {
+						window.FileAPI && FileAPI.disableFileInput && FileAPI.disableFileInput(elem, newVal);
+					}
+				);
+			}
+		}
 	};
 } ]);
 
@@ -216,8 +231,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 				$timeout.cancel(leaveTimeout);
 				if (!elem[0].__drag_over_class_) {
 					if (attr['ngFileDragOverClass'] && attr['ngFileDragOverClass'].search(/\) *$/) > -1) {
-						dragOverClassFn = $parse(attr['ngFileDragOverClass']);
-						var dragOverClass = dragOverClassFn(scope, {
+						var dragOverClass = $parse(attr['ngFileDragOverClass'])(scope, {
 							$event : evt
 						});					
 						elem[0].__drag_over_class_ = dragOverClass; 
