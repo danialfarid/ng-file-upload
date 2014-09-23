@@ -39,16 +39,57 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 	<h3>
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
+	<form action="https://angular-file-upload.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="key" value="aaaaa">
+      <input type="hidden" name="AWSAccessKeyId" value="AKIAITEMCYZ26F3I6DLA"> 
+      <input type="hidden" name="acl" value="private"> 
+      <input type="hidden" name="success_action_redirect" value="http://localhost:8888">
+      <input type="hidden" name="policy" value="eyJleHBpcmF0aW9uIjoiMjAyMC0wMS0wMVQwMDowMDowMFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJhbmd1bGFyLWZpbGUtdXBsb2FkIn0sWyJzdGFydHMtd2l0aCIsIiRrZXkiLCIiXSx7ImFjbCI6InByaXZhdGUifSx7InN1Y2Nlc3NfYWN0aW9uX3JlZGlyZWN0IjoiaHR0cDovL2xvY2FsaG9zdDo4ODg4In0sWyJzdGFydHMtd2l0aCIsIiRDb250ZW50LVR5cGUiLCIiXSxbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwwLDUyNDI4ODAwMF1dfQ==">
+      <input type="hidden" name="signature" value="UxDWR4LY+d7rqrLMvjYE9Rl4lL4=">
+      File to upload to S3: 
+      <input name="file" type="file"> 
+      <br> 
+      <input type="submit" value="Upload File to S3"> 
+    </form> 
+      
 	<div class="upload-div">
-		http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT' ng-disabled="usingFlash"/>put<br/>
-		<br/>
-		How to upload:<br/>
+		How to upload:<br/><br/>
+		<div class="howto">
 		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multipart/form-data upload using $upload.upload() service cross browser</label>
 		<br/>
 		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!fileReaderSupported || usingFlash">File binary content with the file type as Content-Type header using $upload.http() service</label>
 		<div class="sub">The second option could be used to upload files to <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
 			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
-		</div><br/>
+		</div>
+		<label><input type="radio" name="howToSend" ng-model="howToSend" value="3">Upload to Amazon S3 bucket</label>
+		<form ng-show="howToSend==3" class="s3" id="s3form" action="http://localhost:8888" onsubmit="return false;">
+			<br/>
+			Provide S3 upload parameters. <a href="http://aws.amazon.com/articles/1434/" target="_blank">Click here for detailed documentation</a><br/></br>
+			<label>S3 upload url including bucket name:</label> <input type="text" ng-model="s3url"> <br/>
+			<label>AWSAccessKeyId:</label> <input type="Text" name="AWSAccessKeyId" ng-model="AWSAccessKeyId"> <br/>
+			<label>acl (private or public):</label> <input type="text" ng-model="acl" value="private"><br/>
+			<label>success_action_redirect:</label> <input type="text" ng-model="success_action_redirect"><br/>
+			<label>policy:</label> <input type="text" ng-model="policy"><br/>
+			<label>signature:</label> <input type="text" ng-model="signature"><br/>
+			<br/>
+			<button ng-click="showHelper=!showHelper">S3 Policy signing helper (Optional)</button><br/><br/>
+			<div class="helper" ng-show="showHelper">
+				If you don't have your policy and signature you can use this tool to generate them by providing these two fields and clicking on sign<br/>	      
+				<label>AWS Secret Key:</label> <input type="text" ng-model="AWSSecretKey"><br/>
+				<label>JSON policy:</label><br/> <textarea type="text" ng-model="jsonPolicy" rows=10 cols=70></textarea>
+				<button ng-click="generateSignature()">Sign</button>
+			</div>
+      	</form>
+      	</div>
+      	<br/>
+      	http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT' ng-disabled="usingFlash || howToSend == 3"/>put<br/>
+		<input type="checkbox" ng-model="uploadRightAway">Upload right away
+		<br/>
+		<div ng-show="howToSend != 3">
+			<input type="checkbox" ng-model="generateErrorOnServer">Make server return error code: <input type="text" ng-model="serverErrorCode"> message: <input type="text" ng-model="serverErrorMsg">
+			<br/>
+		</div>
+		<br/>
 		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
 		<div class="upload-buttons">
 			choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
@@ -64,10 +105,6 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drop-available="dropSupported=true"
 			ng-file-drag-over-class="dragOverClass($event)" ng-file-drag-over-delay="100">or drop files <div>here</div></div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
-		<br/>
-		<input type="checkbox" ng-model="uploadRightAway">Upload right away
-		<br/>
-		<input type="checkbox" ng-model="generateErrorOnServer">Make server return error code: <input type="text" ng-model="serverErrorCode"> message: <input type="text" ng-model="serverErrorMsg">
 		<br/>
 		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
 		<br/>

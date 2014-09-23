@@ -10,6 +10,14 @@
 		<servlet-name>file_upload</servlet-name>
 		<url-pattern>/upload</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>s3_sign</servlet-name>
+		<servlet-class>com.df.angularfileupload.S3Signature</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>s3_sign</servlet-name>
+		<url-pattern>/s3sign</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

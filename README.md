@@ -1,13 +1,14 @@
 angular-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files.<br/>**See the <a href="http://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**
+Lightweight Angular JS directive to upload files.<br/>**See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**
 
 Table of Content:
 * [Features](#features)
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
 * [Server Side](#server)
+* [Amazon S3 Upload](#s3)
 * [Install (Bower)](#install)
 * [Questions, Issues and Contribution](#contrib)
 
@@ -144,7 +145,7 @@ httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
 httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
 ```
 For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
-([sample xml](http://angular-file-upload.appspot.com/crossdomain.xml))
+([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
 ```xml
 <cross-domain-policy>
   <site-control permitted-cross-domain-policies="all"/>
@@ -154,9 +155,47 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 ```
 
 ####Samples
-* **Amazon S3 Upload**: [nukulb](https://github.com/nukulb) has provided an example here https://github.com/hubba/s3-angular-file-upload
 * **Node.js**: [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 * **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
+
+##<a name="s3"></a>Amazon AWS S3 Upload
+The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
+Here is a sample config options for more detailed documentation see [http://aws.amazon.com/articles/1434/](http://aws.amazon.com/articles/1434/)
+```
+$upload.upload({
+        url: $'https://angular-file-upload.s3.amazonaws.com/' //S3 upload url including bucket name,
+        method: 'POST',
+        data : {
+          key: file.name, // the key to store the file on S3, could be file name or customized
+          AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
+          acl: 'private', // sets the access to the uploaded file in the bucker: private or public 
+          success_action_redirect: 'http://myserver.com', // should match the redirect url in your json policy
+          policy: $scope.policy, // base64-encoded json policy: http://aws.amazon.com/articles/1434/
+          signature: $scope.signature, // base64-encoded signature based on policy string: http://aws.amazon.com/articles/1434/
+          "Content-Type": file.type // content type of the file
+        },
+        file: file,
+      });
+```
+To generate the policy and signature you need a server side tool as described [this](http://aws.amazon.com/articles/1434/) article.
+These two values are generated from the json policy document which looks like this:
+```
+{"expiration": "2020-01-01T00:00:00Z",
+"conditions": [ 
+  {"bucket": "angular-file-upload"}, 
+  ["starts-with", "$key", ""],
+  {"acl": "private"},
+  {"success_action_redirect": "https://angular-file-upload.appspot.com"},
+  ["starts-with", "$Content-Type", ""],
+  ["content-length-range", 0, 524288000]
+]
+}
+```
+The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to genenrate signature and policy to protect your aws secret key which should never be shared.
+
+
+If you have nodejs and aws-sdk stack there is a separate github created as an example using this plugin here: [https://github.com/hubba/s3-angular-file-upload](https://github.com/hubba/s3-angular-file-upload)
+
 
 ##<a name="install"></a> Install
 
@@ -189,7 +228,7 @@ bower.json
 For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/angular-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/angular-file-upload/issues/new). If you need support send me an [email](danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
 
 If you like the plugin give it a thumbs up at [http://ngmodules.org/modules/angular-file-upload](http://ngmodules.org/modules/angular-file-upload),
-<br/>also get me a <a target="_blank" href="http://angular-file-upload.appspot.com/donate.html">cup of tea <img src="http://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
+<br/>also get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> so I add features and fixes faster.
 
 
 

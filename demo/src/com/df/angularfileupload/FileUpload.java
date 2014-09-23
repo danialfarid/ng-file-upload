@@ -123,6 +123,5 @@ public class FileUpload extends HttpServlet {
 			}
 		}
 		return sb.toString();
-
 	}
 }

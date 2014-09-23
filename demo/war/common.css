@@ -111,3 +111,26 @@ button {
 	background-color: #F0F0F0;
 	border: 1px solid black;
 }
+
+.s3 {
+	font-size: smaller;
+	color: #333;
+	margin-left: 20px;
+}
+.s3 fieldset {
+	border: 1px solid #AAA;	
+}
+.s3 label {
+	width: 180px;
+	display: inline-block;
+}
+.s3 input {
+	width: 300px;
+}
+.s3 .helper {
+	margin-left: 5px;
+}
+
+.howto {
+	margin-left: 10px;
+}
