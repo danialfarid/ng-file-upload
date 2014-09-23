@@ -169,7 +169,6 @@ $upload.upload({
           key: file.name, // the key to store the file on S3, could be file name or customized
           AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
           acl: 'private', // sets the access to the uploaded file in the bucker: private or public 
-          success_action_redirect: 'http://myserver.com', // should match the redirect url in your json policy
           policy: $scope.policy, // base64-encoded json policy (see article below)
           signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
           "Content-Type": file.type != '' ? file.type : 'application/octet-stream' // content type of the file (NotEmpty),
