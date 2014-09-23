@@ -137,10 +137,11 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 					key: $scope.selectedFiles[index].name,
 					AWSAccessKeyId: $scope.AWSAccessKeyId,
 					acl: $scope.acl,
-					success_action_redirect: $scope.success_action_redirect,
 					policy: $scope.policy,
 					signature: $scope.signature,
-					"Content-Type": $scope.selectedFiles[index].type
+					"Content-Type": $scope.selectedFiles[index].type === null || $scope.selectedFiles[index].type === '' ?
+										'application/octet-stream' : $scope.selectedFiles[index].type,
+					filename: $scope.selectedFiles[index].name
 				},
 				file: $scope.selectedFiles[index],
 			});
@@ -197,6 +198,6 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.signature = localStorage.getItem("signature");
 	}
 	$scope.success_action_redirect = $scope.success_action_redirect || window.location.protocol + "//" + window.location.host;
-	$scope.jsonPolicy = $scope.jsonPolicy || '{\n  "expiration": "2020-01-01T00:00:00Z",\n  "conditions": [\n    {"bucket": "angular-file-upload"},\n    ["starts-with", "$key", ""],\n    {"acl": "private"},\n    {"success_action_redirect": "' + $scope.success_action_redirect + '"},\n    ["starts-with", "$Content-Type", ""],\n    ["content-length-range", 0, 524288000]\n  ]\n}';
+	$scope.jsonPolicy = $scope.jsonPolicy || '{\n  "expiration": "2020-01-01T00:00:00Z",\n  "conditions": [\n    {"bucket": "angular-file-upload"},\n    ["starts-with", "$key", ""],\n    {"acl": "private"},\n    ["starts-with", "$Content-Type", ""],\n    ["starts-with", "$filename", ""],\n    ["content-length-range", 0, 524288000]\n  ]\n}';
 	$scope.acl = $scope.acl || 'private';
 } ];

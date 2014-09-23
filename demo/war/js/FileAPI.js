@@ -1,4 +1,4 @@
-/*! FileAPI 2.0.4 - BSD | git://github.com/mailru/FileAPI.git
+/*! FileAPI 2.0.7 - BSD | git://github.com/mailru/FileAPI.git
  * FileAPI — a set of  javascript tools for working with files. Multiupload, drag'n'drop and chunked file upload. Images: crop, resize and auto orientation by EXIF.
  */
 
@@ -134,6 +134,8 @@
 		_rimgcanvas = /img|canvas/i,
 		_rinput = /input/i,
 		_rdata = /^data:[^,]+,/,
+
+		_toString = {}.toString,
 
 
 		Math = window.Math,
@@ -278,7 +280,7 @@
 		 * FileAPI (core object)
 		 */
 		api = {
-			version: '2.0.4',
+			version: '2.0.7',
 
 			cors: false,
 			html5: true,
@@ -556,18 +558,24 @@
 
 
 			/**
-			 * Is file instance
-			 *
+			 * Is file?
 			 * @param  {File}  file
 			 * @return {Boolean}
 			 */
 			isFile: function (file){
-				return	html5 && file && (file instanceof File);
+				return _toString.call(file) === '[object File]';
 			},
 
+
+			/**
+			 * Is blob?
+			 * @param   {Blob}  blob
+			 * @returns {Boolean}
+			 */
 			isBlob: function (blob) {
-				return    html5 && blob && (blob instanceof Blob);
+				return this.isFile(blob) || (_toString.call(blob) === '[object Blob]');
 			},
+
 
 			/**
 			 * Is canvas element
@@ -1142,17 +1150,17 @@
 										data.total = (data.total || data.size);
 										data.loaded	= data.total;
 
-										// emulate 100% "progress"
-										if (!err) {
+										if( !err ) {
+											// emulate 100% "progress"
 											this.progress(data);
+
+											// fixed throttle event
+											_fileLoaded = true;
+
+											// bytes loaded
+											_loaded += data.size; // data.size != data.total, it's desirable fix this
+											proxyXHR.loaded = _loaded;
 										}
-
-										// fixed throttle event
-										_fileLoaded = true;
-
-										// bytes loaded
-										_loaded += data.size; // data.size != data.total, it's desirable fix this
-										proxyXHR.loaded = _loaded;
 
 										// emit "filecomplete" event
 										options.filecomplete(err, xhr, _file, _fileOptions);
@@ -1685,7 +1693,8 @@
 		}
 
 		if( FileReader ){
-			_on(el, 'dragenter dragleave dragover', function (evt){
+			// Hover
+			_on(el, 'dragenter dragleave dragover', onHover.ff = onHover.ff || function (evt){
 				var
 					  types = _getDataTransfer(evt).types
 					, i = types && types.length
@@ -1718,7 +1727,9 @@
 				}
 			});
 
-			_on(el, 'drop', function (evt){
+
+			// Drop
+			_on(el, 'drop', onDrop.ff = onDrop.ff || function (evt){
 				evt[preventDefault]();
 
 				_type = 0;
@@ -1742,8 +1753,8 @@
 	 * @param	{Function}		onDrop
 	 */
 	api.event.dnd.off = function (el, onHover, onDrop){
-		_off(el, 'dragenter dragleave dragover', onHover);
-		_off(el, 'drop', onDrop);
+		_off(el, 'dragenter dragleave dragover', onHover.ff);
+		_off(el, 'drop', onDrop.ff);
 	};
 
 
@@ -1800,6 +1811,8 @@
 			  8:	270
 			, 3:	180
 			, 6:	90
+			, 7:	270
+			, 4:	180
 			, 5:	90
 		}
 	;
@@ -2128,9 +2141,9 @@
 			if( !err ){
 				api.each(transform, function (params, name){
 					if( !queue.isFail() ){
-						var ImgTrans = new Image(img.nodeType ? img : file);
+						var ImgTrans = new Image(img.nodeType ? img : file), isFn = typeof params == 'function';
 
-						if( typeof params == 'function' ){
+						if( isFn ){
 							params(img, ImgTrans);
 						}
 						else if( params.width ){
@@ -2151,13 +2164,16 @@
 							params.rotate = 'auto';
 						}
 
-						ImgTrans.set({
-							  deg: params.rotate
-							, type: params.type || file.type || 'image/png'
-							, quality: params.quality || 1
-							, overlay: params.overlay
-							, filter: params.filter
-						});
+						ImgTrans.set({ type: ImgTrans.matrix.type || params.type || file.type || 'image/png' });
+
+						if( !isFn ){
+							ImgTrans.set({
+								  deg: params.rotate
+								, overlay: params.overlay
+								, filter: params.filter
+								, quality: params.quality || 1
+							});
+						}
 
 						queue.inc();
 						ImgTrans.toData(function (err, image){
@@ -2521,6 +2537,7 @@
 					api.reset(blob, true);
 					// set new name
 					blob.name = file.name;
+					blob.disabled = false;
 					data.appendChild(blob);
 				}
 				else {
@@ -2740,7 +2757,7 @@
 		},
 
 		_send: function (options, data){
-			var _this = this, xhr, uid = _this.uid, url = options.url;
+			var _this = this, xhr, uid = _this.uid, onloadFuncName = _this.uid + "Load", url = options.url;
 
 			api.log('XHR._send:', data);
 
@@ -2757,29 +2774,6 @@
 
 				// legacy
 				options.upload(options, _this);
-
-				xhr = document.createElement('div');
-				xhr.innerHTML = '<form target="'+ uid +'" action="'+ url +'" method="POST" enctype="multipart/form-data" style="position: absolute; top: -1000px; overflow: hidden; width: 1px; height: 1px;">'
-							+ '<iframe name="'+ uid +'" src="javascript:false;"></iframe>'
-							+ (jsonp && (options.url.indexOf('=?') < 0) ? '<input value="'+ uid +'" name="'+jsonp+'" type="hidden"/>' : '')
-							+ '</form>'
-				;
-
-				// get form-data & transport
-				var
-					  form = xhr.getElementsByTagName('form')[0]
-					, transport = xhr.getElementsByTagName('iframe')[0]
-				;
-
-				form.appendChild(data);
-
-				api.log(form.parentNode.innerHTML);
-
-				// append to DOM
-				document.body.appendChild(xhr);
-
-				// keep a reference to node-transport
-				_this.xhr.node = xhr;
 
 				var
 					onPostMessage = function (evt){
@@ -2802,7 +2796,7 @@
 						_this.end(status, statusText);
 
 						api.event.off(window, 'message', onPostMessage);
-						window[uid] = xhr = transport = transport.onload = null;
+						window[uid] = xhr = transport = window[onloadFuncName] = null;
 					}
 				;
 
@@ -2818,7 +2812,7 @@
 
 				api.event.on(window, 'message', onPostMessage);
 
-				transport.onload = function (){
+				window[onloadFuncName] = function (){
 					try {
 						var
 							  win = transport.contentWindow
@@ -2830,6 +2824,29 @@
 						api.log('[transport.onload]', e);
 					}
 				};
+
+				xhr = document.createElement('div');
+				xhr.innerHTML = '<form target="'+ uid +'" action="'+ url +'" method="POST" enctype="multipart/form-data" style="position: absolute; top: -1000px; overflow: hidden; width: 1px; height: 1px;">'
+							+ '<iframe name="'+ uid +'" src="javascript:false;" onload="' + onloadFuncName + '()"></iframe>'
+							+ (jsonp && (options.url.indexOf('=?') < 0) ? '<input value="'+ uid +'" name="'+jsonp+'" type="hidden"/>' : '')
+							+ '</form>'
+				;
+
+				// get form-data & transport
+				var
+					  form = xhr.getElementsByTagName('form')[0]
+					, transport = xhr.getElementsByTagName('iframe')[0]
+				;
+
+				form.appendChild(data);
+
+				api.log(form.parentNode.innerHTML);
+
+				// append to DOM
+				document.body.appendChild(xhr);
+
+				// keep a reference to node-transport
+				_this.xhr.node = xhr;
 
 				// send
 				_this.readyState = 2; // loaded
@@ -3035,7 +3052,7 @@
 
 						}
 					} else {
-						// FormData 
+						// FormData
 						xhr.send(data);
 					}
 				}
@@ -3456,7 +3473,7 @@
 				mouseover: function (evt){
 					var target = api.event.fix(evt).target;
 
-					if( /input/i.test(target.nodeName) && target.type == 'file' ){
+					if( /input/i.test(target.nodeName) && target.type == 'file' && !target.disabled ){
 						var
 							  state = target.getAttribute(_attr)
 							, wrapper = flash.getWrapper(target)
@@ -3485,8 +3502,8 @@
 								_css(dummy, {
 									  top:    0
 									, left:   0
-									, width:  target.offsetWidth + 100
-									, height: target.offsetHeight + 100
+									, width:  target.offsetWidth
+									, height: target.offsetHeight
 									, zIndex: 1e6+'' // set max zIndex
 									, position: 'absolute'
 								});

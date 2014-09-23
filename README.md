@@ -130,10 +130,10 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
 **Old browsers known issues**: 
-* Because of a Flash limitation/bug the server needs to send a response body in order for the success and error callbacks to work properly. See [163#issuecomment](https://github.com/danialfarid/angular-file-upload/issues/163#issuecomment-39839508)
-* In case of an error response (http code >= 400) the response body or error message will not be available. Flash just provide a generic code and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
+* Because of a Flash limitation/bug if the server doesn't send any response body the status code of the response will be always `204 'No Content'`. So if you have access to your server upload code at least return a character in the response for the status code to work properly.
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
+* In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
 
 ##<a name="server"></a>Server Side
 ####CORS
@@ -145,7 +145,7 @@ httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
 httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
 ```
 For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
-([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
+<a name="crossdomain"></a>([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
 ```xml
 <cross-domain-policy>
   <site-control permitted-cross-domain-policies="all"/>
@@ -155,12 +155,12 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 ```
 
 ####Samples
-* **Node.js**: [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 * **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
+* **Node.js**: [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 
 ##<a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
-Here is a sample config options for more detailed documentation see [http://aws.amazon.com/articles/1434/](http://aws.amazon.com/articles/1434/)
+Here is a sample config options:
 ```
 $upload.upload({
         url: $'https://angular-file-upload.s3.amazonaws.com/' //S3 upload url including bucket name,
@@ -170,13 +170,15 @@ $upload.upload({
           AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
           acl: 'private', // sets the access to the uploaded file in the bucker: private or public 
           success_action_redirect: 'http://myserver.com', // should match the redirect url in your json policy
-          policy: $scope.policy, // base64-encoded json policy: http://aws.amazon.com/articles/1434/
-          signature: $scope.signature, // base64-encoded signature based on policy string: http://aws.amazon.com/articles/1434/
-          "Content-Type": file.type // content type of the file
+          policy: $scope.policy, // base64-encoded json policy (see article below)
+          signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
+          "Content-Type": file.type != '' ? file.type : 'application/octet-stream' // content type of the file (NotEmpty),
+          filename: file.name // this is needed for Flash polyfill IE8-9
         },
         file: file,
       });
 ```
+This article explain more about these fields: see [http://aws.amazon.com/articles/1434/](http://aws.amazon.com/articles/1434/)
 To generate the policy and signature you need a server side tool as described [this](http://aws.amazon.com/articles/1434/) article.
 These two values are generated from the json policy document which looks like this:
 ```
@@ -185,16 +187,59 @@ These two values are generated from the json policy document which looks like th
   {"bucket": "angular-file-upload"}, 
   ["starts-with", "$key", ""],
   {"acl": "private"},
-  {"success_action_redirect": "https://angular-file-upload.appspot.com"},
   ["starts-with", "$Content-Type", ""],
+  ["starts-with", "$filename", ""],
   ["content-length-range", 0, 524288000]
 ]
 }
 ```
 The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to genenrate signature and policy to protect your aws secret key which should never be shared.
 
+Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit COORS Configuration. Samples of these two files:
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "UploadFile",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::xxxx:user/xxx"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::angular-file-upload/*"
+    },
+    {
+      "Sid": "crossdomainAccess",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::angular-file-upload/crossdomain.xml"
+    }
+  ]
+}
+```
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>http://angular-file-upload.appspot.com</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>HEAD</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
 
-If you have nodejs and aws-sdk stack there is a separate github created as an example using this plugin here: [https://github.com/hubba/s3-angular-file-upload](https://github.com/hubba/s3-angular-file-upload)
+For IE8-9 flash polyfill you need to have a <a href='#crossdomain'>crossdomain.xml</a> file at the root of you S3 bucket. Make sure the content-type of crossdomain.xml is text/xml and you provide read access to this file in your bucket policy.
+
+
+If you have Node.js and aws-sdk stack there is a separate github created by [nukulb](https://github.com/nukulb) as an example using this plugin here: [https://github.com/hubba/s3-angular-file-upload](https://github.com/hubba/s3-angular-file-upload)
 
 
 ##<a name="install"></a> Install

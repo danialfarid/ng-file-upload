@@ -193,21 +193,6 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 //				e.target.click();
 //			});
 //		}
-		// temporary fix for FileAPI disabled input #331
-		if (attr["ngDisabled"]) {
-			var disabledFn = $parse(attr["ngDisabled"])(scope);
-			if (typeof disabledFn === "boolean") {
-				window.FileAPI && FileAPI.disableFileInput && FileAPI.disableFileInput(elem, disabledFn);
-			} else  {
-				scope.$watch(
-					function() {
-						return $parse(attr["ngDisabled"])(scope)
-					}, function(newVal) {
-						window.FileAPI && FileAPI.disableFileInput && FileAPI.disableFileInput(elem, newVal);
-					}
-				);
-			}
-		}
 	};
 } ]);
 

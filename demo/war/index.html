@@ -114,6 +114,7 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 			Server Response:
 			<ul>
 				<li ng-repeat="result in uploadResult">
+					<div data-ng-show="result.result == null">{{result}}</div>
 					<ul>
 						<li ng-repeat="item in result.result">
 							<div data-ng-show="item.name">file name: {{item.name}}</div>
