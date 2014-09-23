@@ -118,9 +118,10 @@ if (window.XMLHttpRequest) {
 							if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
 							Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
 							if (fileApiXHR.response !== undefined) Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
-							var resp = fileApiXHR.responseText || (err && fileApiXHR.status == 0 && err !== 'abort' && err);
+							var resp = fileApiXHR.responseText || (err && fileApiXHR.status == 0 && err !== 'abort' ? err : undefined);
 							Object.defineProperty(xhr, 'responseText', {get: function() {return resp}});
 							Object.defineProperty(xhr, 'response', {get: function() {return resp}});
+							if (err) Object.defineProperty(xhr, 'err', {get: function() {return err}});
 							xhr.__fileApiXHR = fileApiXHR;
 							if (xhr.onreadystatechange) xhr.onreadystatechange();
 						},
