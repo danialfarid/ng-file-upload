@@ -150,7 +150,8 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 			}
 			if (attr["multiple"]) fileElem.attr("multiple", "true");
 			fileElem.css("top", 0).css("bottom", 0).css("left", 0).css("right", 0).css("width", "100%").
-					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)');
+					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)').
+					css("padding", 0);
 			elem.append(fileElem);
 			if (fileElem.parent()[0] != elem[0]) {
 				//fix #298
