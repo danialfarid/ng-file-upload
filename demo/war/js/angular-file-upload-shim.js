@@ -138,7 +138,7 @@ if (window.XMLHttpRequest) {
 										xhr.getAllResponseHeaders = function(){};
 										_this.complete(null, {status: 204, statusText: 'No Content'});
 									}
-								}, 500);
+								}, 3000);
 							}
 						},
 						headers: xhr.__requestHeaders
