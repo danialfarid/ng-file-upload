@@ -10,7 +10,11 @@ Table of Content:
 * [Old Browsers](#old_browsers)
 * [Server Side](#server)
 * [Amazon S3 Upload](#s3)
-* [Install (Bower)](#install)
+* [Install](#install)
+  * [Manual](#manual)
+  * [Bower](#bower)
+  * [Yeoman](#yeoman)
+  * [NuGet](#nuget)
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
@@ -244,7 +248,10 @@ If you have Node.js and aws-sdk stack there is a separate github created by [nuk
 
 ##<a name="install"></a> Install
 
-Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or if you are using bower
+####<a name="manual"></a> Manual download 
+Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases)
+
+####<a name="bower"></a> Bower
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
@@ -256,10 +263,10 @@ Make sure to load the scripts in your html file exactly in this order as describ
 <script src="angular-file-upload(.min).js"></script> 
 ```
 
-Or for yeoman with bower automatic include:
+####<a name="yeoman"></a> Yeoman with bower automatic include
 ```
 bower install ng-file-upload -save
-bower install ng-file-upload-shim -save
+bower install ng-file-upload-shim -save 
 ```
 bower.json
 ```
@@ -267,7 +274,7 @@ bower.json
   "dependencies": [..., "ng-file-upload-shim", "angularjs", "ng-file-upload", ...],
 }
 ```
-
+####<a name="nuget"></a> NuGet
 Package is also available on NuGet: http://www.nuget.org/packages/angular-file-upload with the help of [Georgios Diamantopoulos](https://github.com/georgiosd)
 
 ##<a name="contrib"></a> Issues & Contribution
