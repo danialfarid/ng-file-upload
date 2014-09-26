@@ -145,24 +145,34 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 		var fn = $parse(attr['ngFileSelect']);
 		if (elem[0].tagName.toLowerCase() !== 'input' || (elem.attr('type') && elem.attr('type').toLowerCase()) !== 'file') {
 			var fileElem = angular.element('<input type="file">')
-			for (var i = 0; i < elem[0].attributes.length; i++) {
-				fileElem.attr(elem[0].attributes[i].name, elem[0].attributes[i].value);
+			var attrs = elem[0].attributes;
+			for (var i = 0; i < attrs.length; i++) {
+				if (attrs[i].name.toLowerCase() !== 'type') {
+					fileElem.attr(attrs[i].name, attrs[i].value);
+				}
 			}
 			if (attr["multiple"]) fileElem.attr("multiple", "true");
-			fileElem.css("top", 0).css("bottom", 0).css("left", 0).css("right", 0).css("width", "100%").
-					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)').css("padding", 0);
+			fileElem.css("width", "1px").css("height", "1px").css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)');
+			fileElem.attr('__wrapper_for_parent_', true);
+
+//			fileElem.css("top", 0).css("bottom", 0).css("left", 0).css("right", 0).css("width", "100%").
+//					css("opacity", 0).css("position", "absolute").css('filter', 'alpha(opacity=0)').css("padding", 0).css("margin", 0);
 			elem.append(fileElem);
+			elem[0].__file_click_fn_delegate_  = function() {
+				fileElem[0].click();
+			}; 
+			elem.bind('click', elem[0].__file_click_fn_delegate_);
 			elem.css("overflow", "hidden");
-			if (fileElem.parent()[0] != elem[0]) {
-				//fix #298 button element
-				elem.wrap('<span>');
-				elem.css("z-index", "-1000")
-				elem.parent().append(fileElem);
-				elem = elem.parent();
-			}
-			if (elem.css("position") === '' || elem.css("position") === 'static') {
-				elem.css("position", "relative");
-			}
+//			if (fileElem.parent()[0] != elem[0]) {
+//				//fix #298 button element
+//				elem.wrap('<span>');
+//				elem.css("z-index", "-1000")
+//				elem.parent().append(fileElem);
+//				elem = elem.parent();
+//			}
+//			if (elem.css("position") === '' || elem.css("position") === 'static') {
+//				elem.css("position", "relative");
+//			}
 			elem = fileElem;
 		}
 		elem.bind('change', function(evt) {

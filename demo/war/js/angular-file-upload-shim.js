@@ -10,7 +10,7 @@ var hasFlash = function() {
 	  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
 	  if (fo) return true;
 	} catch(e) {
-	  if (navigator.mimeTypes["application/x-shockwave-flash"] != undefined) return true;
+	  if (navigator.mimeTypes['application/x-shockwave-flash'] != undefined) return true;
 	}
 	return false;
 }
@@ -22,7 +22,7 @@ var patchXHR = function(fnName, newFn) {
 if (window.XMLHttpRequest) {
 	if (window.FormData && (!window.FileAPI || !FileAPI.forceLoad)) {
 		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
-		patchXHR("setRequestHeader", function(orig) {
+		patchXHR('setRequestHeader', function(orig) {
 			return function(header, value) {
 				if (header === '__setXHR_') {
 					var val = value(this);
@@ -48,7 +48,7 @@ if (window.XMLHttpRequest) {
 			}
 		}
 		
-		patchXHR("open", function(orig) {
+		patchXHR('open', function(orig) {
 			return function(m, url, b) {
 				initializeUploadListener(this);
 				this.__url = url;
@@ -62,25 +62,25 @@ if (window.XMLHttpRequest) {
 			}
 		});
 
-		patchXHR("getResponseHeader", function(orig) {
+		patchXHR('getResponseHeader', function(orig) {
 			return function(h) {
 				return this.__fileApiXHR && this.__fileApiXHR.getResponseHeader ? this.__fileApiXHR.getResponseHeader(h) : (orig == null ? null : orig.apply(this, [h]));
 			};
 		});
 
-		patchXHR("getAllResponseHeaders", function(orig) {
+		patchXHR('getAllResponseHeaders', function(orig) {
 			return function() {
 				return this.__fileApiXHR && this.__fileApiXHR.getAllResponseHeaders ? this.__fileApiXHR.getAllResponseHeaders() : (orig == null ? null : orig.apply(this));
 			}
 		});
 
-		patchXHR("abort", function(orig) {
+		patchXHR('abort', function(orig) {
 			return function() {
 				return this.__fileApiXHR && this.__fileApiXHR.abort ? this.__fileApiXHR.abort() : (orig == null ? null : orig.apply(this));
 			}
 		});
 
-		patchXHR("setRequestHeader", function(orig) {
+		patchXHR('setRequestHeader', function(orig) {
 			return function(header, value) {
 				if (header === '__setXHR_') {
 					initializeUploadListener(this);
@@ -97,7 +97,7 @@ if (window.XMLHttpRequest) {
 			}
 		});
 
-		patchXHR("send", function(orig) {
+		patchXHR('send', function(orig) {
 			return function() {
 				var xhr = this;
 				if (arguments[0] && arguments[0].__isShim) {
@@ -138,7 +138,7 @@ if (window.XMLHttpRequest) {
 										xhr.getAllResponseHeaders = function(){};
 										_this.complete(null, {status: 204, statusText: 'No Content'});
 									}
-								}, 5000);
+								}, 10000);
 							}
 						},
 						headers: xhr.__requestHeaders
@@ -187,6 +187,14 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 					wrap.appendChild(elem);
 				} else {
 					el.addClass('js-fileapi-wrapper');
+					if (el.parent()[0].__file_click_fn_delegate_) {
+						if (el.parent().css('position') === '' || el.parent().css('position') === 'static') {
+							el.parent().css('position', 'relative');
+						}
+						el.css('top', 0).css('bottom', 0).css('left', 0).css('right', 0).css('width', '100%').css('height', '100%').
+							css('padding', 0).css('margin', 0);
+						el.parent().unbind('click', el.parent()[0].__file_click_fn_delegate_);
+					}
 				}
 			}
 		}
@@ -236,7 +244,7 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 					addFlash(this);
 					if (window.jQuery) {
 						// fix for #281 jQuery on IE8
-						angular.element(this).bind("change", changeFnWrapper(null));
+						angular.element(this).bind('change', changeFnWrapper(null));
 					} else {
 						origAttachEvent.apply(this, [e, changeFnWrapper(fn)]);
 					}
@@ -291,7 +299,7 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			}
 
 			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-			script.setAttribute('src', jsUrl || basePath + "FileAPI.min.js");
+			script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
 			document.getElementsByTagName('head')[0].appendChild(script);
 			FileAPI.hasFlash = hasFlash();
 		}

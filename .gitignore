@@ -13,3 +13,4 @@ classes/
 ._*
 /node_modules
 *.jar
+release.sh

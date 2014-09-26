@@ -80,6 +80,9 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
 		<div class="upload-buttons">
 			choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
+			<button type="button" ng-file-select="onFileSelect($files)">aaaaaaa</button>
+			<input type="button" ng-file-select="onFileSelect($files)" name="zzzzzzzzzz" value="vvvvvvvvv">
+			<input type="file" ng-file-select="onFileSelect($files)">
 			<br/>
 			or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
 			<br/>
