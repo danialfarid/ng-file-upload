@@ -151,7 +151,7 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 #### <a name="node"></a>Node.js 
 [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 #### <a name="rails"></a>Rails
-[ToDo] Please contribute if you have working sample.
+[ToDo] Please contribute if you have working sample.<br/>
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
 #### <a name="php"></a>PHP
