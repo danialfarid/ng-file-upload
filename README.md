@@ -273,8 +273,8 @@ Make sure to load the scripts in your html file exactly in this order as describ
 
 ####<a name="yeoman"></a> Yeoman with bower automatic include
 ```
-bower install ng-file-upload -save
-bower install ng-file-upload-shim -save 
+bower install ng-file-upload --save
+bower install ng-file-upload-shim --save 
 ```
 bower.json
 ```
