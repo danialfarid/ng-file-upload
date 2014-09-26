@@ -239,7 +239,7 @@ Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> b
 For IE8-9 flash polyfill you need to have a <a href='#crossdomain'>crossdomain.xml</a> file at the root of you S3 bucket. Make sure the content-type of crossdomain.xml is text/xml and you provide read access to this file in your bucket policy.
 
 
-If you have Node.js and aws-sdk stack there is a separate github created by [nukulb](https://github.com/nukulb) as an example using this plugin here: [https://github.com/hubba/s3-angular-file-upload](https://github.com/hubba/s3-angular-file-upload)
+If you have Node.js there is a separate github project created by [Nukul Bhasin](https://github.com/nukulb) as an example using this plugin here: [https://github.com/nukulb/s3-angular-file-upload](https://github.com/nukulb/s3-angular-file-upload)
 
 
 ##<a name="install"></a> Install
