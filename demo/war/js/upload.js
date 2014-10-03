@@ -3,7 +3,7 @@
 
 angular.module('fileUpload', [ 'angularFileUpload' ]);
 
-var uploadUrl = 'http://angular-file-upload-cors-srv.appspot.com/upload';
+var uploadUrl = (window.location.protocol || 'http:') + '//angular-file-upload-cors-srv.appspot.com/upload';
 window.uploadUrl = window.uploadUrl || 'upload';
 	
 var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
