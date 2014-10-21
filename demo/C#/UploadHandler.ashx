@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="UploadHandler.ashx.cs" Class="VehicleSpec.Uploads.UploadHandler1" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="UploadHandler.ashx.cs" Class="MyApp.Uploads.UploadHandler" %>
