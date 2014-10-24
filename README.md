@@ -151,7 +151,7 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 #### <a name="php"></a>PHP
 [ToDo] Please contribute if you have working sample.
 #### <a name="net"></a>.Net
-You can find the sample client and server code in the folder: demo/C# [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/c#/)
+Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/blob/master/demo/c#/) provided by [AtomStar](https://github.com/AtomStar)
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
