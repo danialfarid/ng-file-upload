@@ -27,8 +27,8 @@ Table of Content:
 * Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
 * Direct upload to CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
-* Seperate shim file loaded on deman for `non-HTML5` code meaning no extra load/code if you just need HTML5 support. (Note that html5-shim.js is still needed for `progress` event in `HTML5` browsers)
-* Lighweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
+* Separate shim file loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support. (Note that html5-shim.js is still needed for `progress` event in `HTML5` browsers)
+* Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
 ##<a name="usage"></a> Usage
 
