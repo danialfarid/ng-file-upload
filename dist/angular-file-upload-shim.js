@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.6.12
+ * @version 2.0.0
  */
 
 (function() {
@@ -92,7 +92,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 	patchXHR('send', function(orig) {
 		return function() {
 			var xhr = this;
-			if (arguments[0] && arguments[0].__isShim) {
+			if (arguments[0] && arguments[0].__isFileAPIShim) {
 				var formData = arguments[0];
 				var config = {
 					url: xhr.__url,
@@ -158,7 +158,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			}
 		}
 	});
-	window.XMLHttpRequest.__isShim = true;
+	window.XMLHttpRequest.__isFileAPIShim = true;
 
 	var addFlash = function(elem) {
 		if (!hasFlash()) {
@@ -166,7 +166,9 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		}
 		var el = angular.element(elem);
 		if (!el.attr('disabled')) {
-			if (!el.hasClass('js-fileapi-wrapper') && (elem.getAttribute('ng-file-select') != null || elem.getAttribute('data-ng-file-select') != null)) {
+			if (!el.hasClass('js-fileapi-wrapper') && (el.attr('ng-file-select') != null || el.attr('data-ng-file-select') != null ||
+					(el.attr('ng-file-generated-elem') && 
+							(el.parent().attr('ng-file-select') != null || el.parent().attr('data-ng-file-select') != null)))) {
 				if (FileAPI.wrapInsideDiv) {
 					var wrap = document.createElement('div');
 					wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
@@ -177,13 +179,13 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 					wrap.appendChild(elem);
 				} else {
 					el.addClass('js-fileapi-wrapper');
-					if (el.parent()[0].__file_click_fn_delegate_) {
+					if (el.attr('ng-file-generated-elem')) {
 						if (el.parent().css('position') === '' || el.parent().css('position') === 'static') {
 							el.parent().css('position', 'relative');
 						}
 						el.css('top', 0).css('bottom', 0).css('left', 0).css('right', 0).css('width', '100%').css('height', '100%').
 							css('padding', 0).css('margin', 0);
-						el.parent().unbind('click', el.parent()[0].__file_click_fn_delegate_);
+						el.parent().unbind('click', el.parent().scope().fileClickDelegate);
 					}
 				}
 			}
@@ -255,7 +257,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 				});
 			},
 			data: [],
-			__isShim: true
+			__isFileAPIShim: true
 		};
 	};
 
@@ -286,7 +288,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			}
 
 			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-			script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+			script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
 			document.getElementsByTagName('head')[0].appendChild(script);
 			FileAPI.hasFlash = hasFlash();
 		}
