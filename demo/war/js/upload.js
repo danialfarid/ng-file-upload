@@ -145,36 +145,3 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		return confirm('Are you sure? Your local changes will be lost.');
 	}
 } ]);
-
-//<span ng-file-select ng-model="files" accept="image/*,*pdf" 
-//    class="upload-button" ng-file-change="upload(files)">Attach Images or PDFs</span>
-//<span ng-file-select ng-model="files" class="upload-button" ng-file-change="upload(files)">Attach Any File</span>
-//<br/>
-//<br/>
-//<div ng-file-drop ng-model="files" drop-available="dropSupported" ng-show="dropSupported"
-//	drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-//	multiple="true" allow-dir="true" accept="image/*,*pdf" class="drop-box">
-//		Drop Images or PDFs<div>here</div>
-//</div>
-//<div ng-show="!dropSupported">HTML5 Drop File is not supported for this browser</div>{{dropSupported}}
-//
-//<br/>
-//<br/>
-//
-//<form name="myForm">
-//  <fieldset>
-//  <legend>Upload on Submit</legend>
-//  Username: <input type="text" name="userName" ng-model="username" required> 
-//    <i ng-show="myForm.userName.$error.required">*required</i><br>
-//  Avatar: <input type="file" ng-file-select ng-model="avatar" name="file" accept="image/*" 
-//                 ng-file-change="generateThumb(avatar[0], $files)" required>
-//    <i ng-show="myForm.file.$error.required">*required</i>
-//    <img ng-show="avatar[0].dataUrl != null" ng-src="{{avatar[0].dataUrl}}" class="thumb">
-//	<br/>
-//	<br/>
-//	<button ng-disabled="!myForm.$valid" ng-click="uploadPic(avatar)">Submit From</button>
-//	<div ng-show="formUpload && avatar[0].result">Successful upload ((avatar[0].result))</div>
-//</fieldset>
-//</form>
-
-

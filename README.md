@@ -1,7 +1,7 @@
 angular-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To support get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> or give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload).
+Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> or give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload).
 
 
 Table of Content:
@@ -9,22 +9,26 @@ Table of Content:
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
 * [Server Side](#server)
-* [Amazon S3 Upload](#s3)
-* [Install (Bower)](#install)
+  * [Java](#java)
+  * [Node.js](#node)
+  * [Rails](#rails)
+  * [PHP](#php)
+  * [.Net](#net)
+  * [Amazon S3 Upload](#s3)
+* [CORS](#cors)
+* [Install](#install)
+  * [Manual](#manual)
+  * [Bower](#bower)
+  * [Yeoman](#yeoman)
+  * [NuGet](#nuget)
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
-* File upload for `HTML5` and `non-HTML5` browsers with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation before uploading the file
-* Uses regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
-* Supports upload progress
-* Supports cancel/abort upload while in progress
-* Supports File drag and drop (HTML5 only)
-* Supports Directory drag and drop (webkit only)
-* Supports CORS
-* All `non-HTML5` code is in a separate shim file and could be easily removed if you only supports `HTML5`. (html5-shim.js is needed for `progress` event though)
-* Flash `FileAPI` will be loaded on demand for `non-HTML5` FormData browsers so no extra load for `HTML5` browsers.
-* `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
-* `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the `Content-Type` of the file to CouchDB, imgur, etc... for `HTML5` `FileReader` browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods.
+* Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
+* Direct upload to CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* Separate shim file loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support. (Note that html5-shim.js is still needed for `progress` event in `HTML5` browsers)
+* Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
 ##<a name="usage"></a> Usage
 
@@ -100,18 +104,16 @@ If you want a cross browser approach you need to iterate through files and uploa
 **$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
-**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
-
 **drag and drop styling**: For file drag and drop, `ng-file-drag-over-class` can be a function that returns a class name based on the $event. See the demo for a sample. If the attribute is not specified by default the element will have "dragover" class on drag over which could be used to style the drop zone.
 You can also specify `ng-file-drag-over-delay` to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 ##<a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
+**Note**: Flash needs to be installed on the client browser since `FileAPI` uses Flash to upload files.
+
 For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.flash.swf`** which will be loaded if the browser does not supports HTML5 FormData (no extra load for HTML5 browsers).
 
-**Note**: Flash needs to be installed on the client browser since `FileAPI` uses Flash to upload files.
-**CORS**: To enable CORS
 You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or optionally you can use the following script to set the FileAPI load path if they are not at the same location:
 ```html
 <script>
@@ -137,29 +139,21 @@ You can put these two files beside `angular-file-upload-shim(.min).js` on your s
 * In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
 
 ##<a name="server"></a>Server Side
-####CORS
-To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
-([sample java code](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
-```java
-httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
-httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
-httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
-```
-For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
-<a name="crossdomain"></a>([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
-```xml
-<cross-domain-policy>
-  <site-control permitted-cross-domain-policies="all"/>
-  <allow-access-from domain="angular-file-upload.appspot.com"/>
-  <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
-</cross-domain-policy>
-```
 
-####Samples
-* **Java/GAE**: You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
-* **Node.js**: [Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
+#### <a name="java"></a>**Java**
+You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
+#### <a name="node"></a>Node.js 
+[Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
+#### <a name="rails"></a>Rails
+[ToDo] Please contribute if you have working sample.<br/>
+**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
-##<a name="s3"></a>Amazon AWS S3 Upload
+#### <a name="php"></a>PHP
+[ToDo] Please contribute if you have working sample.
+#### <a name="net"></a>.Net
+Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
+
+#### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
 ```
@@ -195,7 +189,7 @@ These two values are generated from the json policy document which looks like th
 ```
 The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to genenrate signature and policy to protect your aws secret key which should never be shared.
 
-Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit COORS Configuration. Samples of these two files:
+Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit CORS Configuration. Samples of these two files:
 ```
 {
   "Version": "2012-10-17",
@@ -239,12 +233,33 @@ Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> b
 For IE8-9 flash polyfill you need to have a <a href='#crossdomain'>crossdomain.xml</a> file at the root of you S3 bucket. Make sure the content-type of crossdomain.xml is text/xml and you provide read access to this file in your bucket policy.
 
 
-If you have Node.js and aws-sdk stack there is a separate github created by [nukulb](https://github.com/nukulb) as an example using this plugin here: [https://github.com/hubba/s3-angular-file-upload](https://github.com/hubba/s3-angular-file-upload)
+If you have Node.js there is a separate github project created by [Nukul Bhasin](https://github.com/nukulb) as an example using this plugin here: [https://github.com/nukulb/s3-angular-file-upload](https://github.com/nukulb/s3-angular-file-upload)
+
+##<a name="cors"></a>CORS
+To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
+([sample java code](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
+```java
+httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
+httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
+httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
+```
+For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
+<a name="crossdomain"></a>([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
+```xml
+<cross-domain-policy>
+  <site-control permitted-cross-domain-policies="all"/>
+  <allow-access-from domain="angular-file-upload.appspot.com"/>
+  <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
+</cross-domain-policy>
+```
 
 
 ##<a name="install"></a> Install
 
-Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases) or if you are using bower
+####<a name="manual"></a> Manual download 
+Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases)
+
+####<a name="bower"></a> Bower
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
 bower install ng-file-upload 
@@ -256,10 +271,10 @@ Make sure to load the scripts in your html file exactly in this order as describ
 <script src="angular-file-upload(.min).js"></script> 
 ```
 
-Or for yeoman with bower automatic include:
+####<a name="yeoman"></a> Yeoman with bower automatic include
 ```
-bower install ng-file-upload -save
-bower install ng-file-upload-shim -save
+bower install ng-file-upload --save
+bower install ng-file-upload-shim --save 
 ```
 bower.json
 ```
@@ -267,7 +282,7 @@ bower.json
   "dependencies": [..., "ng-file-upload-shim", "angularjs", "ng-file-upload", ...],
 }
 ```
-
+####<a name="nuget"></a> NuGet
 Package is also available on NuGet: http://www.nuget.org/packages/angular-file-upload with the help of [Georgios Diamantopoulos](https://github.com/georgiosd)
 
 ##<a name="contrib"></a> Issues & Contribution
