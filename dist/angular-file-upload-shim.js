@@ -1,8 +1,10 @@
 /**!
- * AngularJS file upload shim for HTML5 FormData
+ * AngularJS file upload/drop directive with progress and abort
+ * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
  * @version 1.6.12
  */
+
 (function() {
 
 var hasFlash = function() {
@@ -15,161 +17,149 @@ var hasFlash = function() {
 	return false;
 }
 
-var patchXHR = function(fnName, newFn) {
+function patchXHR(fnName, newFn) {
 	window.XMLHttpRequest.prototype[fnName] = newFn(window.XMLHttpRequest.prototype[fnName]);
 };
 
-if (window.XMLHttpRequest) {
-	if (window.FormData && (!window.FileAPI || !FileAPI.forceLoad)) {
-		// allow access to Angular XHR private field: https://github.com/angular/angular.js/issues/1934
-		patchXHR('setRequestHeader', function(orig) {
-			return function(header, value) {
-				if (header === '__setXHR_') {
-					var val = value(this);
-					// fix for angular < 1.2.0
-					if (val instanceof Function) {
-						val(this);
-					}
-				} else {
-					orig.apply(this, arguments);
+if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.forceLoad)) {
+	var initializeUploadListener = function(xhr) {
+		if (!xhr.__listeners) {
+			if (!xhr.upload) xhr.upload = {};
+			xhr.__listeners = [];
+			var origAddEventListener = xhr.upload.addEventListener;
+			xhr.upload.addEventListener = function(t, fn, b) {
+				xhr.__listeners[t] = fn;
+				origAddEventListener && origAddEventListener.apply(this, arguments);
+			};
+		}
+	}
+	
+	patchXHR('open', function(orig) {
+		return function(m, url, b) {
+			initializeUploadListener(this);
+			this.__url = url;
+			try {
+				orig.apply(this, [m, url, b]);
+			} catch (e) {
+				if (e.message.indexOf('Access is denied') > -1) {
+					orig.apply(this, [m, '_fix_for_ie_crossdomain__', b]);
 				}
-			}
-		});
-	} else {
-		var initializeUploadListener = function(xhr) {
-			if (!xhr.__listeners) {
-				if (!xhr.upload) xhr.upload = {};
-				xhr.__listeners = [];
-				var origAddEventListener = xhr.upload.addEventListener;
-				xhr.upload.addEventListener = function(t, fn, b) {
-					xhr.__listeners[t] = fn;
-					origAddEventListener && origAddEventListener.apply(this, arguments);
-				};
 			}
 		}
-		
-		patchXHR('open', function(orig) {
-			return function(m, url, b) {
+	});
+
+	patchXHR('getResponseHeader', function(orig) {
+		return function(h) {
+			return this.__fileApiXHR && this.__fileApiXHR.getResponseHeader ? this.__fileApiXHR.getResponseHeader(h) : (orig == null ? null : orig.apply(this, [h]));
+		};
+	});
+
+	patchXHR('getAllResponseHeaders', function(orig) {
+		return function() {
+			return this.__fileApiXHR && this.__fileApiXHR.getAllResponseHeaders ? this.__fileApiXHR.getAllResponseHeaders() : (orig == null ? null : orig.apply(this));
+		}
+	});
+
+	patchXHR('abort', function(orig) {
+		return function() {
+			return this.__fileApiXHR && this.__fileApiXHR.abort ? this.__fileApiXHR.abort() : (orig == null ? null : orig.apply(this));
+		}
+	});
+
+	patchXHR('setRequestHeader', function(orig) {
+		return function(header, value) {
+			if (header === '__setXHR_') {
 				initializeUploadListener(this);
-				this.__url = url;
-				try {
-					orig.apply(this, [m, url, b]);
-				} catch (e) {
-					if (e.message.indexOf('Access is denied') > -1) {
-						orig.apply(this, [m, '_fix_for_ie_crossdomain__', b]);
-					}
+				var val = value(this);
+				// fix for angular < 1.2.0
+				if (val instanceof Function) {
+					val(this);
 				}
+			} else {
+				this.__requestHeaders = this.__requestHeaders || {};
+				this.__requestHeaders[header] = value;
+				orig.apply(this, arguments);
 			}
-		});
-
-		patchXHR('getResponseHeader', function(orig) {
-			return function(h) {
-				return this.__fileApiXHR && this.__fileApiXHR.getResponseHeader ? this.__fileApiXHR.getResponseHeader(h) : (orig == null ? null : orig.apply(this, [h]));
-			};
-		});
-
-		patchXHR('getAllResponseHeaders', function(orig) {
-			return function() {
-				return this.__fileApiXHR && this.__fileApiXHR.getAllResponseHeaders ? this.__fileApiXHR.getAllResponseHeaders() : (orig == null ? null : orig.apply(this));
-			}
-		});
-
-		patchXHR('abort', function(orig) {
-			return function() {
-				return this.__fileApiXHR && this.__fileApiXHR.abort ? this.__fileApiXHR.abort() : (orig == null ? null : orig.apply(this));
-			}
-		});
-
-		patchXHR('setRequestHeader', function(orig) {
-			return function(header, value) {
-				if (header === '__setXHR_') {
-					initializeUploadListener(this);
-					var val = value(this);
-					// fix for angular < 1.2.0
-					if (val instanceof Function) {
-						val(this);
-					}
-				} else {
-					this.__requestHeaders = this.__requestHeaders || {};
-					this.__requestHeaders[header] = value;
-					orig.apply(this, arguments);
-				}
-			}
-		});
-
-		patchXHR('send', function(orig) {
-			return function() {
-				var xhr = this;
-				if (arguments[0] && arguments[0].__isShim) {
-					var formData = arguments[0];
-					var config = {
-						url: xhr.__url,
-						jsonp: false, //removes the callback form param
-						cache: true, //removes the ?fileapiXXX in the url
-						complete: function(err, fileApiXHR) {
-							xhr.__completed = true;
-							if (!err && xhr.__listeners['load']) 
-								xhr.__listeners['load']({type: 'load', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-							if (!err && xhr.__listeners['loadend']) 
-								xhr.__listeners['loadend']({type: 'loadend', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-							if (err === 'abort' && xhr.__listeners['abort']) 
-								xhr.__listeners['abort']({type: 'abort', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
-							if (fileApiXHR.status !== undefined) Object.defineProperty(xhr, 'status', {get: function() {return (fileApiXHR.status == 0 && err && err !== 'abort') ? 500 : fileApiXHR.status}});
-							if (fileApiXHR.statusText !== undefined) Object.defineProperty(xhr, 'statusText', {get: function() {return fileApiXHR.statusText}});
-							Object.defineProperty(xhr, 'readyState', {get: function() {return 4}});
-							if (fileApiXHR.response !== undefined) Object.defineProperty(xhr, 'response', {get: function() {return fileApiXHR.response}});
-							var resp = fileApiXHR.responseText || (err && fileApiXHR.status == 0 && err !== 'abort' ? err : undefined);
-							Object.defineProperty(xhr, 'responseText', {get: function() {return resp}});
-							Object.defineProperty(xhr, 'response', {get: function() {return resp}});
-							if (err) Object.defineProperty(xhr, 'err', {get: function() {return err}});
-							xhr.__fileApiXHR = fileApiXHR;
-							if (xhr.onreadystatechange) xhr.onreadystatechange();
-						},
-						fileprogress: function(e) {
-							e.target = xhr;
-							xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
-							xhr.__total = e.total;
-							xhr.__loaded = e.loaded;
-							if (e.total === e.loaded) {
-								// fix flash issue that doesn't call complete if there is no response text from the server  
-								var _this = this
-								setTimeout(function() {
-									if (!xhr.__completed) {
-										xhr.getAllResponseHeaders = function(){};
-										_this.complete(null, {status: 204, statusText: 'No Content'});
-									}
-								}, 10000);
-							}
-						},
-						headers: xhr.__requestHeaders
-					}
-					config.data = {};
-					config.files = {}
-					for (var i = 0; i < formData.data.length; i++) {
-						var item = formData.data[i];
-						if (item.val != null && item.val.name != null && item.val.size != null && item.val.type != null) {
-							config.files[item.key] = item.val;
-						} else {
-							config.data[item.key] = item.val;
-						}
-					}
-
-					setTimeout(function() {
-						if (!hasFlash()) {
-							throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
-						}
-						xhr.__fileApiXHR = FileAPI.upload(config);
-					}, 1);
-				} else {
-					orig.apply(xhr, arguments);
-				}
-			}
-		});
+		}
+	});
+	
+	function redefineProp(xhr, prop, fn) {
+		try {
+			Object.defineProperty(xhr, prop, {get: fn});
+		} catch (e) {/*ignore*/}
 	}
-	window.XMLHttpRequest.__isShim = true;
-}
 
-if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
+	patchXHR('send', function(orig) {
+		return function() {
+			var xhr = this;
+			if (arguments[0] && arguments[0].__isShim) {
+				var formData = arguments[0];
+				var config = {
+					url: xhr.__url,
+					jsonp: false, //removes the callback form param
+					cache: true, //removes the ?fileapiXXX in the url
+					complete: function(err, fileApiXHR) {
+						xhr.__completed = true;
+						if (!err && xhr.__listeners['load']) 
+							xhr.__listeners['load']({type: 'load', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+						if (!err && xhr.__listeners['loadend']) 
+							xhr.__listeners['loadend']({type: 'loadend', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+						if (err === 'abort' && xhr.__listeners['abort']) 
+							xhr.__listeners['abort']({type: 'abort', loaded: xhr.__loaded, total: xhr.__total, target: xhr, lengthComputable: true});
+						if (fileApiXHR.status !== undefined) redefineProp(xhr, 'status', function() {return (fileApiXHR.status == 0 && err && err !== 'abort') ? 500 : fileApiXHR.status});
+						if (fileApiXHR.statusText !== undefined) redefineProp(xhr, 'statusText', function() {return fileApiXHR.statusText});
+						redefineProp(xhr, 'readyState', function() {return 4});
+						if (fileApiXHR.response !== undefined) redefineProp(xhr, 'response', function() {return fileApiXHR.response});
+						var resp = fileApiXHR.responseText || (err && fileApiXHR.status == 0 && err !== 'abort' ? err : undefined);
+						redefineProp(xhr, 'responseText', function() {return resp});
+						redefineProp(xhr, 'response', function() {return resp});
+						if (err) redefineProp(xhr, 'err', function() {return err});
+						xhr.__fileApiXHR = fileApiXHR;
+						if (xhr.onreadystatechange) xhr.onreadystatechange();
+						if (xhr.onload) xhr.onload();
+					},
+					fileprogress: function(e) {
+						e.target = xhr;
+						xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
+						xhr.__total = e.total;
+						xhr.__loaded = e.loaded;
+						if (e.total === e.loaded) {
+							// fix flash issue that doesn't call complete if there is no response text from the server  
+							var _this = this
+							setTimeout(function() {
+								if (!xhr.__completed) {
+									xhr.getAllResponseHeaders = function(){};
+									_this.complete(null, {status: 204, statusText: 'No Content'});
+								}
+							}, 10000);
+						}
+					},
+					headers: xhr.__requestHeaders
+				}
+				config.data = {};
+				config.files = {}
+				for (var i = 0; i < formData.data.length; i++) {
+					var item = formData.data[i];
+					if (item.val != null && item.val.name != null && item.val.size != null && item.val.type != null) {
+						config.files[item.key] = item.val;
+					} else {
+						config.data[item.key] = item.val;
+					}
+				}
+
+				setTimeout(function() {
+					if (!hasFlash()) {
+						throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
+					}
+					xhr.__fileApiXHR = FileAPI.upload(config);
+				}, 1);
+			} else {
+				orig.apply(xhr, arguments);
+			}
+		}
+	});
+	window.XMLHttpRequest.__isShim = true;
+
 	var addFlash = function(elem) {
 		if (!hasFlash()) {
 			throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
@@ -287,12 +277,9 @@ if (!window.FormData || (window.FileAPI && FileAPI.forceLoad)) {
 			} else {
 				for (i = 0; i < allScripts.length; i++) {
 					src = allScripts[i].src;
-					index = src.indexOf('angular-file-upload-shim.js')
-					if (index == -1) {
-						index = src.indexOf('angular-file-upload-shim.min.js');
-					}
+					index = src.search(/\/angular\-file\-upload[\-a-zA-z0-9\.]*\.js/)
 					if (index > -1) {
-						basePath = src.substring(0, index);
+						basePath = src.substring(0, index + 1);
 						break;
 					}
 				}
@@ -374,5 +361,4 @@ if (!window.FileReader) {
 		}
 	}
 }
-
 })();

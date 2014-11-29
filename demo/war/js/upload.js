@@ -1,186 +1,61 @@
 "use strict";
 
 
-angular.module('fileUpload', [ 'angularFileUpload' ]);
+var app = angular.module('fileUpload', [ 'angularFileUpload' ]);
+var version = angular.module('angularFileUpload').version;
 
-var uploadUrl = 'http://angular-file-upload-cors-srv.appspot.com/upload';
-window.uploadUrl = window.uploadUrl || 'upload';
-	
-var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http, $timeout, $upload) {
+app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload', function($scope, $http, $timeout, $compile, $upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
 	$scope.fileReaderSupported = window.FileReader != null && (window.FileAPI == null || FileAPI.html5 != false);
-	$scope.uploadRightAway = true;
+
 	$scope.changeAngularVersion = function() {
 		window.location.hash = $scope.angularVersion;
 		window.location.reload(true);
 	};
-	$scope.hasUploader = function(index) {
-		return $scope.upload[index] != null;
-	};
-	$scope.abort = function(index) {
-		$scope.upload[index].abort(); 
-		$scope.upload[index] = null;
-	};
+	
 	$scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ? 
 			window.location.hash.substring(2): window.location.hash.substring(1)) : '1.2.20';
-	$scope.onFileSelect = function($files) {
-		$scope.selectedFiles = [];
-		$scope.progress = [];
-		if ($scope.upload && $scope.upload.length > 0) {
-			for (var i = 0; i < $scope.upload.length; i++) {
-				if ($scope.upload[i] != null) {
-					$scope.upload[i].abort();
-				}
+			
+	// you can also $scope.$watch('files',...) instead of calling upload from ui
+	$scope.upload = function(files) {
+		$scope.formUpload = false;
+		if (files != null) {
+			for (var i = 0; i < files.length; i++) {
+				$scope.errorMsg = null;
+				(function(file) {
+					$scope.generateThumb(file);
+					eval($scope.uploadScript);
+				})(files[i]);
 			}
 		}
-		$scope.upload = [];
-		$scope.uploadResult = [];
-		$scope.selectedFiles = $files;
-		$scope.dataUrls = [];
-		for ( var i = 0; i < $files.length; i++) {
-			var $file = $files[i];
-			if ($scope.fileReaderSupported && $file.type.indexOf('image') > -1) {
-				var fileReader = new FileReader();
-				fileReader.readAsDataURL($files[i]);
-				var loadFile = function(fileReader, index) {
+		storeS3UploadConfigInLocalStore();
+	};
+
+	$scope.uploadPic = function(files) {
+		$scope.formUpload = true;
+		if (files != null) {
+			var file = files[0];
+			$scope.generateThumb(file);
+			$scope.errorMsg = null;
+			eval($scope.uploadScript);	
+		}
+	}
+	
+	$scope.generateThumb = function(file) {
+		if (file != null) {
+			if ($scope.fileReaderSupported && file.type.indexOf('image') > -1) {
+				$timeout(function() {
+					var fileReader = new FileReader();
+					fileReader.readAsDataURL(file);
 					fileReader.onload = function(e) {
 						$timeout(function() {
-							$scope.dataUrls[index] = e.target.result;
+							file.dataUrl = e.target.result;
 						});
 					}
-				}(fileReader, i);
-			}
-			$scope.progress[i] = -1;
-			if ($scope.uploadRightAway) {
-				$scope.start(i);
+				});
 			}
 		}
-	};
-	
-	$scope.start = function(index) {
-		$scope.progress[index] = 0;
-		$scope.errorMsg = null;
-		if ($scope.howToSend == 1) {
-			//$upload.upload()
-			$scope.upload[index] = $upload.upload({
-				url: uploadUrl,
-				method: $scope.httpMethod,
-				headers: {'my-header': 'my-header-value'},
-				data : {
-					myModel : $scope.myModel,
-					errorCode: $scope.generateErrorOnServer && $scope.serverErrorCode,
-					errorMessage: $scope.generateErrorOnServer && $scope.serverErrorMsg
-				},
-				/* formDataAppender: function(fd, key, val) {
-					if (angular.isArray(val)) {
-                        angular.forEach(val, function(v) {
-                          fd.append(key, v);
-                        });
-                      } else {
-                        fd.append(key, val);
-                      }
-				}, */
-				/* transformRequest: [function(val, h) {
-					console.log(val, h('my-header')); return val + '-modified';
-				}], */
-				file: $scope.selectedFiles[index],
-				fileFormDataName: 'myFile'
-			});
-			$scope.upload[index].then(function(response) {
-				$timeout(function() {
-					$scope.uploadResult.push(response.data);
-				});
-			}, function(response) {
-				if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
-			}, function(evt) {
-				// Math.min is to fix IE which reports 200% sometimes
-				$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-			});
-			$scope.upload[index].xhr(function(xhr){
-//				xhr.upload.addEventListener('abort', function() {console.log('abort complete')}, false);
-			});
-		} else if ($scope.howToSend == 2) {
-			//$upload.http()
-			var fileReader = new FileReader();
-            fileReader.onload = function(e) {
-            	console.log('file is loaded in filereader');
-		        $scope.upload[index] = $upload.http({
-		        	url: uploadUrl,
-					headers: {'Content-Type': $scope.selectedFiles[index].type},
-					data: e.target.result
-		        });
-		        $scope.upload[index].then(function(response) {
-					$scope.uploadResult.push(response.data);
-				}, function(response) {
-					if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
-				}, function(evt) {
-					// Math.min is to fix IE which reports 200% sometimes
-					$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-					console.log('progres', Math.min(100, parseInt(100.0 * evt.loaded / evt.total)))
-				});
-				$scope.upload[index].xhr(function(xhr){
-					xhr.upload.addEventListener('progress', function(evt) {
-						console.log('progres2', Math.min(100, parseInt(100.0 * evt.loaded / evt.total)))
-					}, false);
-					xhr.addEventListener('progress', function(evt) {
-						console.log('progres3', Math.min(100, parseInt(100.0 * evt.loaded / evt.total)))
-					}, false);
-				});
-            }
-	        fileReader.readAsArrayBuffer($scope.selectedFiles[index]);
-		} else {
-			//s3 upload
-			$scope.upload[index] = $upload.upload({
-				url: $scope.s3url,
-				method: 'POST',
-				data : {
-					key: $scope.selectedFiles[index].name,
-					AWSAccessKeyId: $scope.AWSAccessKeyId,
-					acl: $scope.acl,
-					policy: $scope.policy,
-					signature: $scope.signature,
-					"Content-Type": $scope.selectedFiles[index].type === null || $scope.selectedFiles[index].type === '' ?
-										'application/octet-stream' : $scope.selectedFiles[index].type,
-					filename: $scope.selectedFiles[index].name
-				},
-				file: $scope.selectedFiles[index],
-			});
-			$scope.upload[index].then(function(response) {
-				$timeout(function() {
-					$scope.uploadResult.push(response.data);
-				});
-			}, function(response) {
-				if (response.status > 0) $scope.errorMsg = response.status + ': ' + response.data;
-			}, function(evt) {
-				// Math.min is to fix IE which reports 200% sometimes
-				$scope.progress[index] = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-			});
-			if (localStorage) {
-				localStorage.setItem("s3url", $scope.s3url);
-				localStorage.setItem("AWSAccessKeyId", $scope.AWSAccessKeyId);
-				localStorage.setItem("acl", $scope.acl);
-				localStorage.setItem("success_action_redirect", $scope.success_action_redirect);
-				localStorage.setItem("policy", $scope.policy);
-				localStorage.setItem("signature", $scope.signature);
-			}
-		}
-	};
-	
-	$scope.dragOverClass = function($event) {
-		var items = $event.dataTransfer.items;
-		var hasFile = false;
-		if (items != null) {
-			for (var i = 0 ; i < items.length; i++) {
-				if (items[i].kind == 'file') {
-					hasFile = true;
-					break;
-				}
-			}
-		} else {
-			hasFile = true;
-		}
-		return hasFile ? "dragover" : "dragover-err";
-	};
+	}
 	
 	$scope.generateSignature = function() {
 		$http.post('/s3sign?aws-secret-key=' + encodeURIComponent($scope.AWSSecretKey), $scope.jsonPolicy).
@@ -189,6 +64,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 				$scope.signature = data.signature;
 			});
 	}
+	
 	if (localStorage) {
 		$scope.s3url = localStorage.getItem("s3url");
 		$scope.AWSAccessKeyId = localStorage.getItem("AWSAccessKeyId");
@@ -197,7 +73,108 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload', function($scope, $http,
 		$scope.policy = localStorage.getItem("policy");
 		$scope.signature = localStorage.getItem("signature");
 	}
+	
 	$scope.success_action_redirect = $scope.success_action_redirect || window.location.protocol + "//" + window.location.host;
 	$scope.jsonPolicy = $scope.jsonPolicy || '{\n  "expiration": "2020-01-01T00:00:00Z",\n  "conditions": [\n    {"bucket": "angular-file-upload"},\n    ["starts-with", "$key", ""],\n    {"acl": "private"},\n    ["starts-with", "$Content-Type", ""],\n    ["starts-with", "$filename", ""],\n    ["content-length-range", 0, 524288000]\n  ]\n}';
 	$scope.acl = $scope.acl || 'private';
-} ];
+	
+	function storeS3UploadConfigInLocalStore() {
+		if ($scope.howToSend == 3 && localStorage) {
+			localStorage.setItem("s3url", $scope.s3url);
+			localStorage.setItem("AWSAccessKeyId", $scope.AWSAccessKeyId);
+			localStorage.setItem("acl", $scope.acl);
+			localStorage.setItem("success_action_redirect", $scope.success_action_redirect);
+			localStorage.setItem("policy", $scope.policy);
+			localStorage.setItem("signature", $scope.signature);
+		}
+	}
+	
+	(function handleDynamicEditingOfScriptsAndHtml($scope, $http) {
+		$scope.defaultUploadScript = [];
+		$http.get('js/upload-upload.js').success(function(data) {
+			$scope.defaultUploadScript[1] = data; $scope.uploadScript = $scope.uploadScript || data
+		});
+		$http.get('js/upload-http.js').success(function(data) {$scope.defaultUploadScript[2] = data});
+		$http.get('js/upload-s3.js').success(function(data) {$scope.defaultUploadScript[3] = data});
+		
+		$scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '');
+		
+		$scope.editHtml = (localStorage && localStorage.getItem("editHtml" + version)) || $scope.defaultHtml;
+		function htmlEdit(update) {
+			document.getElementById("editArea").innerHTML = $scope.editHtml;
+			$compile(document.getElementById("editArea"))($scope);
+			$scope.editHtml && localStorage && localStorage.setItem("editHtml" + version, $scope.editHtml);
+			if ($scope.editHtml != $scope.htmlEditor.getValue()) $scope.htmlEditor.setValue($scope.editHtml);
+		}
+		$scope.$watch("editHtml", htmlEdit);
+		
+		$scope.$watch("howToSend", function(newVal, oldVal) {
+			$scope.uploadScript && localStorage && localStorage.setItem("uploadScript" + oldVal + version, $scope.uploadScript);
+			$scope.uploadScript = (localStorage && localStorage.getItem("uploadScript" + newVal + version)) || $scope.defaultUploadScript[newVal]; 
+		});
+		
+		function jsEdit(update) {
+			$scope.uploadScript && localStorage && localStorage.setItem("uploadScript" + $scope.howToSend + version, $scope.uploadScript);
+			if ($scope.uploadScript != $scope.jsEditor.getValue()) $scope.jsEditor.setValue($scope.uploadScript);
+		}
+		$scope.$watch("uploadScript", jsEdit);
+
+		$scope.htmlEditor = CodeMirror(document.getElementById('htmlEdit'), {
+			lineNumbers: true, indentUnit: 4,
+			mode:  "htmlmixed"
+		});
+		$scope.htmlEditor.on('change', function() {
+			if ($scope.editHtml != $scope.htmlEditor.getValue()) {
+				$scope.editHtml = $scope.htmlEditor.getValue();
+				htmlEdit();
+			}
+		});
+		$scope.jsEditor = CodeMirror(document.getElementById('jsEdit'), {
+			lineNumbers: true, indentUnit: 4,
+			mode:  "javascript"
+		});
+		$scope.jsEditor.on('change', function() {
+			if ($scope.uploadScript != $scope.jsEditor.getValue()) {
+				$scope.uploadScript = $scope.jsEditor.getValue();
+				jsEdit();
+			}
+		});
+	})($scope, $http);
+	
+	$scope.confirm = function() {
+		return confirm('Are you sure? Your local changes will be lost.');
+	}
+} ]);
+
+//<span ng-file-select ng-model="files" accept="image/*,*pdf" 
+//    class="upload-button" ng-file-change="upload(files)">Attach Images or PDFs</span>
+//<span ng-file-select ng-model="files" class="upload-button" ng-file-change="upload(files)">Attach Any File</span>
+//<br/>
+//<br/>
+//<div ng-file-drop ng-model="files" drop-available="dropSupported" ng-show="dropSupported"
+//	drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+//	multiple="true" allow-dir="true" accept="image/*,*pdf" class="drop-box">
+//		Drop Images or PDFs<div>here</div>
+//</div>
+//<div ng-show="!dropSupported">HTML5 Drop File is not supported for this browser</div>{{dropSupported}}
+//
+//<br/>
+//<br/>
+//
+//<form name="myForm">
+//  <fieldset>
+//  <legend>Upload on Submit</legend>
+//  Username: <input type="text" name="userName" ng-model="username" required> 
+//    <i ng-show="myForm.userName.$error.required">*required</i><br>
+//  Avatar: <input type="file" ng-file-select ng-model="avatar" name="file" accept="image/*" 
+//                 ng-file-change="generateThumb(avatar[0], $files)" required>
+//    <i ng-show="myForm.file.$error.required">*required</i>
+//    <img ng-show="avatar[0].dataUrl != null" ng-src="{{avatar[0].dataUrl}}" class="thumb">
+//	<br/>
+//	<br/>
+//	<button ng-disabled="!myForm.$valid" ng-click="uploadPic(avatar)">Submit From</button>
+//	<div ng-show="formUpload && avatar[0].result">Successful upload ((avatar[0].result))</div>
+//</fieldset>
+//</form>
+
+

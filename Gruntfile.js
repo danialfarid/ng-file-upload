@@ -53,6 +53,20 @@ module.exports = function(grunt) {
 				} ]
 			}
 		},
+		concat: {
+			dist: {
+				options: {
+					process: function(content, srcpath) {
+						return grunt.template.process(content);
+					}
+				},
+				files: {
+					'demo/war/js/<%= pkg.name %>-all.js': 
+						['demo/war/js/<%= pkg.name %>.js', 
+						'demo/war/js/<%= pkg.name %>-shim.js']
+				}
+			}
+		},
 		uglify : {
 			options : {
 				banner : '/*! <%= pkg.version %> */\n'
@@ -61,14 +75,14 @@ module.exports = function(grunt) {
 				files : [ {
 					'dist/<%= pkg.name %>.min.js' : 'dist/<%= pkg.name %>.js',
 					'dist/<%= pkg.name %>-shim.min.js' : 'dist/<%= pkg.name %>-shim.js',
-					'dist/<%= pkg.name %>-html5-shim.min.js' : 'dist/<%= pkg.name %>-html5-shim.js'
+					'dist/<%= pkg.name %>-all.min.js' : 'dist/<%= pkg.name %>-all.js'
 				} ]
 			}
 		},
 		replace : {
 			version : {
 				src: ['nuget/Package.nuspec', '../angular-file-upload-bower/bower.json',
-					'../angular-file-upload-shim-bower/bower.json', 'aaaa.txt'
+					'../angular-file-upload-shim-bower/bower.json'
 					], 
     			overwrite: true,
     			replacements: [{
@@ -82,13 +96,11 @@ module.exports = function(grunt) {
 		}	
 	});
 
-	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-text-replace');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
-
-	// Default task(s).
-	grunt.registerTask('default', [ 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower', 'replace:version' ]);
+	grunt.registerTask('default', [ 'concat:dist', 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower', 'replace:version' ]);
 
 };

@@ -19,15 +19,23 @@ FileAPI = {
 };
 </script>
 <!-- <script src="//code.jquery.com/jquery-1.9.0.min.js"></script> -->
-<script src="js/angular-file-upload-shim.js"></script>
 <script type="text/javascript">
-// load angularjs specific version
-var angularVersion = window.location.hash.substring(1);
-if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1); 
-document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + (angularVersion || '1.2.20') + '/angular.js"><\/script>');
+	// load angularjs specific version
+	var angularVersion = window.location.hash.substring(1);
+	if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1); 
+	document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + 
+			(angularVersion || '1.2.20') + '/angular.js"><\/script>');
 </script>
+<script src="js/angular-file-upload-shim.js"></script>
 <script src="js/angular-file-upload.js"></script>
 <script src="js/upload.js"></script>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/codemirror.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/codemirror.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/mode/htmlembedded/htmlembedded.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/mode/xml/xml.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/mode/javascript/javascript.min.js"></script>
 </head>
 
 <body ng-app="fileUpload" ng-controller="MyCtrl">
@@ -40,95 +48,126 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
 	</h3>
 	<div class="upload-div">
-		How to upload:<br/><br/>
-		<div class="howto">
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">Multipart/form-data upload using $upload.upload() service cross browser</label>
-		<br/>
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!fileReaderSupported || usingFlash">File binary content with the file type as Content-Type header using $upload.http() service</label>
-		<div class="sub">The second option could be used to upload files to <a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
-			<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... for HTML5 FileReader browsers.<br/>
+		<div class="edit-div">
+			<a ng-click="showEdit = !showEdit" href="javascript:void(0)">+ edit upload html</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a ng-show="showEdit" ng-click="confirm() && (editHtml = defaultHtml)" href="javascript:void(0)">reset to default</a><br/><br/>
+			<div ng-show="showEdit" id="htmlEdit"></div>
 		</div>
-		<label><input type="radio" name="howToSend" ng-model="howToSend" value="3">Upload to Amazon S3 bucket</label>
-		<form ng-show="howToSend==3" class="s3" id="s3form" action="http://localhost:8888" onsubmit="return false;">
-			<br/>
-			Provide S3 upload parameters. <a href="http://aws.amazon.com/articles/1434/" target="_blank">Click here for detailed documentation</a><br/></br>
-			<label>S3 upload url including bucket name:</label> <input type="text" ng-model="s3url"> <br/>
-			<label>AWSAccessKeyId:</label> <input type="Text" name="AWSAccessKeyId" ng-model="AWSAccessKeyId"> <br/>
-			<label>acl (private or public):</label> <input type="text" ng-model="acl" value="private"><br/>
-			<label>success_action_redirect:</label> <input type="text" ng-model="success_action_redirect"><br/>
-			<label>policy:</label> <input type="text" ng-model="policy"><br/>
-			<label>signature:</label> <input type="text" ng-model="signature"><br/>
-			<br/>
-			<button ng-click="showHelper=!showHelper">S3 Policy signing helper (Optional)</button><br/><br/>
-			<div class="helper" ng-show="showHelper">
-				If you don't have your policy and signature you can use this tool to generate them by providing these two fields and clicking on sign<br/>	      
-				<label>AWS Secret Key:</label> <input type="text" ng-model="AWSSecretKey"><br/>
-				<label>JSON policy:</label><br/> <textarea type="text" ng-model="jsonPolicy" rows=10 cols=70></textarea>
-				<button ng-click="generateSignature()">Sign</button>
-			</div>
-      	</form>
-      	</div>
-      	<br/>
-      	http method: <input type="radio" ng-model="httpMethod" ng-init="httpMethod = 'POST'" value="POST"/>post <input type="radio" ng-model="httpMethod" value='PUT' ng-disabled="usingFlash || howToSend == 3"/>put<br/>
-		<input type="checkbox" ng-model="uploadRightAway">Upload right away
-		<br/>
-		<div ng-show="howToSend != 3">
-			<input type="checkbox" ng-model="generateErrorOnServer">Make server return error code: <input type="text" ng-model="serverErrorCode"> message: <input type="text" ng-model="serverErrorMsg">
-			<br/>
-		</div>
-		<br/>
-		myModel: <input type="text" ng-model="myModel"> model object to be sent with the file.<br/>
+
 		<div class="upload-buttons">
-			choose a single file: <input type="file" ng-file-select="onFileSelect($files)" onclick="this.value=null">
-			<br/>
-			or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null">
-			<br/>
-			or only images: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple onclick="this.value=null" accept="image/*">
-		</div>
-		You can have any element as an upload button: <div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button">Click here to select file</div>
-		<br/>
-		<br/>
-		<!-- ng-file-drag-over-class and ng-file-drag-over-delay are optional for styling and css transition handling #277 -->
-		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drop-available="dropSupported=true"
-			ng-file-drag-over-class="dragOverClass($event)" ng-file-drag-over-delay="100">or drop files <div>here</div></div>
-		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
-		<br/>
-		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
-		<br/>
-		Progress:
-		<br/>
-		<br/>
-		<div ng-show="selectedFiles != null">
-			<div class="sel-file" ng-repeat="f in selectedFiles">
-				{{($index + 1) + '.'}}
-				<img ng-show="dataUrls[$index]" ng-src="{{dataUrls[$index]}}">
-				<button class="button" ng-click="start($index)" ng-show="progress[$index] < 0">Start</button>
-				<span class="progress" ng-show="progress[$index] >= 0">						
-					<div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
-				</span>				
-				<button class="button" ng-click="abort($index)" ng-show="hasUploader($index) && progress[$index] < 100">Abort</button>
-				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
+			<div id="editArea">
+				<form name="myForm">
+				  	<fieldset><legend>Upload on form submit</legend>
+					    Username: <input type="text" name="userName" ng-model="username" size="48" required> 
+					      			<i ng-show="myForm.userName.$error.required">*required</i><br>
+					    Profile Picture: <input type="file" ng-file-select ng-model="picFile" name="file" accept="image/*" 
+					                   ng-file-change="generateThumb(picFile[0], $files)" required>
+									<i ng-show="myForm.file.$error.required">*required</i>
+									<img ng-show="picFile[0].dataUrl != null" ng-src="{{picFile[0].dataUrl}}" class="thumb">
+					  	<br/>
+					  	
+						<button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
+					    
+						<span class="progress" ng-show="picFile[0].progress >= 0">						
+							<div style="width:{{picFile[0].progress}}%" ng-bind="picFile[0].progress + '%'"></div>
+						</span>	
+						<span ng-show="picFile[0].result">Upload Successful</span>
+				  	</fieldset>
+					<br/>
+				</form>
+				<fieldset><legend>Upload right away</legend>
+					<div class="up-buttons">
+						<div ng-file-select ng-model="files" class="upload-button" 
+						       ng-file-change="upload(files)" multiple="true" accept="image/*,*pdf" tabindex="0">Attach Images or PDFs</div><br/>
+						<button ng-file-select ng-model="files"
+								ng-file-change="upload(files)" multiple="true">Attach Any File</button>
+					</div>
+					<div ng-file-drop ng-model="files" class="drop-box" 
+						drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+						multiple="true" allow-dir="true" accept="image/*,*pdf" ng-file-change="upload(files)">
+							Drop Images or PDFs<div>here</div>
+					</div>
+					<div ng-no-file-drop class="drop-box">File Farg&Drop is not supported for this browser</div>
+				</fieldset>
+				<br/>
 			</div>
 		</div>
-		<div class="response" ng-show="uploadResult.length > 0">
-			Server Response:
-			<ul>
-				<li ng-repeat="result in uploadResult">
-					<div data-ng-show="result.result == null">{{result}}</div>
+		
+		<ul ng-show="files.length > 0" class="response">
+			<li class="sel-file" ng-repeat="f in files">
+				<img ng-show="f.dataUrl" ng-src="{{f.dataUrl}}" class="thumb">
+				<span class="progress" ng-show="f.progress >= 0">						
+					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
+				</span>				
+				<button class="button" ng-click="f.upload.abort()" ng-show="f.upload != null && f.progress < 100">Abort</button>
+				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
+				<a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>
+				<div ng-show="f.showDetail">
+					<br/>
+					<div data-ng-show="f.result.result == null">{{f.result}}</div>
 					<ul>
-						<li ng-repeat="item in result.result">
+						<li ng-repeat="item in f.result.result">
 							<div data-ng-show="item.name">file name: {{item.name}}</div>
 							<div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
 							<div data-ng-show="item.size">size on the serve: {{item.size}}</div>
 							<div data-ng-show="item.value">value: {{item.value}}</div>
 						</li>
 					</ul>
-					<div data-ng-show="result.requestHeaders" class="reqh">request headers: {{result.requestHeaders}}</div>
-				</li>
-			</ul>
-		</div>
+					<div data-ng-show="f.result.requestHeaders" class="reqh">request headers: {{f.result.requestHeaders}}</div>
+				</div>
+			</li>
+		</ul>
+
+		<br/>
+		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
 	</div>
+
+	<div class="server">
+		<div class="srv-title">How to upload to the server:</div>
+		
+		<div class="edit-div">
+			<a ng-click="showEditScript  = !showEditScript" href="javascript:void(0)">+ edit upload script</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a ng-show="showEditScript" ng-click="confirm() && (uploadScript = defaultUploadScript[howToSend])" href="javascript:void(0)">reset to default</a><br/><br/>
+			<div ng-show="showEditScript" id="jsEdit"></div>
+		</div>
+		
+		<div class="howto">
+			<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">$upload.upload(): multipart/form-data upload cross browser</label>
+			<br/>
+			<label><input type="radio" name="howToSend" ng-model="howToSend" value="2" ng-disabled="!fileReaderSupported || usingFlash">$upload.http(): binary content with file's Content-Type</label>
+			<div class="sub">Can be used to upload files directory into<a href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>, 
+				<a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... without multipart form data (HTML5 FileReader browsers only)<br/>
+			</div>
+			<label><input type="radio" name="howToSend" ng-model="howToSend" value="3">Amazon S3 bucket upload</label>
+			
+			<form ng-show="howToSend==3" class="s3" id="s3form" action="http://localhost:8888" onsubmit="return false">
+				<br/>
+				Provide S3 upload parameters. <a href="http://aws.amazon.com/articles/1434/" target="_blank">Click here for detailed documentation</a><br/></br>
+				<label>S3 upload url including bucket name:</label> <input type="text" ng-model="s3url"> <br/>
+				<label>AWSAccessKeyId:</label> <input type="Text" name="AWSAccessKeyId" ng-model="AWSAccessKeyId"> <br/>
+				<label>acl (private or public):</label> <input type="text" ng-model="acl" value="private"><br/>
+				<label>success_action_redirect:</label> <input type="text" ng-model="success_action_redirect"><br/>
+				<label>policy:</label> <input type="text" ng-model="policy"><br/>
+				<label>signature:</label> <input type="text" ng-model="signature"><br/>
+				<br/>
+				<button ng-click="showHelper=!showHelper">S3 Policy signing helper (Optional)</button><br/><br/>
+				<div class="helper" ng-show="showHelper">
+					If you don't have your policy and signature you can use this tool to generate them by providing these two fields and clicking on sign<br/>	      
+					<label>AWS Secret Key:</label> <input type="text" ng-model="AWSSecretKey"><br/>
+					<label>JSON policy:</label><br/> <textarea type="text" ng-model="jsonPolicy" rows=10 cols=70></textarea>
+					<button ng-click="generateSignature()">Sign</button>
+				</div>
+		   	</form>
+		   	<br/>
+		   	<br/>
+			<div ng-show="howToSend != 3">
+				<input type="checkbox" ng-model="generateErrorOnServer">Return server error with http code: <input type="text" ng-model="serverErrorCode" size="5"> and message: <input type="text" ng-model="serverErrorMsg">
+				<br/>
+			</div>
+		   	<br/>
+		</div>
+	</div>	
 	<a style="position:fixed;bottom:10px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2014-09-23</div>
+	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2014-12-01</div>
 </body>
 </html>

@@ -4,24 +4,20 @@ body {
 
 .upload-buttons input[type="file"] {	
 	width: 6.3em \0/IE9;
-	height: 1.5em;
-	margin: 5px;
-}
-
-.upload-buttons input[multiple] {
-	width: 6.2em \0/IE9;
 }
 
 .upload-button {
-	width: 170px;
-	Height: 30px;
-	display: inline-block;
+	Height: 26px;
 	line-height: 30px;
 	padding: 0 10px;
 	background: #CCC;
 	appearance: button;
 	-moz-appearance: button; /* Firefox */
 	-webkit-appearance: button; /* Safari and Chrome */
+	position: relative;
+	text-align: center;
+	top: 7px;
+	cursor: pointer;
 }
 
 .sel-file {
@@ -31,18 +27,23 @@ body {
 }
 
 .response {
-	padding-top: 30px;
-	padding-bottom: 50px;
+	padding: 0;
+	padding-top: 10px;
+	margin: 3px 0;
+	clear: both;
 }
 
-.response>ul {
-	list-style-type: decimal;
-}
-
-.response li, .response .reqh {
+.response .sel-file li, .response .reqh {
 	color: blue;
 	font-size: smaller;
 	padding-bottom: 5px; 
+}
+
+fieldset {
+	border: 1px solid #DDD;
+	width: 500px;
+	padding: 10px;
+	line-height: 23px;	
 }
 
 .progress {
@@ -63,7 +64,13 @@ body {
 	width: 200px;
 	height: 65px; 
 	text-align: center;
-	padding-top: 35px; 
+	padding-top: 35px;
+	float: left;
+	margin-left: 20px;
+}
+
+.up-buttons {
+	float: left;
 }
 
 .drop-box.dragover {
@@ -90,11 +97,45 @@ button {
 	float: right;
 }
 
-.sel-file img {
+.thumb {
 	float: left;
 	width: 18px;
 	height: 18px;
 	padding-right: 10px;
+}
+
+form .thumb {
+	width: 24px;
+	height: 24px;
+	float: none;
+	display: block;
+}
+
+.edit-area {
+	font-size: 14px;
+	background: black;
+	color: #f9f9f9;
+	padding: 5px 1px;	
+}
+
+#htmlEdit {
+	margin-bottom: 25px;	
+}
+
+.edit-div {
+	font-size: smaller;
+}
+
+.CodeMirror {
+	font-size: 14px;
+	border: 1px solid #ccc;
+	margin-bottom: 15px;
+}
+
+form button {
+	padding: 3px 10px;
+	font-weight: bold;
+	margin-top:10px;
 }
 
 .sub {
@@ -119,7 +160,7 @@ button {
 	margin-left: 20px;
 }
 .s3 fieldset {
-	border: 1px solid #AAA;	
+	border: 1px solid #AAA;
 }
 .s3 label {
 	width: 180px;
@@ -134,4 +175,17 @@ button {
 
 .howto {
 	margin-left: 10px;
+}
+
+.server {
+	margin-bottom:20px;
+}
+
+.srv-title {
+	font-weight: bold;
+	padding: 5px 0 10px 0;
+}
+
+:not(output):-moz-ui-invalid {
+    box-shadow: none;
 }
