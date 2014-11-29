@@ -35,7 +35,6 @@ body {
 
 .response .sel-file li, .response .reqh {
 	color: blue;
-	font-size: smaller;
 	padding-bottom: 5px; 
 }
 
@@ -64,7 +63,7 @@ fieldset {
 	width: 200px;
 	height: 65px; 
 	text-align: center;
-	padding-top: 35px;
+	padding-top: 25px;
 	float: left;
 	margin-left: 20px;
 }
@@ -108,7 +107,12 @@ form .thumb {
 	width: 24px;
 	height: 24px;
 	float: none;
-	display: block;
+	position: relative;
+	top: 7px;
+}
+
+form .progress {
+	line-height: 15px;
 }
 
 .edit-area {
