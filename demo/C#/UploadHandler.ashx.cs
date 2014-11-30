@@ -21,7 +21,7 @@ namespace MyApp.Uploads
                 {
                     HttpPostedFile file = files[i];
 
-                    string fname = context.Server.MapPath("Uploads\"+userName.ToUpper() + "\\" + file.FileName);
+                    string fname = context.Server.MapPath("Uploads\"" + userName.ToUpper() + "\\" + file.FileName);
                     file.SaveAs(fname);
                 }
             }
