@@ -128,7 +128,7 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
     */
     // $scope.upload = $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 
-  };
+  });
 }];
 ```
 
