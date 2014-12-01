@@ -158,7 +158,7 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 
 	this.http = function(config) {
 		return sendHttp(config);
-	}
+	};
 }]);
 
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($parse, $timeout) { return {
@@ -184,10 +184,10 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
 				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);
 		elem.append(fileElem);
-		elem.scope().fileClickDelegate = function() {
+		elem.__afu_fileClickDelegate__ = function() {
 			fileElem[0].click();
 		}; 
-		elem.bind('click', elem.scope().fileClickDelegate);
+		elem.bind('click', elem.__afu_fileClickDelegate__);
 		elem.css('overflow', 'hidden');
 		elem = fileElem;
 	}
@@ -336,9 +336,11 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 			}
 		}
 		var clazz = scope.dragOverClass({$event : evt});
-		if (clazz.delay) dragOverDelay = clazz.delay; 
-		if (clazz.accept) clazz = valid ? clazz.accept : clazz.reject;
-		return clazz || 'dragover';
+		if (clazz) {
+			if (clazz.delay) dragOverDelay = clazz.delay; 
+			if (clazz.accept) clazz = valid ? clazz.accept : clazz.reject;
+		}
+		return clazz || attr['dragOverClass'] || 'dragover';
 	}
 				
 	function extractFiles(evt, callback, allowDir, multiple) {

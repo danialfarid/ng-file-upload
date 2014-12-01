@@ -185,7 +185,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 						}
 						el.css('top', 0).css('bottom', 0).css('left', 0).css('right', 0).css('width', '100%').css('height', '100%').
 							css('padding', 0).css('margin', 0);
-						el.parent().unbind('click', el.parent().scope().fileClickDelegate);
+						el.parent().unbind('click', el.parent().__afu_fileClickDelegate__);
 					}
 				}
 			}
