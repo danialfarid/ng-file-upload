@@ -30,7 +30,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		}
 		storeS3UploadConfigInLocalStore();
 	};
-
+	
 	$scope.uploadPic = function(files) {
 		$scope.formUpload = true;
 		if (files != null) {
@@ -143,5 +143,10 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	
 	$scope.confirm = function() {
 		return confirm('Are you sure? Your local changes will be lost.');
+	}
+	
+	$scope.getReqParams = function() {
+		return $scope.generateErrorOnServer ? "?errorCode=" + $scope.serverErrorCode + 
+				"&errorMessage=" + $scope.serverErrorMsg : "";
 	}
 } ]);

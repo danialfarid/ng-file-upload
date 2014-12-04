@@ -2,7 +2,7 @@ var fileReader = new FileReader();
 fileReader.onload = function(e) {
 	$timeout(function() {
 		file.upload = $upload.http({
-			url: 'https://angular-file-upload-cors-srv.appspot.com/upload',
+			url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
 			method: 'POST',
 			headers : {
 				'Content-Type': file.type

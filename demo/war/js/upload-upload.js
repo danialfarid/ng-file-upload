@@ -2,13 +2,8 @@ var data = $scope.formUpload ? {
 	username: $scope.username
 } : {};
 
-if ($scope.generateErrorOnServer) {
-	data.errorCode = $scope.serverErrorCode;
-	data.errorMessage = $scope.serverErrorMsg;
-}
-
 file.upload = $upload.upload({
-	url: 'https://angular-file-upload-cors-srv.appspot.com/upload',
+	url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
 	method: 'POST',
 	headers: {
 		'my-header' : 'my-header-value'

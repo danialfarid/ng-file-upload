@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.0.2
+ * @version 2.0.3
  */
 (function() {
 	
@@ -26,7 +26,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 }
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
-angularFileUpload.version = '2.0.2';
+angularFileUpload.version = '2.0.3';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -193,8 +193,17 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 	}
 	if (scope.resetOnClick() != false) {
 		elem.bind('click', function(evt) {
-			this.value = null;
-			updateModel([], attr, ngModel, scope, evt);
+			if (elem[0].value) {
+				updateModel([], attr, ngModel, scope, evt);
+			}
+			elem[0].value = null;
+		});
+	}
+	if (ngModel) {
+		scope.$parent.$watch(attr['ngModel'], function(val) {
+			if (val == null) {
+				elem[0].value = null;
+			}
 		});
 	}
 	if (attr['ngFileSelect'] != '') {
@@ -465,7 +474,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.0.2
+ * @version 2.0.3
  */
 
 (function() {
