@@ -168,7 +168,9 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 		fileModel: '=ngModel',
 		change: '&ngFileChange',
 		select : '&ngFileSelect',
-		resetOnClick: '&resetOnClick'
+		resetOnClick: '&resetOnClick',
+		multiple: '&ngMultiple',
+		accept: '&ngAccept'
 	},
 	link: function(scope, elem, attr, ngModel) {
 		handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout);
@@ -176,7 +178,15 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 }}]);
 
 function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
-	ngModel && ngModel.$setViewValue('');
+	if (scope.multiple()) {
+		elem.attr('multiple', 'true');
+		attr['multiple'] = 'true';
+	}
+	var accept = scope.accept();
+	if (accept) {
+		elem.attr('accept', accept);
+		attr['accept'] = accept;
+	}
 	if (elem[0].tagName.toLowerCase() !== 'input' || (elem.attr('type') && elem.attr('type').toLowerCase()) !== 'file') {
 		var fileElem = angular.element('<input type="file">')
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
@@ -247,7 +257,9 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 		dragOverClass: '&dragOverClass',
 		dropAvailable: '=dropAvailable', 
 		stopPropagation: '&stopPropagation',
-		hideOnDropNotAvailable: '&hideOnDropNotAvailable'
+		hideOnDropNotAvailable: '&hideOnDropNotAvailable',
+		multiple: '&ngMultiple',
+		accept: '&ngAccept'
 	},
 	link: function(scope, elem, attr, ngModel) {
 		handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location);
@@ -273,7 +285,6 @@ angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$timeout', funct
 }]);
 
 function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
-	ngModel && ngModel.$setViewValue('');
 	var available = dropAvailable();
 	if (attr['dropAvailable']) {
 		$timeout(function() {
@@ -289,7 +300,8 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	var leaveTimeout = null;
 	var stopPropagation = scope.stopPropagation();
 	var dragOverDelay = 1;
-	var regexp = attr['accept'] == null ? null : new RegExp(globStringToRegex(attr['accept']));
+	var accept = scope.accept() || attr['accept'] || attr['ngAccept'];
+	var regexp = accept ? new RegExp(globStringToRegex(accept)) : null;
 	elem[0].addEventListener('dragover', function(evt) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
@@ -330,7 +342,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 					$event : evt
 				});
 			});
-		}, scope.allowDir() != false, attr['multiple']);
+		}, scope.allowDir() != false, attr['multiple'] || scope.multiple() || attr['ngMultiple'] == 'true');
 	}, false);
 	
 	function calculateDragOverClass(scope, attr, evt) {
