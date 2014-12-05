@@ -147,11 +147,10 @@ It could also be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that sp
 ##<a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
-**Note**: Flash needs to be installed on the client browser since `FileAPI` uses Flash to upload files.
+**Note**: You need Flash installed on your browser since `FileAPI` uses Flash to upload files.
 
-For these browsers these two files are needed:  **`FileAPI.min.js`, `FileAPI.flash.swf`** which will be loaded if the browser does not supports HTML5 FormData (no extra load for HTML5 browsers).
-
-You can put these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically on demand or optionally you can use the following script to set the FileAPI load path if they are not at the same location:
+These two files  **`FileAPI.min.js`, `FileAPI.flash.swf`** will be loaded by the module on demand (no need to be included in the html) if the browser does not supports HTML5 FormData to avoid extra load for HTML5 browsers.
+You can place these two files beside `angular-file-upload-shim(.min).js` on your server to be loaded automatically from the same path or you can specify the path to those files if they are in a different path using the following script:
 ```html
 <script>
     //optional need to be loaded before angular-file-upload-shim(.min).js
