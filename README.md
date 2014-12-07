@@ -103,7 +103,8 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
         //withCredentials: true,
         data: {myObj: $scope.myModelObj},
         file: file, // single file or a list of files. list is only for html5
-        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)        //fileFormDataName: myFile, // file formData name ('Content-Disposition'), server side request form name
+        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
+        //fileFormDataName: myFile, // file formData name ('Content-Disposition'), server side request form name
                                     // could be a list of names for multiple files (html5). Default is 'file'
         //formDataAppender: function(formData, key, val){}  // customize how data is added to the formData. 
                                                             // See #40#issuecomment-28612000 for sample code
