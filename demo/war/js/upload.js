@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', [ 'angularFileUpload' ]);
-var version = angular.module('angularFileUpload').version;
+var version = '2.0.4';
 
 app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload', function($scope, $http, $timeout, $compile, $upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
