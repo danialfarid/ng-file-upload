@@ -47,9 +47,8 @@ HTML:
     ng-file-select ng-file-model="myFiles" // binds the selected files to the scope model
     ng-file-change="fileSelected($files, $event)" // will be called upon files being selected
                                                   // you can use $scope.$watch('myFiles') instead
-    multiple="true|false" // default false, allows selecting multiple files. 
-                          // (value is ignored for input file only so remove this attr for no multiple)
-    accept="image/*,*.pdf,*.xml" // wildcard filter for file types allowed (comma separated)
+    ng-multiple="true|false" // default false, allows selecting multiple files
+    accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
     resetOnClick="true|false" // default true, reset the value to null and clear selected files when
                               // user cancels file select popup. (default behaviour in Chrome)
 >Upload</button>
@@ -57,7 +56,7 @@ HTML:
 <div|button|ng-file-drop|...
     ng-file-drop ng-file-model="myFiles" // binds the dropped files to the scope model    
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
-    multiple="true|false" // default false, allows selecting multiple files. 
+    ng-multiple="true|false" // default false, allows selecting multiple files. 
     accept="image/*" // wildcard filter for file types allowed for drop (comma separated)
     ng-rejected-file-model="rejFiles" // bind to dropped files that do not match the accept wildcard
     allowDir="true|false" // default true, allow dropping files only for Chrome webkit browser
@@ -80,7 +79,7 @@ Sample:
 <button ng-file-select ng-model="files" multiple="true">Attach Any File</button>
 <div ng-file-drop ng-model="files" class="drop-box" 
     drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-    multiple="true" allow-dir="true" accept="image/*,*pdf">
+    multiple="true" allow-dir="true" accept="image/*,application/pdf">
             Drop Images or PDFs files here
 </div>
 <div ng-no-file-drop>File Farg/Drop is not supported for this browser</div>
@@ -104,7 +103,8 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
         //withCredentials: true,
         data: {myObj: $scope.myModelObj},
         file: file, // single file or a list of files. list is only for html5
-        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)        //fileFormDataName: myFile, // file formData name ('Content-Disposition'), server side request form name
+        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
+        //fileFormDataName: myFile, // file formData name ('Content-Disposition'), server side request form name
                                     // could be a list of names for multiple files (html5). Default is 'file'
         //formDataAppender: function(formData, key, val){}  // customize how data is added to the formData. 
                                                             // See #40#issuecomment-28612000 for sample code
