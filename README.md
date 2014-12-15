@@ -179,13 +179,14 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 #### <a name="java"></a>**Java**
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 #### <a name="node"></a>Node.js 
-[Sample wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
+[Wiki page](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy)
 #### <a name="rails"></a>Rails
-[ToDo] Please contribute if you have working sample.<br/>
+[Wiki page](https://github.com/danialfarid/angular-file-upload/wiki/Rails-Example) provided by guptapriyank
+
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
 #### <a name="php"></a>PHP
-[Sample php code] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example)
+[Wiki page] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example)
 #### <a name="net"></a>.Net
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
