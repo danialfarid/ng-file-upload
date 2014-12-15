@@ -44,7 +44,7 @@ HTML:
   Syntax: 
 
 <button|div|input type="file"|ng-file-select|...
-    ng-file-select ng-file-model="myFiles" // binds the selected files to the scope model
+    ng-file-select ng-model="myFiles" // binds the selected files to the scope model
     ng-file-change="fileSelected($files, $event)" // will be called upon files being selected
                                                   // you can use $scope.$watch('myFiles') instead
     ng-multiple="true|false" // default false, allows selecting multiple files
@@ -54,7 +54,7 @@ HTML:
 >Upload</button>
 
 <div|button|ng-file-drop|...
-    ng-file-drop ng-file-model="myFiles" // binds the dropped files to the scope model    
+    ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
     ng-multiple="true|false" // default false, allows selecting multiple files. 
     accept="image/*" // wildcard filter for file types allowed for drop (comma separated)
