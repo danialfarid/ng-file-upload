@@ -93,9 +93,9 @@ JS:
 angular.module('myApp', ['angularFileUpload']);
 
 myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
-  $scope.$watch('files', function() {
-    for (var i = 0; i < $scope.files.length; i++) {
-      var file = $scope.files[i];
+  $scope.$watch('myFiles', function() {
+    for (var i = 0; i < $scope.myFiles.length; i++) {
+      var file = $scope.myFiles[i];
       $scope.upload = $upload.upload({
         url: 'server/upload/url', // upload.php script, node.js route, or servlet url
         //method: 'POST' or 'PUT',
