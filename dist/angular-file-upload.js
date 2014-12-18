@@ -430,21 +430,32 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 					addFile({name: entry.name, type: 'directory', path: (path ? path : '') + entry.name});
 					var dirReader = entry.createReader();
 					processing++;
-					dirReader.readEntries(function(entries) {
+
+					var handleEntries = function(entries) {
 						try {
 							for (var i = 0; i < entries.length; i++) {
 								traverseFileTree(files, entries[i], (path ? path : '') + entry.name + '/');
 							}
-						} finally {
+
+							if (entries.length > 99) {
+								dirReader.readEntries(handleEntries);  // dir reader only returns 100 items at a time
+							} else {
+								processing--;
+							}
+						} catch(err) {
 							processing--;
 						}
-					});
+					};
+
+					dirReader.readEntries(handleEntries);
 				} else {
 					processing++;
 					entry.file(function(file) {
 						processing--;
 						file.path = (path ? path : '') + file.name;
 						addFile(file);
+					}, function(error) {  // in the event of an error, make sure to decrement the processing flag
+						processing--;
 					});
 				}
 			}
