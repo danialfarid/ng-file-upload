@@ -170,7 +170,8 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 		select : '&ngFileSelect',
 		resetOnClick: '&resetOnClick',
 		multiple: '&ngMultiple',
-		accept: '&ngAccept'
+		accept: '&ngAccept',
+		capture: '&ngCapture'
 	},
 	link: function(scope, elem, attr, ngModel) {
 		handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout);
@@ -191,6 +192,7 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 		var fileElem = angular.element('<input type="file">')
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
 		if (attr['accept']) fileElem.attr('accept', attr['accept']);
+		if (attr['capture']) fileElem.attr('capture', attr['capture']);
 		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
 				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);
 		elem.append(fileElem);
