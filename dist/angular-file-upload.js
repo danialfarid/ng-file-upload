@@ -188,6 +188,11 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 		elem.attr('accept', accept);
 		attr['accept'] = accept;
 	}
+	var capture = scope.capture();
+	if (capture) {
+		elem.attr('capture', capture);
+		attr['capture'] = capture;
+	}
 	if (elem[0].tagName.toLowerCase() !== 'input' || (elem.attr('type') && elem.attr('type').toLowerCase()) !== 'file') {
 		var fileElem = angular.element('<input type="file">')
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
