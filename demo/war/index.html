@@ -97,7 +97,8 @@ FileAPI = {
 				<span class="progress" ng-show="f.progress >= 0">						
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>				
-				<button class="button" ng-click="f.upload.abort()" ng-show="f.upload != null && f.progress < 100">Abort</button>
+				<button class="button" ng-click="f.upload.abort();f.upload.aborted=true" 
+						ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort</button>
 				{{f.name}} - size: {{f.size}}B - type: {{f.type}}
 				<a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>
 				<div ng-show="f.showDetail">

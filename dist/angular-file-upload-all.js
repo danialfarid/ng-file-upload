@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.0
+ * @version 2.1.1
  */
 (function() {
 	
@@ -26,7 +26,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 }
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
-angularFileUpload.version = '2.1.0';
+angularFileUpload.version = '2.1.1';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -161,15 +161,15 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 	};
 }]);
 
-angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($parse, $timeout) { return {
+angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', '$compile', function($parse, $timeout, $compile) { return {
 	restrict: 'AEC',
 	require:'?ngModel',
 	link: function(scope, elem, attr, ngModel) {
-		handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout);
+		handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile);
 	}
 }}]);
 
-function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
+function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) {
 	if (attr.ngMultiple && $parse(attr.ngMultiple)(scope)) {
 		elem.attr('multiple', 'true');
 		attr['multiple'] = 'true';
@@ -188,55 +188,64 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 		elem.append(fileElem);
 		elem.__afu_fileClickDelegate__ = function() {
 			fileElem[0].click();
-		}; 
+		};
 		elem.bind('click', elem.__afu_fileClickDelegate__);
 		elem.css('overflow', 'hidden');
+		var origElem = elem;
 		elem = fileElem;
 	}
 	var changeFn = $parse(attr.ngFileChange);
 	if ($parse(attr.resetOnClick)(scope) != false) {
-		elem.bind('click', function(evt) {
-			if (elem[0].value) {
-				updateModel([], attr, ngModel, changeFn, scope, evt);
-			}
-			elem[0].value = null;
-		});
-	}
-	if (ngModel) {
-		scope.$parent.$watch(attr['ngModel'], function(val) {
-			if (val == null) {
+		if (navigator.appVersion.indexOf("MSIE 10") !== -1) {
+			// fix for IE10 cannot set the value of the input to null programmatically by replacing input
+			var replaceElem = function(evt) {
+				var inputFile = elem.clone();
+				inputFile.val('');
+				elem.replaceWith(inputFile);
+				$compile(inputFile)(scope);
+				fileElem = inputFile;
+				elem = inputFile;
+				elem.bind('change', onChangeFn);
+				elem.unbind('click');
+				elem[0].click();
+				elem.bind('click', replaceElem);
+				evt.preventDefault();
+				evt.stopPropagation();
+			};
+			elem.bind('click', replaceElem);
+		} else {
+			elem.bind('click', function(evt) {
 				elem[0].value = null;
-			}
-		});
+			});
+		}
 	}
-	if (attr['ngFileSelect'] != '') {
-		attr.ngFileChange = attr.ngFileSelect;
-	}
-	elem.bind('change', function(evt) {
+	var onChangeFn = function(evt) {
 		var files = [], fileList, i;
 		fileList = evt.__files_ || evt.target.files;
 		updateModel(fileList, attr, ngModel, changeFn, scope, evt);
-	});
+	};
+	elem.bind('change', onChangeFn);
+	if (attr['ngFileSelect'] != '') {
+		attr.ngFileChange = attr.ngFileSelect;
+	}
 	
 	function updateModel(fileList, attr, ngModel, change, scope, evt) {
-		$timeout(function() {
-			var files = [];
-			for (var i = 0; i < fileList.length; i++) {
-				files.push(fileList.item(i));
-			}
-			if (ngModel) {
-				scope[attr.ngModel] ? scope[attr.ngModel].value = files : scope[attr.ngModel] = files;
-				ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
-			}
-			if (change) {
-				$timeout(function() {
-					change(scope, {
-						$files : files,
-						$event : evt
-					});
+		var files = [];
+		for (var i = 0; i < fileList.length; i++) {
+			files.push(fileList.item(i));
+		}
+		if (ngModel) {
+			scope[attr.ngModel] ? scope[attr.ngModel].value = files : scope[attr.ngModel] = files;
+			ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
+		}
+		if (change) {
+			$timeout(function() {
+				change(scope, {
+					$files : files,
+					$event : evt
 				});
-			}
-		});
+			});
+		}
 	}
 }
 
@@ -493,7 +502,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 (function() {

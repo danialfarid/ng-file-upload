@@ -3696,13 +3696,15 @@
 								if( !file.__info ){
 									var defer = file.__info = api.defer();
 
-									flash.cmd(file, 'getFileInfo', {
-										  id: file.id
-										, callback: _wrap(function _(err, info){
-											_unwrap(_);
-											defer.resolve(err, file.info = info);
-										})
-									});
+//									flash.cmd(file, 'getFileInfo', {
+//										  id: file.id
+//										, callback: _wrap(function _(err, info){
+//											_unwrap(_);
+//											defer.resolve(err, file.info = info);
+//										})
+//									});
+									defer.resolve(null, file.info = null);
+
 								}
 
 								file.__info.then(fn);
