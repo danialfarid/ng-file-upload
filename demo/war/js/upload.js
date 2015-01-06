@@ -16,8 +16,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	$scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ? 
 			window.location.hash.substring(2): window.location.hash.substring(1)) : '1.2.20';
 			
-	// you can also $scope.$watch('files',...) instead of calling upload from ui
-	$scope.upload = function(files) {
+	$scope.$watch('files', function(files) {
 		$scope.formUpload = false;
 		if (files != null) {
 			for (var i = 0; i < files.length; i++) {
@@ -29,7 +28,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 			}
 		}
 		storeS3UploadConfigInLocalStore();
-	};
+	});
 	
 	$scope.uploadPic = function(files) {
 		$scope.formUpload = true;
@@ -149,4 +148,12 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		return $scope.generateErrorOnServer ? "?errorCode=" + $scope.serverErrorCode + 
 				"&errorMessage=" + $scope.serverErrorMsg : "";
 	}
+
+	window.addEventListener("dragover", function(e) {
+		e.preventDefault();
+	}, false);
+	window.addEventListener("drop", function(e) {
+		e.preventDefault();
+	}, false);
+	
 } ]);

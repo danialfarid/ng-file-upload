@@ -78,12 +78,11 @@ FileAPI = {
 					<div class="up-buttons">
 						<div ng-file-select ng-model="files" class="upload-button" 
 						       ng-file-change="upload(files)" ng-multiple="false" ng-accept="'image/*,application/pdf'" tabindex="0">Attach an Image or PDF</div><br/>
-						<button ng-file-select ng-model="files"
-								ng-file-change="upload(files)" ng-multiple="true">Attach Any File</button>
+						<button ng-file-select ng-model="files" ng-multiple="true">Attach Any File</button>
 					</div>
-					<div ng-file-drop ng-model="files" class="drop-box" 
+					<div ng-file-drop ng-file-select ng-model="files" class="drop-box" 
 						drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-						ng-multiple="true" allow-dir="true" accept="image/*,*pdf" ng-file-change="upload(files)">
+						ng-multiple="true" allow-dir="true" accept="image/*,*pdf">
 							Drop Images or PDFs<div>here</div>
 					</div>
 					<div ng-no-file-drop class="drop-box">File Farg&Drop not supported on your browser</div>
@@ -167,6 +166,6 @@ FileAPI = {
 		</div>
 	</div>	
 	<a style="position:fixed;bottom:10px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2014-12-01</div>
+	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2015-01-06</div>
 </body>
 </html>
