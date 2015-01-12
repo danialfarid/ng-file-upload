@@ -198,7 +198,7 @@ The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> 
 Here is a sample config options:
 ```
 $upload.upload({
-        url: $'https://angular-file-upload.s3.amazonaws.com/' //S3 upload url including bucket name,
+        url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
         data : {
           key: file.name, // the key to store the file on S3, could be file name or customized
@@ -206,7 +206,7 @@ $upload.upload({
           acl: 'private', // sets the access to the uploaded file in the bucket: private or public 
           policy: $scope.policy, // base64-encoded json policy (see article below)
           signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
-          "Content-Type": file.type != '' ? file.type : 'application/octet-stream' // content type of the file (NotEmpty),
+          "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
           filename: file.name // this is needed for Flash polyfill IE8-9
         },
         file: file,
