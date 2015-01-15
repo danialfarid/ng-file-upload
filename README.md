@@ -48,7 +48,7 @@ HTML:
     ng-file-change="fileSelected($files, $event)" // will be called upon files being selected
                                                   // you can use $scope.$watch('myFiles') instead
     ng-multiple="true|false" // default false, allows selecting multiple files
-    ng-capture="'camera'|'other'" // default not included, allows mobile devices to capture using camera
+    //to be implemented: ng-capture="'camera'|'other'" // default not included, allows mobile devices to capture using camera
     accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
     resetOnClick="true|false" // default true, reset the value to null and clear selected files when
                               // user cancels file select popup. (default behaviour in Chrome)
