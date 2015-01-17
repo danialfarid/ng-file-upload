@@ -134,7 +134,7 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
-None html5 browsers due to flash limitation will still upload array of files one by one so if you want a cross browser approach you need to iterate through files and upload them one by one.
+Non-html5 browsers due to flash limitation will still upload array of files one by one so if you want a cross browser approach you need to iterate through files and upload them one by one.
 
 **$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This is equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
