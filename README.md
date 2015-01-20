@@ -130,7 +130,7 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
     // $scope.upload = $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 
   });
-}];
+});
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
