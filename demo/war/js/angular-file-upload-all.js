@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.1
+ * @version 2.1.2
  */
 (function() {
 	
@@ -26,7 +26,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 }
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
-angularFileUpload.version = '2.1.1';
+angularFileUpload.version = '2.1.2';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -194,7 +194,9 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		var origElem = elem;
 		elem = fileElem;
 	}
-	var changeFn = $parse(attr.ngFileChange);
+	if (attr['ngFileSelect'] != '') {
+		attr.ngFileChange = attr.ngFileSelect;
+	}
 	if ($parse(attr.resetOnClick)(scope) != false) {
 		if (navigator.appVersion.indexOf("MSIE 10") !== -1) {
 			// fix for IE10 cannot set the value of the input to null programmatically by replacing input
@@ -222,12 +224,9 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	var onChangeFn = function(evt) {
 		var files = [], fileList, i;
 		fileList = evt.__files_ || evt.target.files;
-		updateModel(fileList, attr, ngModel, changeFn, scope, evt);
+		updateModel(fileList, attr, ngModel, scope, evt);
 	};
 	elem.bind('change', onChangeFn);
-	if (attr['ngFileSelect'] != '') {
-		attr.ngFileChange = attr.ngFileSelect;
-	}
 	
 	function updateModel(fileList, attr, ngModel, change, scope, evt) {
 		var files = [];
@@ -238,9 +237,9 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 			scope[attr.ngModel] ? scope[attr.ngModel].value = files : scope[attr.ngModel] = files;
 			ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
 		}
-		if (change) {
+		if (attr.ngFileChange && attr.ngFileChange != "") {
 			$timeout(function() {
-				change(scope, {
+				$parse(attr.ngFileChange)(scope, {
 					$files : files,
 					$event : evt
 				});
@@ -502,7 +501,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.1
+ * @version 2.1.2
  */
 
 (function() {
