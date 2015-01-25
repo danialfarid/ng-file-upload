@@ -112,8 +112,13 @@ Drop files here
 $upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
   *file: file,  // single file or an array of files (array is for html5 only)
-  method: 'POST' or 'PUT', default POST
+  method: 'POST' or 'PUT', default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
+  fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
+  /* 
+  file formData name ('Content-Disposition'), server side request form name could be
+  an array  of names for multiple files (html5). Default is 'file' */
+  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
   /* 
   data map. each field will be sent as a form field unless sendDataAsJson is true.
   The values are converted to json string unless sendObjectAsJson or transformRequest is specified. */
@@ -121,17 +126,13 @@ $upload.upload({
   /* 
   send the whole data object as a json blob with the key "data". Server will recieve a "data" 
   form field binary of type 'application/json'. default false html5 only */
-  sendDataAsJson: true|false
+  sendDataAsJson: true|false,
   /*
   if the value of a form field is an object it will send it as an 'application/json' blob type 
-  rather than json string. default false.*/
-  sendObjectAsJson: true|false    
-  fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
-  /* file formData name ('Content-Disposition'), server side request form name could be
-  an array  of names for multiple files (html5). Default is 'file' */
-  fileFormDataName: 'myFile', 
-  /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code */
-  formDataAppender: function(formData, key, val){}  
+  rather than json string. default false. */
+  sendObjectAsJson: true|false,    
+  /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
+  formDataAppender: function(formData, key, val){},
   transforRequest: muTransformRequestFn, //called on each field or whole "data" depending on sendDataAsJson
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
