@@ -32,109 +32,131 @@ Table of Content:
 
 ##<a name="usage"></a> Usage
 
-HTML:
+###Sample:
 ```html
 <script src="angular.min.js"></script>
-
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
 <script src="angular-file-upload-shim.min.js"></script> 
 <script src="angular-file-upload.min.js"></script> 
 
 <div ng-controller="MyCtrl">
-  Syntax: 
-
-<button|div|input type="file"|ng-file-select|...
-    ng-file-select ng-model="myFiles" // binds the selected files to the scope model
-    ng-file-change="fileSelected($files, $event)" // will be called upon files being selected
-                                                  // you can use $scope.$watch('myFiles') instead
-    ng-multiple="true|false" // default false, allows selecting multiple files
-    //to be implemented: ng-capture="'camera'|'other'" // default not included, allows mobile devices to capture using camera
-    accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
-    resetOnClick="true|false" // default true, reset the value to null and clear selected files when
-                              // user cancels file select popup. (default behaviour in Chrome)
->Upload</button>
-
-<div|button|ng-file-drop|...
-    ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
-    ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
-    ng-multiple="true|false" // default false, allows selecting multiple files. 
-    accept="image/*" // wildcard filter for file types allowed for drop (comma separated)
-    ng-rejected-file-model="rejFiles" // bind to dropped files that do not match the accept wildcard
-    allowDir="true|false" // default true, allow dropping files only for Chrome webkit browser
-    dragOverClass="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
-                    calcDragOverClass($event)" 
-              // drag over css class behaviour. could be a string, a function returning class name 
-              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
-    dropAvailable="dropSupported" // set the value of scope model to true or false based on file
-                                  // drag&drop support for this browser
-    stopPropagation="true|false" // default false, whether to propagate drag/drop events.
-    hideOnDropNotAvailable="true|false" // default true, hides element if file drag&drop is not supported
->  
-Drop files here
-</div>
-
-<div|... ng-no-file-drop>File Drag/drop is not supported</div> 
-
-Sample:
-
-<button ng-file-select ng-model="files" multiple="true">Attach Any File</button>
-<div ng-file-drop ng-model="files" class="drop-box" 
-    drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-    multiple="true" allow-dir="true" accept="image/*,application/pdf">
-            Drop Images or PDFs files here
-</div>
-<div ng-no-file-drop>File Farg/Drop is not supported for this browser</div>
-
+   Select File: <div class="button" ng-file-select ng-model="files">Select File</div>
+   
+   Drop File: <div ng-file-drop ng-model="files" class="drop-box" 
+                   drag-over-class="dragover" multiple="true" 
+                   allow-dir="true" accept="image/*,application/pdf">
+                       Drop Images or PDFs files here
+              </div>
+   <div ng-no-file-drop>File Farg/Drop is not supported for this browser</div>
 </div>
 ```
-
 JS:
 ```js
 //inject angular file upload directives and service.
 angular.module('myApp', ['angularFileUpload']);
 
 myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
-  $scope.$watch('myFiles', function() {
-    for (var i = 0; i < $scope.myFiles.length; i++) {
-      var file = $scope.myFiles[i];
-      $scope.upload = $upload.upload({
-        url: 'server/upload/url', // upload.php script, node.js route, or servlet url
-        //method: 'POST' or 'PUT',
-        //headers: {'Authorization': 'xxx'}, // only for html5
-        //withCredentials: true,
-        data: {myObj: $scope.myModelObj},
-        file: file, // single file or a list of files. list is only for html5
-        //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
-        //fileFormDataName: myFile, // file formData name ('Content-Disposition'), server side request form name
-                                    // could be a list of names for multiple files (html5). Default is 'file'
-        //formDataAppender: function(formData, key, val){}  // customize how data is added to the formData. 
-                                                            // See #40#issuecomment-28612000 for sample code
+  $scope.$watch('files', function() {
+    $scope.upload = $upload.upload({
+      url: 'server/upload/url',
+      data: {myObj: $scope.myModelObj},
+      file: $scope.files
+    }).progress(function(evt) {
+      console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
+    }).success(function(data, status, headers, config) {
+      console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
+    });
+  }
+})];
+```
 
-      }).progress(function(evt) {
-        console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
-      }).success(function(data, status, headers, config) {
-        // file is uploaded successfully
-        console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
-      });
-      //.error(...)
-      //.then(success, error, progress); // returns a promise that does NOT have progress/abort/xhr functions
-      //.xhr(function(xhr){xhr.upload.addEventListener(...)}) // access or attach event listeners to 
-                                                              //the underlying XMLHttpRequest
-    }
-    /* alternative way of uploading, send the file binary with the file's content-type.
-       Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
-       It could also be used to monitor the progress of a normal http post/put request. 
-       Note that the whole file will be loaded in browser first so large files could crash the browser.
-       You should verify the file size before uploading with $upload.http().
-    */
-    // $scope.upload = $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
+### Full reference
 
-  });
-});
+#### File select
+
+```html
+<button|div|input type="file"|ng-file-select|...
+    ng-file-select ng-model="myFiles" // binds the selected files to the scope model
+    ng-file-change="fileSelected($files, $event)" // will be called upon files being selected
+                                                  // you can use $scope.$watch('myFiles') instead
+    ng-multiple="true|false" // default false, allows selecting multiple files
+    ng-capture="'camera'|'other'" // allows mobile devices to capture using camera
+    accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
+>Upload</button>
+```
+#### File drop
+```html
+<div|button|ng-file-drop|...
+    ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
+    ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
+    ng-multiple="true|false" // default false, allows selecting multiple files. 
+    accept="image/*" // wildcard filter for file types allowed for drop (comma separated)
+    ng-rejected-file-model="rejFiles" // bind to dropped files that do not match the accept wildcard
+    allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
+    drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
+                    calcDragOverClass($event)" 
+              // drag over css class behaviour. could be a string, a function returning class name 
+              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
+    drop-available="dropSupported" // set the value of scope model to true or false based on file
+                                  // drag&drop support for this browser
+    stop-propagation="true|false" // default false, whether to propagate drag/drop events.
+    hide-on-drop-not-available="true|false" // default true, hides element if file drag&drop is not supported
+>
+Drop files here
+</div>
+<div|... ng-no-file-drop>File Drag/drop is not supported</div>
+```
+
+#### $upload service:
+```js
+$upload.upload({
+  *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
+  *file: file,  // single file or an array of files (array is for html5 only)
+  method: 'POST' or 'PUT', default POST
+  headers: {'Authorization': 'xxx'}, // only for html5
+  /* 
+  data map. each field will be sent as a form field unless sendDataAsJson is true.
+  The values are converted to json string unless sendObjectAsJson or transformRequest is specified. */
+  data: {myObj: $scope.myModelObj}, 
+  /* 
+  send the whole data object as a json blob with the key "data". Server will recieve a "data" 
+  form field binary of type 'application/json'. default false html5 only */
+  sendDataAsJson: true|false
+  /*
+  if the value of a form field is an object it will send it as an 'application/json' blob type 
+  rather than json string. default false.*/
+  sendObjectAsJson: true|false    
+  fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
+  /* file formData name ('Content-Disposition'), server side request form name could be
+  an array  of names for multiple files (html5). Default is 'file' */
+  fileFormDataName: 'myFile', 
+  /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code */
+  formDataAppender: function(formData, key, val){}  
+  transforRequest: muTransformRequestFn, //called on each field or whole "data" depending on sendDataAsJson
+  withCredentials: true|false,
+  ... and all other angular $http() options could be used here.
+}).progress(function(evt) {
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
+}).success(function(data, status, headers, config) {
+  // file is uploaded successfully
+  console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
+}).error(...
+/* access or attach event listeners to the underlying XMLHttpRequest */
+}).xhr(function(xhr){xhr.upload.addEventListener(...) 
+/* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
+}).then(success, error, progress);
+
+/* alternative way of uploading, send the file binary with the file's content-type.
+   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
+   It could also be used to monitor the progress of a normal http post/put request. 
+   Note that the whole file will be loaded in browser first so large files could crash the browser.
+   You should verify the file size before uploading with $upload.http().
+*/
+$upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
-Non-html5 browsers due to flash limitation will still upload array of files one by one so if you want a cross browser approach you need to iterate through files and upload them one by one.
+Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
 **$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This is equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
