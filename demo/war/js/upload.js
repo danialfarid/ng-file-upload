@@ -15,7 +15,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	
 	$scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ? 
 			window.location.hash.substring(2): window.location.hash.substring(1)) : '1.2.20';
-			
+
 	$scope.$watch('files', function(files) {
 		$scope.formUpload = false;
 		if (files != null) {

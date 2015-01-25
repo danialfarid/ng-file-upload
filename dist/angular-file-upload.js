@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.2.1
+ * @version 2.2.2
  */
 (function() {
 	
@@ -26,7 +26,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 }
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
-angularFileUpload.version = '2.2.1';
+angularFileUpload.version = '2.2.2';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -197,7 +197,8 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		attr['capture'] = capture;
 	}
 	if (elem[0].tagName.toLowerCase() !== 'input' || (elem.attr('type') && elem.attr('type').toLowerCase()) !== 'file') {
-		var fileElem = angular.element('<input type="file">')
+		var id = '--ng-file-upload-' + Math.random();
+		var fileElem = angular.element('<input type="file" id="' + id + '">')
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
 		if (attr['accept']) fileElem.attr('accept', attr['accept']);
 		if (attr['capture']) fileElem.attr('capture', attr['capture']);
@@ -209,14 +210,16 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 			}
 		}
 
-		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
-				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);
-		elem.append(fileElem);
-		elem.__afu_fileClickDelegate__ = function() {
-			fileElem[0].click();
-		};
-		elem.bind('click', elem.__afu_fileClickDelegate__);
+		fileElem.css('width', '0px').css('height', '0px').css('position', 'absolute').css('padding', 0).css('margin', 0)
+				.css('overflow', 'hidden').attr('tabindex', '-1').css('opacity', 0).attr('ng-file-generated-elem--', true);
+		elem.parent()[0].insertBefore(fileElem[0], elem[0])
+		elem.attr('onclick', 'document.getElementById("' + id + '").click()')
+//		elem.__afu_fileClickDelegate__ = function() {
+//			fileElem[0].click();
+//		};
+//		elem.bind('click', elem.__afu_fileClickDelegate__);
 		elem.css('overflow', 'hidden');
+		elem.attr('id', 'e' + id);
 		var origElem = elem;
 		elem = fileElem;
 	}
@@ -254,14 +257,16 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	};
 	elem.bind('change', onChangeFn);
 	
-	function updateModel(fileList, attr, ngModel, change, scope, evt) {
+	function updateModel(fileList, attr, ngModel, scope, evt) {
 		var files = [];
 		for (var i = 0; i < fileList.length; i++) {
 			files.push(fileList.item(i));
 		}
 		if (ngModel) {
-			scope[attr.ngModel] ? scope[attr.ngModel].value = files : scope[attr.ngModel] = files;
-			ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
+			$timeout(function() {
+				scope[attr.ngModel] ? scope[attr.ngModel].value = files : scope[attr.ngModel] = files;
+				ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
+			});
 		}
 		if (attr.ngFileChange && attr.ngFileChange != "") {
 			$timeout(function() {

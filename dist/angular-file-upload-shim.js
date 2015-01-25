@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.2.1
+ * @version 2.2.2
  */
 
 (function() {
@@ -167,26 +167,21 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		var el = angular.element(elem);
 		if (!el.attr('disabled')) {
 			if (!el.hasClass('js-fileapi-wrapper') && (el.attr('ng-file-select') != null || el.attr('data-ng-file-select') != null ||
-					(el.attr('ng-file-generated-elem') && 
-							(el.parent().attr('ng-file-select') != null || el.parent().attr('data-ng-file-select') != null)))) {
-				if (FileAPI.wrapInsideDiv) {
-					var wrap = document.createElement('div');
-					wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
-					wrap = wrap.firstChild;
-					var parent = elem.parentNode;
-					parent.insertBefore(wrap, elem);
-					parent.removeChild(elem);
-					wrap.appendChild(elem);
-				} else {
-					el.addClass('js-fileapi-wrapper');
-					if (el.attr('ng-file-generated-elem')) {
+					el.attr('ng-file-generated-elem--') != null)) {
+				
+				el.addClass('js-fileapi-wrapper');
+				if (el.attr('ng-file-generated-elem--') != null) {
+					var ref = angular.element(document.getElementById('e' + el.attr('id')));
+					ref.bind('mouseover', function() {
 						if (el.parent().css('position') === '' || el.parent().css('position') === 'static') {
 							el.parent().css('position', 'relative');
 						}
-						el.css('top', 0).css('bottom', 0).css('left', 0).css('right', 0).css('width', '100%').css('height', '100%').
-							css('padding', 0).css('margin', 0);
-						el.parent().unbind('click', el.parent().__afu_fileClickDelegate__);
-					}
+						el.css('position', 'absolute').css('top', ref[0].offsetTop + 'px').css('left', ref[0].offsetLeft + 'px')
+							.css('width', ref[0].offsetWidth + 'px').css('height', ref[0].offsetHeight + 'px')
+							.css('padding', ref.css('padding')).css('margin', ref.css('margin')).css('filter', 'alpha(opacity=0)');
+						ref.attr('onclick', '');
+						el.css('z-index', '1000');
+					});
 				}
 			}
 		}
