@@ -201,6 +201,13 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
 		if (attr['accept']) fileElem.attr('accept', attr['accept']);
 		if (attr['capture']) fileElem.attr('capture', attr['capture']);
+		for (var key in attr) {
+			if (key.indexOf('inputFile') == 0) {
+				var name = key.substring('inputFile'.length);
+				name = name[0].toLowerCase() + name.substring(1);
+				fileElem.attr(name, attr[key]);
+			}
+		}
 
 		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
 				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);

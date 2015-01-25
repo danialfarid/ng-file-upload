@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.2.0
+ * @version 2.2.1
  */
 (function() {
 	
@@ -26,7 +26,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 }
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
-angularFileUpload.version = '2.2.0';
+angularFileUpload.version = '2.2.1';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -201,6 +201,13 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
 		if (attr['accept']) fileElem.attr('accept', attr['accept']);
 		if (attr['capture']) fileElem.attr('capture', attr['capture']);
+		for (var key in attr) {
+			if (key.indexOf('inputFile') == 0) {
+				var name = key.substring('inputFile'.length);
+				name = name[0].toLowerCase() + name.substring(1);
+				fileElem.attr(name, attr[key]);
+			}
+		}
 
 		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
 				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);
@@ -520,7 +527,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.2.0
+ * @version 2.2.1
  */
 
 (function() {
