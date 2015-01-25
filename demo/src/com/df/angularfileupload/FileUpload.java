@@ -45,7 +45,7 @@ public class FileUpload extends HttpServlet {
 					if (item.getName() != null) {
 						sb.append("\"size\":\"").append(size(item.openStream())).append("\"");
 					} else {
-						sb.append("\"value\":\"").append(read(item.openStream())).append("\"");
+						sb.append("\"value\":\"").append(read(item.openStream()).replace("\"", "'")).append("\"");
 					}
 					sb.append("}");
 					if (iterator.hasNext()) {
@@ -82,9 +82,9 @@ public class FileUpload extends HttpServlet {
 			int size;
 			while ((size = stream.read(buffer)) != -1) {
 				length += size;
-				// for (int i = 0; i < size; i++) {
-				// System.out.print((char) buffer[i]);
-				// }
+//				 for (int i = 0; i < size; i++) {
+//				 System.out.print((char) buffer[i]);
+//				 }
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

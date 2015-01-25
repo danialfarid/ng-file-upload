@@ -1,8 +1,8 @@
 /**!
- * AngularJS file upload/drop directive with progress and abort
+ * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.2
+ * @version 2.2.0
  */
 
 (function() {
@@ -250,6 +250,9 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 	window.FormData = FormData = function() {
 		return {
 			append: function(key, val, name) {
+				if (val.__isFileAPIBlobShim) {
+					val = val.data[0];
+				}
 				this.data.push({
 					key: key,
 					val: val,
@@ -258,6 +261,13 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			},
 			data: [],
 			__isFileAPIShim: true
+		};
+	};
+
+	window.Blob = Blob = function(b) {
+		return {
+			data: b,
+			__isFileAPIBlobShim: true
 		};
 	};
 

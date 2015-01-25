@@ -1,5 +1,5 @@
 /**!
- * AngularJS file upload/drop directive with progress and abort
+ * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
  * @version <%= pkg.version %>
  */
@@ -111,26 +111,38 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 		var origTransformRequest = config.transformRequest;
 		var origData = config.data;
 		config.transformRequest = function(formData, headerGetter) {
+			function transform(data) {
+				if (typeof origTransformRequest == 'function') {
+					data = origTransformRequest(data, headerGetter);
+				} else {
+					for (var i = 0; i < origTransformRequest.length; i++) {
+						if (typeof origTransformRequest[i] == 'function') {
+							data = origTransformRequest[i](data, headerGetter);
+						}
+					}
+				}
+				return data
+			}
 			if (origData) {
 				if (config.formDataAppender) {
 					for (var key in origData) {
 						var val = origData[key];
 						config.formDataAppender(formData, key, val);
 					}
+				} else if (config.sendDataAsJson) {
+					origData = transform(origData);
+					formData.append('data', new Blob([origData], { type: 'application/json' }));
 				} else {
 					for (var key in origData) {
-						var val = origData[key];
-						if (typeof origTransformRequest == 'function') {
-							val = origTransformRequest(val, headerGetter);
-						} else {
-							for (var i = 0; i < origTransformRequest.length; i++) {
-								var transformFn = origTransformRequest[i];
-								if (typeof transformFn == 'function') {
-									val = transformFn(val, headerGetter);
-								}
+						var val = transform(origData[key]);
+						if (val !== undefined) {
+							if (config.sendObjectAsJson && typeof val === 'object' && 
+									Object.prototype.toString.call(fileFormName) !== '[object String]') {
+								formData.append(key, new Blob(val), { type: 'application/json' });
+							} else {
+								formData.append(key, val);
 							}
 						}
-						if (val != undefined) formData.append(key, val);
 					}
 				}
 			}
@@ -179,10 +191,17 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		elem.attr('accept', accept);
 		attr['accept'] = accept;
 	}
+	var capture = attr.ngCapture && $parse(attr.ngCapture)(scope)
+	if (capture) {
+		elem.attr('capture', capture);
+		attr['capture'] = capture;
+	}
 	if (elem[0].tagName.toLowerCase() !== 'input' || (elem.attr('type') && elem.attr('type').toLowerCase()) !== 'file') {
 		var fileElem = angular.element('<input type="file">')
 		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
 		if (attr['accept']) fileElem.attr('accept', attr['accept']);
+		if (attr['capture']) fileElem.attr('capture', attr['capture']);
+
 		fileElem.css('width', '1px').css('height', '1px').css('opacity', 0).css('position', 'absolute').css('filter', 'alpha(opacity=0)')
 				.css('padding', 0).css('margin', 0).css('overflow', 'hidden').attr('tabindex', '-1').attr('ng-file-generated-elem', true);
 		elem.append(fileElem);
