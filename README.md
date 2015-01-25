@@ -82,6 +82,9 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
     ng-multiple="true|false" // default false, allows selecting multiple files
     ng-capture="'camera'|'other'" // allows mobile devices to capture using camera
     accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
+    input-file-...="..." // if you prefix the attr with (data-)input-file- it would
+                         // propagate that property to underlying <input type="file"...>
+                         // see #462. Use only if the elememt is not input type="file" already
 >Upload</button>
 ```
 #### File drop
