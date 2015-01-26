@@ -21,6 +21,7 @@ public class FileUpload extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
+			req.setCharacterEncoding("utf-8");
 			if (req.getParameter("errorCode") != null) {
 //				res.getWriter().write(req.getParameter("errorMessage"));
 //				res.getWriter().flush();
@@ -68,7 +69,7 @@ public class FileUpload extends HttpServlet {
 				}
 			}
 			sb.append("}}");
-			
+			res.setCharacterEncoding("utf-8");
 			res.getWriter().write(sb.toString());
 		} catch (Exception ex) {
 			throw new ServletException(ex);
