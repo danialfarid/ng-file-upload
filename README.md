@@ -21,6 +21,7 @@ Table of Content:
   * [Bower](#bower)
   * [Yeoman](#yeoman)
   * [NuGet](#nuget)
+  * [npm](#npm)
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
@@ -349,6 +350,11 @@ bower.json
 ```
 ####<a name="nuget"></a> NuGet
 Package is also available on NuGet: http://www.nuget.org/packages/angular-file-upload with the help of [Georgios Diamantopoulos](https://github.com/georgiosd)
+
+####<a name="npm"></a> NPM
+```
+npm install ng-file-upload
+```
 
 ##<a name="contrib"></a> Issues & Contribution
 
