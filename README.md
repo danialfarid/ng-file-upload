@@ -48,7 +48,7 @@ Table of Content:
                    allow-dir="true" accept="image/*,application/pdf">
                        Drop Images or PDFs files here
               </div>
-   <div ng-no-file-drop>File Farg/Drop is not supported for this browser</div>
+   <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
 </div>
 ```
 JS:
