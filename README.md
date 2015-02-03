@@ -63,9 +63,9 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
       data: {myObj: $scope.myModelObj},
       file: $scope.files
     }).progress(function(evt) {
-      console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
+      console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file[0].name);
     }).success(function(data, status, headers, config) {
-      console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
+      console.log('file ' + config.file[9].name + 'is uploaded successfully. Response: ' + data);
     });
   }
 })];
@@ -141,10 +141,10 @@ $upload.upload({
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
-  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total));
 }).success(function(data, status, headers, config) {
   // file is uploaded successfully
-  console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
+  console.log('file is uploaded successfully. Response: ' + data);
 }).error(...
 /* access or attach event listeners to the underlying XMLHttpRequest */
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
