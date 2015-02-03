@@ -58,15 +58,18 @@ angular.module('myApp', ['angularFileUpload']);
 
 myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
   $scope.$watch('files', function() {
-    $scope.upload = $upload.upload({
-      url: 'server/upload/url',
-      data: {myObj: $scope.myModelObj},
-      file: $scope.files
-    }).progress(function(evt) {
-      console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file[0].name);
-    }).success(function(data, status, headers, config) {
-      console.log('file ' + config.file[9].name + 'is uploaded successfully. Response: ' + data);
-    });
+    if ($scope.files.lenght) {
+      $scope.upload = $upload.upload({
+        url: 'server/upload/url',
+        data: {myObj: $scope.myModelObj},
+        file: $scope.files
+      }).progress(function(evt) {
+        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+        console.log('progress: ' + progressPercentage + '% file :'+ evt.config.file[0].name);
+      }).success(function(data, status, headers, config) {
+        console.log('file ' + config.file[0].name + 'is uploaded successfully. Response: ' + data);
+      });
+    }
   }
 })];
 ```
