@@ -41,8 +41,10 @@ Table of Content:
 <script src="angular-file-upload.min.js"></script> 
 
 <div ng-controller="MyCtrl">
-   Select File (watching model): <div class="button" ng-file-select ng-model="files">Select File</div>
-   Select File (on file change): <div class="button" ng-file-select ng-file-change="upload($files)">Select File</div>
+   Select File (watching model): 
+   <div class="button" ng-file-select ng-model="files">Select File</div>
+   Select File (on file change): 
+   <div class="button" ng-file-select ng-file-change="upload($files)">Select File</div>
    
    Drop File: <div ng-file-drop ng-model="files" class="drop-box" 
                    drag-over-class="dragover" multiple="true" 
