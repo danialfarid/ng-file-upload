@@ -41,7 +41,8 @@ Table of Content:
 <script src="angular-file-upload.min.js"></script> 
 
 <div ng-controller="MyCtrl">
-   Select File: <div class="button" ng-file-select ng-model="files">Select File</div>
+   Select File (watching model): <div class="button" ng-file-select ng-model="files">Select File</div>
+   Select File (on file change): <div class="button" ng-file-select ng-file-change="upload($files)">Select File</div>
    
    Drop File: <div ng-file-drop ng-model="files" class="drop-box" 
                    drag-over-class="dragover" multiple="true" 
@@ -58,20 +59,24 @@ angular.module('myApp', ['angularFileUpload']);
 
 myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
   $scope.$watch('files', function() {
-    if ($scope.files.lenght) {
+    $scope.upload($scope.files);
+  });
+  
+  $scope.upload = function(files) {
+    if (files.lenght) {
       $scope.upload = $upload.upload({
         url: 'server/upload/url',
         data: {myObj: $scope.myModelObj},
-        file: $scope.files
+        file: files[0]
       }).progress(function(evt) {
         var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-        console.log('progress: ' + progressPercentage + '% file :'+ evt.config.file[0].name);
+        console.log('progress: ' + progressPercentage + '% file :'+ evt.config.file.name);
       }).success(function(data, status, headers, config) {
-        console.log('file ' + config.file[0].name + 'is uploaded successfully. Response: ' + data);
+        console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
       });
     }
-  }
-})];
+  };
+}];
 ```
 
 ### Full reference
