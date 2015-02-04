@@ -35,7 +35,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Sample:
-[jsfiddle link](http://jsfiddle.net/wsoLzeur/)
+[jsfiddle http://jsfiddle.net/wsoLzeur/](http://jsfiddle.net/wsoLzeur/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -169,7 +169,6 @@ $upload.upload({
 */
 $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 ```
-```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
@@ -183,6 +182,7 @@ This is equivalent to angular $http() but allow you to listen to progress event 
 It could also be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. 
 `reject` param will only work in Chrome browser which provide information about dragged over content. However some file types are reported as empty by Chrome even though they will have correct type when they are dropped, so if your `accept` attribute wildcard depends on file types rather than file extensions it may not work for those files if their type is not reported by Chrome. 
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
+
 ##<a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
