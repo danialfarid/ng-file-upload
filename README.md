@@ -1,8 +1,9 @@
 angular-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a> or give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload).
+Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
+**Migrate to version 3.x** [Change log](https://github.com/danialfarid/angular-file-upload/releases/tag/3.0.0)
 
 Table of Content:
 * [Features](#features)
@@ -34,51 +35,51 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Sample:
+[jsfiddle link](http://jsfiddle.net/wsoLzeur/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
 <script src="angular-file-upload-shim.min.js"></script> 
 <script src="angular-file-upload.min.js"></script> 
 
-<div ng-controller="MyCtrl">
-   Select File (watching model): 
-   <div class="button" ng-file-select ng-model="files">Select File</div>
-   Select File (on file change): 
-   <div class="button" ng-file-select ng-file-change="upload($files)">Select File</div>
-   
-   Drop File: <div ng-file-drop ng-model="files" class="drop-box" 
-                   drag-over-class="dragover" multiple="true" 
-                   allow-dir="true" accept="image/*,application/pdf">
-                       Drop Images or PDFs files here
-              </div>
-   <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
-</div>
+<div ng-app="fileUpload" ng-controller="MyCtrl">
+    watching model:
+    <div class="button" ng-file-select ng-model="files">Upload ussing model $watch</div>
+    <div class="button" ng-file-select ng-file-change="upload($files)">Upload on file change</div>
+    Drop File:
+    <div ng-file-drop ng-model="files" class="drop-box" 
+        drag-over-class="dragover" ng-multiple="true" allow-dir="true"
+        accept=".jpg,.png,.pdf">Drop Images or PDFs files here</div>
+    <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
 ```
 JS:
 ```js
-//inject angular file upload directives and service.
-angular.module('myApp', ['angularFileUpload']);
+//inject angular file upload directives and services.
+var app = angular.module('fileUpload', ['angularFileUpload']);
 
-myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
-  $scope.$watch('files', function() {
-    $scope.upload($scope.files);
-  });
-  
-  $scope.upload = function(files) {
-    if (files.lenght) {
-      $scope.upload = $upload.upload({
-        url: 'server/upload/url',
-        data: {myObj: $scope.myModelObj},
-        file: files[0]
-      }).progress(function(evt) {
-        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-        console.log('progress: ' + progressPercentage + '% file :'+ evt.config.file.name);
-      }).success(function(data, status, headers, config) {
-        console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
-      });
-    }
-  };
-}];
+app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
+    $scope.$watch('files', function () {
+        $scope.upload($scope.files);
+    });
+
+    $scope.upload = function (files) {
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                $upload.upload({
+                    url: 'upload/url',
+                    fields: {'username': $scope.username},
+                    file: file
+                }).progress(function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                }).success(function (data, status, headers, config) {
+                    console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                });
+            }
+        }
+    };
+}]);
 ```
 
 ### Full reference
@@ -92,10 +93,10 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
                                                   // you can use $scope.$watch('myFiles') instead
     ng-multiple="true|false" // default false, allows selecting multiple files
     ng-capture="'camera'|'other'" // allows mobile devices to capture using camera
-    accept="image/*,*.pdf,*.xml" // see standard HTML file input accept attribute
-    input-file-...="..." // if you prefix the attr with (data-)input-file- it would
-                         // propagate that property to underlying <input type="file"...>
-                         // see #462. Use only if the elememt is not input type="file" already
+    ng-accept="'image/*'" // see standard HTML file input accept attribute
+    ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
+    input-file-...="..." // if element is not input file the attributes prefix with (data-)input-file- 
+                         // will be added to underlying <input type="file"...> see #462.
 >Upload</button>
 ```
 #### File drop
@@ -104,8 +105,8 @@ myApp.controller('MyCtrl') = [ '$scope', '$upload', function($scope, $upload) {
     ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
     ng-multiple="true|false" // default false, allows selecting multiple files. 
-    accept="image/*" // wildcard filter for file types allowed for drop (comma separated)
-    ng-file-rejected-model="rejFiles" // bind to dropped files that do not match the accept wildcard
+    ng-accept="'.pdf,.jpg'" // wildcard filter for file types allowed for drop (comma separated)
+    ng-mode-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
     drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
                     calcDragOverClass($event)" 
@@ -134,27 +135,26 @@ $upload.upload({
   an array  of names for multiple files (html5). Default is 'file' */
   fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
   /* 
-  data map. each field will be sent as a form field unless sendDataAsJson is true.
-  The values are converted to json string unless sendObjectAsJson or transformRequest is specified. */
-  data: {myObj: $scope.myModelObj}, 
-  /* 
-  send the whole data object as a json blob with the key "data". Server will recieve a "data" 
-  form field binary of type 'application/json'. default false html5 only */
-  sendDataAsJson: true|false,
+  map of extra form data fields to send along with file. each field will be sent as a form field.
+  The values are converted to json string or jsob blob depending on 'sendObjectsAsJsonBlob' option. */
+  fields: {key: $scope.myValue, ...},
   /*
-  if the value of a form field is an object it will send it as an 'application/json' blob type 
-  rather than json string. default false. */
-  sendObjectAsJson: true|false,    
+  if the value of a form field is an object it will be sent as 'application/json' blob 
+  rather than json string, default false. */
+  sendObjectsAsJsonBlob: true|false,
   /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
   formDataAppender: function(formData, key, val){},
-  transforRequest: muTransformRequestFn, //called on each field or whole "data" depending on sendDataAsJson
+  /*
+  data will be sent as a separate form data field called "data". It will be converted to json string 
+  or jsob blob depending on 'sendObjectsAsJsonBlob' option*/
+  data: {}. 
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
-  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total));
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
 }).success(function(data, status, headers, config) {
   // file is uploaded successfully
-  console.log('file is uploaded successfully. Response: ' + data);
+  console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
 }).error(...
 /* access or attach event listeners to the underlying XMLHttpRequest */
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
@@ -168,6 +168,7 @@ $upload.upload({
    You should verify the file size before uploading with $upload.http().
 */
 $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
+```
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
@@ -202,6 +203,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
         flashUrl: 'yourcdn.com/js/FileAPI.flash.swf',
 
         //forceLoad: true, html5: false //to debug flash in HTML5 browsers
+        //noContentTimeout: 10000 (see #528)
     }
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
@@ -226,7 +228,7 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
 #### <a name="php"></a>PHP
-[Wiki Sample] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example)
+[Wiki Sample] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/angular-file-upload/issues/475)
 #### <a name="net"></a>.Net
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
