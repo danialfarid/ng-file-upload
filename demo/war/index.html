@@ -77,20 +77,26 @@ FileAPI = {
 				<fieldset><legend>Upload right away</legend>
 					<div class="up-buttons">
 						<div ng-file-select ng-model="files" class="upload-button" 
-						       ng-file-change="upload(files)" ng-multiple="false" ng-accept="'image/*,application/pdf'" tabindex="0">Attach an Image or PDF</div><br/>
-						<button ng-file-select ng-model="files" ng-multiple="true">Attach Any File</button>
+						       ng-multiple="false" ng-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles" 
+						       tabindex="0">Attach an Image or PDF</div><br/>
+						<button ng-file-select ng-model="files" 
+								ng-multiple="true">Attach Any File</button>
 					</div>
-					<div ng-file-drop ng-file-select ng-model="files" class="drop-box" 
-						drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-						ng-multiple="true" allow-dir="true" accept="image/*,*pdf">
-							Drop Images or PDFs<div>here</div>
+					<div ng-file-drop ng-file-select ng-model="files" ng-model-rejected="rejFiles"
+						drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
+						ng-multiple="true" allow-dir="true" ng-accept="'.pdf,.jpg,.png'">
+							Drop Images or PDFs<div>or click to select</div>
 					</div>
 					<div ng-no-file-drop class="drop-box">File Farg&Drop not supported on your browser</div>
 				</fieldset>
 				<br/>
 			</div>
 		</div>
-		
+		<ul ng-show="rejFiles.length > 0" class="response">
+			<li class="sel-file" ng-repeat="f in rejFiles">
+				Rejected file: {{f.name}} - size: {{f.size}}B - type: {{f.type}}
+			</li>
+		</ul>
 		<ul ng-show="files.length > 0" class="response">
 			<li class="sel-file" ng-repeat="f in files">
 				<img ng-show="f.dataUrl" ng-src="{{f.dataUrl}}" class="thumb">
@@ -123,13 +129,7 @@ FileAPI = {
 
 	<div class="server">
 		<div class="srv-title">How to upload to the server:</div>
-		
-		<div class="edit-div">
-			<a ng-click="showEditScript  = !showEditScript" href="javascript:void(0)">+ edit upload script</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a ng-show="showEditScript" ng-click="confirm() && (uploadScript = defaultUploadScript[howToSend])" href="javascript:void(0)">reset to default</a><br/><br/>
-			<div ng-show="showEditScript" id="jsEdit"></div>
-		</div>
-		
+				
 		<div class="howto">
 			<label><input type="radio" name="howToSend" ng-model="howToSend" value="1" ng-init="howToSend = 1">$upload.upload(): multipart/form-data upload cross browser</label>
 			<br/>
@@ -167,6 +167,6 @@ FileAPI = {
 		</div>
 	</div>	
 	<a style="position:fixed;bottom:10px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2015-01-06</div>
+	<div style="position:fixed;bottom:30px;right:10px;font-size:smaller;color:#777">Last update: 2015-02-03</div>
 </body>
 </html>

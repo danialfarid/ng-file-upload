@@ -1,8 +1,8 @@
 "use strict";
 
 
-var app = angular.module('fileUpload', [ 'angularFileUpload' ]);
-var version = '2.2.2';
+var app = angular.module('fileUpload', [ 'ngFileUpload' ]);
+var version = '3.0.0';
 
 app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload', function($scope, $http, $timeout, $compile, $upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -22,21 +22,28 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 			for (var i = 0; i < files.length; i++) {
 				$scope.errorMsg = null;
 				(function(file) {
-					$scope.generateThumb(file);
-					eval($scope.uploadScript);
+					generateThumbAndUpload(file);
 				})(files[i]);
 			}
 		}
-		storeS3UploadConfigInLocalStore();
 	});
 	
 	$scope.uploadPic = function(files) {
 		$scope.formUpload = true;
 		if (files != null) {
-			var file = files[0];
-			$scope.generateThumb(file);
-			$scope.errorMsg = null;
-			eval($scope.uploadScript);	
+			generateThumbAndUpload(files[0])
+		}
+	}
+	
+	function generateThumbAndUpload(file) {
+		$scope.errorMsg = null;
+		$scope.generateThumb(file);
+		if ($scope.howToSend == 1) {
+			uploadUsing$upload(file);
+		} else if ($scope.howToSend == 2) {
+			uploadUsing$http(file);
+		} else {
+			uploadS3(file);
 		}
 	}
 	
@@ -54,6 +61,99 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 				});
 			}
 		}
+	}
+	
+	function uploadUsing$upload(file) {
+		file.upload = $upload.upload({
+			url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
+			method: 'POST',
+			headers: {
+				'my-header' : 'my-header-value'
+			},
+			data: {aaa:'aaa'},
+			sendObjectsAsJsonBlob: false,
+			fields: {username: $scope.username},
+			file: file,
+			fileFormDataName: 'myFile',
+		});
+
+		file.upload.then(function(response) {
+			$timeout(function() {
+				file.result = response.data;
+			});
+		}, function(response) {
+			if (response.status > 0)
+				$scope.errorMsg = response.status + ': ' + response.data;
+		});
+
+		file.upload.progress(function(evt) {
+			// Math.min is to fix IE which reports 200% sometimes
+			file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+		});
+
+		file.upload.xhr(function(xhr) {
+			// xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+		});
+	}
+	
+	function uploadUsing$http(file) {
+		var fileReader = new FileReader();
+		fileReader.onload = function(e) {
+			$timeout(function() {
+				file.upload = $upload.http({
+					url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
+					method: 'POST',
+					headers : {
+						'Content-Type': file.type
+					},
+					data: e.target.result
+				});
+			
+				file.upload.then(function(response) {
+					file.result = response.data;
+				}, function(response) {
+					if (response.status > 0)
+						$scope.errorMsg = response.status + ': ' + response.data;
+				});
+			
+				file.upload.progress(function(evt) {
+					file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+				});
+			}, 5000);
+		}
+		fileReader.readAsArrayBuffer(file);
+	}
+	
+	function uploadS3(file) {
+		file.upload = $upload
+		.upload({
+			url : $scope.s3url,
+			method : 'POST',
+			fields : {
+				key : file.name,
+				AWSAccessKeyId : $scope.AWSAccessKeyId,
+				acl : $scope.acl,
+				policy : $scope.policy,
+				signature : $scope.signature,
+				"Content-Type" : file.type === null || file.type === '' ? 'application/octet-stream' : file.type,
+				filename : file.name
+			},
+			file : file,
+		});
+
+		file.upload.then(function(response) {
+			$timeout(function() {
+				file.result = response.data;
+			});
+		}, function(response) {
+			if (response.status > 0)
+				$scope.errorMsg = response.status + ': ' + response.data;
+		});
+		
+		file.upload.progress(function(evt) {
+			file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+		});
+		storeS3UploadConfigInLocalStore();
 	}
 	
 	$scope.generateSignature = function() {
@@ -89,13 +189,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	}
 	
 	(function handleDynamicEditingOfScriptsAndHtml($scope, $http) {
-		$scope.defaultUploadScript = [];
-		$http.get('js/upload-upload.js').success(function(data) {
-			$scope.defaultUploadScript[1] = data; $scope.uploadScript = $scope.uploadScript || data
-		});
-		$http.get('js/upload-http.js').success(function(data) {$scope.defaultUploadScript[2] = data});
-		$http.get('js/upload-s3.js').success(function(data) {$scope.defaultUploadScript[3] = data});
-		
 		$scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '');
 		
 		$scope.editHtml = (localStorage && localStorage.getItem("editHtml" + version)) || $scope.defaultHtml;
@@ -107,17 +200,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		}
 		$scope.$watch("editHtml", htmlEdit);
 		
-		$scope.$watch("howToSend", function(newVal, oldVal) {
-			$scope.uploadScript && localStorage && localStorage.setItem("uploadScript" + oldVal + version, $scope.uploadScript);
-			$scope.uploadScript = (localStorage && localStorage.getItem("uploadScript" + newVal + version)) || $scope.defaultUploadScript[newVal]; 
-		});
-		
-		function jsEdit(update) {
-			$scope.uploadScript && localStorage && localStorage.setItem("uploadScript" + $scope.howToSend + version, $scope.uploadScript);
-			if ($scope.uploadScript != $scope.jsEditor.getValue()) $scope.jsEditor.setValue($scope.uploadScript);
-		}
-		$scope.$watch("uploadScript", jsEdit);
-
 		$scope.htmlEditor = CodeMirror(document.getElementById('htmlEdit'), {
 			lineNumbers: true, indentUnit: 4,
 			mode:  "htmlmixed"
@@ -126,16 +208,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 			if ($scope.editHtml != $scope.htmlEditor.getValue()) {
 				$scope.editHtml = $scope.htmlEditor.getValue();
 				htmlEdit();
-			}
-		});
-		$scope.jsEditor = CodeMirror(document.getElementById('jsEdit'), {
-			lineNumbers: true, indentUnit: 4,
-			mode:  "javascript"
-		});
-		$scope.jsEditor.on('change', function() {
-			if ($scope.uploadScript != $scope.jsEditor.getValue()) {
-				$scope.uploadScript = $scope.jsEditor.getValue();
-				jsEdit();
 			}
 		});
 	})($scope, $http);

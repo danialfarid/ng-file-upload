@@ -131,7 +131,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 									xhr.getAllResponseHeaders = function(){};
 									_this.complete(null, {status: 204, statusText: 'No Content'});
 								}
-							}, 10000);
+							}, FileAPI.noContentTimeout || 10000);
 						}
 					},
 					headers: xhr.__requestHeaders
@@ -166,12 +166,22 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		}
 		var el = angular.element(elem);
 		if (!el.attr('disabled')) {
-			if (!el.hasClass('js-fileapi-wrapper') && (el.attr('ng-file-select') != null || el.attr('data-ng-file-select') != null ||
-					el.attr('ng-file-generated-elem--') != null)) {
+			var hasFileSelect = false;
+			for (var i = 0; i < el[0].attributes.length; i++) {
+				var attrib = el[0].attributes[i];
+				if (attrib.name.indexOf('file-select') !== -1) {
+					hasFileSelect = true;
+					break;
+				}
+			}
+			if (!el.hasClass('js-fileapi-wrapper') && (hasFileSelect || el.attr('__afu_gen__') != null)) {
 				
 				el.addClass('js-fileapi-wrapper');
-				if (el.attr('ng-file-generated-elem--') != null) {
-					var ref = angular.element(document.getElementById('e' + el.attr('id')));
+				if (el.attr('__afu_gen__') != null) {
+					var ref = (el[0].__refElem__ && angular.element(el[0].__refElem__)) || el;
+					while (ref && !ref.attr('__refElem__')) {
+						ref = angular.element(ref[0].nextSibling);
+					}
 					ref.bind('mouseover', function() {
 						if (el.parent().css('position') === '' || el.parent().css('position') === 'static') {
 							el.parent().css('position', 'relative');
@@ -337,7 +347,7 @@ if (!window.FileReader) {
 		var listener = function(evt) {
 			if (!loadStarted) {
 				loadStarted = true;
-				_this.onloadstart && this.onloadstart(constructEvent('loadstart', evt));
+				_this.onloadstart && _this.onloadstart(constructEvent('loadstart', evt));
 			}
 			if (evt.type === 'load') {
 				_this.onloadend && _this.onloadend(constructEvent('loadend', evt));
