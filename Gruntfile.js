@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 				files : [ {
 					expand : true,
 					cwd : 'demo/war/js/',
-					src : '<%= pkg.name %>*.js',
+					src : 'angular-file-upload*.js',
 					dest : 'dist/',
 					flatten : true,
 					filter : 'isFile'
@@ -61,9 +61,9 @@ module.exports = function(grunt) {
 					}
 				},
 				files: {
-					'demo/war/js/<%= pkg.name %>-all.js': 
-						['demo/war/js/<%= pkg.name %>.js', 
-						'demo/war/js/<%= pkg.name %>-shim.js']
+					'demo/war/js/angular-file-upload-all.js': 
+						['demo/war/js/angular-file-upload.js', 
+						'demo/war/js/angular-file-upload-shim.js']
 				}
 			}
 		},
@@ -73,9 +73,9 @@ module.exports = function(grunt) {
 			},
 			build : {
 				files : [ {
-					'dist/<%= pkg.name %>.min.js' : 'dist/<%= pkg.name %>.js',
-					'dist/<%= pkg.name %>-shim.min.js' : 'dist/<%= pkg.name %>-shim.js',
-					'dist/<%= pkg.name %>-all.min.js' : 'dist/<%= pkg.name %>-all.js'
+					'dist/angular-file-upload.min.js' : 'dist/angular-file-upload.js',
+					'dist/angular-file-upload-shim.min.js' : 'dist/angular-file-upload-shim.js',
+					'dist/angular-file-upload-all.min.js' : 'dist/angular-file-upload-all.js'
 				} ]
 			}
 		},
