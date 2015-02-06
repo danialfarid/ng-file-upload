@@ -70,8 +70,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 			headers: {
 				'my-header' : 'my-header-value'
 			},
-			data: {aaa:'aaa'},
-			sendObjectsAsJsonBlob: false,
 			fields: {username: $scope.username},
 			file: file,
 			fileFormDataName: 'myFile',
