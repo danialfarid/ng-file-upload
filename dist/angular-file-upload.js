@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.0.1
+ * @version 3.0.2
  */
 (function() {
 	
@@ -27,7 +27,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.0.1';
+angularFileUpload.version = '3.0.2';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -393,6 +393,9 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	elem[0].addEventListener('dragover', function(evt) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
+		// handling dragover events from the Chrome download bar
+		var b = evt.dataTransfer.effectAllowed;
+		evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
 		$timeout.cancel(leaveTimeout);
 		if (!scope.actualDragOverClass) {
 			actualDragOverClass = calculateDragOverClass(scope, attr, evt);

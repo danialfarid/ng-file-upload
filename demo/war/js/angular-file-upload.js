@@ -393,6 +393,9 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	elem[0].addEventListener('dragover', function(evt) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
+		// handling dragover events from the Chrome download bar
+		var b = evt.dataTransfer.effectAllowed;
+		evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
 		$timeout.cancel(leaveTimeout);
 		if (!scope.actualDragOverClass) {
 			actualDragOverClass = calculateDragOverClass(scope, attr, evt);
