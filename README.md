@@ -35,7 +35,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Sample:
-[jsfiddle http://jsfiddle.net/wsoLzeur/](http://jsfiddle.net/wsoLzeur/)
+[jsfiddle http://jsfiddle.net/nmdcwf3w/](http://jsfiddle.net/nmdcwf3w/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -106,7 +106,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
     ng-multiple="true|false" // default false, allows selecting multiple files. 
     ng-accept="'.pdf,.jpg'" // wildcard filter for file types allowed for drop (comma separated)
-    ng-mode-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
+    ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
     drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
                     calcDragOverClass($event)" 
