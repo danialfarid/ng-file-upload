@@ -213,6 +213,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 * In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
+* Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/angular-file-upload/issues/261)
 
 ##<a name="server"></a>Server Side
 
