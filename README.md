@@ -9,13 +9,7 @@ Table of Content:
 * [Features](#features)
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
-* [Server Side](#server)
-  * [Java](#java)
-  * [Spring MVC](#spring)
-  * [Node.js](#node)
-  * [Rails](#rails)
-  * [PHP](#php)
-  * [.Net](#net)
+* [Server Side](#server) [Java](#java) [Spring](#spring) [Node.js](#node) [Rails](#rails) [PHP](#php) [.Net](#net)
   * [Amazon S3 Upload](#s3)
 * [CORS](#cors)
 * [Install](#install)
@@ -218,22 +212,22 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 
 ##<a name="server"></a>Server Side
 
-#### <a name="java"></a>**Java**
+* <a name="java"></a>**Java**
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
-#### <a name="spring"></a>**Spring MVC**
+* <a name="spring"></a>**Spring MVC**
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
-#### <a name="node"></a>Node.js 
+* <a name="node"></a>Node.js 
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
 
 [Another wiki](https://github.com/danialfarid/angular-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
-#### <a name="rails"></a>Rails
+* <a name="rails"></a>Rails
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank)
 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
-#### <a name="php"></a>PHP
+* <a name="php"></a>PHP
 [Wiki Sample] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/angular-file-upload/issues/475)
-#### <a name="net"></a>.Net
+* <a name="net"></a>.Net
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
