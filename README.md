@@ -9,15 +9,10 @@ Table of Content:
 * [Features](#features)
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
-* [Server Side](#server) [Java](#java) [Spring](#spring) [Node.js](#node) [Rails](#rails) [PHP](#php) [.Net](#net)
+* [Server Side](#server) ([Java](#java) [Spring](#spring) [Node.js](#node) [Rails](#rails) [PHP](#php) [.Net](#net))
 * [Amazon S3 Upload](#s3)
 * [CORS](#cors)
-* [Install](#install)
-  * [Manual](#manual)
-  * [Bower](#bower)
-  * [Yeoman](#yeoman)
-  * [NuGet](#nuget)
-  * [npm](#npm)
+* [Install](#install) ([Manual](#manual) [Bower](#bower) [Yeoman](#yeoman) [NuGet](#nuget) [npm](#npm))
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
