@@ -230,7 +230,7 @@ Here is a sample config options:
 $upload.upload({
         url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
-        data : {
+        fields : {
           key: file.name, // the key to store the file on S3, could be file name or customized
           AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
           acl: 'private', // sets the access to the uploaded file in the bucket: private or public 
