@@ -9,20 +9,11 @@ Table of Content:
 * [Features](#features)
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
-* [Server Side](#server)
-  * [Java](#java)
-  * [Node.js](#node)
-  * [Rails](#rails)
-  * [PHP](#php)
-  * [.Net](#net)
+* [Server Side](#server) 
+  * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
   * [Amazon S3 Upload](#s3)
-* [CORS](#cors)
-* [Install](#install)
-  * [Manual](#manual)
-  * [Bower](#bower)
-  * [Yeoman](#yeoman)
-  * [NuGet](#nuget)
-  * [npm](#npm)
+  * [CORS](#cors)
+* [Install](#install) ([Manual](#manual), [Bower](#bower), [Yeoman](#yeoman), [NuGet](#nuget), [npm](#npm))
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
@@ -213,23 +204,23 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
 * In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
+* Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/angular-file-upload/issues/261)
 
 ##<a name="server"></a>Server Side
 
-#### <a name="java"></a>**Java**
+* <a name="java"></a>**Java**
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
-#### <a name="node"></a>Node.js 
+* <a name="spring"></a>**Spring MVC**
+[Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
+* <a name="node"></a>**Node.js** 
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
-
 [Another wiki](https://github.com/danialfarid/angular-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
-#### <a name="rails"></a>Rails
+* <a name="rails"></a>**Rails**
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank)
-
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
-
-#### <a name="php"></a>PHP
+* <a name="php"></a>**PHP**
 [Wiki Sample] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/angular-file-upload/issues/475)
-#### <a name="net"></a>.Net
+* <a name="net"></a>**.Net**
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
@@ -239,7 +230,7 @@ Here is a sample config options:
 $upload.upload({
         url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
-        data : {
+        fields : {
           key: file.name, // the key to store the file on S3, could be file name or customized
           AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
           acl: 'private', // sets the access to the uploaded file in the bucket: private or public 
