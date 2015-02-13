@@ -103,6 +103,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
                     calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
+              // reject class only works in Chrome.
     drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     stop-propagation="true|false" // default false, whether to propagate drag/drop events.
