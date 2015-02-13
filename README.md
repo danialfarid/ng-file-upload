@@ -116,7 +116,7 @@ Drop files here
 
 #### $upload service:
 ```js
-$upload.upload({
+var upload = $upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
   *file: file,  // single file or an array of files (array is for html5 only)
   method: 'POST' or 'PUT', default POST,
@@ -152,6 +152,9 @@ $upload.upload({
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
 /* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
 }).then(success, error, progress);
+
+//cancel/abort the upload in progress.
+upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
    Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
