@@ -151,9 +151,11 @@ var upload = $upload.upload({
 /* access or attach event listeners to the underlying XMLHttpRequest */
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
 /* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
-}).then(success, error, progress);
+});
+/* then promise (note that returned promise doesn't have progress, xhr and cancel functions. */
+var promise = upload.then(success, error, progress);
 
-//cancel/abort the upload in progress.
+/* cancel/abort the upload in progress. */
 upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
