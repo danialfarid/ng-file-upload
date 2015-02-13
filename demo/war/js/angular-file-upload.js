@@ -602,7 +602,7 @@ function globStringToRegex(str) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-for (key in angularFileUpload) {
+for (var key in angularFileUpload) {
 	ngFileUpload[key] = angularFileUpload[key];
 }
 
