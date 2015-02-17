@@ -103,6 +103,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
                     calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
+              // reject class only works in Chrome.
     drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     stop-propagation="true|false" // default false, whether to propagate drag/drop events.
@@ -115,7 +116,7 @@ Drop files here
 
 #### $upload service:
 ```js
-$upload.upload({
+var upload = $upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
   *file: file,  // single file or an array of files (array is for html5 only)
   method: 'POST' or 'PUT', default POST,
@@ -150,7 +151,12 @@ $upload.upload({
 /* access or attach event listeners to the underlying XMLHttpRequest */
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
 /* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
-}).then(success, error, progress);
+});
+/* then promise (note that returned promise doesn't have progress, xhr and cancel functions. */
+var promise = upload.then(success, error, progress);
+
+/* cancel/abort the upload in progress. */
+upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
    Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
