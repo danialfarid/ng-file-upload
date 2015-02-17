@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', [ 'ngFileUpload' ]);
-var version = '3.0.2';
+var version = '3.0.5';
 
 app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload', function($scope, $http, $timeout, $compile, $upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -190,7 +190,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		$scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '');
 		
 		$scope.editHtml = (localStorage && localStorage.getItem("editHtml" + version)) || $scope.defaultHtml;
-		$scope.editHtml = $scope.defaultHtml;
 		function htmlEdit(update) {
 			document.getElementById("editArea").innerHTML = $scope.editHtml;
 			$compile(document.getElementById("editArea"))($scope);

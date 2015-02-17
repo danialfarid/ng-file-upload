@@ -156,9 +156,9 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 					xhr.__fileApiXHR = FileAPI.upload(config);
 				}, 1);
 			} else {
-				if (this.__url === '_fix_for_ie_crossdomain__') {
-					throw this.__origError;
-				}
+//				if (this.__url === '_fix_for_ie_crossdomain__') {
+//					throw this.__origError;
+//				}
 				orig.apply(xhr, arguments);
 			}
 		}

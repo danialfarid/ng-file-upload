@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.0.4
+ * @version 3.0.5
  */
 (function() {
 	
@@ -27,7 +27,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.0.4';
+angularFileUpload.version = '3.0.5';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -324,12 +324,10 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		}
 		if (ngModel) {
 			$timeout(function() {
-				if (scope[attr.ngModel]) scope[attr.ngModel].value = files
-				scope[attr.ngModel] = files;
+				$parse(attr.ngModel).assign(scope, files);
 				ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
-				if (attr['ngModelRejected']) {
-					if (scope[attr.ngModelRejected]) scope[attr.ngModelRejected].value = rejFiles;
-					scope[attr.ngModelRejected] = rejFiles;
+				if (attr.ngModelRejected) {
+					$parse(attr.ngModelRejected).assign(scope, rejFiles);
 				}
 			});
 		}
@@ -394,8 +392,10 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
 		// handling dragover events from the Chrome download bar
-		var b = evt.dataTransfer.effectAllowed;
-		evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
+		if (navigator.userAgent.indexOf("Chrome") > -1) {
+			var b = evt.dataTransfer.effectAllowed;
+			evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
+		}
 		$timeout.cancel(leaveTimeout);
 		if (!scope.actualDragOverClass) {
 			actualDragOverClass = calculateDragOverClass(scope, attr, evt);
@@ -423,13 +423,13 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		extractFiles(evt, function(files, rejFiles) {
 			$timeout(function() {
 				if (ngModel) {
-					if (scope[attr.ngModel]) scope[attr.ngModel].value = files; 
-					scope[attr.ngModel] = files;
+					$parse(attr.ngModel).assign(scope, files);
 					ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
 				}
 				if (attr['ngModelRejected']) {
-					if (scope[attr.ngModelRejected]) scope[attr.ngModelRejected].value = rejFiles;
-					scope[attr.ngModelRejected] = rejFiles;
+					if (scope[attr.ngModelRejected]) {
+						$parse(attr.ngModelRejected).assign(scope, rejFiles);
+					}
 				}
 			});
 			$timeout(function() {
@@ -480,12 +480,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 						continue;
 					}
 					if (entry != null) {
-						//fix for chrome bug https://code.google.com/p/chromium/issues/detail?id=149735
-						if (isASCII(entry.name)) {
-							traverseFileTree(files, entry);
-						} else if (!items[i].webkitGetAsEntry().isDirectory) {
-							addFile(items[i].getAsFile());
-						}
+						traverseFileTree(files, entry);
 					}
 				} else {
 					var f = items[i].getAsFile();
@@ -574,10 +569,6 @@ function dropAvailable() {
     return ('draggable' in div) && ('ondrop' in div);
 }
 
-function isASCII(str) {
-	return /^[\000-\177]*$/.test(str);
-}
-
 function globStringToRegex(str) {
 	if (str.length > 2 && str[0] === '/' && str[str.length -1] === '/') {
 		return str.substring(1, str.length - 1);
@@ -585,15 +576,15 @@ function globStringToRegex(str) {
 	var split = str.split(','), result = '';
 	if (split.length > 1) {
 		for (var i = 0; i < split.length; i++) {
-			if (split[i].indexOf('.') == 0) {
-				split[i] = '*' + split[i];
-			}
 			result += '(' + globStringToRegex(split[i]) + ')';
 			if (i < split.length - 1) {
 				result += '|'
 			}
 		}
 	} else {
+		if (str.indexOf('.') == 0) {
+			str= '*' + str;
+		}
 		result = '^' + str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + '-]', 'g'), '\\$&') + '$';
 		result = result.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
 	}
