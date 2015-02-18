@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.0.6
+ * @version 3.0.7
  */
 (function() {
 	
@@ -27,7 +27,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 	
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.0.6';
+angularFileUpload.version = '3.0.7';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
@@ -263,31 +263,28 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	}
 	
 	function resetAndClick(evt) {
-		var isChanged = fileElem[0].value != null && fileElem[0].value != '';
-		// reset the value to allow selecting the same file again
-		fileElem[0].value = null;
-		// chrome fires change event on popup cancel so no need for special handling but for others
-		// we cannot detect the user clicking cancel on file select popup and it doesn't fire change event, 
-		// so we fire a null change event before the popup opens for these browsers so if the user 
-		// clicks cancel the previous file value will be removed and model will be notified. 
-		if (navigator.userAgent.indexOf("Chrome") === -1) {
-			// if this is manual click trigger we don't need to reset again 
-			if (!elem.attr('__afu_clone__')) {
-				if (isChanged) {
-					onChangeFn({target: {files: []}});
-				}
-				// fix for IE10 cannot set the value of the input to null programmatically by cloning and replacing input
-				if (navigator.appVersion.indexOf("MSIE 10") !== -1) {
-					var clone = recompileElem();
-					clone.attr('__afu_clone__', true);
-					clone[0].click();
-					evt.preventDefault();
-					evt.stopPropagation();
-					return true;
-				}
-			} else {
-				elem.attr('__afu_clone__', null);
+		if (fileElem[0].value != null && fileElem[0].value != '') {
+			fileElem[0].value = null;
+			// IE 11 already fires change event when you set the value to null
+			if (navigator.userAgent.indexOf("Trident/7") === -1) {
+				onChangeFn({target: {files: []}});
 			}
+		}
+		// if this is manual click trigger we don't need to reset again 
+		if (!elem.attr('__afu_clone__')) {
+			// fix for IE10 cannot set the value of the input to null programmatically by cloning and replacing input
+			// IE 11 setting the value to null event will be fired after file change clearing the selected file so 
+			// we just recreate the element for IE 11 as well
+			if (navigator.appVersion.indexOf("MSIE 10") !== -1 || navigator.userAgent.indexOf("Trident/7") !== -1) {
+				var clone = recompileElem();
+				clone.attr('__afu_clone__', true);
+				clone[0].click();
+				evt.preventDefault();
+				evt.stopPropagation();
+				return true;
+			}
+		} else {
+			elem.attr('__afu_clone__', null);
 		}
 	}
 	
@@ -322,24 +319,22 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 				rejFiles.push(file);
 			}
 		}
-		if (ngModel) {
-			$timeout(function() {
+		$timeout(function() {
+			if (ngModel) {
 				$parse(attr.ngModel).assign(scope, files);
 				ngModel && ngModel.$setViewValue(files != null && files.length == 0 ? '' : files);
 				if (attr.ngModelRejected) {
 					$parse(attr.ngModelRejected).assign(scope, rejFiles);
 				}
-			});
-		}
-		if (attr.ngFileChange && attr.ngFileChange != "") {
-			$timeout(function() {
+			}
+			if (attr.ngFileChange && attr.ngFileChange != "") {
 				$parse(attr.ngFileChange)(scope, {
 					$files: files,
 					$rejectedFiles: rejFiles,
 					$event: evt
 				});
-			});
-		}
+			}
+		});
 	}
 }
 
@@ -603,7 +598,7 @@ for (var key in angularFileUpload) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.0.6
+ * @version 3.0.7
  */
 
 (function() {
