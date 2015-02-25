@@ -35,7 +35,7 @@ Table of Content:
 
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
-    <div class="button" ng-file-select ng-model="files">Upload ussing model $watch</div>
+    <div class="button" ng-file-select ng-model="files">Upload using model $watch</div>
     <div class="button" ng-file-select ng-file-change="upload($files)">Upload on file change</div>
     Drop File:
     <div ng-file-drop ng-model="files" class="drop-box" 
