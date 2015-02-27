@@ -42,6 +42,7 @@ Table of Content:
         drag-over-class="dragover" ng-multiple="true" allow-dir="true"
         accept=".jpg,.png,.pdf">Drop Images or PDFs files here</div>
     <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
+</div>
 ```
 JS:
 ```js
