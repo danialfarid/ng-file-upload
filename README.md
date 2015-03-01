@@ -3,7 +3,7 @@ angular-file-upload
 
 Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
-**Migrate to version 3.x** [Change log](https://github.com/danialfarid/angular-file-upload/releases/tag/3.0.0)
+**Migration notes: [version 3.0.0](https://github.com/danialfarid/angular-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/angular-file-upload/releases/tag/3.1.0)
 
 Table of Content:
 * [Features](#features)
@@ -85,7 +85,8 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
                                                   // you can use $scope.$watch('myFiles') instead
     ng-multiple="true|false" // default false, allows selecting multiple files
     ng-capture="'camera'|'other'" // allows mobile devices to capture using camera
-    ng-accept="'image/*'" // see standard HTML file input accept attribute
+    accept="'image/*'" // see standard HTML file input accept attribute
+    ng-accept="'image/*'|validate($file)" // function or comma separated wildcard to filter files allowed
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     input-file-...="..." // if element is not input file the attributes prefix with (data-)input-file- 
                          // will be added to underlying <input type="file"...> see #462.
@@ -97,7 +98,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
     ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
     ng-multiple="true|false" // default false, allows selecting multiple files. 
-    ng-accept="'.pdf,.jpg'" // wildcard filter for file types allowed for drop (comma separated)
+    ng-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
     drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
