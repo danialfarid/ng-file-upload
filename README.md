@@ -35,13 +35,14 @@ Table of Content:
 
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
-    <div class="button" ng-file-select ng-model="files">Upload ussing model $watch</div>
+    <div class="button" ng-file-select ng-model="files">Upload using model $watch</div>
     <div class="button" ng-file-select ng-file-change="upload($files)">Upload on file change</div>
     Drop File:
     <div ng-file-drop ng-model="files" class="drop-box" 
         drag-over-class="dragover" ng-multiple="true" allow-dir="true"
         accept=".jpg,.png,.pdf">Drop Images or PDFs files here</div>
     <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
+</div>
 ```
 JS:
 ```js
