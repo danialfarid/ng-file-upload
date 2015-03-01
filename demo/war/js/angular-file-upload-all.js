@@ -309,11 +309,14 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	
 	function updateModel(fileList, attr, ngModel, scope, evt) {
 		var files = [], rejFiles = [];
-		var regexp = attr['accept'] ? new RegExp(globStringToRegex(attr['accept']), 'gi') : null;
+		var accept = $parse(attr.ngAccept)(scope);
+		var regexp = angular.isString(accept) && accept ? new RegExp(globStringToRegex(accept), 'gi') : null;
+		var acceptFn = regexp ? null : attr.ngAccept;
 
 		for (var i = 0; i < fileList.length; i++) {
 			var file = fileList.item(i);
-			if (!regexp || file.type.match(regexp) || (file.name != null && file.name.match(regexp))) {
+			if ((!regexp || file.type.match(regexp) || (file.name != null && file.name.match(regexp))) &&
+					(!acceptFn || $parse(acceptFn)(scope, {$file: file, $event: evt}))) {
 				files.push(file);
 			} else {
 				rejFiles.push(file);
@@ -381,7 +384,8 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	var stopPropagation = $parse(attr.stopPropagation)(scope);
 	var dragOverDelay = 1;
 	var accept = $parse(attr.ngAccept)(scope) || attr.accept;
-	var regexp = accept ? new RegExp(globStringToRegex(accept), 'gi') : null;
+	var regexp = angular.isString(accept) && accept ? new RegExp(globStringToRegex(accept), 'gi') : null;
+	var acceptFn = regexp ? null : attr.ngAccept;
 	var actualDragOverClass;
 	elem[0].addEventListener('dragover', function(evt) {
 		evt.preventDefault();
@@ -439,12 +443,14 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	
 	function calculateDragOverClass(scope, attr, evt) {
 		var valid = true;
-		if (regexp) {
+		if (regexp || acceptFn) {
 			var items = evt.dataTransfer.items;
 			if (items != null) {
 				for (var i = 0 ; i < items.length && valid; i++) {
 					valid = valid && (items[i].kind == 'file' || items[i].kind == '') && 
-						(items[i].type.match(regexp) != null || (items[i].name != null && items[i].name.match(regexp) != null));
+						((acceptFn && $parse(acceptFn)(scope, {$file: items[i], $event: evt})) || 
+						(regexp && (items[i].type != null && items[i].type.match(regexp)) || 
+								(items[i].name != null && items[i].name.match(regexp))));
 				}
 			}
 		}
@@ -460,7 +466,8 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		var files = [], rejFiles = [], items = evt.dataTransfer.items, processing = 0;
 		
 		function addFile(file) {
-			if (!regexp || file.type.match(regexp) || (file.name != null && file.name.match(regexp))) {
+			if ((!regexp || file.type.match(regexp) || (file.name != null && file.name.match(regexp))) && 
+					(!acceptFn || $parse(acceptFn)(scope, {$file: file, $event: evt}))) {
 				files.push(file);
 			} else {
 				rejFiles.push(file);
