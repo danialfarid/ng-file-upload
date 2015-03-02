@@ -178,7 +178,7 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	
 	var watchers = [];
 
-	function watch(attrVal) {
+	function watchForRecompile(attrVal) {
 		$timeout(function() {
 			if (elem.parent().length) {
 				watchers.push(scope.$watch(attrVal, function(val, oldVal) {
@@ -207,7 +207,7 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	
 	function bindAttr(bindAttr, attrName) {
 		if (bindAttr) {
-			watch(bindAttr);
+			watchForRecompile(bindAttr);
 			var val = $parse(bindAttr)(scope);
 			if (val) {
 				elem.attr(attrName, val);
@@ -220,7 +220,7 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	}
 	
 	bindAttr(attr.ngMultiple, 'multiple');
-	bindAttr(attr.ngAccept, 'accept');
+	bindAttr(attr.ngAccept, 'ng-accept');
 	bindAttr(attr.ngCapture, 'capture');
 	
 	if (attr['ngFileSelect'] != '') {
@@ -236,9 +236,9 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 	var fileElem = elem;
 	if (!isInputTypeFile()) {
 		fileElem = angular.element('<input type="file">')
-		if (attr['multiple']) fileElem.attr('multiple', attr['multiple']);
-		if (attr['accept']) fileElem.attr('accept', attr['accept']);
-		if (attr['capture']) fileElem.attr('capture', attr['capture']);
+		if (elem.attr['multiple']) fileElem.attr('multiple', elem.attr['multiple']);
+		if (elem.attr['accept']) fileElem.attr('accept', elem.attr['accept']);
+		if (elem.attr['capture']) fileElem.attr('capture', elem.attr['capture']);
 		for (var key in attr) {
 			if (key.indexOf('inputFile') == 0) {
 				var name = key.substring('inputFile'.length);

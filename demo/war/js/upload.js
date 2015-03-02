@@ -226,8 +226,4 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		e.preventDefault();
 	});
 	
-	$scope.verify = function($file) {
-		return $file && $file.type == 'image/jpeg';
-	};
-	
 } ]);
