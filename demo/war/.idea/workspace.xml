@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8d3c539d-c56c-4462-9b62-e3927756359f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/angular-file-upload.js" afterPath="$PROJECT_DIR$/js/angular-file-upload.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WEB-INF/appengine-web.xml" afterPath="$PROJECT_DIR$/WEB-INF/appengine-web.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="8d3c539d-c56c-4462-9b62-e3927756359f" name="Default" comment="" />
     <ignored path="war.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
