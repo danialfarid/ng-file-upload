@@ -56,6 +56,7 @@ FileAPI = {
 
 		<div class="upload-buttons">
 			<div id="editArea">
+				<div style="float:left; margin-right: 10px;">
 				<form name="myForm">
 				  	<fieldset><legend>Upload on form submit</legend>
 					    Username: <input type="text" name="userName" ng-model="username" size="48" required> 
@@ -76,28 +77,45 @@ FileAPI = {
 				</form>
 				<fieldset><legend>Upload right away</legend>
 					<div class="up-buttons">
-						<div ng-file-select ng-model="files" class="upload-button" 
-						       ng-multiple="false" ng-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles" 
-						       tabindex="0">Attach an Image or PDF</div><br/>
-						<button ng-file-select ng-model="files" 
+						<div ng-file-select ng-model="files" class="upload-button"
+							 ng-multiple="false" ng-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles"
+							 tabindex="0">Attach an Image or PDF</div><br/>
+						<button ng-file-select ng-model="files"
 								ng-multiple="true">Attach Any File</button>
 					</div>
 					<div ng-file-drop ng-file-select ng-model="files" ng-model-rejected="rejFiles"
-						drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
-						ng-multiple="true" allow-dir="true" ng-accept="'image/*,application/pdf'">
-							Drop Images or PDFs<div>or click to select</div>
+						 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
+						 ng-multiple="true" allow-dir="true" ng-accept="'image/*,application/pdf'">
+						Drop Images or PDFs<div>or click to select</div>
 					</div>
 					<div ng-no-file-drop class="drop-box">File Farg&Drop not supported on your browser</div>
+				</fieldset>
+				</div>
+				<fieldset><legend>Play with attributes</legend>
+					<label>ng-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
+					<label>accept (browser dependent select window filter): <input type="text" ng-model="acceptSelect"></label><br/>
+					<label>ng-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
+					<label><input type="checkbox" ng-model="multiple" >ng-multiple (allow multiple files)</label><br/>
+					<label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
+					<label><input type="checkbox" ng-model="allowDir">allow-dir (allow directory drop Chrome only)</label><br/>
+
+					<div class="up-buttons">
+						<div ng-file-select ng-file-drop ng-model="files" ng-model-rejected="rejFiles"
+							 ng-multiple="multiple" ng-accept="accept" accept="{{acceptSelect}}"
+							 ng-disabled="disabled" ng-capture="capture"
+							 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+							 allow-dir="allowDir" class="drop-box">Select File or Drop</div><br/>
+					</div>
 				</fieldset>
 				<br/>
 			</div>
 		</div>
-		<ul ng-show="rejFiles.length > 0" class="response">
+		<ul style="clear:both" ng-show="rejFiles.length > 0" class="response">
 			<li class="sel-file" ng-repeat="f in rejFiles">
 				Rejected file: {{f.name}} - size: {{f.size}}B - type: {{f.type}}
 			</li>
 		</ul>
-		<ul ng-show="files.length > 0" class="response">
+		<ul style="clear:both" ng-show="files.length > 0" class="response">
 			<li class="sel-file" ng-repeat="f in files">
 				<img ng-show="f.dataUrl" ng-src="{{f.dataUrl}}" class="thumb">
 				<span class="progress" ng-show="f.progress >= 0">						
@@ -124,10 +142,10 @@ FileAPI = {
 		</ul>
 
 		<br/>
-		<div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
+		<div style="clear:both" class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
 	</div>
 
-	<div class="server">
+	<div style="clear:both" class="server">
 		<div class="srv-title">How to upload to the server:</div>
 				
 		<div class="howto">
@@ -166,8 +184,8 @@ FileAPI = {
 		   	<br/>
 		</div>
 	</div>	
-	<a style="position:fixed;bottom:40px;right:10px;font-size:smaller;" target="_blank" href="https://angular-file-upload.appspot.com/donate.html">donate</a>
-	<a style="position:fixed;bottom:60px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-02-06</div>
+	<a style="position:fixed;bottom:28px;right:10px;font-size:smaller;" target="_blank" href="https://angular-file-upload.appspot.com/donate.html">donate</a>
+	<a style="position:fixed;bottom:45px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
+	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-03-11</div>
 </body>
 </html>
