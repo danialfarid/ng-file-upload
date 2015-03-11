@@ -13,5 +13,5 @@ classes/
 ._*
 /node_modules
 *.jar
-release.sh
+release-local.sh
 npm-debug.log
