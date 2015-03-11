@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.2.0
+ * @version 3.2.1
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.2.0';
+angularFileUpload.version = '3.2.1';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -199,7 +199,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
 
     function bindAttrToFileInput(fileElem) {
         if (attr.ngMultiple) fileElem.attr('multiple', $parse(attr.ngMultiple)(scope));
-        if (attr.ngSelectAccept) fileElem.attr('accept', $parse(attr.ngSelectAccept)(scope));
+        if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngCapture) fileElem.attr('capture', $parse(attr.ngCapture)(scope));
         if (attr.ngDisabled) fileElem.attr('disabled', $parse(attr.ngDisabled)(scope));
 
@@ -571,7 +571,7 @@ for (key in angularFileUpload) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.2.0
+ * @version 3.2.1
  */
 
 (function() {

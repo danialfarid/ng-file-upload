@@ -199,7 +199,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
 
     function bindAttrToFileInput(fileElem) {
         if (attr.ngMultiple) fileElem.attr('multiple', $parse(attr.ngMultiple)(scope));
-        if (attr.ngSelectAccept) fileElem.attr('accept', $parse(attr.ngSelectAccept)(scope));
+        if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngCapture) fileElem.attr('capture', $parse(attr.ngCapture)(scope));
         if (attr.ngDisabled) fileElem.attr('disabled', $parse(attr.ngDisabled)(scope));
 
