@@ -220,7 +220,6 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
                             rejFiles.push(file);
                         }
                     }
-                    console.log('change' + files);
                     updateModel($parse, $timeout, scope, ngModel, attr,
                         attr.ngFileChange || attr.ngFileSelect, files, rejFiles, evt);
                     if (files.length == 0) fileElem[0].value = files;
@@ -493,7 +492,6 @@ function dropAvailable() {
 }
 
 function updateModel($parse, $timeout, scope, ngModel, attr, fileChange, files, rejFiles, evt, noDelay) {
-    console.log('aa ' + files);
     function update() {
         if (ngModel) {
             $parse(attr.ngModel).assign(scope, files);
