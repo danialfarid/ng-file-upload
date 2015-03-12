@@ -88,8 +88,6 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
     accept="'image/*'" // see standard HTML file input accept attribute
     ng-accept="'image/*'|validate($file)" // function or comma separated wildcard to filter files allowed
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
-    input-file-...="..." // if element is not input file the attributes prefix with (data-)input-file- 
-                         // will be added to underlying <input type="file"...> see #462.
 >Upload</button>
 ```
 #### File drop
