@@ -34,4 +34,3 @@ curl --data "$API_JSON" https://api.github.com/repos/danialfarid/ng-file-upload-
 cd ../angular-file-upload
 npm publish
 
-
