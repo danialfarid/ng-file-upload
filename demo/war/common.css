@@ -40,9 +40,13 @@ body {
 
 fieldset {
 	border: 1px solid #DDD;
-	width: 490px;
+	width: 420px;
 	padding: 10px;
-	line-height: 23px;	
+	line-height: 23px;
+}
+
+fieldset label {
+	/*font-size: smaller;*/
 }
 
 .progress {
@@ -65,7 +69,7 @@ fieldset {
 	text-align: center;
 	padding-top: 25px;
 	float: left;
-	margin-left: 20px;
+	margin-left: 10px;
 }
 
 .up-buttons {

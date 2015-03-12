@@ -15,3 +15,4 @@ classes/
 *.jar
 release-local.sh
 npm-debug.log
+/.idea

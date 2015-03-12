@@ -197,56 +197,49 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
     }
 
+    var isUpdating = false;
+    function changeFn(evt) {
+        if (!isUpdating) {
+            isUpdating = true;
+            try {
+                var fileList = evt.__files_ || (evt.target && evt.target.files);
+                var files = [], rejFiles = [];
+
+                var accept = $parse(attr.ngAccept);
+                for (i = 0; i < fileList.length; i++) {
+                    var file = fileList.item(i);
+                    if (isAccepted(scope, accept, file, evt)) {
+                        files.push(file);
+                    } else {
+                        rejFiles.push(file);
+                    }
+                }
+                updateModel($parse, $timeout, scope, ngModel, attr,
+                    attr.ngFileChange || attr.ngFileSelect, files, rejFiles, evt);
+                if (files.length == 0) evt.target.value = files;
+                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
+                    angular.element(evt.target).remove();
+                }
+            } finally {
+                isUpdating = false;
+            }
+        }
+    }
+
     function bindAttrToFileInput(fileElem) {
         if (attr.ngMultiple) fileElem.attr('multiple', $parse(attr.ngMultiple)(scope));
         if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngCapture) fileElem.attr('capture', $parse(attr.ngCapture)(scope));
         if (attr.ngDisabled) fileElem.attr('disabled', $parse(attr.ngDisabled)(scope));
 
-        var isUpdating = false;
-        fileElem.bind('change', function(evt) {
-            if (!isUpdating) {
-                isUpdating = true;
-                try {
-                    var fileList = evt.__files_ || (evt.target && evt.target.files);
-                    var files = [], rejFiles = [];
-
-                    var accept = $parse(attr.ngAccept);
-                    for (i = 0; i < fileList.length; i++) {
-                        var file = fileList.item(i);
-                        if (isAccepted(scope, accept, file, evt)) {
-                            files.push(file);
-                        } else {
-                            rejFiles.push(file);
-                        }
-                    }
-                    updateModel($parse, $timeout, scope, ngModel, attr,
-                        attr.ngFileChange || attr.ngFileSelect, files, rejFiles, evt);
-                    if (files.length == 0) fileElem[0].value = files;
-                    if (fileElem.attr('__afu_gen__')) {
-                        fileElem.remove();
-                    }
-                } finally {
-                    isUpdating = false;
-                }
-            }
-        });
+        fileElem.bind('change', changeFn);
     }
 
-    function clickHandler(evt) {
-        createAndClickFileInput(evt);
-        if (isInputTypeFile()) {
-            evt.preventDefault()
-        }
-    }
-
-    elem.bind('click', clickHandler);
-
-    function createAndClickFileInput(evt) {
+    function createFileInput(evt) {
         if (elem.attr('disabled')) {
             return;
         }
-        fileElem = angular.element('<input type="file">');
+        var fileElem = angular.element('<input type="file">');
 
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
@@ -257,24 +250,42 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
             elem.replaceWith(fileElem);
             elem = fileElem;
         } else {
-            fileElem.css('width', '0px').css('height', '0px').css('position', 'absolute').css('padding', 0).css('margin', 0)
-                .css('overflow', 'hidden').attr('tabindex', '-1').css('opacity', 0).attr('__afu_gen__', true);
-            elem.attr('__refElem__', true);
-            fileElem[0].__refElem__ = elem[0];
+            fileElem.css('width', '0px').css('height', '0px').css('position', 'absolute')
+                .css('padding', 0).css('margin', 0).css('overflow', 'hidden')
+                .attr('tabindex', '-1').css('opacity', 0).attr('__ngf_gen__', true);
+            if (elem.__ngf_ref_elem__) elem.__ngf_ref_elem__.remove();
+            elem.__ngf_ref_elem__ = fileElem;
             elem.parent()[0].insertBefore(fileElem[0], elem[0]);
             elem.css('overflow', 'hidden');
         }
 
         bindAttrToFileInput(fileElem);
 
+        return fileElem;
+    }
+
+    function resetModel(evt) {
         updateModel($parse, $timeout, scope, ngModel, attr,
             attr.ngFileChange || attr.ngFileSelect, [], [], evt, true);
+    }
 
-        fileElem[0].click();
+    function clickHandler(evt) {
+        var fileElem = createFileInput(evt);
+        if (fileElem) {
+            resetModel(evt);
 
+            fileElem[0].click();
+        }
         if (isInputTypeFile()) {
             elem.bind('click', clickHandler);
+            evt.preventDefault()
         }
+    }
+
+    if (FileAPI && FileAPI.ngfFixIE) {
+        FileAPI.ngfFixIE(elem, createFileInput, changeFn, resetModel);
+    } else {
+        elem.bind('click', clickHandler);
     }
 }
 
@@ -310,11 +321,12 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     var available = dropAvailable();
     if (attr['dropAvailable']) {
         $timeout(function () {
-            scope.dropAvailable ? scope.dropAvailable.value = available : scope.dropAvailable = available;
+            scope.dropAvailable ? scope.dropAvailable.value = available :
+                scope.dropAvailable = available;
         });
     }
     if (!available) {
-        if ($parse(attr.hideOnDropNotAvailable)(scope) != false) {
+        if ($parse(attr.hideOnDropNotAvailable)(scope) == true) {
             elem.css('display', 'none');
         }
         return;

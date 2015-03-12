@@ -59,7 +59,7 @@ FileAPI = {
 				<div style="float:left; margin-right: 10px;">
 				<form name="myForm">
 				  	<fieldset><legend>Upload on form submit</legend>
-					    Username: <input type="text" name="userName" ng-model="username" size="48" required> 
+					    Username: <input type="text" name="userName" ng-model="username" size="39" required>
 					      			<i ng-show="myForm.userName.$error.required">*required</i><br>
 					    Profile Picture: <input type="file" ng-file-select ng-model="picFile" name="file" accept="image/*" 
 					                   ng-file-change="generateThumb(picFile[0], $files)" required>
@@ -85,15 +85,17 @@ FileAPI = {
 					</div>
 					<div ng-file-drop ng-file-select ng-model="files" ng-model-rejected="rejFiles"
 						 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
-						 ng-multiple="true" allow-dir="true" ng-accept="'image/*,application/pdf'">
-						Drop Images or PDFs<div>or click to select</div>
+						 ng-multiple="true" allow-dir="true" ng-accept="'image/*,application/pdf'"
+						 drop-available="dropAvailable">
+						<div ng-hide="dropAvailable">File Drop not available</div>
+						<div ng-show="dropAvailable">Drop Images or PDFs</div>
+						<div>click to select</div>
 					</div>
-					<div ng-no-file-drop class="drop-box">File Farg&Drop not supported on your browser</div>
 				</fieldset>
 				</div>
 				<fieldset><legend>Play with attributes</legend>
 					<label>ng-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
-					<label>accept (browser dependent select window filter): <input type="text" ng-model="acceptSelect"></label><br/>
+					<label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
 					<label>ng-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
 					<label><input type="checkbox" ng-model="multiple" >ng-multiple (allow multiple files)</label><br/>
 					<label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
@@ -104,7 +106,8 @@ FileAPI = {
 							 ng-multiple="multiple" ng-accept="accept" accept="{{acceptSelect}}"
 							 ng-disabled="disabled" ng-capture="capture"
 							 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-							 allow-dir="allowDir" class="drop-box">Select File or Drop</div><br/>
+							 allow-dir="allowDir" class="drop-box" drop-available="dropAvailable">Select File
+							<span ng-show="dropAvailable">or Drop</span></div><br/>
 					</div>
 				</fieldset>
 				<br/>
