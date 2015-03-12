@@ -109,7 +109,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
     drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     stop-propagation="true|false" // default false, whether to propagate drag/drop events.
-    hide-on-drop-not-available="true|false" // default true, hides element if file drag&drop is not supported
+    hide-on-drop-not-available="true|false" // default false, hides element if file drag&drop is not supported
 >
 Drop files here
 </div>
