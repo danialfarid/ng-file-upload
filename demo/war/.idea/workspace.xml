@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8d3c539d-c56c-4462-9b62-e3927756359f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/angular-file-upload-shim.js" afterPath="$PROJECT_DIR$/js/angular-file-upload-shim.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/angular-file-upload.js" afterPath="$PROJECT_DIR$/js/angular-file-upload.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common.css" afterPath="$PROJECT_DIR$/common.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/upload.js" afterPath="$PROJECT_DIR$/js/upload.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="8d3c539d-c56c-4462-9b62-e3927756359f" name="Default" comment="" />
     <ignored path="war.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -114,7 +107,9 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
+              <folding>
+                <marker date="1426135778000" expanded="true" signature="0:142" placeholder="/** AngularJS file upload/drop directive and service with progress and abort ...*/" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -370,7 +365,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1426135778000" expanded="true" signature="0:142" placeholder="/** AngularJS file upload/drop directive and service with progress and abort ...*/" />
+          </folding>
         </state>
       </provider>
     </entry>

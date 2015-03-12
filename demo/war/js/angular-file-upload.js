@@ -282,8 +282,8 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         }
     }
 
-    if (FileAPI && FileAPI.ngfFixIE) {
-        FileAPI.ngfFixIE(elem, createFileInput, changeFn, resetModel);
+    if (window.FileAPI && window.FileAPI.ngfFixIE) {
+        window.FileAPI.ngfFixIE(elem, createFileInput, changeFn, resetModel);
     } else {
         elem.bind('click', clickHandler);
     }
