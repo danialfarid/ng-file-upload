@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.2.4
+ * @version 3.2.5
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.2.4';
+angularFileUpload.version = '3.2.5';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -243,7 +243,9 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
 
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
-            fileElem.attr(attribute.name, attribute.value);
+            if (attribute.name !== 'type') {
+            	fileElem.attr(attribute.name, attribute.value);
+            }
         }
 
         if (isInputTypeFile()) {
@@ -581,7 +583,7 @@ for (key in angularFileUpload) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.2.4
+ * @version 3.2.5
  */
 
 (function() {

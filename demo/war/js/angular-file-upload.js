@@ -243,7 +243,9 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
 
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
-            fileElem.attr(attribute.name, attribute.value);
+            if (attribute.name !== 'type') {
+            	fileElem.attr(attribute.name, attribute.value);
+            }
         }
 
         if (isInputTypeFile()) {
