@@ -119,7 +119,7 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http
         config.headers = config.headers || {};
         config.headers['Content-Type'] = undefined;
         config.transformRequest = config.transformRequest ?
-            (Object.prototype.toString.call(config.transformRequest) === '[object Array]' ?
+            (angular.isArray(config.transformRequest) ?
                 config.transformRequest : [config.transformRequest]) : [];
         config.transformRequest.push(function (data) {
             var formData = new FormData();
@@ -142,10 +142,13 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http
                     if (allFields.hasOwnProperty(key)) {
                         var val = allFields[key];
                         if (val !== undefined) {
-                            if (Object.prototype.toString.call(val) === '[object String]') {
+                            if (angular.isDate(val)) {
+                                val = val.toISOString();
+                            }
+                            if (angular.isString(val)) {
                                 formData.append(key, val);
                             } else {
-                                if (config.sendObjectsAsJsonBlob && typeof val === 'object') {
+                                if (config.sendObjectsAsJsonBlob && angular.isObject(val)) {
                                     formData.append(key, new Blob([val], {type: 'application/json'}));
                                 } else {
                                     formData.append(key, JSON.stringify(val));
@@ -160,8 +163,8 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http
             if (config.file != null) {
                 var fileFormName = config.fileFormDataName || 'file';
 
-                if (Object.prototype.toString.call(config.file) === '[object Array]') {
-                    var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]';
+                if (angular.isArray(config.file)) {
+                    var isFileFormNameString = angular.isString(fileFormName);
                     for (i = 0; i < config.file.length; i++) {
                         formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i],
                             (config.fileName && config.fileName[i]) || config.file[i].name);
