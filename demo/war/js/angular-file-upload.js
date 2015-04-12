@@ -243,7 +243,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
 
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
-            if (attribute.name !== 'type') {
+            if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'id') {
             	fileElem.attr(attribute.name, attribute.value);
             }
         }
@@ -409,7 +409,7 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
         }
 
         if (items && items.length > 0 && $location.protocol() != 'file') {
-            for (i = 0; i < items.length; i++) {
+            for (var i = 0; i < items.length; i++) {
                 if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
                     var entry = items[i].webkitGetAsEntry();
                     if (entry.isDirectory && !allowDir) {
@@ -427,7 +427,7 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
         } else {
             var fileList = evt.dataTransfer.files;
             if (fileList != null) {
-                for (i = 0; i < fileList.length; i++) {
+                for (var i = 0; i < fileList.length; i++) {
                     addFile(fileList.item(i));
                     if (!multiple && files.length > 0) break;
                 }
