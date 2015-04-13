@@ -161,10 +161,14 @@ upload.abort();
 /* alternative way of uploading, send the file binary with the file's content-type.
    Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
    It could also be used to monitor the progress of a normal http post/put request. 
-   Note that the whole file will be loaded in browser first so large files could crash the browser.
-   You should verify the file size before uploading with $upload.http().
 */
-$upload.http({...})  // See 88#issuecomment-31366487 for sample code.
+$upload.http({
+			url: '/server/upload/url',
+			headers : {
+				'Content-Type': file.type
+			},
+			data: file
+})
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
