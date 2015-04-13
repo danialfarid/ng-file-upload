@@ -19,7 +19,7 @@ Table of Content:
 ##<a name="features"></a> Features
 * Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
-* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
 * Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
@@ -161,17 +161,21 @@ upload.abort();
 /* alternative way of uploading, send the file binary with the file's content-type.
    Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
    It could also be used to monitor the progress of a normal http post/put request. 
-   Note that the whole file will be loaded in browser first so large files could crash the browser.
-   You should verify the file size before uploading with $upload.http().
 */
-$upload.http({...})  // See 88#issuecomment-31366487 for sample code.
+$upload.http({
+			url: '/server/upload/url',
+			headers : {
+				'Content-Type': file.type
+			},
+			data: file
+})
 ```
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
-**$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
-This is equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
+**$upload.http()**:
+This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
