@@ -2,6 +2,10 @@ body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
+/* object {
+	border: 3px solid red;
+} */
+ 
 .upload-buttons input[type="file"] {	
 	width: 6.3em \0/IE9;
 }

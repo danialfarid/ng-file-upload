@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 				}, {
 					expand : true,
 					cwd : 'demo/war/js/',
-					src : 'FileAPI.min.js',
+					src : 'FileAPI.js',
 					dest : 'dist/',
 					flatten : true,
 					filter : 'isFile'
@@ -75,7 +75,9 @@ module.exports = function(grunt) {
 				files : [ {
 					'dist/angular-file-upload.min.js' : 'dist/angular-file-upload.js',
 					'dist/angular-file-upload-shim.min.js' : 'dist/angular-file-upload-shim.js',
-					'dist/angular-file-upload-all.min.js' : 'dist/angular-file-upload-all.js'
+					'dist/angular-file-upload-all.min.js' : 'dist/angular-file-upload-all.js',
+					'dist/FileAPI.min.js' : 'dist/FileAPI.js',
+					'demo/war/js/FileAPI.min.js' : 'demo/war/js/FileAPI.js'
 				} ]
 			}
 		},
@@ -101,6 +103,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-text-replace');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 
-	grunt.registerTask('default', [ 'concat:dist', 'copy:build', 'uglify', 'copy:fileapi', 'copy:bower', 'replace:version' ]);
+	grunt.registerTask('default', [ 'concat:dist', 'copy:build', 'copy:fileapi', 'uglify', 'copy:bower', 'replace:version' ]);
 
 };

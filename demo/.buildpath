@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path="src"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.mod.launching.INTERPRETER_CONTAINER"/>
+	<buildpathentry kind="con" path="org.eclipse.vjet.eclipse.core.JSNATIVE_CONTAINER/JS Native Types"/>
+	<buildpathentry kind="con" path="org.eclipse.vjet.eclipse.core.BROWSER_CONTAINER/Browser SDK"/>
+	<buildpathentry external="true" kind="lib" path="/Applications/eclipse-luna/plugins/com.google.appengine.eclipse.sdkbundle_1.9.10/appengine-java-sdk-1.9.10/lib/shared/appengine-local-runtime-shared.jar"/>
+	<buildpathentry external="true" kind="lib" path="/Applications/eclipse-luna/plugins/com.google.appengine.eclipse.sdkbundle_1.9.10/appengine-java-sdk-1.9.10/lib/opt/user/appengine-api-labs/v1/appengine-api-labs.jar"/>
+</buildpath>

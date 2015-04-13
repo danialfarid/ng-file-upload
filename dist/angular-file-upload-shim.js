@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.2.5
+ * @version 3.3.0
  */
 
 (function() {
@@ -168,7 +168,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
 	}
 
-	FileAPI.ngfFixIE = function(elem, createFileElemFn, changeFn, resetModel) {
+	FileAPI.ngfFixIE = function(elem, createFileElemFn, bindAttr, changeFn, resetModel) {
 		if (!hasFlash()) {
 			throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
 		}
@@ -176,30 +176,51 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			if (elem.attr('disabled')) {
 				elem.__ngf_elem__.removeClass('js-fileapi-wrapper');
 			} else {
-				var fileElem = elem.__ngf_elem__ = createFileElemFn();
-				fileElem.addClass('js-fileapi-wrapper');
-				if (!isInputTypeFile(elem)) {
-					if (fileElem.parent().css('position') === '' || fileElem.parent().css('position') === 'static') {
-						fileElem.parent().css('position', 'relative');
+				var fileElem = elem.__ngf_elem__;
+				if (!fileElem) {
+					fileElem = elem.__ngf_elem__ = createFileElemFn();
+					fileElem.addClass('js-fileapi-wrapper');
+					if (!isInputTypeFile(elem)) {
+//						if (fileElem.parent().css('position') === '' || fileElem.parent().css('position') === 'static') {
+//							fileElem.parent().css('position', 'relative');
+//						}
+//						elem.parent()[0].insertBefore(fileElem[0], elem[0]);
+//						elem.css('overflow', 'hidden');
 					}
-					fileElem.css('position', 'absolute').css('top', elem[0].offsetTop + 'px')
-						.css('left', elem[0].offsetLeft + 'px')
-						.css('width', elem[0].offsetWidth + 'px')
-						.css('height', elem[0].offsetHeight + 'px')
-						.css('padding', elem.css('padding')).css('margin', elem.css('margin'))
-						.css('filter', 'alpha(opacity=0)');
-					fileElem.css('z-index', '1000');
+					setTimeout(function() {
+						fileElem.bind('mouseenter', makeFlashInput);
+					}, 10);
+					fileElem.bind('change', function(evt) {
+				    	fileApiChangeFn.apply(this, [evt]);
+						changeFn.apply(this, [evt]);
+//						alert('change' +  evt);
+					});
 				} else {
+					bindAttr(elem.__ngf_elem__);
 				}
-				setTimeout(function() {
-					fileElem.bind('mouseenter', makeFlashInput);
-				}, 10);
-				fileElem.unbind('change');
-				fileElem.bind('change', function(evt) {
-					fileApiChangeFn.apply(this, [evt]);
-					changeFn.apply(this, [evt]);
-				});
+				if (!isInputTypeFile(elem)) {
+					FileAPI.log(getOffset(elem[0]).top, getOffset(elem[0]).left)
+					fileElem.css('position', 'absolute')
+							.css('top', getOffset(elem[0]).top + 'px').css('left', getOffset(elem[0]).left + 'px')
+							.css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
+							.css('filter', 'alpha(opacity=0)').css('display', elem.css('display'))
+							.css('overflow', 'hidden').css('z-index', '1');
+				}
 			}
+			function getOffset(obj) {
+			    var left, top;
+			    left = top = 0;
+			    if (obj.offsetParent) {
+			        do {
+			            left += obj.offsetLeft;
+			            top  += obj.offsetTop;
+			        } while (obj = obj.offsetParent);
+			    }
+			    return {
+			        left : left,
+			        top : top
+			    };
+			};
 		};
 
 		elem.bind('mouseenter', makeFlashInput);
@@ -277,7 +298,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			}
 
 			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-			script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+			script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
 			document.getElementsByTagName('head')[0].appendChild(script);
 			FileAPI.hasFlash = hasFlash();
 		}
