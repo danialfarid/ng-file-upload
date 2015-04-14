@@ -371,7 +371,7 @@ npm install ng-file-upload
 
 ##<a name="contrib"></a> Issues & Contribution
 
-For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/angular-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/angular-file-upload/issues/new). If you need support send me an [email](danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
+For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/angular-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/angular-file-upload/issues/new). If you need support send me an [email](mailto:danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
 
 
 
