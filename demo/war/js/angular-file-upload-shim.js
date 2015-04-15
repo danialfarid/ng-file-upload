@@ -199,7 +199,6 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 					bindAttr(elem.__ngf_elem__);
 				}
 				if (!isInputTypeFile(elem)) {
-					FileAPI.log(getOffset(elem[0]).top, getOffset(elem[0]).left)
 					fileElem.css('position', 'absolute')
 							.css('top', getOffset(elem[0]).top + 'px').css('left', getOffset(elem[0]).left + 'px')
 							.css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
