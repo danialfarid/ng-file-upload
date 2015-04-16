@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.3.2
+ * @version 3.3.3
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.version = '3.3.2';
+angularFileUpload.version = '3.3.3';
 angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -592,7 +592,7 @@ for (key in angularFileUpload) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 3.3.2
+ * @version 3.3.3
  */
 
 (function() {
@@ -793,7 +793,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 							.css('top', getOffset(elem[0]).top + 'px').css('left', getOffset(elem[0]).left + 'px')
 							.css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
 							.css('filter', 'alpha(opacity=0)').css('display', elem.css('display'))
-							.css('overflow', 'hidden').css('z-index', '1');
+							.css('overflow', 'hidden').css('z-index', '900000');
 				}
 			}
 			function getOffset(obj) {
