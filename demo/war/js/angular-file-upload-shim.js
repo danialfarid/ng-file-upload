@@ -167,7 +167,64 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 	function isInputTypeFile(elem) {
 		return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
 	}
+	
+	window.FormData = FormData = function() {
+		return {
+			append: function(key, val, name) {
+				if (val.__isFileAPIBlobShim) {
+					val = val.data[0];
+				}
+				this.data.push({
+					key: key,
+					val: val,
+					name: name
+				});
+			},
+			data: [],
+			__isFileAPIShim: true
+		};
+	};
 
+	window.Blob = Blob = function(b) {
+		return {
+			data: b,
+			__isFileAPIBlobShim: true
+		};
+	};
+
+	(function () {
+		//load FileAPI
+		if (!window.FileAPI) {
+			window.FileAPI = {};
+		}
+		if (FileAPI.forceLoad) {
+			FileAPI.html5 = false;
+		}
+		
+		if (!FileAPI.upload) {
+			var jsUrl, basePath, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
+			if (window.FileAPI.jsUrl) {
+				jsUrl = window.FileAPI.jsUrl;
+			} else if (window.FileAPI.jsPath) {
+				basePath = window.FileAPI.jsPath;
+			} else {
+				for (i = 0; i < allScripts.length; i++) {
+					src = allScripts[i].src;
+					index = src.search(/\/angular\-file\-upload[\-a-zA-z0-9\.]*\.js/)
+					if (index > -1) {
+						basePath = src.substring(0, index + 1);
+						break;
+					}
+				}
+			}
+
+			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
+			script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+			document.getElementsByTagName('head')[0].appendChild(script);
+			FileAPI.hasFlash = hasFlash();
+		}
+	})();
+	
 	FileAPI.ngfFixIE = function(elem, createFileElemFn, bindAttr, changeFn, resetModel) {
 		if (!hasFlash()) {
 			throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
@@ -246,69 +303,13 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		};
 	};
 
-	window.FormData = FormData = function() {
-		return {
-			append: function(key, val, name) {
-				if (val.__isFileAPIBlobShim) {
-					val = val.data[0];
-				}
-				this.data.push({
-					key: key,
-					val: val,
-					name: name
-				});
-			},
-			data: [],
-			__isFileAPIShim: true
-		};
-	};
-
-	window.Blob = Blob = function(b) {
-		return {
-			data: b,
-			__isFileAPIBlobShim: true
-		};
-	};
-
-	(function () {
-		//load FileAPI
-		if (!window.FileAPI) {
-			window.FileAPI = {};
-		}
-		if (FileAPI.forceLoad) {
-			FileAPI.html5 = false;
-		}
-		
-		if (!FileAPI.upload) {
-			var jsUrl, basePath, script = document.createElement('script'), allScripts = document.getElementsByTagName('script'), i, index, src;
-			if (window.FileAPI.jsUrl) {
-				jsUrl = window.FileAPI.jsUrl;
-			} else if (window.FileAPI.jsPath) {
-				basePath = window.FileAPI.jsPath;
-			} else {
-				for (i = 0; i < allScripts.length; i++) {
-					src = allScripts[i].src;
-					index = src.search(/\/angular\-file\-upload[\-a-zA-z0-9\.]*\.js/)
-					if (index > -1) {
-						basePath = src.substring(0, index + 1);
-						break;
-					}
-				}
-			}
-
-			if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-			script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
-			document.getElementsByTagName('head')[0].appendChild(script);
-			FileAPI.hasFlash = hasFlash();
-		}
-	})();
 	FileAPI.disableFileInput = function(elem, disable) {
 		if (disable) {
 			elem.removeClass('js-fileapi-wrapper')
 		} else {
 			elem.addClass('js-fileapi-wrapper');
 		}
-	}
+	};
 }
 
 
