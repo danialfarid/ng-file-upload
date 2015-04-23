@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 				files : [ {
 					expand : true,
 					cwd : 'demo/war/js/',
-					src : 'angular-file-upload*.js',
+					src : 'ng-file-upload*.js',
 					dest : 'dist/',
 					flatten : true,
 					filter : 'isFile'
@@ -61,9 +61,9 @@ module.exports = function(grunt) {
 					}
 				},
 				files: {
-					'demo/war/js/angular-file-upload-all.js': 
-						['demo/war/js/angular-file-upload.js', 
-						'demo/war/js/angular-file-upload-shim.js']
+					'demo/war/js/ng-file-upload-all.js': 
+						['demo/war/js/ng-file-upload.js', 
+						'demo/war/js/ng-file-upload-shim.js']
 				}
 			}
 		},
@@ -73,9 +73,9 @@ module.exports = function(grunt) {
 			},
 			build : {
 				files : [ {
-					'dist/angular-file-upload.min.js' : 'dist/angular-file-upload.js',
-					'dist/angular-file-upload-shim.min.js' : 'dist/angular-file-upload-shim.js',
-					'dist/angular-file-upload-all.min.js' : 'dist/angular-file-upload-all.js',
+					'dist/ng-file-upload.min.js' : 'dist/ng-file-upload.js',
+					'dist/ng-file-upload-shim.min.js' : 'dist/ng-file-upload-shim.js',
+					'dist/ng-file-upload-all.min.js' : 'dist/ng-file-upload-all.js',
 					'dist/FileAPI.min.js' : 'dist/FileAPI.js',
 					'demo/war/js/FileAPI.min.js' : 'demo/war/js/FileAPI.js'
 				} ]

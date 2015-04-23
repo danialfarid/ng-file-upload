@@ -2,9 +2,9 @@
 
 
 var app = angular.module('fileUpload', [ 'ngFileUpload' ]);
-var version = '3.2.4';
+var version = '4.0.0';
 
-app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload', function($scope, $http, $timeout, $compile, $upload) {
+app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', function($scope, $http, $timeout, $compile, Upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
 	$scope.fileReaderSupported = window.FileReader != null && (window.FileAPI == null || FileAPI.html5 != false);
 
@@ -39,7 +39,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		$scope.errorMsg = null;
 		$scope.generateThumb(file);
 		if ($scope.howToSend === 1) {
-			uploadUsing$upload(file);
+			uploadUsingUpload(file);
 		} else if ($scope.howToSend == 2) {
 			uploadUsing$http(file);
 		} else {
@@ -63,8 +63,8 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 		}
 	};
 	
-	function uploadUsing$upload(file) {
-		file.upload = $upload.upload({
+	function uploadUsingUpload(file) {
+		file.upload = Upload.upload({
 			url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
 			method: 'POST',
 			headers: {
@@ -95,7 +95,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	}
 	
 	function uploadUsing$http(file) {
-		file.upload = $upload.http({
+		file.upload = Upload.http({
 			url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
 			method: 'POST',
 			headers : {
@@ -117,8 +117,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', '$upload',
 	}
 	
 	function uploadS3(file) {
-		file.upload = $upload
-		.upload({
+		file.upload = Upload.upload({
 			url : $scope.s3url,
 			method : 'POST',
 			fields : {

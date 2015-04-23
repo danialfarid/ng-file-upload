@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version <%= pkg.version %>
+ * @version 4.0.0
  */
 
 (function() {
@@ -210,7 +210,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			} else {
 				for (i = 0; i < allScripts.length; i++) {
 					src = allScripts[i].src;
-					index = src.search(/\/angular\-file\-upload[\-a-zA-z0-9\.]*\.js/)
+					index = src.search(/\/ng\-file\-upload[\-a-zA-z0-9\.]*\.js/)
 					if (index > -1) {
 						basePath = src.substring(0, index + 1);
 						break;

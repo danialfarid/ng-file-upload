@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link type="text/css" rel="stylesheet" href="common.css">
 <title>Angular file upload sample</title>
-<!-- 
+
 <script type="text/javascript">
 FileAPI = {
 	debug: true,
@@ -19,7 +19,7 @@ FileAPI = {
     //flashUrl: 'yourcdn.com/js/FileAPI.flash.swf'
 };
 </script> 
--->
+
 <!-- <script src="//code.jquery.com/jquery-1.9.0.min.js"></script> -->
 <script type="text/javascript">
 	// load angularjs specific version
@@ -28,8 +28,8 @@ FileAPI = {
 	document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' + 
 			(angularVersion || '1.2.20') + '/angular.js"><\/script>');
 </script>
-<script src="js/angular-file-upload-shim.js"></script>
-<script src="js/angular-file-upload.js"></script>
+<script src="js/ng-file-upload-shim.js"></script>
+<script src="js/ng-file-upload.js"></script>
 <script src="js/upload.js"></script>
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.8.0/codemirror.min.css">
@@ -47,7 +47,7 @@ FileAPI = {
 	</div>
 	<h1>Angular file upload Demo</h1>
 	<h3>
-		Visit <a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a> on github
+		Visit <a href="https://github.com/danialfarid/ng-file-upload">ng-file-upload</a> on github
 	</h3>
 	<div class="upload-div">
 		<div class="edit-div">
@@ -63,13 +63,13 @@ FileAPI = {
 				  	<fieldset><legend>Upload on form submit</legend>
 					    Username: <input type="text" name="userName" ng-model="username" size="39" required>
 					      			<i ng-show="myForm.userName.$error.required">*required</i><br>
-					    Profile Picture: <input type="file" ng-file-select ng-model="picFile" name="file" accept="image/*" 
-					                   ng-file-change="generateThumb(picFile[0], $files)" required>
+					    Profile Picture: <input type="file" ngf-select ng-model="picFile" name="file" accept="image/*" 
+					                   ngf-change="generateThumb(picFile[0], $files)" required>
 									<i ng-show="myForm.file.$error.required">*required</i>
 					  	<br/>
 					  	
 						<button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
-					    <img ng-show="picFile[0].dataUrl != null" ng-src="{{picFile[0].dataUrl}}" class="thumb">
+					    <img ng-show="picFile[0] != null" ngf-thumbnail="picFile[0]" class="thumb">
 						<span class="progress" ng-show="picFile[0].progress >= 0">						
 							<div style="width:{{picFile[0].progress}}%" ng-bind="picFile[0].progress + '%'"></div>
 						</span>	
@@ -79,16 +79,16 @@ FileAPI = {
 				</form>
 				<fieldset><legend>Upload right away</legend>
 					<div class="up-buttons">
-						<div ng-file-select ng-model="files" class="upload-button"
-							 ng-multiple="false" ng-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles"
+						<div ngf-select ng-model="files" class="upload-button"
+							 ngf-multiple="false" ngf-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles"
 							 tabindex="0">Attach an Image or PDF</div><br/>
-						<button ng-file-select ng-model="files"
-								ng-multiple="true">Attach Any File</button>
+						<button ngf-select ng-model="files"
+								ngf-multiple="true">Attach Any File</button>
 					</div>
-					<div ng-file-drop ng-file-select ng-model="files" ng-model-rejected="rejFiles"
-						 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
-						 ng-multiple="true" allow-dir="true" ng-accept="'image/*,application/pdf'"
-						 drop-available="dropAvailable">
+					<div ngf-drop ngf-select ng-model="files" ng-model-rejected="rejFiles"
+						 ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
+						 ngf-multiple="true" ngf-allow-dir="true" ngf-accept="'image/*,application/pdf'"
+						 ngf-drop-available="dropAvailable">
 						<div ng-hide="dropAvailable">File Drop not available</div>
 						<div ng-show="dropAvailable">Drop Images or PDFs</div>
 						<div>click to select</div>
@@ -96,19 +96,22 @@ FileAPI = {
 				</fieldset>
 				</div>
 				<fieldset><legend>Play with attributes</legend>
-					<label>ng-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
+					<label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
 					<label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
-					<label>ng-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
-					<label><input type="checkbox" ng-model="multiple" >ng-multiple (allow multiple files)</label><br/>
+					<label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
+					<label>ngf-min-size: <input type="text" ng-model="minSize"></label><br/>
+					<label>ngf-max-size: <input type="text" ng-model="maxSize"></label><br/>
+					<label><input type="checkbox" ng-model="multiple" >ngf-multiple (allow multiple files)</label><br/>
 					<label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
-					<label><input type="checkbox" ng-model="allowDir">allow-dir (allow directory drop Chrome only)</label><br/>
+					<label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
 
 					<div class="up-buttons">
-						<div ng-file-select ng-file-drop ng-model="files" ng-model-rejected="rejFiles"
-							 ng-multiple="multiple" ng-accept="accept" accept="{{acceptSelect}}"
-							 ng-disabled="disabled" ng-capture="capture"
-							 drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-							 allow-dir="allowDir" class="drop-box" drop-available="dropAvailable">Select File
+						<div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
+							 ngf-multiple="multiple" ngf-accept="accept" accept="{{acceptSelect}}"
+							 ngf-disabled="disabled" ngf-capture="capture"
+							 ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
+							 ngf-min-size="minSize" ngf-max-size="maxSize"
+							 ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File
 							<span ng-show="dropAvailable">or Drop</span></div><br/>
 					</div>
 				</fieldset>
@@ -191,6 +194,6 @@ FileAPI = {
 	</div>	
 	<a style="position:fixed;bottom:28px;right:10px;font-size:smaller;" target="_blank" href="https://angular-file-upload.appspot.com/donate.html">donate</a>
 	<a style="position:fixed;bottom:45px;right:10px;font-size:smaller;" href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-03-11</div>
+	<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-04-23</div>
 </body>
 </html>
