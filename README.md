@@ -47,7 +47,7 @@ Table of Content:
 JS:
 ```js
 //inject angular file upload directives and services.
-var app = angular.module('fileUpload', ['angularFileUpload']);
+var app = angular.module('fileUpload', ['ngFileUpload']);
 
 app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.$watch('files', function () {
