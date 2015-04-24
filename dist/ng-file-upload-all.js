@@ -571,13 +571,13 @@ function validate(scope, $parse, attr, file, evt) {
     var accept = $parse(attr.ngfAccept);
     var fileSizeMax = $parse(attr.ngfMaxSize)(scope) || 9007199254740991;
     var fileSizeMin = $parse(attr.ngfMinSize)(scope) || -1;
-    var val = accept(scope, {$file: file, $event: evt});
-    if (angular.isString(val)) {
-        var regexp = new RegExp(globStringToRegex(val), 'gi')
-        val = (file.type != null && file.type.match(regexp)) ||
+    var val = accept(scope, {$file: file, $event: evt}), match = false;
+    if (val != null && angular.isString(val)) {
+        var regexp = new RegExp(globStringToRegex(val), 'gi');
+        match = (file.type != null && file.type.match(regexp)) ||
         		(file.name != null && file.name.match(regexp));
     }
-    return (val == null || val) && file.size < fileSizeMax && file.size > fileSizeMin;
+    return (val == null || match) && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
 }
 
 function globStringToRegex(str) {
