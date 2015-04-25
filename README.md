@@ -17,7 +17,7 @@ Table of Content:
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
-* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size.
+* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show thumbnail/preview of selected images.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
 * Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
