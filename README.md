@@ -37,6 +37,7 @@ Table of Content:
     watching model:
     <div class="button" ngf-select ng-model="files">Upload using model $watch</div>
     <div class="button" ngf-select ngf-change="upload($files)">Upload on file change</div>
+    Image thumbnail: <img ngf-thumbnail="files[0]" class="thumb">
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
@@ -116,6 +117,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 Drop files here
 </div>
 <div|... ng-no-file-drop>File Drag/drop is not supported</div>
+<img ngf-thumbnail="file" //an image file object, You can repeat files if multiple images are selected.
+...>
 ```
 
 #### $upload service:
