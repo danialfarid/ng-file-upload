@@ -19,7 +19,7 @@ Table of Content:
 ##<a name="features"></a> Features
 * Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show thumbnail/preview of selected images.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
-* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
+* Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
 * Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
@@ -121,7 +121,7 @@ Drop files here
 ...>
 ```
 
-#### $upload service:
+#### Upload service:
 ```js
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
@@ -243,7 +243,7 @@ Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
 ```
-$upload.upload({
+Upload.upload({
         url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
         fields : {
