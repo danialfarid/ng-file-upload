@@ -1,7 +1,7 @@
-angular-file-upload
+ng-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
+Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
 **Migration notes**: [version 3.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0)
 
@@ -17,16 +17,16 @@ Table of Content:
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
-* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size.
+* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show thumbnail/preview of selected images.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
-* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
+* Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
 * Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
 ##<a name="usage"></a> Usage
 
 ###Sample:
-[jsfiddle http://jsfiddle.net/nmdcwf3w/](http://jsfiddle.net/nmdcwf3w/)
+[jsfiddle http://jsfiddle.net/3t50b3fw/](http://jsfiddle.net/3t50b3fw/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -37,6 +37,7 @@ Table of Content:
     watching model:
     <div class="button" ngf-select ng-model="files">Upload using model $watch</div>
     <div class="button" ngf-select ngf-change="upload($files)">Upload on file change</div>
+    Image thumbnail: <img ngf-thumbnail="files[0]" class="thumb">
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
@@ -116,9 +117,11 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 Drop files here
 </div>
 <div|... ng-no-file-drop>File Drag/drop is not supported</div>
+<img ngf-thumbnail="file" //an image file object, You can repeat files if multiple images are selected.
+...>
 ```
 
-#### $upload service:
+#### Upload service:
 ```js
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
@@ -240,7 +243,7 @@ Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
 ```
-$upload.upload({
+Upload.upload({
         url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
         fields : {
@@ -375,6 +378,8 @@ npm install ng-file-upload
 ##<a name="contrib"></a> Issues & Contribution
 
 For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). If you need support send me an [email](mailto:danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
+
+To help with the development of this module give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
 
 
