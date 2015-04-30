@@ -17,7 +17,7 @@ Table of Content:
 * [Questions, Issues and Contribution](#contrib)
 
 ##<a name="features"></a> Features
-* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show thumbnail/preview of selected images.
+* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show preview of selected images/audio/videos.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
 * Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
@@ -37,12 +37,15 @@ Table of Content:
     watching model:
     <div class="button" ngf-select ng-model="files">Upload using model $watch</div>
     <div class="button" ngf-select ngf-change="upload($files)">Upload on file change</div>
-    Image thumbnail: <img ngf-thumbnail="files[0]" class="thumb">
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
         ngf-accept="'.jpg,.png,.pdf'">Drop Images or PDFs files here</div>
     <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+    
+    Image thumbnail: <img ngf-src="files[0]">
+    Audio preview: <audio controls ngf-src="files[0]"></audio>
+    Video preview: <video controls ngf-src="files[0]"></video>
 </div>
 ```
 JS:
@@ -117,8 +120,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 Drop files here
 </div>
 <div|... ng-no-file-drop>File Drag/drop is not supported</div>
-<img ngf-thumbnail="file" //an image file object, You can repeat files if multiple images are selected.
-...>
+<img|audio|video ngf-src="file"> //To preview the selected file, sets src attribute to the file's data url.
+
 ```
 
 #### Upload service:
