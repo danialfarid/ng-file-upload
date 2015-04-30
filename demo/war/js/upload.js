@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', [ 'ngFileUpload' ]);
-var version = '4.0.0';
+var version = '4.1.0';
 
 app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', function($scope, $http, $timeout, $compile, Upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -221,8 +221,8 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', 
 
 	$timeout(function(){
 		$scope.capture = localStorage.getItem('capture'+ version) || 'camera';
-		$scope.accept = localStorage.getItem('accept'+ version) || 'image/*';
-		$scope.acceptSelect = localStorage.getItem('acceptSelect'+ version) || 'image/*';
+		$scope.accept = localStorage.getItem('accept'+ version) || 'image/*,audio/*,video/*';
+		$scope.acceptSelect = localStorage.getItem('acceptSelect'+ version) || 'image/*,audio/*,video/*';
 		$scope.disabled = localStorage.getItem('disabled'+ version) == 'true' || false;
 		$scope.multiple = localStorage.getItem('multiple'+ version) == 'true' || false;
 		$scope.allowDir = localStorage.getItem('allowDir'+ version) == 'true' || true;

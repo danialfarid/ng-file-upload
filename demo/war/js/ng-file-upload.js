@@ -508,29 +508,29 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     }
 }
 
-ngFileUpload.directive('ngfThumbnail', ['$parse', '$timeout', function ($parse, $timeout) {
-    return {
-        restrict: 'AE',
-        link: function (scope, elem, attr, file) {
-        	if (window.FileReader) {
-	        	scope.$watch(attr.ngfThumbnail, function(file) {
-	        		if (file && file.type.indexOf('image') > -1) {
-        				$timeout(function() {
-        					var fileReader = new FileReader();
-        					fileReader.readAsDataURL(file);
-        					fileReader.onload = function(e) {
-        						$timeout(function() {
-        							elem.attr('src', e.target.result);
-        						});
-        					}
-        				});
-	        		} else {
-	        			elem.attr('src', '');
-	        		}
-	        	});
-        	}
-        }
-    }
+ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeout) {
+	return {
+		restrict: 'AE',
+		link: function (scope, elem, attr, file) {
+			if (window.FileReader) {
+				scope.$watch(attr.ngfSrc, function(file) {
+					if (file) {
+						$timeout(function() {
+							var fileReader = new FileReader();
+							fileReader.readAsDataURL(file);
+							fileReader.onload = function(e) {
+								$timeout(function() {
+									elem.attr('src', e.target.result);
+								});
+							}
+						});
+					} else {
+						elem.attr('src', '');
+					}
+				});
+			}
+		}
+	}
 }]);
 
 function dropAvailable() {

@@ -201,3 +201,7 @@ form button {
 :not(output):-moz-ui-invalid {
     box-shadow: none;
 }
+.preview {
+	padding-top: 30px;
+	clear: both;
+}

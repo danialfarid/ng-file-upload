@@ -69,7 +69,7 @@ FileAPI = {
 					  	<br/>
 					  	
 						<button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
-					    <img ng-show="picFile[0] != null" ngf-thumbnail="picFile[0]" class="thumb">
+					    <img ng-show="picFile[0] != null" ngf-src="picFile[0]" class="thumb">
 						<span class="progress" ng-show="picFile[0].progress >= 0">						
 							<div style="width:{{picFile[0].progress}}%" ng-bind="picFile[0].progress + '%'"></div>
 						</span>	
@@ -104,7 +104,6 @@ FileAPI = {
 					<label><input type="checkbox" ng-model="multiple" >ngf-multiple (allow multiple files)</label><br/>
 					<label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
 					<label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
-
 					<div class="up-buttons">
 						<div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
 							 ngf-multiple="multiple" ngf-accept="accept" accept="{{acceptSelect}}"
@@ -113,6 +112,12 @@ FileAPI = {
 							 ngf-min-size="minSize" ngf-max-size="maxSize"
 							 ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File
 							<span ng-show="dropAvailable">or Drop</span></div><br/>
+					</div>
+					<div class="preview">
+						<div>Preview image/audio/video:</div>
+						<img style="max-width:300px" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1">
+						<audio controls ngf-src="files[0]" ng-show="files[0].type.indexOf('audio') > -1"></audio>
+						<video controls ngf-src="files[0]" ng-show="files[0].type.indexOf('video') > -1"></video>
 					</div>
 				</fieldset>
 				<br/>
