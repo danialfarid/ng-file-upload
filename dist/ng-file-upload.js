@@ -199,7 +199,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     function isInputTypeFile() {
         return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
     }
-    var changeFnAttr = attr.ngfChange || (attr.ngfSelect && attr.ngfSelect.indexOf('(') > 0);
+    var changeFnAttr = attr.ngfChange || (attr.ngfSelect && attr.ngfSelect.indexOf('(') > 0 ? attr.ngfSelect : null);
     var isUpdating = false;
     function changeFn(evt) {
         if (!isUpdating) {
@@ -383,7 +383,7 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
         actualDragOverClass = null;
         extractFiles(evt, function (files, rejFiles) {
             updateModel($parse, $timeout, scope, ngModel, attr,
-                attr.ngfChange || (attr.ngfDrop && attr.ngfDrop.indexOf('(') > 0), files, rejFiles, evt)
+                attr.ngfChange || (attr.ngfDrop && attr.ngfDrop.indexOf('(') > 0 ? attr.ngfDrop : null), files, rejFiles, evt)
         }, $parse(attr.ngfAllowDir)(scope) != false, attr.multiple || $parse(attr.ngfMultiple)(scope));
     }, false);
 
