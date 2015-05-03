@@ -90,7 +90,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                                                   // you can use $scope.$watch('myFiles') instead
     ngf-multiple="true|false" // default false, allows selecting multiple files
     ngf-capture="'camera'|'other'" // allows mobile devices to capture using camera
-    accept="'image/*'" // see standard HTML file input accept attribute
+    accept="image/*" // see standard HTML file input accept attribute
     ngf-accept="'image/*'|validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
