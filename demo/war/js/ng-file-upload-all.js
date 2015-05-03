@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.1.0
+ * @version 4.1.1
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '4.1.0';
+ngFileUpload.version = '4.1.1';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -199,7 +199,6 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     function isInputTypeFile() {
         return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
     }
-    var changeFnAttr = attr.ngfChange || (attr.ngfSelect && attr.ngfSelect.indexOf('(') > 0);
     var isUpdating = false;
     function changeFn(evt) {
         if (!isUpdating) {
@@ -216,7 +215,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
                         rejFiles.push(file);
                     }
                 }
-                updateModel($parse, $timeout, scope, ngModel, attr, changeFnAttr, files, rejFiles, evt);
+                updateModel($parse, $timeout, scope, ngModel, attr, attr.ngfChange || attr.ngfSelect, files, rejFiles, evt);
                 if (files.length == 0) evt.target.value = files;
 //                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
 //                    angular.element(evt.target).remove();
@@ -262,7 +261,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     }
 
     function resetModel(evt) {
-        updateModel($parse, $timeout, scope, ngModel, attr, changeFnAttr, [], [], evt, true);
+        updateModel($parse, $timeout, scope, ngModel, attr, attr.ngfChange || attr.ngfSelect, [], [], evt, true);
     }
 
     function clickHandler(evt) {
@@ -383,7 +382,7 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
         actualDragOverClass = null;
         extractFiles(evt, function (files, rejFiles) {
             updateModel($parse, $timeout, scope, ngModel, attr,
-                attr.ngfChange || (attr.ngfDrop && attr.ngfDrop.indexOf('(') > 0), files, rejFiles, evt)
+                attr.ngfChange || attr.ngfDrop, files, rejFiles, evt)
         }, $parse(attr.ngfAllowDir)(scope) != false, attr.multiple || $parse(attr.ngfMultiple)(scope));
     }, false);
 
@@ -568,16 +567,15 @@ function updateModel($parse, $timeout, scope, ngModel, attr, fileChange, files, 
 }
 
 function validate(scope, $parse, attr, file, evt) {
-    var accept = $parse(attr.ngfAccept);
-    var fileSizeMax = $parse(attr.ngfMaxSize)(scope) || 9007199254740991;
-    var fileSizeMin = $parse(attr.ngfMinSize)(scope) || -1;
-    var val = accept(scope, {$file: file, $event: evt}), match = false;
-    if (val != null && angular.isString(val)) {
-        var regexp = new RegExp(globStringToRegex(val), 'gi');
-        match = (file.type != null && file.type.match(regexp)) ||
-        		(file.name != null && file.name.match(regexp));
+    var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt});
+    var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || 9007199254740991;
+    var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || -1;
+    if (accept != null && angular.isString(accept)) {
+        var regexp = new RegExp(globStringToRegex(accept), 'gi');
+        accept = (file.type != null && file.type.toLowerCase().match(regexp)) ||
+        		(file.name != null && file.name.toLowerCase().match(regexp));
     }
-    return (val == null || match) && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
+    return accept && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
 }
 
 function globStringToRegex(str) {
@@ -608,7 +606,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.1.0
+ * @version 4.1.1
  */
 
 (function() {
