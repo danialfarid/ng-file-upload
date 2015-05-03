@@ -575,7 +575,7 @@ function validate(scope, $parse, attr, file, evt) {
         accept = (file.type != null && file.type.toLowerCase().match(regexp)) ||
         		(file.name != null && file.name.toLowerCase().match(regexp));
     }
-    return accept && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
+    return (accept == null || accept) && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
 }
 
 function globStringToRegex(str) {

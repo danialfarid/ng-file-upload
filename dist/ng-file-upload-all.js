@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.1.1
+ * @version 4.1.2
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '4.1.1';
+ngFileUpload.version = '4.1.2';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -575,7 +575,7 @@ function validate(scope, $parse, attr, file, evt) {
         accept = (file.type != null && file.type.toLowerCase().match(regexp)) ||
         		(file.name != null && file.name.toLowerCase().match(regexp));
     }
-    return accept && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
+    return (accept == null || accept) && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
 }
 
 function globStringToRegex(str) {
@@ -606,7 +606,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.1.1
+ * @version 4.1.2
  */
 
 (function() {
