@@ -572,8 +572,8 @@ function validate(scope, $parse, attr, file, evt) {
     var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || -1;
     if (accept != null && angular.isString(accept)) {
         var regexp = new RegExp(globStringToRegex(accept), 'gi');
-        accept = (file.type != null && file.type.toLowerCase().match(regexp)) ||
-        		(file.name != null && file.name.toLowerCase().match(regexp));
+        accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||
+        		(file.name != null && regexp.test(file.name.toLowerCase()));
     }
     return (accept == null || accept) && (file.size == null || (file.size < fileSizeMax && file.size > fileSizeMin));
 }
