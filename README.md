@@ -119,9 +119,17 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 >
 Drop files here
 </div>
-<div|... ng-no-file-drop>File Drag/drop is not supported</div>
-<img|audio|video ngf-src="file"> //To preview the selected file, sets src attribute to the file's data url.
 
+<div|... ng-no-file-drop>File Drag/drop is not supported</div>
+```
+
+#### File preview
+```html
+<img|audio|video ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
+    ngf-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
+    ngf-min-size='10' // minimum acceptable file size in bytes
+    ngf-max-size='10' // maximum acceptable file size in bytes
+> 
 ```
 
 #### Upload service:
