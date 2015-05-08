@@ -6,7 +6,6 @@ var version = '4.1.2';
 
 app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', function($scope, $http, $timeout, $compile, Upload) {
 	$scope.usingFlash = FileAPI && FileAPI.upload != null;
-	$scope.fileReaderSupported = window.FileReader != null && (window.FileAPI == null || FileAPI.html5 != false);
 
 	$scope.changeAngularVersion = function() {
 		window.location.hash = $scope.angularVersion;
@@ -22,7 +21,7 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', 
 			for (var i = 0; i < files.length; i++) {
 				$scope.errorMsg = null;
 				(function(file) {
-					generateThumbAndUpload(file);
+					upload(file);
 				})(files[i]);
 			}
 		}
@@ -31,13 +30,12 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', 
 	$scope.uploadPic = function(files) {
 		$scope.formUpload = true;
 		if (files != null) {
-			generateThumbAndUpload(files[0])
+			upload(files[0])
 		}
 	};
 	
-	function generateThumbAndUpload(file) {
+	function upload(file) {
 		$scope.errorMsg = null;
-		$scope.generateThumb(file);
 		if ($scope.howToSend === 1) {
 			uploadUsingUpload(file);
 		} else if ($scope.howToSend == 2) {
@@ -46,22 +44,6 @@ app.controller('MyCtrl', [ '$scope', '$http', '$timeout', '$compile', 'Upload', 
 			uploadS3(file);
 		}
 	}
-	
-	$scope.generateThumb = function(file) {
-		if (file != null) {
-			if ($scope.fileReaderSupported && file.type.indexOf('image') > -1) {
-				$timeout(function() {
-					var fileReader = new FileReader();
-					fileReader.readAsDataURL(file);
-					fileReader.onload = function(e) {
-						$timeout(function() {
-							file.dataUrl = e.target.result;
-						});
-					}
-				});
-			}
-		}
-	};
 	
 	function uploadUsingUpload(file) {
 		file.upload = Upload.upload({

@@ -1,4 +1,4 @@
-/*! FileAPI 2.0.7 - BSD | git://github.com/mailru/FileAPI.git
+/*! FileAPI 2.1.0 - BSD | git://github.com/mailru/FileAPI.git
  * FileAPI — a set of  javascript tools for working with files. Multiupload, drag'n'drop and chunked file upload. Images: crop, resize and auto orientation by EXIF.
  */
 
@@ -104,6 +104,7 @@
 
 		document = window.document,
 		doctype = document.doctype || {},
+		navigator = window.navigator,
 		userAgent = window.navigator.userAgent,
 
 		// https://github.com/blueimp/JavaScript-Load-Image/blob/master/load-image.js#L48
@@ -114,9 +115,8 @@
 		FileReader = window.FileReader,
 		FormData = window.FormData,
 
-
-		XMLHttpRequest = window.XMLHttpRequest,
 		jQuery = window.jQuery,
+		XMLHttpRequest = window.XMLHttpRequest,
 
 		html5 =    !!(File && (FileReader && (window.Uint8Array || FormData || XMLHttpRequest.prototype.sendAsBinary)))
 				&& !(/safari\//i.test(userAgent) && !/chrome\//i.test(userAgent) && /windows/i.test(userAgent)), // BugFix: https://github.com/mailru/FileAPI/issues/25
@@ -128,17 +128,15 @@
 		// https://github.com/blueimp/JavaScript-Canvas-to-Blob
 		dataURLtoBlob = window.dataURLtoBlob,
 
-
 		_rimg = /img/i,
 		_rcanvas = /canvas/i,
 		_rimgcanvas = /img|canvas/i,
 		_rinput = /input/i,
 		_rdata = /^data:[^,]+,/,
 
-		_toString = {}.toString,
-
-
 		Math = window.Math,
+		setTimeout = window.setTimeout,
+		clearTimeout = window.clearTimeout,
 
 		_SIZE_CONST = function (pow){
 			pow = new window.Number(Math.pow(1024, pow));
@@ -154,6 +152,10 @@
 
 		currentTarget = 'currentTarget', // for minimize
 		preventDefault = 'preventDefault', // and this too
+
+		_createElement = function (name){
+			return	document.createElement(name);
+		},
 
 		_isArray = function (ar) {
 			return	ar && ('length' in ar);
@@ -179,6 +181,20 @@
 					}
 				}
 			}
+		},
+
+		/**
+		 * Search for a specified value within an array and return its index (or -1 if not found).
+		 */
+		_indexOf = function (arr, el){
+			var idx = -1, i = arr && arr.length;
+			while( i-- ){
+				if( arr[i] === el ){
+					idx = i;
+					break;
+				}
+			}
+			return	idx;
 		},
 
 		/**
@@ -270,17 +286,18 @@
 
 
 		_supportInputAttr = function (attr){
-			var input = document.createElement('input');
+			var input = _createElement('input');
 			input.setAttribute('type', "file");
 			return attr in input;
 		},
+
 
 
 		/**
 		 * FileAPI (core object)
 		 */
 		api = {
-			version: '2.0.7',
+			version: '2.1.0',
 
 			cors: false,
 			html5: true,
@@ -301,6 +318,18 @@
 
 			postNameConcat: function (name, idx){
 				return	name + (idx != null ? '['+ idx +']' : '');
+			},
+
+			support: {
+				dnd:      cors && ('ondrop' in _createElement('div')),
+				cors:     cors,
+				html5:    html5,
+				chunked:  chunked,
+				dataURI:  true,
+				accept:   _supportInputAttr('accept'),
+				multiple: _supportInputAttr('multiple'),
+				saveAs:   !!navigator.msSaveBlob,
+				download: ('download' in _createElement('a'))
 			},
 
 			ext2mime: {
@@ -358,7 +387,7 @@
 			 * @returns {HTMLElement}
 			 */
 			newImage: function (src, fn){
-				var img = document.createElement('img');
+				var img = _createElement('img');
 				if( fn ){
 					api.event.one(img, 'error load', function (evt){
 						fn(evt.type == 'error', img);
@@ -390,17 +419,25 @@
 				return  xhr;
 			},
 
-			isArray: _isArray,
-
-			support: {
-				dnd:     cors && ('ondrop' in document.createElement('div')),
-				cors:    cors,
-				html5:   html5,
-				chunked: chunked,
-				dataURI: true,
-				accept:   _supportInputAttr('accept'),
-				multiple: _supportInputAttr('multiple')
+			/**
+			 * Creates a URL representing the object given in parameter.
+			 * @param {Blob|File} blob
+			 * @returns {String|Null}
+			 */
+			createURL: function (blob){
+				return	apiURL ? apiURL.createObjectURL(blob) : null;
 			},
+
+			/**
+			 * Releases an existing object URL which was previously
+			 * created by calling FileAPI.createURL()
+			 * @param {String} url
+			 */
+			revokeURL: function (url){
+				return	apiURL && apiURL.revokeObjectURL(url);
+			},
+
+			isArray: _isArray,
 
 			event: {
 				  on: _on
@@ -408,7 +445,6 @@
 				, one: _one
 				, fix: _fixEvent
 			},
-
 
 			throttle: function(fn, delay) {
 				var id, args;
@@ -426,22 +462,36 @@
 				};
 			},
 
+			F: noop,
 
-			F: function (){},
-
-
+			/**
+			 * Takes a well-formed JSON string and returns the resulting JavaScript object.
+			 * @param {String} str
+			 * @returns {*}
+			 */
 			parseJSON: function (str){
 				var json;
-				if( window.JSON && JSON.parse ){
-					json = JSON.parse(str);
+
+				try {
+					if( window.JSON && JSON.parse ){
+						json = JSON.parse(str);
+					}
+					else {
+						json = (new Function('return ('+str.replace(/([\r\n])/g, '\\$1')+');'))();
+					}
 				}
-				else {
-					json = (new Function('return ('+str.replace(/([\r\n])/g, '\\$1')+');'))();
+				catch( err ){
+					api.log('[err] FileAPI.parseJSON: ' + err);
 				}
+
 				return json;
 			},
 
-
+			/**
+			 * Remove the whitespace from the beginning and end of a string.
+			 * @param {String} str
+			 * @returns {String}
+			 */
 			trim: function (str){
 				str = String(str);
 				return	str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
@@ -453,26 +503,80 @@
 			 */
 			defer: function (){
 				var
-					  list = []
-					, result
-					, error
-					, defer = {
-						resolve: function (err, res){
-							defer.resolve = noop;
-							error	= err || false;
-							result	= res;
+					  doneList = []
+					, failList = []
+					, progressList = []
 
-							while( res = list.shift() ){
-								res(error, result);
+					, _push = function (x, fn){
+						fn && (x ? doneList : failList).push(fn);
+						return	this;
+					}
+
+					, _complete = function (state, args){
+						var
+							  list = state ? doneList : failList
+							, i = 0, n = list.length
+						;
+
+						_push = function (x, fn){
+							(x === state) && fn.apply(this, args);
+						};
+
+						_complete = noop;
+
+						doneList =
+						failList = null;
+
+						progressList = [];
+
+						for( ; i < n; i++ ){
+							list[i] && list[i].apply(this, args);
+						}
+					}
+
+					, defer = {
+						done: function (fn){
+							_push(1, fn);
+							return this;
+						},
+
+						fail: function (fn){
+							_push(0, fn);
+							return this;
+						},
+
+						resolve: function (){
+							_complete(1, arguments);
+							return this;
+						},
+
+						reject: function (){
+							_complete(0, arguments);
+							return this;
+						},
+
+						notify: function (){
+							var i = 0, n = progressList.length;
+							for( ; i< n; i++ ){
+								progressList[i].apply(this, arguments);
 							}
 						},
 
-						then: function (fn){
-							if( error !== undef ){
-								fn(error, result);
-							} else {
-								list.push(fn);
-							}
+						progress: function (fn){
+							fn && progressList.push(fn);
+							return	this;
+						},
+
+						then: function (doneFn, failFn){
+							return	this.done(doneFn).fail(failFn);
+						},
+
+						always: function (fn){
+							return	this.then(fn, fn);
+						},
+
+						promise: function (){
+							return	this;
 						}
 				};
 
@@ -515,6 +619,7 @@
 						}
 					}
 				;
+
 				return queue;
 			},
 
@@ -527,6 +632,16 @@
 			 * @param	{*}				[ctx]
 			 */
 			each: _each,
+
+
+			/**
+			 * Search for a specified value within an array and return its index (or -1 if not found).
+			 *
+			 * @param   {Array}  arr
+			 * @param   {*}      el
+			 * @returns {Number}
+			 */
+			indexOf: _indexOf,
 
 
 			/**
@@ -558,24 +673,18 @@
 
 
 			/**
-			 * Is file?
+			 * Is file instance
+			 *
 			 * @param  {File}  file
 			 * @return {Boolean}
 			 */
 			isFile: function (file){
-				return _toString.call(file) === '[object File]';
+				return	html5 && file && (file instanceof File || file instanceof Blob);
 			},
 
-
-			/**
-			 * Is blob?
-			 * @param   {Blob}  blob
-			 * @returns {Boolean}
-			 */
 			isBlob: function (blob) {
-				return this.isFile(blob) || (_toString.call(blob) === '[object Blob]');
+				return    html5 && blob && (blob instanceof Blob);
 			},
-
 
 			/**
 			 * Is canvas element
@@ -592,7 +701,6 @@
 				filter = typeof filter == 'string' ? filter : (filter.getAttribute && filter.getAttribute('accept') || '');
 				return	filter ? new RegExp('('+ filter.replace(/\./g, '\\.').replace(/,/g, '|') +')$', 'i') : /./;
 			},
-
 
 
 			/**
@@ -622,7 +730,7 @@
 					_readAs(file, fn, 'BinaryString');
 				} else {
 					// Hello IE10!
-					_readAs(file, function (evt){
+					api.readAsDataURL(file, function (evt){
 						if( evt.type == 'load' ){
 							try {
 								// dataURL -> binaryString
@@ -633,7 +741,7 @@
 							}
 						}
 						fn(evt);
-					}, 'DataURL');
+					});
 				}
 			},
 
@@ -704,13 +812,12 @@
 			readAsImage: function (file, fn, progress){
 				if( api.isFile(file) ){
 					if( apiURL ){
-						/** @namespace apiURL.createObjectURL */
-						var data = apiURL.createObjectURL(file);
-						if( data === undef ){
-							_emit(file, fn, 'error');
+						var src = api.createURL(file);
+						if( src ){
+							api.readAsImage(src, fn, progress);
 						}
 						else {
-							api.readAsImage(data, fn, progress);
+							_emit(file, fn, 'error');
 						}
 					}
 					else {
@@ -724,9 +831,11 @@
 						});
 					}
 				}
+				// Is canvas?
 				else if( api.isCanvas(file) ){
 					_emit(file, fn, 'load', file);
 				}
+				// Is image tag?
 				else if( _rimg.test(file.nodeName) ){
 					if( file.complete ){
 						_emit(file, fn, 'load', file);
@@ -735,8 +844,7 @@
 						var events = 'error abort load';
 						_one(file, events, function _fn(evt){
 							if( evt.type == 'load' && apiURL ){
-								/** @namespace apiURL.revokeObjectURL */
-								apiURL.revokeObjectURL(file.src);
+								api.revokeURL(file.src);
 							}
 
 							_off(file, events, _fn);
@@ -745,7 +853,7 @@
 					}
 				}
 				else if( file.iframe ){
-					_emit(file, fn, { type: 'error' });
+					_emit(file, fn, { type: 'error', message: 'is iframe' });
 				}
 				else {
 					// Created image
@@ -756,33 +864,29 @@
 
 
 			/**
-			 * Make file by name
-			 *
-			 * @param	{String}	name
-			 * @return	{Array}
+			 * Get mime type by File or name
+			 * @param   {Object|String}  file
+			 * @returns {String}
 			 */
-			checkFileObj: function (name){
-				var file = {}, accept = api.accept;
+			getMimeType: function (file){
+				var
+					  mime = file && (file.type || String(file.name || file).split('.').pop())
+					, accept = api.accept
+					, ext, type
+				;
 
-				if( typeof name == 'object' ){
-					file = name;
-				}
-				else {
-					file.name = (name + '').split(/\\|\//g).pop();
-				}
+				if( !/^[^/]+\/[^/]+$/.test(mime) ){
+					for( type in accept ){
+						ext = new RegExp(accept[type].replace(/\s/g, '|'), 'i');
 
-				if( file.type == null ){
-					file.type = file.name.split('.').pop();
-				}
-
-				_each(accept, function (ext, type){
-					ext = new RegExp(ext.replace(/\s/g, '|'), 'i');
-					if( ext.test(file.type) || api.ext2mime[file.type] ){
-						file.type = api.ext2mime[file.type] || (type.split('/')[0] +'/'+ file.type);
+						if( ext.test(mime) || api.ext2mime[mime] ){
+							mime = api.ext2mime[mime] || (type.split('/')[0] +'/'+ mime);
+							break;
+						}
 					}
-				});
+				}
 
-				return	file;
+				return	mime;
 			},
 
 
@@ -834,10 +938,10 @@
 			/**
 			 * Get file list
 			 *
-			 * @param	{HTMLInputElement|Event}	input
-			 * @param	{String|Function}	[filter]
-			 * @param	{Function}			[callback]
-			 * @return	{Array|Null}
+			 * @param   {HTMLInputElement|Event}   input
+			 * @param   {String|Function}          [filter]
+			 * @param   {Function}                 [callback]
+			 * @returns {Array|Null}
 			 */
 			getFiles: function (input, filter, callback){
 				var files = [];
@@ -891,7 +995,7 @@
 				}
 				else if( !html5 && isInputFile(input) ){
 					if( api.trim(input.value) ){
-						files = [api.checkFileObj(input.value)];
+						files = [_toFileObject(input.value)];
 						files[0].blob   = input;
 						files[0].iframe = true;
 					}
@@ -905,9 +1009,9 @@
 
 
 			/**
-			 * Get total file size
+			 * Get total files size
 			 * @param	{Array}	files
-			 * @return	{Number}
+			 * @returns	{Number}
 			 */
 			getTotalSize: function (files){
 				var size = 0, i = files && files.length;
@@ -931,7 +1035,7 @@
 					(function _next(){
 						var reader = readers.shift();
 						if( reader ){
-							if( reader.test(file.type) ){
+							if( reader.test(api.getMimeType(file)) ){
 								reader(file, function (err, res){
 									if( err ){
 										fn(err);
@@ -1023,23 +1127,63 @@
 			},
 
 
-			upload: function (options){
+			/**
+			 * Upload files on server
+			 *
+			 * @param   {String|Object}   url
+			 * @param   {*}               [files]
+			 * @param   {Object}          [options]
+			 * @returns {FileAPI.XHR}
+			 */
+			upload: function (url, files, options){
+				if( files || typeof url == 'string' ){
+					options = _extend({}, options, { url: url, files: [].concat(files) });
+				}
+				else {
+					options = url;
+				}
+
+
 				options = _extend({
 					  jsonp: 'callback'
-					, prepare: api.F
-					, beforeupload: api.F
-					, upload: api.F
-					, fileupload: api.F
-					, fileprogress: api.F
-					, filecomplete: api.F
-					, progress: api.F
-					, complete: api.F
-					, pause: api.F
-					, imageOriginal: true
+					, prepare: noop
+					, beforeupload: noop
+					, upload: noop
+					, fileupload: noop
+					, fileprogress: noop
+					, filecomplete: noop
+					, progress: noop
+					, complete: noop
+					, pause: noop
+					, serial: true
+					, parallel: 0
+					, postName: 'files'
 					, chunkSize: api.chunkSize
+					, imageOriginal: true
 					, chunkUploadRetry: api.chunkUploadRetry
 					, uploadRetry: api.uploadRetry
 				}, options);
+
+
+				if( !options.serial ){
+					if( options.chunkSize ){
+						options.chunkSize = 0;
+						api.log('[warn] FileAPI.upload: `chunkSize > 0` is not supported, if serial == false');
+					}
+
+					if( api.flashEngine ){
+						api.log('[warn] FileAPI.upload: `serial == false` is not supported in Flash.');
+					}
+				}
+
+
+				if( options.parallel > 0 ){
+					options.serial = true;
+
+					if( api.flashEngine ){
+						api.log('[warn] FileAPI.upload: `parallel > 0` is not supported in Flash.');
+					}
+				}
 
 
 				if( options.imageAutoOrientation && !options.imageTransform ){
@@ -1049,65 +1193,99 @@
 
 				var
 					  proxyXHR = new api.XHR(options)
-					, dataArray = this._getFilesDataArray(options.files)
+					, filesData = _getUploadFiles(options.files, options.postName)
+					, defer = api.defer()
+
 					, _this = this
 					, _total = 0
 					, _loaded = 0
-					, _nextFile
-					, _complete = false
+					, _active = 0 // Counter for holding the number of active queries
+
+					, _serial = html5 && options.serial
+					, _parallel = _serial && options.parallel
+
+					, _withoutFiles = !filesData.length
+
+					, _processedData = []
+
+					// Array of active uploaded files
+					, _activeFiles = proxyXHR.activeFiles = []
 				;
 
-
 				// calc total size
-				_each(dataArray, function (data){
+				_each(filesData, function (data){
 					_total += data.size;
 				});
 
 				// Array of files
 				proxyXHR.files = [];
-				_each(dataArray, function (data){
+				_each(filesData, function (data){
 					proxyXHR.files.push(data.file);
 				});
 
 				// Set upload status props
 				proxyXHR.total	= _total;
 				proxyXHR.loaded	= 0;
-				proxyXHR.filesLeft = dataArray.length;
+				proxyXHR.filesLeft = filesData.length;
 
 				// emit "beforeupload"  event
 				options.beforeupload(proxyXHR, options);
 
-				// Upload by file
-				_nextFile = function (){
+				// Subscribe to `defer`
+				defer.progress(options.progress);
+				defer.done(options.success);
+				defer.fail(options.error);
+
+
+				// Counting the amount of bytes uploaded files
+				function _getTotalLoadedSize(){
+					var size = 0, i = _processedData.length, data;
+					while( i-- ){
+						data = _processedData[i];
+						size += data.size * (data.loaded / data.total);
+					}
+					return	size;
+				}
+
+
+				// Uploading files
+				function _uploadFiles(){
 					var
-						  data = dataArray.shift()
-						, _file = data && data.file
+						  data  = filesData.splice(0, _serial ? 1 : 1e5)
+						, _file = _serial ? data[0] && data[0].file : proxyXHR.files
+						, _dataSize = api.getTotalSize(data)
 						, _fileLoaded = false
 						, _fileOptions = _simpleClone(options)
 					;
 
-					proxyXHR.filesLeft = dataArray.length;
+					// The actual value is set in "progress"
+					data.loaded = 0;
+					data.size = data.total = _dataSize;
 
-					if( _file && _file.name === api.expando ){
+					_processedData.push(data);
+
+					if( _withoutFiles ){
 						_file = null;
 						api.log('[warn] FileAPI.upload() — called without files');
 					}
 
-					if( ( proxyXHR.statusText != 'abort' || proxyXHR.current ) && data ){
-						// Mark active job
-						_complete = false;
+					if( (proxyXHR.statusText != 'abort' || proxyXHR.current) && (data.length || _withoutFiles) ){
+						_withoutFiles = false;
+
+					    // Increase the number of active requests
+					    _active++;
 
 						// Set current upload file
 						proxyXHR.currentFile = _file;
 
 						// Prepare file options
 						if (_file && options.prepare(_file, _fileOptions) === false) {
-							_nextFile.call(_this);
+							_uploadFiles();
 							return;
 						}
 						_fileOptions.file = _file;
 
-						_this._getFormData(_fileOptions, data, function (form){
+						_getFormData(_fileOptions, data, function (form){
 							if( !_loaded ){
 								// emit "upload" event
 								options.upload(proxyXHR, options);
@@ -1117,26 +1295,34 @@
 
 								upload: _file ? function (){
 									// emit "fileupload" event
-									options.fileupload(_file, xhr, _fileOptions);
+									if( _serial ){
+										_activeFiles.push(_file);
+										xhr.activeFiles = _activeFiles;
+										options.fileupload(_file, xhr, _fileOptions);
+									}
 								} : noop,
 
 								progress: _file ? function (evt){
 									if( !_fileLoaded ){
 										// For ignore the double calls.
-										_fileLoaded = (evt.loaded === evt.total);
+										_fileLoaded = (evt.loaded == evt.total);
+
+										// Set actual value
+										data.total = evt.total;
+										data.loaded = Math.min(evt.loaded, evt.total);
 
 										// emit "fileprogress" event
-										options.fileprogress({
+										(_serial || _parallel) && options.fileprogress({
 											  type:   'progress'
-											, total:  data.total = evt.total
-											, loaded: data.loaded = evt.loaded
+											, total:  data.total
+											, loaded: data.loaded
 										}, _file, xhr, _fileOptions);
 
 										// emit "progress" event
-										options.progress({
+										defer.notify({
 											  type:   'progress'
 											, total:  _total
-											, loaded: proxyXHR.loaded = (_loaded + data.size * (evt.loaded/evt.total))|0
+											, loaded: proxyXHR.loaded = _getTotalLoadedSize()
 										}, _file, xhr, _fileOptions);
 									}
 								} : noop,
@@ -1147,34 +1333,38 @@
 									});
 
 									if( _file ){
+										// "loaded" and "total" set in "progress".
 										data.total = (data.total || data.size);
 										data.loaded	= data.total;
 
-										if( !err ) {
-											// emulate 100% "progress"
-											this.progress(data);
+										// emulate 100% "progress"
+										this.progress(data);
 
-											// fixed throttle event
-											_fileLoaded = true;
+										// fixed "progress" throttle
+										_fileLoaded = true;
 
-											// bytes loaded
-											_loaded += data.size; // data.size != data.total, it's desirable fix this
-											proxyXHR.loaded = _loaded;
-										}
+										// bytes loaded
+										proxyXHR.loaded = _loaded = _getTotalLoadedSize();
 
 										// emit "filecomplete" event
-										options.filecomplete(err, xhr, _file, _fileOptions);
+										if( _serial ){
+											_activeFiles.splice(_indexOf(_activeFiles, _file), 1);
+											options.filecomplete(err, xhr, _file, _fileOptions);
+										}
 									}
 
+									// Decrease the number of active requests
+									_active--;
+
 									// upload next file
-									setTimeout(function () {_nextFile.call(_this);}, 0);
+									setTimeout(function (){ _uploadFiles(); }, 0);
 								}
 							})); // xhr
 
 
 							// ...
 							proxyXHR.abort = function (current){
-								if (!current) { dataArray.length = 0; }
+								if( !current ){ filesData.length = 0; }
 								this.current = current;
 								xhr.abort();
 							};
@@ -1183,17 +1373,28 @@
 							xhr.send(form);
 						});
 					}
-					else {
-						var successful = proxyXHR.status == 200 || proxyXHR.status == 201 || proxyXHR.status == 204;
-						options.complete(successful ? false : (proxyXHR.statusText || 'error'), proxyXHR, options);
-						// Mark done state
-						_complete = true;
+					else if( !_active ){
+						var err = (proxyXHR.status == 200 || proxyXHR.status == 201 || proxyXHR.status == 204)
+									? false
+									: (proxyXHR.statusText || 'error');
+
+						if( err ){
+							defer.reject(err, proxyXHR, options);
+						} else {
+							defer.resolve(proxyXHR, options);
+						}
+
+						options.complete(err, proxyXHR, options);
 					}
-				};
+				}
 
 
-				// Next tick
-				setTimeout(_nextFile, 0);
+				// Start upload on next tick
+				setTimeout(function (){
+					for( var i = 0; i < Math.max(_parallel, 1); i++ ){
+						_uploadFiles();
+					}
+				}, 0);
 
 
 				// Append more files to the existing request
@@ -1204,164 +1405,37 @@
 					_each(files, function (data) {
 						_total += data.size;
 						proxyXHR.files.push(data.file);
-						if (first) {
-							dataArray.unshift(data);
+						if( first ){
+							filesData.unshift(data);
 						} else {
-							dataArray.push(data);
+							filesData.push(data);
 						}
 					});
 
 					proxyXHR.statusText = "";
 
-					if( _complete ){
-						_nextFile.call(_this);
+					if( !_active ){
+						_uploadFiles.call(_this);
 					}
 				};
 
 
 				// Removes file from queue by file reference and returns it
 				proxyXHR.remove = function (file) {
-				    var i = dataArray.length, _file;
+				    var i = filesData.length, _file;
 				    while( i-- ){
-						if( dataArray[i].file == file ){
-							_file = dataArray.splice(i, 1);
+						if( filesData[i].file == file ){
+							_file = filesData.splice(i, 1);
 							_total -= _file.size;
 						}
 					}
 					return	_file;
 				};
 
-				return proxyXHR;
-			},
+				proxyXHR.error = defer.fail;
+				proxyXHR.success = defer.done;
 
-
-			_getFilesDataArray: function (data){
-				var files = [], oFiles = {};
-
-				if( isInputFile(data) ){
-					var tmp = api.getFiles(data);
-					oFiles[data.name || 'file'] = data.getAttribute('multiple') !== null ? tmp : tmp[0];
-				}
-				else if( _isArray(data) && isInputFile(data[0]) ){
-					_each(data, function (input){
-						oFiles[input.name || 'file'] = api.getFiles(input);
-					});
-				}
-				else {
-					oFiles = data;
-				}
-
-				_each(oFiles, function add(file, name){
-					if( _isArray(file) ){
-						_each(file, function (file){
-							add(file, name);
-						});
-					}
-					else if( file && (file.name || file.image) ){
-						files.push({
-							  name: name
-							, file: file
-							, size: file.size
-							, total: file.size
-							, loaded: 0
-						});
-					}
-				});
-
-				if( !files.length ){
-					// Create fake `file` object
-					files.push({ file: { name: api.expando } });
-				}
-
-				return	files;
-			},
-
-
-			_getFormData: function (options, data, fn){
-				var
-					  file = data.file
-					, name = data.name
-					, filename = file.name
-					, filetype = file.type
-					, trans = api.support.transform && options.imageTransform
-					, Form = new api.Form
-					, queue = api.queue(function (){ fn(Form); })
-					, isOrignTrans = trans && _isOriginTransform(trans)
-					, postNameConcat = api.postNameConcat
-				;
-
-				// Append data
-				_each(options.data, function add(val, name){
-					if( typeof val == 'object' ){
-						_each(val, function (v, i){
-							add(v, postNameConcat(name, i));
-						});
-					}
-					else {
-						Form.append(name, val);
-					}
-				});
-
-				(function _addFile(file/**Object*/){
-					if( file.image ){ // This is a FileAPI.Image
-						queue.inc();
-
-						file.toData(function (err, image){
-							// @todo: error
-							filename = filename || (new Date).getTime()+'.png';
-
-							_addFile(image);
-							queue.next();
-						});
-					}
-					else if( api.Image && trans && (/^image/.test(file.type) || _rimgcanvas.test(file.nodeName)) ){
-						queue.inc();
-
-						if( isOrignTrans ){
-							// Convert to array for transform function
-							trans = [trans];
-						}
-
-						api.Image.transform(file, trans, options.imageAutoOrientation, function (err, images){
-							if( isOrignTrans && !err ){
-								if( !dataURLtoBlob && !api.flashEngine ){
-									// Canvas.toBlob or Flash not supported, use multipart
-									Form.multipart = true;
-								}
-
-								Form.append(name, images[0], filename,  trans[0].type || filetype);
-							}
-							else {
-								var addOrigin = 0;
-
-								if( !err ){
-									_each(images, function (image, idx){
-										if( !dataURLtoBlob && !api.flashEngine ){
-											Form.multipart = true;
-										}
-
-										if( !trans[idx].postName ){
-											addOrigin = 1;
-										}
-
-										Form.append(trans[idx].postName || postNameConcat(name, idx), image, filename, trans[idx].type || filetype);
-									});
-								}
-
-								if( err || options.imageOriginal ){
-									Form.append(postNameConcat(name, (addOrigin ? 'original' : null)), file, filename, filetype);
-								}
-							}
-
-							queue.next();
-						});
-					}
-					else if( filename !== api.expando ){
-						Form.append(name, file, filename);
-					}
-				})(file);
-
-				queue.check();
+				return _extend(proxyXHR, defer);
 			},
 
 
@@ -1395,85 +1469,76 @@
 
 
 			/**
-			 * Load remote file
+			 * Load a remote file
 			 *
-			 * @param   {String}    url
-			 * @param   {Function}  fn
-			 * @return  {XMLHttpRequest}
+			 * @param   {String}  url
+			 * @param   {Object}  [options]
+			 * @return  {FileAPI.XHR}
 			 */
-			load: function (url, fn){
-				var xhr = api.getXHR();
-				if( xhr ){
-					xhr.open('GET', url, true);
+			load: function (url, options){
+				var
+					xhr = new api.XHR(options = _extend(options || {}, {
+						  url: url
+						, type: 'GET'
+						, cache: true
+						, responseType: 'blob'
+					}))
+					, resolve = xhr.defer.resolve
+				;
 
-					if( xhr.overrideMimeType ){
-				        xhr.overrideMimeType('text/plain; charset=x-user-defined');
-					}
+				xhr.defer.resolve = function (xhr, opts){
+					var blob = xhr.response;
+					return (blob && Blob) && (blob instanceof Blob)
+						? resolve(blob, xhr, opts)
+						: xhr.defer.reject('load_not_supported', xhr, opts)
+					;
+				};
 
-					_on(xhr, 'progress', function (/**Event*/evt){
-						/** @namespace evt.lengthComputable */
-						if( evt.lengthComputable ){
-							fn({ type: evt.type, loaded: evt.loaded, total: evt.total }, xhr);
-						}
-					});
-
-					xhr.onreadystatechange = function(){
-						if( xhr.readyState == 4 ){
-							xhr.onreadystatechange = null;
-							if( xhr.status == 200 ){
-								url = url.split('/');
-								/** @namespace xhr.responseBody */
-								var file = {
-								      name: url[url.length-1]
-									, size: xhr.getResponseHeader('Content-Length')
-									, type: xhr.getResponseHeader('Content-Type')
-								};
-								file.dataURL = 'data:'+file.type+';base64,' + api.encode64(xhr.responseBody || xhr.responseText);
-								fn({ type: 'load', result: file }, xhr);
-							}
-							else {
-								fn({ type: 'error' }, xhr);
-							}
-					    }
-					};
-				    xhr.send(null);
-				} else {
-					fn({ type: 'error' });
-				}
+				_getFormData(options, [], function (formData){
+					xhr.send(formData);
+				});
 
 				return  xhr;
 			},
 
-			encode64: function (str){
-				var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', outStr = '', i = 0;
 
-				if( typeof str !== 'string' ){
-					str	= String(str);
-				}
+			/**
+			 * Save file on disk
+			 * @param    {String|File|Blob}  blob
+			 * @param    {String}            [name]
+			 * @returns  {FileAPI.defer}
+			 */
+			saveAs: function (blob, name){
+				var defer = api.defer();
 
-				while( i < str.length ){
-					//all three "& 0xff" added below are there to fix a known bug
-					//with bytes returned by xhr.responseText
-					var
-						  byte1 = str.charCodeAt(i++) & 0xff
-						, byte2 = str.charCodeAt(i++) & 0xff
-						, byte3 = str.charCodeAt(i++) & 0xff
-						, enc1 = byte1 >> 2
-						, enc2 = ((byte1 & 3) << 4) | (byte2 >> 4)
-						, enc3, enc4
-					;
-
-					if( isNaN(byte2) ){
-						enc3 = enc4 = 64;
-					} else {
-						enc3 = ((byte2 & 15) << 2) | (byte3 >> 6);
-						enc4 = isNaN(byte3) ? 64 : byte3 & 63;
+				if( typeof blob === 'string' ){
+					if( name === undef ){
+						name = blob.split('/').pop();
 					}
 
-					outStr += b64.charAt(enc1) + b64.charAt(enc2) + b64.charAt(enc3) + b64.charAt(enc4);
+					api.load(blob)
+						.progress(defer.notify)
+						.done(function (blob){
+							api.saveAs(blob, name).then(defer.resolve, defer.reject);
+						})
+						.fail(defer.reject)
+					;
+				}
+				else {
+					try {
+						if( _saveAs(blob, name) ){
+							defer.resolve();
+						}
+						else {
+							defer.reject('saveAs_not_support');
+						}
+					} catch (err){
+						api.log('[err] FileAPI.saveAs: '+err.toString());
+						defer.reject(err);
+					}
 				}
 
-				return  outStr;
+				return	defer;
 			}
 
 		} // api
@@ -1532,6 +1597,19 @@
 		else {
 			_emit(file, fn, 'error', undef, { error: 'filreader_not_support_'+as });
 		}
+	}
+
+
+	function _isLikeFile(obj){
+		return	obj && (File && (obj instanceof File) || obj.blob || obj.image && obj.file || obj.flashId);
+	}
+
+
+	function _toFileObject(name){
+		return {
+			  name: (name + '').split(/\\|\//g).pop()
+			, type: api.getMimeType(name)
+		};
 	}
 
 
@@ -1622,10 +1700,154 @@
 	}
 
 
+	function _getUploadFiles(data, postName){
+		var files = [], oFiles = {};
+
+		// Convert `data` to `oFiles`
+		if( isInputFile(data) ){
+			var tmp = api.getFiles(data);
+			oFiles[data.name || postName] = data.getAttribute('multiple') !== null ? tmp : tmp[0];
+		}
+		else if( _isArray(data) ){
+			if( isInputFile(data[0]) ){
+				_each(data, function (input){
+					oFiles[input.name || postName] = api.getFiles(input);
+				});
+			} else if( _isLikeFile(data[0]) ){
+				oFiles[postName] = data;
+			}
+		}
+		else if( _isLikeFile(data) ){
+			oFiles[postName] = data;
+		}
+		else {
+			// `key` - post name, `value` - file object
+			oFiles = data;
+		}
+
+
+		// Convert `oFiles` to `files`
+		_each(oFiles, function add(file, name){
+			if( _isArray(file) ){
+				_each(file, function (file){
+					add(file, name);
+				});
+			}
+			else if( _isLikeFile(file) ){
+				files.push({
+					  name: name // post name
+					, file: file
+					, size: file.size
+					, total: file.size
+					, loaded: 0
+				});
+			}
+		});
+
+		return	files;
+	}
+
+
+
+	function _getFormData(options, filesData, fn){
+		var
+			  Form  = new api.Form
+			, queue = api.queue(function (){ fn(Form); })
+			, trans = api.support.transform && options.imageTransform
+			, isOrignTrans   = trans && _isOriginTransform(trans)
+			, postNameConcat = api.postNameConcat
+		;
+
+		// Add files to `Form`
+		_each(filesData, function (data, idx){
+			var
+				  file = data.file
+				, name = postNameConcat(data.name, options.serial || options.chunkSize ? null : idx)
+				, filename = file.name
+				, filetype = file.type
+			;
+
+			(function _addFile(file/**Object*/){
+				if( file.image ){ // This is a FileAPI.Image
+					queue.inc();
+
+					file.toData(function (err, image){
+						// @todo: error
+						filename = filename || (new Date).getTime()+'.png';
+
+						_addFile(image);
+						queue.next();
+					});
+				}
+				else if( api.Image && trans && (/^image/.test(file.type) || _rimgcanvas.test(file.nodeName)) ){
+					queue.inc();
+
+					if( isOrignTrans ){
+						// Convert to array for transform function
+						trans = [].concat(trans);
+					}
+
+					api.Image.transform(file, trans, options.imageAutoOrientation, function (err, images){
+						if( isOrignTrans && !err ){
+							if( !dataURLtoBlob && !api.flashEngine ){
+								// Canvas.toBlob or Flash not supported, use multipart
+								Form.multipart = true;
+							}
+
+							Form.append(name, images[0], filename,  trans[0].type || filetype);
+						}
+						else {
+							var addOrigin = 0;
+
+							if( !err ){
+								_each(images, function (image, idx){
+									if( !dataURLtoBlob && !api.flashEngine ){
+										Form.multipart = true;
+									}
+
+									if( !trans[idx].postName ){
+										addOrigin = 1;
+									}
+
+									Form.append(trans[idx].postName || postNameConcat(name, idx), image, filename, trans[idx].type || filetype);
+								});
+							}
+
+							if( err || options.imageOriginal ){
+								Form.append(postNameConcat(name, (addOrigin ? 'original' : null)), file, filename, filetype);
+							}
+						}
+
+						queue.next();
+					});
+				}
+				else if( filename !== api.expando ){
+					Form.append(name, file, filename);
+				}
+			})(file);
+		});
+
+
+		// Append data
+		_each(options.data, function add(val, name){
+			if( typeof val == 'object' ){
+				_each(val, function (v, i){
+					add(v, postNameConcat(name, i));
+				});
+			}
+			else {
+				Form.append(name, val);
+			}
+		});
+
+		queue.check();
+	}
+
+
 	function _simpleClone(obj){
 		var copy = {};
 		_each(obj, function (val, key){
-			if( val && (typeof val === 'object') && (val.nodeType === void 0) ){
+			if( val && (typeof val === 'object') && (val.nodeType == null) ){
 				val = _extend({}, val);
 			}
 			copy[key] = val;
@@ -1654,6 +1876,38 @@
 			}
 		}
 		return	false;
+	}
+
+
+	function _saveAs(blob, name){
+		var ret = false;
+
+		if( navigator.msSaveBlob ){
+			ret = navigator.msSaveBlob(blob, name);
+		}
+		else if( api.support.download ){
+			var
+				  url = api.createURL(blob)
+				, body = document.body
+				, transport = _createElement('a')
+			;
+
+			if( url ){
+				transport.href = url;
+				transport.download = name || blob.name;
+				transport.style.top = '-10000px';
+				transport.style.position = 'absolute';
+
+				body.appendChild(transport);
+				transport.click();
+				body.removeChild(transport);
+
+				ret = true;
+				setTimeout(function (){ api.revokeURL(url); }, 1);
+			}
+		}
+
+		return	ret;
 	}
 
 
@@ -1689,12 +1943,11 @@
 
 		if( !onDrop ){
 			onDrop = onHover;
-			onHover = api.F;
+			onHover = noop;
 		}
 
 		if( FileReader ){
-			// Hover
-			_on(el, 'dragenter dragleave dragover', onHover.ff = onHover.ff || function (evt){
+			_on(el, 'dragenter dragleave dragover', function (evt){
 				var
 					  types = _getDataTransfer(evt).types
 					, i = types && types.length
@@ -1727,9 +1980,7 @@
 				}
 			});
 
-
-			// Drop
-			_on(el, 'drop', onDrop.ff = onDrop.ff || function (evt){
+			_on(el, 'drop', function (evt){
 				evt[preventDefault]();
 
 				_type = 0;
@@ -1753,8 +2004,8 @@
 	 * @param	{Function}		onDrop
 	 */
 	api.event.dnd.off = function (el, onHover, onDrop){
-		_off(el, 'dragenter dragleave dragover', onHover.ff);
-		_off(el, 'drop', onDrop.ff);
+		_off(el, 'dragenter dragleave dragover', onHover);
+		_off(el, 'drop', onDrop);
 	};
 
 
@@ -1811,9 +2062,6 @@
 			  8:	270
 			, 3:	180
 			, 6:	90
-			, 7:	270
-			, 4:	180
-			, 5:	90
 		}
 	;
 
@@ -1848,7 +2096,8 @@
 			resize: 0, // min, max OR preview
 			deg: 0,
 			quality: 1, // jpeg quality
-			filter: 0
+			filter: 0,
+			multipass: api.multiPassResize
 		};
 	}
 
@@ -1939,22 +2188,25 @@
 			// For `renderImageToCanvas`
 			image._type = this.file.type;
 
-			while(m.multipass && min(w/dw, h/dh) > 2 ){
-				w = (w/2 + 0.5)|0;
-				h = (h/2 + 0.5)|0;
 
-				copy = getCanvas();
-				copy.width  = w;
-				copy.height = h;
+			if( m.multipass ){
+				while( min(w/dw, h/dh) > 2 ){
+					w = (w/2 + 0.5)|0;
+					h = (h/2 + 0.5)|0;
 
-				if( buffer !== image ){
-					renderImageToCanvas(copy, buffer, 0, 0, buffer.width, buffer.height, 0, 0, w, h);
-					buffer = copy;
-				}
-				else {
-					buffer = copy;
-					renderImageToCanvas(buffer, image, m.sx, m.sy, m.sw, m.sh, 0, 0, w, h);
-					m.sx = m.sy = m.sw = m.sh = 0;
+					copy = getCanvas();
+					copy.width  = w;
+					copy.height = h;
+
+					if( buffer !== image ){
+						renderImageToCanvas(copy, buffer, 0, 0, buffer.width, buffer.height, 0, 0, w, h);
+						buffer = copy;
+					}
+					else {
+						buffer = copy;
+						renderImageToCanvas(buffer, image, m.sx, m.sy, m.sw, m.sh, 0, 0, w, h);
+						m.sx = m.sy = m.sw = m.sh = 0;
+					}
 				}
 			}
 
@@ -2141,9 +2393,9 @@
 			if( !err ){
 				api.each(transform, function (params, name){
 					if( !queue.isFail() ){
-						var ImgTrans = new Image(img.nodeType ? img : file), isFn = typeof params == 'function';
+						var ImgTrans = new Image(img.nodeType ? img : file);
 
-						if( isFn ){
+						if( typeof params == 'function' ){
 							params(img, ImgTrans);
 						}
 						else if( params.width ){
@@ -2164,16 +2416,13 @@
 							params.rotate = 'auto';
 						}
 
-						ImgTrans.set({ type: ImgTrans.matrix.type || params.type || file.type || 'image/png' });
-
-						if( !isFn ){
-							ImgTrans.set({
-								  deg: params.rotate
-								, overlay: params.overlay
-								, filter: params.filter
-								, quality: params.quality || 1
-							});
-						}
+						ImgTrans.set({
+							  deg: params.rotate
+							, type: params.type || file.type || 'image/png'
+							, quality: params.quality || 1
+							, overlay: params.overlay
+							, filter: params.filter
+						});
 
 						queue.inc();
 						ImgTrans.toData(function (err, image){
@@ -2269,14 +2518,14 @@
 
 
 	/**
-	 * For load-image-ios.js
+	 * @Override in load-image-ios.js
 	 */
 	api.renderImageToCanvas = function (canvas, img, sx, sy, sw, sh, dx, dy, dw, dh){
 		try {
 			return canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-		} catch (ex) {
-			api.log('renderImageToCanvas failed');
-			throw ex;
+		} catch (err) {
+			api.log('renderImageToCanvas failed:', err);
+			throw err;
 		}
 	};
 
@@ -2468,12 +2717,21 @@
 	"use strict";
 
 	var
-		  document = window.document
-		, FormData = window.FormData
-		, Form = function (){ this.items = []; }
+		  FormData = window.FormData
+
+		, document = window.document
+		, unescape = window.unescape
 		, encodeURIComponent = window.encodeURIComponent
 	;
 
+
+	/**
+	 * @class FileAPI.Form
+	 * @constructor
+	 */
+	function Form(){
+		this.items = [];
+	}
 
 	Form.prototype = {
 
@@ -2537,7 +2795,6 @@
 					api.reset(blob, true);
 					// set new name
 					blob.name = file.name;
-					blob.disabled = false;
 					data.appendChild(blob);
 				}
 				else {
@@ -2616,11 +2873,13 @@
 				queue.inc();
 				_convertFile(file, function (file, blob){
 					data.push(
-						  '--_' + boundary + ('\r\nContent-Disposition: form-data; name="'+ file.name +'"'+ (file.file ? '; filename="'+ encodeURIComponent(file.file) +'"' : '')
-						+ (file.file ? '\r\nContent-Type: '+ (file.type || 'application/octet-stream') : '')
+						  '--_' + boundary
+						+ '\r\nContent-Disposition: form-data; name="'+ file.name +'"'
+						+ (file.file ? '; filename="'+ unescape( encodeURIComponent(file.file) ) +'"' : '') // `unescape + encodeURIComponent` -- for сyrillic characters and similar.
+						+ (file.file ? '\r\nContent-Type: ' + (file.type || 'application/octet-stream') : '')
 						+ '\r\n'
-						+ '\r\n'+ (file.file ? blob : encodeURIComponent(blob))
-						+ '\r\n')
+						+ '\r\n' + blob
+						+ '\r\n'
 					);
 					queue.next();
 				}, true);
@@ -2683,17 +2942,31 @@
 	"use strict";
 
 	var
-		  noop = function (){}
+		  noop = api.F
 		, document = window.document
 
 		, XHR = function (options){
+			var defer = api.defer().progress(options.progress);
+
 			this.uid = api.uid();
+
 			this.xhr = {
 				  abort: noop
 				, getResponseHeader: noop
 				, getAllResponseHeaders: noop
 			};
-			this.options = options;
+
+			this.defer = defer;
+			this.options = api.extend({
+				  upload: noop
+				, complete: noop
+				, withCredentials: api.withCredentials
+			}, options);
+
+			this.done = this.success = defer.done;
+			this.fail = this.error = defer.fail;
+			this.notify = defer.notify;
+			this.progress = defer.progress;
 		},
 
 		_xhrResponsePostfix = { '': 1, XML: 1, Text: 1, Body: 1 }
@@ -2714,7 +2987,12 @@
 		},
 
 		end: function (status, statusText){
-			var _this = this, options = _this.options;
+			var
+				  _this = this
+				, defer = _this.defer
+				, options = _this.options
+				, err = (status == 200 || status == 201 ? false : statusText || 'unknown')
+			;
 
 			_this.end		=
 			_this.abort		= noop;
@@ -2725,7 +3003,14 @@
 			}
 
 			api.log('xhr.end:', status, statusText);
-			options.complete(status == 200 || status == 201 ? false : _this.statusText || 'unknown', _this);
+
+			if( err ){
+				defer.reject(err, _this, options);
+			} else {
+				defer.resolve(_this, options);
+			}
+
+			options.complete(err, _this);
 
 			if( _this.xhr && _this.xhr.node ){
 				setTimeout(function (){
@@ -2757,7 +3042,7 @@
 		},
 
 		_send: function (options, data){
-			var _this = this, xhr, uid = _this.uid, onloadFuncName = _this.uid + "Load", url = options.url;
+			var _this = this, xhr, uid = _this.uid, url = options.url;
 
 			api.log('XHR._send:', data);
 
@@ -2774,6 +3059,29 @@
 
 				// legacy
 				options.upload(options, _this);
+
+				xhr = document.createElement('div');
+				xhr.innerHTML = '<form target="'+ uid +'" action="'+ url +'" method="POST" enctype="multipart/form-data" style="position: absolute; top: -1000px; overflow: hidden; width: 1px; height: 1px;">'
+							+ '<iframe name="'+ uid +'" src="javascript:false;"></iframe>'
+							+ (jsonp && (options.url.indexOf('=?') < 0) ? '<input value="'+ uid +'" name="'+jsonp+'" type="hidden"/>' : '')
+							+ '</form>'
+				;
+
+				// get form-data & transport
+				var
+					  form = xhr.getElementsByTagName('form')[0]
+					, transport = xhr.getElementsByTagName('iframe')[0]
+				;
+
+				form.appendChild(data);
+
+				api.log(form.parentNode.innerHTML);
+
+				// append to DOM
+				document.body.appendChild(xhr);
+
+				// keep a reference to node-transport
+				_this.xhr.node = xhr;
 
 				var
 					onPostMessage = function (evt){
@@ -2796,7 +3104,7 @@
 						_this.end(status, statusText);
 
 						api.event.off(window, 'message', onPostMessage);
-						window[uid] = xhr = transport = window[onloadFuncName] = null;
+						window[uid] = xhr = transport = transport.onload = null;
 					}
 				;
 
@@ -2812,7 +3120,7 @@
 
 				api.event.on(window, 'message', onPostMessage);
 
-				window[onloadFuncName] = function (){
+				transport.onload = function (){
 					try {
 						var
 							  win = transport.contentWindow
@@ -2825,29 +3133,6 @@
 					}
 				};
 
-				xhr = document.createElement('div');
-				xhr.innerHTML = '<form target="'+ uid +'" action="'+ url +'" method="POST" enctype="multipart/form-data" style="position: absolute; top: -1000px; overflow: hidden; width: 1px; height: 1px;">'
-							+ '<iframe name="'+ uid +'" src="javascript:false;" onload="' + onloadFuncName + '()"></iframe>'
-							+ (jsonp && (options.url.indexOf('=?') < 0) ? '<input value="'+ uid +'" name="'+jsonp+'" type="hidden"/>' : '')
-							+ '</form>'
-				;
-
-				// get form-data & transport
-				var
-					  form = xhr.getElementsByTagName('form')[0]
-					, transport = xhr.getElementsByTagName('iframe')[0]
-				;
-
-				form.appendChild(data);
-
-				api.log(form.parentNode.innerHTML);
-
-				// append to DOM
-				document.body.appendChild(xhr);
-
-				// keep a reference to node-transport
-				_this.xhr.node = xhr;
-
 				// send
 				_this.readyState = 2; // loaded
 				form.submit();
@@ -2858,19 +3143,24 @@
 				url = url.replace(/([a-z]+)=(\?)&?/i, '');
 
 				// html5
-				if (this.xhr && this.xhr.aborted) {
+				if( this.xhr && this.xhr.aborted ){
 					api.log("Error: already aborted");
 					return;
 				}
-				xhr = _this.xhr = api.getXHR();
 
 				if (data.params) {
 					url += (url.indexOf('?') < 0 ? "?" : "&") + data.params.join("&");
 				}
 
-				xhr.open('POST', url, true);
+				xhr = _this.xhr = api.getXHR();
 
-				if( api.withCredentials ){
+				xhr.open(options.type || 'POST', url, true);
+
+				if( options.responseType ){
+					xhr.responseType = options.responseType;
+				}
+
+				if( options.withCredentials ){
 					xhr.withCredentials = "true";
 				}
 
@@ -2889,7 +3179,7 @@
 						xhr.upload.addEventListener('progress', api.throttle(function (/**Event*/evt){
 							if (!data.retry) {
 								// show progress only for correct chunk uploads
-								options.progress({
+								_this.notify({
 									  type:			evt.type
 									, total:		data.size
 									, loaded:		data.start + evt.loaded
@@ -2911,7 +3201,8 @@
 								for( var k in _xhrResponsePostfix ){
 									_this['response'+k]  = xhr['response'+k];
 								}
-							}catch(_){}
+							} catch (_){}
+
 							xhr.onreadystatechange = null;
 
 							if (!xhr.status || xhr.status - 201 > 0) {
@@ -2999,8 +3290,12 @@
 					if( xhr.upload ){
 						// https://github.com/blueimp/jQuery-File-Upload/wiki/Fixing-Safari-hanging-on-very-high-speed-connections-%281Gbps%29
 						xhr.upload.addEventListener('progress', api.throttle(function (/**Event*/evt){
-							options.progress(evt, _this, options);
+							_this.notify(evt, _this, options);
 						}, 100), false);
+
+						api.event.on(xhr, 'progress', function (/**Event*/evt){
+							_this.notify(evt, _this, options);
+						});
 					}
 
 					xhr.onreadystatechange = function (){
@@ -3009,9 +3304,11 @@
 						_this.readyState = xhr.readyState;
 
 						if( xhr.readyState == 4 ){
-							for( var k in _xhrResponsePostfix ){
-								_this['response'+k]  = xhr['response'+k];
-							}
+							try {
+								for( var k in _xhrResponsePostfix ){
+									_this['response'+k]  = xhr['response'+k];
+								}
+							} catch (_){}
 							xhr.onreadystatechange = null;
 
 							if (!xhr.status || xhr.status > 201) {
@@ -3054,7 +3351,7 @@
 
 						}
 					} else {
-						// FormData
+						// FormData 
 						xhr.send(data);
 					}
 				}
@@ -3470,75 +3767,76 @@
 					}
 					while( (node = node.parentNode) && (node !== document.body) );
 				},
-				
-				disableMouseover: false,
+
 
 				mouseover: function (evt){
-					if (!flash.disableMouseover) {
-						var target = api.event.fix(evt).target;
-	
-						if( /input/i.test(target.nodeName) && target.type == 'file' && !target.disabled ){
-							var
-								  state = target.getAttribute(_attr)
-								, wrapper = flash.getWrapper(target)
-							;
-	
-							if( api.multiFlash ){
-								// check state:
-								//   i — published
-								//   i — initialization
-								//   r — ready
-								if( state == 'i' || state == 'r' ){
-									// publish fail
-									return	false;
-								}
-								else if( state != 'p' ){
-									// set "init" state
-									target.setAttribute(_attr, 'i');
-	
-									var dummy = document.createElement('div');
-	
-									if( !wrapper ){
-										api.log('[err] FlashAPI.mouseover: js-fileapi-wrapper not found');
-										return;
-									}
-	
-									_css(dummy, {
-										  top:    0
-										, left:   0
-										, width:  target.offsetWidth
-										, height: target.offsetHeight
-										, zIndex: 1e6+'' // set max zIndex
-										, position: 'absolute'
-									});
-	
-									wrapper.appendChild(dummy);
-									flash.publish(dummy, api.uid());
-	
-									// set "publish" state
-									target.setAttribute(_attr, 'p');
-								}
-	
-								return	true;
+					if (flash.disableMouseover) {
+						return;
+					}
+					var target = api.event.fix(evt).target;
+
+					if( /input/i.test(target.nodeName) && target.type == 'file' ){
+						var
+							  state = target.getAttribute(_attr)
+							, wrapper = flash.getWrapper(target)
+						;
+
+						if( api.multiFlash ){
+							// check state:
+							//   i — published
+							//   i — initialization
+							//   r — ready
+							if( state == 'i' || state == 'r' ){
+								// publish fail
+								return	false;
 							}
-							else if( wrapper ){
-								// Use one flash element
-								var box = _getDimensions(wrapper);
-								_css(flash.getEl(), box);
-	
-								// Set current input
-								flash.curInp = target;
+							else if( state != 'p' ){
+								// set "init" state
+								target.setAttribute(_attr, 'i');
+
+								var dummy = document.createElement('div');
+
+								if( !wrapper ){
+									api.log('[err] FlashAPI.mouseover: js-fileapi-wrapper not found');
+									return;
+								}
+
+								_css(dummy, {
+									  top:    0
+									, left:   0
+									, width:  target.offsetWidth + 100
+									, height: target.offsetHeight + 100
+									, zIndex: 1e6+'' // set max zIndex
+									, position: 'absolute'
+								});
+
+								wrapper.appendChild(dummy);
+								flash.publish(dummy, api.uid());
+
+								// set "publish" state
+								target.setAttribute(_attr, 'p');
 							}
+
+							return	true;
 						}
-						else if( !/object|embed/i.test(target.nodeName) ){
-							_css(flash.getEl(), { top: 1, left: 1, width: 5, height: 5 });
+						else if( wrapper ){
+							// Use one flash element
+							var box = _getDimensions(wrapper);
+
+							_css(flash.getEl(), box);
+
+							// Set current input
+							flash.curInp = target;
 						}
+					}
+					else if( !/object|embed/i.test(target.nodeName) ){
+						_css(flash.getEl(), { top: 1, left: 1, width: 5, height: 5 });
 					}
 				},
 
 				onEvent: function (evt){
 					var type = evt.type;
-					
+
 					if( type == 'ready' ){
 						try {
 							// set "ready" state
@@ -3563,6 +3861,7 @@
 						}, 1);
 					}
 				},
+
 				mouseDown: function(evt) {
 					flash.disableMouseover = true;
 				},
@@ -3624,8 +3923,9 @@
 							, files = evt.target.files
 							, event
 						;
+	
 						_each(files, function (file){
-							api.checkFileObj(file);
+							file.type = api.getMimeType(file);
 						});
 	
 						_files[uid] = files;
@@ -3649,18 +3949,8 @@
 					}
 				},
 
-				interval: null,
-				cmd: function (id, name, data, last) {
-					if (flash.uploadInProgress && flash.readInProgress) {
-						setTimeout(function() {
-							flash.cmd(id, name, data, last);
-						}, 100);
-					} else {
-						this.cmdFn(id, name, data, last);
-					}
-				},
-				
-				cmdFn: function(id, name, data, last) {
+
+				cmd: function (id, name, data, last){
 					try {
 						api.log('(js -> flash).'+name+':', data);
 						return flash.get(id.flashId || id).cmd(name, data);
@@ -3673,6 +3963,7 @@
 					}
 				},
 
+
 				patch: function (){
 					api.flashEngine = true;
 
@@ -3684,11 +3975,10 @@
 							}
 							else {
 								api.log('FlashAPI.readAsBase64');
-								flash.readInProgress = true;
+
 								flash.cmd(file, 'readAsBase64', {
 									id: file.id,
 									callback: _wrap(function _(err, base64){
-										flash.readInProgress = false;
 										_unwrap(_);
 
 										api.log('FlashAPI.readAsBase64:', err);
@@ -3722,7 +4012,7 @@
 								callback(evt);
 							});
 						},
-						
+
 						getFiles: function (input, filter, callback){
 							if( callback ){
 								api.filterFiles(api.getFiles(input), filter, callback);
@@ -3761,15 +4051,13 @@
 								if( !file.__info ){
 									var defer = file.__info = api.defer();
 
-//									flash.cmd(file, 'getFileInfo', {
-//										  id: file.id
-//										, callback: _wrap(function _(err, info){
-//											_unwrap(_);
-//											defer.resolve(err, file.info = info);
-//										})
-//									});
-									defer.resolve(null, file.info = null);
-
+									flash.cmd(file, 'getFileInfo', {
+										  id: file.id
+										, callback: _wrap(function _(err, info){
+											_unwrap(_);
+											defer.resolve(err, file.info = info);
+										})
+									});
 								}
 
 								file.__info.then(fn);
@@ -3890,6 +4178,7 @@
 						}
 					});
 
+
 					// FileAPI.Form
 					_inherit(api.Form.prototype, {
 						toData: function (fn){
@@ -3953,13 +4242,12 @@
 
 							_this.xhr = {
 								headers: {},
-								abort: function (){ flash.uploadInProgress = false; flash.cmd(flashId, 'abort', { id: fileId }); },
+								abort: function (){ flash.cmd(flashId, 'abort', { id: fileId }); },
 								getResponseHeader: function (name){ return this.headers[name]; },
 								getAllResponseHeaders: function (){ return this.headers; }
 							};
 
 							var queue = api.queue(function (){
-								flash.uploadInProgress = true;
 								flash.cmd(flashId, 'upload', {
 									  url: _getUrl(options.url.replace(/([a-z]+)=(\?)&?/i, ''))
 									, data: data
@@ -3976,7 +4264,6 @@
 											options.progress(evt);
 										}
 										else if( type == 'complete' ){
-											flash.uploadInProgress = false;
 											_unwrap(upload);
 
 											if( typeof result == 'string' ){
@@ -3986,7 +4273,6 @@
 											_this.end(evt.status || 200);
 										}
 										else if( type == 'abort' || type == 'error' ){
-											flash.uploadInProgress = false;
 											_this.end(evt.status || 0, evt.message);
 											_unwrap(upload);
 										}
@@ -4034,7 +4320,6 @@
 					}
 					try { el.style[key] = val; } catch (e) {}
 				}
-				
 			}
 		}
 
@@ -4149,30 +4434,33 @@
 			};
 		}
 
-
+		function getOffset(obj) {
+		    var left, top;
+		    left = top = 0;
+		    if (obj.offsetParent) {
+		        do {
+		            left += obj.offsetLeft;
+		            top  += obj.offsetTop;
+		        } while (obj = obj.offsetParent);
+		    }
+		    return {
+		        left : left,
+		        top : top
+		    };
+		};
+		
 		function _getDimensions(el){
 			var
 				  box = el.getBoundingClientRect()
 				, body = document.body
 				, docEl = (el && el.ownerDocument).documentElement
 			;
-			
-			function getOffset(obj) {
-			    var left, top;
-			    left = top = 0;
-			    if (obj.offsetParent) {
-			        do {
-			            left += obj.offsetLeft;
-			            top  += obj.offsetTop;
-			        } while (obj = obj.offsetParent);
-			    }
-			    return {
-			        left : left,
-			        top : top
-			    };
-			};
-			
+
 			return {
+//				  top:		box.top + (window.pageYOffset || docEl.scrollTop)  - (docEl.clientTop || body.clientTop || 0)
+//				, left:		box.left + (window.pageXOffset || docEl.scrollLeft) - (docEl.clientLeft || body.clientLeft || 0)
+//				, width:	box.right - box.left
+//				, height:	box.bottom - box.top
 				  top:		getOffset(el).top
 				, left:		getOffset(el).left
 				, width:	el.offsetWidth
@@ -4180,7 +4468,10 @@
 			};
 		}
 
+
 		// @export
+		flash.wrap = _wrap;
+		flash.unwrap = _unwrap;
 		api.Flash = flash;
 
 
@@ -4202,107 +4493,96 @@
 (function (window, jQuery, api) {
     "use strict";
 
-    var _each = api.each,
-        _cameraQueue = [];
+	var
+		  _each = api.each
+		, _extend = api.extend
+		, _cameraQueue = []
+
+		, Flash = api.Flash
+		, _wrap = Flash.wrap
+		, _unwrap = Flash.unwrap
+	;
 
 
-    if (api.support.flash && (api.media && !api.support.media)) {
-        (function () {
+	if( api.support.flash && (api.media && !api.support.media) ){
+		api.extend(Flash, {
 
-            function _wrap(fn) {
-                var id = fn.wid = api.uid();
-                api.Flash._fn[id] = fn;
-                return 'FileAPI.Flash._fn.' + id;
-            }
+			patchCamera: function (){
+				api.Camera.fallback = function (el, options, callback){
+					var camId = api.uid();
+					api.log('FlashAPI.Camera.publish: ' + camId);
+					Flash.publish(el, camId, _extend(options, {
+						camera: true,
+						onEvent: _wrap(function _(evt){
+							if( evt.type === 'camera' ){
+								_unwrap(_);
 
-
-            function _unwrap(fn) {
-                try {
-                    api.Flash._fn[fn.wid] = null;
-                    delete api.Flash._fn[fn.wid];
-                } catch (e) {
-                }
-            }
-
-            var flash = api.Flash;
-            api.extend(api.Flash, {
-
-                patchCamera: function () {
-                    api.Camera.fallback = function (el, options, callback) {
-                        var camId = api.uid();
-                        api.log('FlashAPI.Camera.publish: ' + camId);
-                        flash.publish(el, camId, api.extend(options, {
-                            camera: true,
-                            onEvent: _wrap(function _(evt) {
-                                if (evt.type === 'camera') {
-                                    _unwrap(_);
-
-                                    if (evt.error) {
-                                        api.log('FlashAPI.Camera.publish.error: ' + evt.error);
-                                        callback(evt.error);
-                                    } else {
-                                        api.log('FlashAPI.Camera.publish.success: ' + camId);
-                                        callback(null);
-                                    }
-                                }
-                            })
-                        }));
-                    };
-                    // Run
-                    _each(_cameraQueue, function (args) {
-                        api.Camera.fallback.apply(api.Camera, args);
-                    });
-                    _cameraQueue = [];
+								if( evt.error ){
+									api.log('FlashAPI.Camera.publish.error: ' + evt.error);
+									callback(evt.error);
+								} else {
+									api.log('FlashAPI.Camera.publish.success: ' + camId);
+									callback(null);
+								}
+							}
+						})
+					}));
+				};
 
 
-                    // FileAPI.Camera:proto
-                    api.extend(api.Camera.prototype, {
-                        _id: function () {
-                            return this.video.id;
-                        },
+				// Run
+				_each(_cameraQueue, function (args){
+					api.Camera.fallback.apply(api.Camera, args);
+				});
+				_cameraQueue = [];
 
-                        start: function (callback) {
-                            var _this = this;
-                            flash.cmd(this._id(), 'camera.on', {
-                                callback: _wrap(function _(evt) {
-                                    _unwrap(_);
 
-                                    if (evt.error) {
-                                        api.log('FlashAPI.camera.on.error: ' + evt.error);
-                                        callback(evt.error, _this);
-                                    } else {
-                                        api.log('FlashAPI.camera.on.success: ' + _this._id());
-                                        _this._active = true;
-                                        callback(null, _this);
-                                    }
-                                })
-                            });
-                        },
+				// FileAPI.Camera:proto
+				_extend(api.Camera.prototype, {
+					_id: function (){
+						return this.video.id;
+					},
 
-                        stop: function () {
-                            this._active = false;
-                            flash.cmd(this._id(), 'camera.off');
-                        },
+					start: function (callback){
+						var _this = this;
+						Flash.cmd(this._id(), 'camera.on', {
+							callback: _wrap(function _(evt){
+								_unwrap(_);
 
-                        shot: function () {
-                            api.log('FlashAPI.Camera.shot:', this._id());
+								if( evt.error ){
+									api.log('FlashAPI.camera.on.error: ' + evt.error);
+									callback(evt.error, _this);
+								} else {
+									api.log('FlashAPI.camera.on.success: ' + _this._id());
+									_this._active = true;
+									callback(null, _this);
+								}
+							})
+						});
+					},
 
-                            var shot = api.Flash.cmd(this._id(), 'shot', {});
-                            shot.type = 'image/png';
-                            shot.flashId = this._id();
-                            shot.isShot = true;
+					stop: function (){
+						this._active = false;
+						Flash.cmd(this._id(), 'camera.off');
+					},
 
-                            return new api.Camera.Shot(shot);
-                        }
-                    });
-                }
-            });
+					shot: function (){
+						api.log('FlashAPI.Camera.shot:', this._id());
 
-            api.Camera.fallback = function () {
-                _cameraQueue.push(arguments);
-            };
+						var shot = Flash.cmd(this._id(), 'shot', {});
+						shot.type = 'image/png';
+						shot.flashId = this._id();
+						shot.isShot = true;
 
-        }());
+						return new api.Camera.Shot(shot);
+					}
+				});
+			}
+		});
+
+		api.Camera.fallback = function (){
+			_cameraQueue.push(arguments);
+		};
     }
-}(window, window.jQuery, FileAPI));
+})(window, window.jQuery, FileAPI);
 if( typeof define === "function" && define.amd ){ define("FileAPI", [], function (){ return FileAPI; }); }

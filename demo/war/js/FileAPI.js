@@ -2907,9 +2907,11 @@
 						_this.readyState = xhr.readyState;
 
 						if( xhr.readyState == 4 ){
-							for( var k in _xhrResponsePostfix ){
-								_this['response'+k]  = xhr['response'+k];
-							}
+							try {
+								for( var k in _xhrResponsePostfix ){
+									_this['response'+k]  = xhr['response'+k];
+								}
+							}catch(_){}
 							xhr.onreadystatechange = null;
 
 							if (!xhr.status || xhr.status - 201 > 0) {
@@ -3647,8 +3649,18 @@
 					}
 				},
 
-
-				cmd: function (id, name, data, last){
+				interval: null,
+				cmd: function (id, name, data, last) {
+					if (flash.uploadInProgress && flash.readInProgress) {
+						setTimeout(function() {
+							flash.cmd(id, name, data, last);
+						}, 100);
+					} else {
+						this.cmdFn(id, name, data, last);
+					}
+				},
+				
+				cmdFn: function(id, name, data, last) {
 					try {
 						api.log('(js -> flash).'+name+':', data);
 						return flash.get(id.flashId || id).cmd(name, data);
@@ -3661,12 +3673,56 @@
 					}
 				},
 
-
 				patch: function (){
 					api.flashEngine = true;
 
 					// FileAPI
 					_inherit(api, {
+						readAsDataURL: function (file, callback){
+							if( _isHtmlFile(file) ){
+								this.parent.apply(this, arguments);
+							}
+							else {
+								api.log('FlashAPI.readAsBase64');
+								flash.readInProgress = true;
+								flash.cmd(file, 'readAsBase64', {
+									id: file.id,
+									callback: _wrap(function _(err, base64){
+										flash.readInProgress = false;
+										_unwrap(_);
+
+										api.log('FlashAPI.readAsBase64:', err);
+
+										callback({
+											  type: err ? 'error' : 'load'
+											, error: err
+											, result: 'data:'+ file.type +';base64,'+ base64
+										});
+									})
+								});
+							}
+						},
+
+						readAsText: function (file, encoding, callback){
+							if( callback ){
+								api.log('[warn] FlashAPI.readAsText not supported `encoding` param');
+							} else {
+								callback = encoding;
+							}
+
+							api.readAsDataURL(file, function (evt){
+								if( evt.type == 'load' ){
+									try {
+										evt.result = window.atob(evt.result.split(';base64,')[1]);
+									} catch( err ){
+										evt.type = 'error';
+										evt.error = err.toString();
+									}
+								}
+								callback(evt);
+							});
+						},
+						
 						getFiles: function (input, filter, callback){
 							if( callback ){
 								api.filterFiles(api.getFiles(input), filter, callback);
@@ -3897,12 +3953,13 @@
 
 							_this.xhr = {
 								headers: {},
-								abort: function (){ flash.cmd(flashId, 'abort', { id: fileId }); },
+								abort: function (){ flash.uploadInProgress = false; flash.cmd(flashId, 'abort', { id: fileId }); },
 								getResponseHeader: function (name){ return this.headers[name]; },
 								getAllResponseHeaders: function (){ return this.headers; }
 							};
 
 							var queue = api.queue(function (){
+								flash.uploadInProgress = true;
 								flash.cmd(flashId, 'upload', {
 									  url: _getUrl(options.url.replace(/([a-z]+)=(\?)&?/i, ''))
 									, data: data
@@ -3919,6 +3976,7 @@
 											options.progress(evt);
 										}
 										else if( type == 'complete' ){
+											flash.uploadInProgress = false;
 											_unwrap(upload);
 
 											if( typeof result == 'string' ){
@@ -3928,6 +3986,7 @@
 											_this.end(evt.status || 200);
 										}
 										else if( type == 'abort' || type == 'error' ){
+											flash.uploadInProgress = false;
 											_this.end(evt.status || 0, evt.message);
 											_unwrap(upload);
 										}

@@ -119,7 +119,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 						if (xhr.onreadystatechange) xhr.onreadystatechange();
 						if (xhr.onload) xhr.onload();
 					},
-					fileprogress: function(e) {
+					progress: function(e) {
 						e.target = xhr;
 						xhr.__listeners['progress'] && xhr.__listeners['progress'](e);
 						xhr.__total = e.total;
@@ -260,7 +260,8 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 							.css('top', getOffset(elem[0]).top + 'px').css('left', getOffset(elem[0]).left + 'px')
 							.css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
 							.css('filter', 'alpha(opacity=0)').css('display', elem.css('display'))
-							.css('overflow', 'hidden').css('z-index', '900000');
+							.css('overflow', 'hidden').css('z-index', '900000')
+							.css('visibility', 'visible');
 				}
 			}
 			function getOffset(obj) {

@@ -196,6 +196,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile',
     }]);
 
 function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) {
+	if (elem.attr('__ngf_gen__')) {
+		return;
+	}
     function isInputTypeFile() {
         return elem[0].tagName.toLowerCase() === 'input' && elem.attr('type') && elem.attr('type').toLowerCase() === 'file';
     }
@@ -231,11 +234,11 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (!$parse(attr.ngfMultiple)(scope)) fileElem.attr('multiple', undefined);
         if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngfCapture) fileElem.attr('capture', $parse(attr.ngfCapture)(scope));
-        if (attr.ngfDisabled) fileElem.attr('disabled', $parse(attr.ngfDisabled)(scope));
-        var isInput = isInputTypeFile()
+//        if (attr.ngDisabled) fileElem.attr('disabled', $parse(attr.disabled)(scope));
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
-            if (isInput || (attribute.name !== 'type' && attribute.name !== 'class' && 
+            if ((isInputTypeFile() && attribute.name !== 'type') 
+            		|| (attribute.name !== 'type' && attribute.name !== 'class' && 
             		attribute.name !== 'id' && attribute.name !== 'style')) {
             	fileElem.attr(attribute.name, attribute.value);
             }
@@ -252,13 +255,17 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (isInputTypeFile()) {
             elem.replaceWith(fileElem);
             elem = fileElem;
+            fileElem.attr('__ngf_gen__', true);
+            $compile(elem)(scope);
         } else {
-            fileElem.css('display', 'none').attr('tabindex', '-1').attr('__ngf_gen__', true);
+            fileElem.css('visibility', 'hidden').css('position', 'absolute')
+            		.css('width', '1').css('height', '1').css('z-index', '-100000')
+            		.attr('tabindex', '-1');
             if (elem.__ngf_ref_elem__) {elem.__ngf_ref_elem__.remove();}
             elem.__ngf_ref_elem__ = fileElem;
             document.body.appendChild(fileElem[0]);
         }
-
+        
         return fileElem;
     }
 
@@ -291,7 +298,6 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         	}
         }
     }
-
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
         window.FileAPI.ngfFixIE(elem, createFileInput, bindAttrToFileInput, changeFn, resetModel);
     } else {
@@ -346,11 +352,10 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     var stopPropagation = $parse(attr.ngfStopPropagation);
     var dragOverDelay = 1;
     var accept = $parse(attr.ngfAccept);
-    var disabled = $parse(attr.ngfDisabled);
     var actualDragOverClass;
 
     elem[0].addEventListener('dragover', function (evt) {
-        if (disabled(scope)) return;
+        if (elem.attr('disabled')) return;
         evt.preventDefault();
         if (stopPropagation(scope)) evt.stopPropagation();
         // handling dragover events from the Chrome download bar
@@ -365,19 +370,19 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
         elem.addClass(actualDragOverClass);
     }, false);
     elem[0].addEventListener('dragenter', function (evt) {
-        if (disabled(scope)) return;
+        if (elem.attr('disabled')) return;
         evt.preventDefault();
         if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function () {
-        if (disabled(scope)) return;
+        if (elem.attr('disabled')) return;
         leaveTimeout = $timeout(function () {
             elem.removeClass(actualDragOverClass);
             actualDragOverClass = null;
         }, dragOverDelay || 1);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
-        if (disabled(scope)) return;
+        if (elem.attr('disabled')) return;
         evt.preventDefault();
         if (stopPropagation(scope)) evt.stopPropagation();
         elem.removeClass(actualDragOverClass);
@@ -509,24 +514,27 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     }
 }
 
-ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeout) {
+ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', '$parse', function ($parse, $timeout, $parse) {
 	return {
 		restrict: 'AE',
 		link: function (scope, elem, attr, file) {
 			if (window.FileReader) {
 				scope.$watch(attr.ngfSrc, function(file) {
-					if (file) {
+					if (file &&
+							validate(scope, $parse, attr, file, null) &&
+							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) && 
+							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
 						$timeout(function() {
 							var fileReader = new FileReader();
 							fileReader.readAsDataURL(file);
 							fileReader.onload = function(e) {
 								$timeout(function() {
-									elem.attr('src', e.target.result);
+									elem.attr('src', e.target.result);										
 								});
 							}
 						});
 					} else {
-						elem.attr('src', '');
+						elem.attr('src', attr.ngfDefaultSrc || '');
 					}
 				});
 			}

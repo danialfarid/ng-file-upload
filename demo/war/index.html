@@ -63,8 +63,7 @@ FileAPI = {
 				  	<fieldset><legend>Upload on form submit</legend>
 					    Username: <input type="text" name="userName" ng-model="username" size="39" required>
 					      			<i ng-show="myForm.userName.$error.required">*required</i><br>
-					    Profile Picture: <input type="file" ngf-select ng-model="picFile" name="file" accept="image/*" 
-					                   ngf-change="generateThumb(picFile[0], $files)" required>
+					    Profile Picture: <input type="file" ngf-select ng-model="picFile" name="file" accept="image/*" required>
 									<i ng-show="myForm.file.$error.required">*required</i>
 					  	<br/>
 					  	
@@ -130,7 +129,7 @@ FileAPI = {
 		</ul>
 		<ul style="clear:both" ng-show="files.length > 0" class="response">
 			<li class="sel-file" ng-repeat="f in files">
-				<img ng-show="f.dataUrl" ng-src="{{f.dataUrl}}" class="thumb">
+				<img ng-show="f.type.indexOf('image') > -1" ngf-src="f" class="thumb">
 				<span class="progress" ng-show="f.progress >= 0">						
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>				
