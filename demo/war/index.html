@@ -114,9 +114,9 @@ FileAPI = {
 					</div>
 					<div class="preview">
 						<div>Preview image/audio/video:</div>
-						<img style="max-width:300px" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1">
-						<audio controls ngf-src="files[0]" ng-show="files[0].type.indexOf('audio') > -1"></audio>
-						<video controls ngf-src="files[0]" ng-show="files[0].type.indexOf('video') > -1"></video>
+						<img style="max-width:300px" ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
+						<audio controls ngf-src="files[0]" ng-show="files[0].type.indexOf('audio') > -1" ngf-accept="'audio/*'"></audio>
+						<video controls ngf-src="files[0]" ng-show="files[0].type.indexOf('video') > -1" ngf-accept="'video/*'"></video>
 					</div>
 				</fieldset>
 				<br/>
@@ -129,7 +129,7 @@ FileAPI = {
 		</ul>
 		<ul style="clear:both" ng-show="files.length > 0" class="response">
 			<li class="sel-file" ng-repeat="f in files">
-				<img ng-show="f.type.indexOf('image') > -1" ngf-src="f" class="thumb">
+				<img ng-show="f.type.indexOf('image') > -1" ngf-src="f" class="thumb" ngf-accept="'image/*">
 				<span class="progress" ng-show="f.progress >= 0">						
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>				
