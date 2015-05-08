@@ -18,7 +18,7 @@ Table of Content:
 
 ##<a name="features"></a> Features
 * Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show preview of selected images/audio/videos.
-* Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
+* Cross browser file upload and FileReader (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
 * Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
 * Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
@@ -119,9 +119,17 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 >
 Drop files here
 </div>
-<div|... ng-no-file-drop>File Drag/drop is not supported</div>
-<img|audio|video ngf-src="file"> //To preview the selected file, sets src attribute to the file's data url.
 
+<div|... ng-no-file-drop>File Drag/drop is not supported</div>
+```
+
+#### File preview
+```html
+<img|audio|video ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
+    ngf-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
+    ngf-min-size='10' // minimum acceptable file size in bytes
+    ngf-max-size='10' // maximum acceptable file size in bytes
+> 
 ```
 
 #### Upload service:
