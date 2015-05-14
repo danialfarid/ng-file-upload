@@ -514,7 +514,7 @@ function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     }
 }
 
-ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', '$parse', function ($parse, $timeout, $parse) {
+ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeout) {
 	return {
 		restrict: 'AE',
 		link: function (scope, elem, attr, file) {
