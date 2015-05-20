@@ -525,6 +525,13 @@ ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeo
 							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) && 
 							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
 						$timeout(function() {
+							//prefer URL.createObjectURL for handling refrences to files of all sizes
+							//since it doesn´t build a large string in memory
+							var url = window.URL || window.webkitURL;
+							if(url && url.createObjectURL){
+								elem.attr('src', url.createObjectURL(file));
+								return;
+							}
 							var fileReader = new FileReader();
 							fileReader.readAsDataURL(file);
 							fileReader.onload = function(e) {
