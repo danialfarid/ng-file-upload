@@ -88,10 +88,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileSelected($files, $event)" // will be called upon files being selected
                                                   // you can use $scope.$watch('myFiles') instead
-    ngf-multiple="true|false" // default false, allows selecting multiple files
-    ngf-capture="'camera'|'other'" // allows mobile devices to capture using camera
+    ngf-multiple="true" or "false" // default false, allows selecting multiple files
+    ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
     accept="image/*" // see standard HTML file input accept attribute
-    ngf-accept="'image/*'|validate($file)" // function or comma separated wildcard to filter files allowed
+    ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
 >Upload</button>
@@ -102,18 +102,18 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     ngf-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
-    ngf-multiple="true|false" // default false, allows selecting multiple files. 
-    ngf-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
-    ngf-allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
-    ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
-                    calcDragOverClass($event)" 
+    ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
+    ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+    ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
+    ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
+                    "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
               // reject class only works in Chrome. Validation only on file type.
     ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
-    ngf-stop-propagation="true|false" // default false, whether to propagate drag/drop events.
-    ngf-hide-on-drop-not-available="true|false" // default false, hides element if file drag&drop is not supported
+    ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
+    ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
 >
@@ -126,7 +126,8 @@ Drop files here
 #### File preview
 ```html
 <img|audio|video ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
-    ngf-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
+    ngf-default-src="'placeholder.jpg'" // default src in case no file is available
+    ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
 > 
