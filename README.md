@@ -108,8 +108,9 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
-              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
-              // reject class only works in Chrome. Validation only on file type.
+              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
+              // accept/reject class only works in Chrome and on the file type so ngf-accept
+              // needs to check the file type for it to work.
     ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
@@ -199,7 +200,7 @@ This is equivalent to angular $http() but allow you to listen to the progress ev
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ng-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 ##<a name="old_browsers"></a> Old browsers
