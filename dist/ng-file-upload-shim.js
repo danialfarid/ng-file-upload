@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.2.2
+ * @version 4.2.3
  */
 
 (function() {

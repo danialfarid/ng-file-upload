@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.2.2
+ * @version 4.2.3
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '4.2.2';
+ngFileUpload.version = '4.2.3';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -536,17 +536,17 @@ ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeo
 						$timeout(function() {
 							//prefer URL.createObjectURL for handling refrences to files of all sizes
 							//since it doesn´t build a large string in memory
-							var url = window.URL || window.webkitURL;
-							if(url && url.createObjectURL){
-								elem.attr('src', url.createObjectURL(file));
-								return;
-							}
-							var fileReader = new FileReader();
-							fileReader.readAsDataURL(file);
-							fileReader.onload = function(e) {
-								$timeout(function() {
-									elem.attr('src', e.target.result);										
-								});
+							var URL = window.URL || window.webkitURL;
+							if (URL && URL.createObjectURL){
+								elem.attr('src', URL.createObjectURL(file));
+							} else {
+								var fileReader = new FileReader();
+								fileReader.readAsDataURL(file);
+								fileReader.onload = function(e) {
+									$timeout(function() {
+										elem.attr('src', e.target.result);										
+									});
+								}
 							}
 						});
 					} else {

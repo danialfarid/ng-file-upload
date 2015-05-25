@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.2.2
+ * @version 4.2.3
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '4.2.2';
+ngFileUpload.version = '4.2.3';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -534,12 +534,19 @@ ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeo
 							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) && 
 							(!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
 						$timeout(function() {
-							var fileReader = new FileReader();
-							fileReader.readAsDataURL(file);
-							fileReader.onload = function(e) {
-								$timeout(function() {
-									elem.attr('src', e.target.result);										
-								});
+							//prefer URL.createObjectURL for handling refrences to files of all sizes
+							//since it doesn´t build a large string in memory
+							var URL = window.URL || window.webkitURL;
+							if (URL && URL.createObjectURL){
+								elem.attr('src', URL.createObjectURL(file));
+							} else {
+								var fileReader = new FileReader();
+								fileReader.readAsDataURL(file);
+								fileReader.onload = function(e) {
+									$timeout(function() {
+										elem.attr('src', e.target.result);										
+									});
+								}
 							}
 						});
 					} else {
@@ -625,7 +632,7 @@ function globStringToRegex(str) {
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 4.2.2
+ * @version 4.2.3
  */
 
 (function() {
