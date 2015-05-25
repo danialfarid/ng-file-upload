@@ -109,8 +109,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                     "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
-              // accept/reject class only works in Chrome and on the file's mime type so ngf-accept
-              // needs to check the file's mime type for it to work.
+              // accept/reject class only works in Chrome and on the file mime type so ngf-accept
+              // needs to check the file mime type for it to work.
     ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
