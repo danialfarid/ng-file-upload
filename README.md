@@ -40,7 +40,7 @@ Table of Content:
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-        ngf-accept="'.jpg,.png,.pdf'">Drop Images or PDFs files here</div>
+        ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
     <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
     
     Image thumbnail: <img ngf-src="files[0]" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
@@ -109,8 +109,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                     "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
-              // accept/reject class only works in Chrome and on the file type so ngf-accept
-              // needs to check the file type for it to work.
+              // accept/reject class only works in Chrome and on the file's mime type so ngf-accept
+              // needs to check the file's mime type for it to work.
     ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
     ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
