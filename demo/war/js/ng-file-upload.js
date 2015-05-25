@@ -308,7 +308,9 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         window.FileAPI.ngfFixIE(elem, createFileInput, bindAttrToFileInput, changeFn, resetModel);
     } else {
         clickHandler();
-        elem.bind('click touchend', clickHandler);
+        if (!isInputTypeFile()) {
+        	elem.bind('click touchend', clickHandler);
+        }
     }
 }
 
