@@ -274,33 +274,40 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     }
 
     function clickHandler(evt) {
-    	evt.preventDefault();
+    	if (evt != null) {
+    		evt.preventDefault();
+    		evt.stopPropagation();
+    	}
         var fileElem = createFileInput(evt);
         if (fileElem) {
         	fileElem.bind('change', changeFn);
         	resetModel(evt);
 
-        	function clickAndAssign() {
-            	fileElem[0].click();
+        	function clickAndAssign(evt) {
+        		if (evt != null) {
+        			fileElem[0].click();
+        		}
     	        if (isInputTypeFile()) {
     	            elem.bind('click touchend', clickHandler);
-    	            evt.preventDefault()
     	        }
         	}
         	
         	// fix for android native browser
         	if (navigator.userAgent.toLowerCase().match(/android/)) {
                 setTimeout(function() {
-                	clickAndAssign();
+                	clickAndAssign(evt);
                 }, 0);        		
         	} else {
-        		clickAndAssign();
+        		clickAndAssign(evt);
         	}
         }
+        return false;
     }
+    
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
         window.FileAPI.ngfFixIE(elem, createFileInput, bindAttrToFileInput, changeFn, resetModel);
     } else {
+        clickHandler();
         elem.bind('click touchend', clickHandler);
     }
 }
