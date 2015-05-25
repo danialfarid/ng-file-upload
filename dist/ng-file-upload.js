@@ -274,6 +274,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     }
 
     function clickHandler(evt) {
+    	evt.stopPropagation();
     	evt.preventDefault();
         var fileElem = createFileInput(evt);
         if (fileElem) {
