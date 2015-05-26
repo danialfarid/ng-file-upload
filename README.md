@@ -97,6 +97,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```
 #### File drop
 ```html
+All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
     ngf-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
