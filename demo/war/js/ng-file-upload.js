@@ -263,7 +263,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
             		.attr('tabindex', '-1');
             if (elem.__ngf_ref_elem__) {elem.__ngf_ref_elem__.remove();}
             elem.__ngf_ref_elem__ = fileElem;
-            document.body.appendChild(fileElem[0]);
+            angular.element(fileElem[0]).appendTo(elem.parent());
         }
         
         return fileElem;
