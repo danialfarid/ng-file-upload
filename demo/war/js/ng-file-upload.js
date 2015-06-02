@@ -115,6 +115,31 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         return promise;
     }
 
+    function addFormData(root, lastKey, formData) {
+        if(angular.isDate(root)) {
+          return formData.append(lastKey, root.toISOString());
+        }
+        if(angular.isString(root) || angular.isNumber(root)) {
+          return formData.append(lastKey, root);
+        }
+        if(angular.isObject(root)) {
+          for(key in root) {
+            if(root.hasOwnProperty(key)) {
+              var val = root[key];
+              getData(val, lastKey + '[' + key + ']', formData);
+            }
+          }
+          return ;
+        }
+        if(angular.isArray(root)) {
+          for(var i=0; i < root.length; i++) {
+            getData(root[i], lastKey + '[' + i + ']', formData);
+          }
+          return ;
+        }
+        formData.append(lastKey, JSON.stringify(root));
+    }
+
     this.upload = function (config) {
         config.headers = config.headers || {};
         config.headers['Content-Type'] = undefined;
@@ -150,6 +175,8 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                             } else {
                                 if (config.sendObjectsAsJsonBlob && angular.isObject(val)) {
                                     formData.append(key, new Blob([val], {type: 'application/json'}));
+                                } else if (config.sendFieldsAsFormValue && (angular.isArray(val) || angular.isObject(val))) {
+                                    addFormData(val, key, formData);
                                 } else {
                                     formData.append(key, JSON.stringify(val));
                                 }
