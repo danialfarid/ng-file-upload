@@ -191,6 +191,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile',
             require: '?ngModel',
             link: function (scope, elem, attr, ngModel) {
                 linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile);
+
+                scope.$on('$destroy', function () {
+                    if (elem.__ngf_ref_elem__) {
+                        elem.__ngf_ref_elem__.remove();
+                    }
+                });
             }
         }
     }]);
