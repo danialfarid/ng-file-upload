@@ -3,7 +3,7 @@ ng-file-upload
 
 Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
-**Migration notes**: [version 3.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0)
+**Migration notes**: [version 3.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0)
 
 Table of Content:
 * [Features](#features)
@@ -154,17 +154,16 @@ var upload = Upload.upload({
   fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
   /* 
   map of extra form data fields to send along with file. each field will be sent as a form field.
-  The values are converted to json string or jsob blob depending on 'sendObjectsAsJsonBlob' option. */
+  The values are converted to json string or jsob blob or nested form depending on 'sendFieldsAs' option. */
   fields: {key: $scope.myValue, ...},
   /*
-  if the value of a form field is an object it will be sent as 'application/json' blob 
-  rather than json string, default false. */
-  sendObjectsAsJsonBlob: true|false,
+  default is 'json', sends each field as json string plain text content type, 'json-blob' sends object fields 
+  as a blob object with content type 'application/json', 'form' sends fields as nested form fields. see #784 */
+  sendFieldsAs: json|json-blob|form,
   /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
   formDataAppender: function(formData, key, val){},
   /*
-  data will be sent as a separate form data field called "data". It will be converted to json string 
-  or jsob blob depending on 'sendObjectsAsJsonBlob' option*/
+  data will be sent as a separate form data field called "data".*/
   data: {}. 
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
