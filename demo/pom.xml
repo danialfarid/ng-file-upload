@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>war</packaging>
+    <version>0.0.1</version>
+    <artifactId>ng-file-upload-demo-server</artifactId>
+    <groupId>com.df.ng-file-upload.demo.server</groupId>
+
+    <properties>
+        <appengine.app.version>1</appengine.app.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <prerequisites>
+        <maven>3.1.0</maven>
+    </prerequisites>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- Compile/runtime dependencies -->
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <version>1.9.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-endpoints</artifactId>
+            <version>1.9.18</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- for hot reload of the web application-->
+        <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>3.2</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archiveClasses>true</archiveClasses>
+                    <webResources>
+                        &lt;!&ndash; in order to interpolate version from pom into appengine-web.xml &ndash;&gt;
+                        <resource>
+                            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                            <filtering>true</filtering>
+                            <targetPath>WEB-INF</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>1.9.18</version>
+                <configuration>
+                    <enableJarClasses>false</enableJarClasses>
+                    <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
+                    <address>0.0.0.0</address>
+                    <port>8888</port>
+                    <fullScanSeconds>1</fullScanSeconds>
+                    <jvmFlags>
+                        <jvmFlag>-Xdebug</jvmFlag>
+                        <jvmFlag>-Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n</jvmFlag>
+                    </jvmFlags>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

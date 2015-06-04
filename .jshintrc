@@ -1,0 +1,29 @@
+{
+  "node": true,
+  "browser": true,
+  "esnext": true,
+  "camelcase": true,
+  "curly": false,
+  "eqeqeq": true,
+  "eqnull": true,
+  "immed": true,
+  "indent": 4,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "quotmark": "single",
+  "undef": true,
+  "unused": true,
+  "trailing": true,
+  "smarttabs": true,
+  "jquery": true,
+  "evil": true,
+  "globals": {
+    "angular":false,
+    "FileAPI":false,
+    "ngFileUpload":true,
+    "FormData":true,
+    "Blob":true,
+    "ActiveXObject":false
+  }
+}

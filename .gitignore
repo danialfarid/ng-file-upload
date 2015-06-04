@@ -1,3 +1,7 @@
+node_modules
+dist
+.tmp
+bower_components
 .settings
 .metadata
 *.war
@@ -8,11 +12,12 @@ ehthumbs.db
 Thumbs.db
 .Spotlight-V100
 .Trashes
-/target/*
 classes/
 ._*
-/node_modules
 *.jar
 release-local.sh
 npm-debug.log
-/.idea
+.idea/
+target/
+*.iml
+

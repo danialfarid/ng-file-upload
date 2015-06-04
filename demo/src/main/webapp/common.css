@@ -1,12 +1,12 @@
 body {
-	font-family: Helvetica, arial, freesans, clean, sans-serif;	
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
 }
 
 /* object {
 	border: 3px solid red;
 } */
- 
-.upload-buttons input[type="file"] {	
+
+.upload-buttons input[type="file"] {
 	width: 6.3em \0/IE9;
 }
 
@@ -39,7 +39,7 @@ body {
 
 .response .sel-file li, .response .reqh {
 	color: blue;
-	padding-bottom: 5px; 
+	padding-bottom: 5px;
 }
 
 fieldset {
@@ -55,7 +55,7 @@ fieldset label {
 
 .progress {
 	display: inline-block;
-	width: 100px;	
+	width: 100px;
 	border: 3px groove #CCC;
 }
 
@@ -69,7 +69,7 @@ fieldset label {
 	background: #F8F8F8;
 	border: 5px dashed #DDD;
 	width: 200px;
-	height: 65px; 
+	height: 65px;
 	text-align: center;
 	padding-top: 25px;
 	float: left;
@@ -91,13 +91,13 @@ fieldset label {
 /* for IE*/
 .js-fileapi-wrapper {
 	display: inline-block;
-	vertical-align: middle;	
+	vertical-align: middle;
 }
 
 button {
 	padding: 1px 5px;
 	font-size: smaller;
-	margin: 0 3px; 
+	margin: 0 3px;
 }
 
 .ng-v {
@@ -127,11 +127,11 @@ form .progress {
 	font-size: 14px;
 	background: black;
 	color: #f9f9f9;
-	padding: 5px 1px;	
+	padding: 5px 1px;
 }
 
 #htmlEdit {
-	margin-bottom: 25px;	
+	margin-bottom: 25px;
 }
 
 .edit-div {
@@ -204,4 +204,9 @@ form button {
 .preview {
 	padding-top: 30px;
 	clear: both;
+}
+
+.preview img, .preview audio, .preview video {
+  max-width: 300px;
+  max-height: 150px;
 }

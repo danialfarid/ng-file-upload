@@ -31,6 +31,6 @@ curl --data "$API_JSON" https://api.github.com/repos/danialfarid/ng-file-upload-
 
 curl --data "$API_JSON" https://api.github.com/repos/danialfarid/ng-file-upload-bower/releases?access_token=$3
 
-cd ../angular-file-upload
+cd ../ng-file-upload
 npm publish
 
