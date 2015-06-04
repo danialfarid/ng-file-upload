@@ -84,7 +84,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ```html
 <button|div|input type="file"|ngf-select|...
-    ngf-select ng-model="myFiles" // binds the selected files to the scope model
+    *ngf-select="true" or "false" // default true, enables file select directive on this element
+    ng-model="myFiles" // binds the selected files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileSelected($files, $event)" // called when files are selected or removed
     ngf-multiple="true" or "false" // default false, allows selecting multiple files
@@ -93,13 +94,18 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
+    ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
+    ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
+    ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
+    ngf-reset-model-on-click="true" or "false" // default true, reset the model upon click. see note below.
 >Upload</button>
 ```
 #### File drop
 ```html
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-    ngf-drop ng-model="myFiles" // binds the dropped files to the scope model
+    *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
+    ng-model="myFiles" // binds the dropped files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
     ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
@@ -190,7 +196,6 @@ Upload.http({
 			data: file
 })
 ```
-
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
@@ -202,6 +207,11 @@ This is equivalent to angular $http() but allow you to listen to the progress ev
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
 Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
+
+**ngf-reset-on-click and ngf-reset-model-on-click**
+These two options are for testing purposes or rare cases, be aware that they might make the file select behave differently on different browsers.
+By default since there is no cross-browser way to detect cancel on the file popup everytime you click on the file select it would create a new element and click on that and the model value will be reset to empty. This would also allow selecting the same file again which normally will not trigger a change event.
+Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would recieve a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
 
 ##<a name="old_browsers"></a> Old browsers
 
