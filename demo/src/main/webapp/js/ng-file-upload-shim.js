@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.0
+ * @version 5.0.1
  */
 
 (function () {
@@ -235,12 +235,16 @@
   }
 
   function getOffset(obj) {
-    var left, top;
-    left = top = 0;
+    var left = 0, top = 0;
+
+    if (window.jQuery) {
+      return jQuery(obj).offset();
+    }
+
     if (obj.offsetParent) {
       do {
-        left += obj.offsetLeft;
-        top += obj.offsetTop;
+        left += (obj.offsetLeft - obj.scrollLeft);
+        top += (obj.offsetTop - obj.scrollTop);
         obj = obj.offsetParent;
       } while (obj);
     }

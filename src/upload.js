@@ -31,7 +31,8 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     config.method = config.method || 'POST';
     config.headers = config.headers || {};
 
-    var deferred = $q.defer();
+    var deferred =
+        $q.defer();
     var promise = deferred.promise;
 
     config.headers.__setXHR_ = function () {
