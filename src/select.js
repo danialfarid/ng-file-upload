@@ -160,11 +160,10 @@
   }
 
   function isAndroidBelow44() {
-    var match = navigator.userAgent.toLowerCase().match(/android[^\d]*(\d|.)/);
-    if (match) {
-      var version = match[0].split('.');
-      return version[0] < '4' || (version[0] === '4' && version[1] < '4');
+    if (/Android[\s](\d+)\.(\d+)/.test(navigator.userAgent)) { //test for Android x.x (ignoring remaining digits);
+      return (Number(RegExp.$1 + RegExp.$2) < 44);
     }
+
     return false;
   }
 
