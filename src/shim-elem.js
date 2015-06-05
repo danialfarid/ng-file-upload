@@ -18,12 +18,16 @@
   }
 
   function getOffset(obj) {
-    var left, top;
-    left = top = 0;
+    var left = 0, top = 0;
+
+    if (window.jQuery) {
+      return jQuery(obj).offset();
+    }
+
     if (obj.offsetParent) {
       do {
-        left += obj.offsetLeft;
-        top += obj.offsetTop;
+        left += (obj.offsetLeft - obj.scrollLeft);
+        top += (obj.offsetTop - obj.scrollTop);
         obj = obj.offsetParent;
       } while (obj);
     }
