@@ -1,11 +1,11 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.2
+ * @version 5.0.3
  */
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '5.0.2';
+ngFileUpload.version = '5.0.3';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function patchXHR(fnName, newFn) {
     window.XMLHttpRequest.prototype[fnName] = newFn(window.XMLHttpRequest.prototype[fnName]);
@@ -305,9 +305,9 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                 fileElem.attr('__ngf_gen__', true);
                 $compile(elem)(scope);
             } else {
-                fileElem.css('visibility', 'hidden').css('position', 'absolute')
-                    .css('width', '9').css('height', '1').css('z-index', '-100000')
-                    .attr('tabindex', '-1');
+                fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
+                    .css('width', '0px').css('height', '0px').css('z-index', '-100000').css('border', 'none')
+                    .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
                 if (elem.$$ngfRefElem) {
                     elem.$$ngfRefElem.remove();
                 }
@@ -739,7 +739,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.2
+ * @version 5.0.3
  */
 
 (function () {
