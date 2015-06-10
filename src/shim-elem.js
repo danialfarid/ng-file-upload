@@ -37,13 +37,9 @@
     };
   }
 
-  if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.forceLoad)) {
+  if (FileAPI.shouldLoad) {
 
     //load FileAPI
-    if (!window.FileAPI) {
-      window.FileAPI = {};
-    }
-
     if (FileAPI.forceLoad) {
       FileAPI.html5 = false;
     }

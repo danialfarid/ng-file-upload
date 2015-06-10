@@ -19,7 +19,12 @@
     }
   }
 
-  if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.forceLoad)) {
+  if (!window.FileAPI) {
+    window.FileAPI = {};
+  }
+
+  FileAPI.shouldLoad = (window.XMLHttpRequest && !window.FormData) || FileAPI.forceLoad;
+  if (FileAPI.shouldLoad) {
     var initializeUploadListener = function (xhr) {
       if (!xhr.__listeners) {
         if (!xhr.upload) xhr.upload = {};

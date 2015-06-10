@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.3
+ * @version 5.0.4
  */
 
 (function () {
@@ -19,7 +19,12 @@
     }
   }
 
-  if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.forceLoad)) {
+  if (!window.FileAPI) {
+    window.FileAPI = {};
+  }
+
+  FileAPI.shouldLoad = (window.XMLHttpRequest && !window.FormData) || FileAPI.forceLoad;
+  if (FileAPI.shouldLoad) {
     var initializeUploadListener = function (xhr) {
       if (!xhr.__listeners) {
         if (!xhr.upload) xhr.upload = {};
@@ -254,13 +259,9 @@
     };
   }
 
-  if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.forceLoad)) {
+  if (FileAPI.shouldLoad) {
 
     //load FileAPI
-    if (!window.FileAPI) {
-      window.FileAPI = {};
-    }
-
     if (FileAPI.forceLoad) {
       FileAPI.html5 = false;
     }
