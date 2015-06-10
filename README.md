@@ -266,7 +266,7 @@ The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> 
 Here is a sample config options:
 ```
 Upload.upload({
-        url: $'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
+        url: 'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
         method: 'POST',
         fields : {
           key: file.name, // the key to store the file on S3, could be file name or customized
