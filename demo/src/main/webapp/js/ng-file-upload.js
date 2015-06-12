@@ -1,11 +1,11 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.4
+ * @version 5.0.5
  */
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '5.0.4';
+ngFileUpload.version = '5.0.5';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function patchXHR(fnName, newFn) {
     window.XMLHttpRequest.prototype[fnName] = newFn(window.XMLHttpRequest.prototype[fnName]);
@@ -344,7 +344,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                 if (evt && resetOnClick && $parse(attr.ngfResetModelOnClick)(scope) !== false) resetModel(evt);
 
                 // fix for android native browser < 4.4
-                if (isAndroidBelow44(navigator.userAgent)) {
+                if (shouldClickLater(navigator.userAgent)) {
                     setTimeout(function () {
                         clickAndAssign(evt);
                     }, 0);
@@ -365,13 +365,15 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         }
     }
 
-    function isAndroidBelow44(ua) {
+    function shouldClickLater(ua) {
+        // android below 4.4
         var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
         if (m && m.length > 2) {
             return parseInt(m[1]) < 4 || (parseInt(m[1]) === 4 && parseInt(m[2]) < 4);
         }
 
-        return false;
+        // safari on windows
+        return /.*Windows.*Safari.*/.test(ua);
     }
 
     ngFileUpload.validate = function (scope, $parse, attr, file, evt) {

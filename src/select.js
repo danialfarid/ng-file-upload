@@ -138,7 +138,7 @@
                 if (evt && resetOnClick && $parse(attr.ngfResetModelOnClick)(scope) !== false) resetModel(evt);
 
                 // fix for android native browser < 4.4
-                if (isAndroidBelow44(navigator.userAgent)) {
+                if (shouldClickLater(navigator.userAgent)) {
                     setTimeout(function () {
                         clickAndAssign(evt);
                     }, 0);
@@ -159,13 +159,15 @@
         }
     }
 
-    function isAndroidBelow44(ua) {
+    function shouldClickLater(ua) {
+        // android below 4.4
         var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
         if (m && m.length > 2) {
             return parseInt(m[1]) < 4 || (parseInt(m[1]) === 4 && parseInt(m[2]) < 4);
         }
 
-        return false;
+        // safari on windows
+        return /.*Windows.*Safari.*/.test(ua);
     }
 
     ngFileUpload.validate = function (scope, $parse, attr, file, evt) {
