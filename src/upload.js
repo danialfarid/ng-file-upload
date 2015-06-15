@@ -31,8 +31,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     config.method = config.method || 'POST';
     config.headers = config.headers || {};
 
-    var deferred =
-        $q.defer();
+    var deferred = $q.defer();
     var promise = deferred.promise;
 
     config.headers.__setXHR_ = function () {
@@ -192,7 +191,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
   this.http = function (config) {
     config.transformRequest = config.transformRequest || function (data) {
-        if (window.ArrayBuffer && data instanceof window.ArrayBuffer) {
+        if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
           return data;
         }
         return $http.defaults.transformRequest[0](arguments);
@@ -201,5 +200,4 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
   };
 }
 
-])
-;
+]);
