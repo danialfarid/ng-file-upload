@@ -1,11 +1,11 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.0.6
+ * @version 5.0.7
  */
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '5.0.6';
+ngFileUpload.version = '5.0.7';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function patchXHR(fnName, newFn) {
     window.XMLHttpRequest.prototype[fnName] = newFn(window.XMLHttpRequest.prototype[fnName]);
@@ -412,11 +412,11 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                                          files, rejFiles, evt, noDelay) {
         function update() {
             if ($parse(attr.ngfKeep)(scope) === true) {
+                var prevFiles = (ngModel.$modelValue || []).slice(0);
                 if (!files || !files.length) {
-                    return;
-                }
-                if ($parse(attr.ngfKeepDistinct)(scope) === true) {
-                    var prevFiles = (ngModel.$modelValue || []).slice(0), len = prevFiles.length;
+                    files = prevFiles;
+                } else if ($parse(attr.ngfKeepDistinct)(scope) === true) {
+                    var len = prevFiles.length;
                     for (var i = 0; i < files.length; i++) {
                         for (var j = 0; j < len; j++) {
                             if (files[i].name === prevFiles[j].name) break;
@@ -425,12 +425,9 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                             prevFiles.push(files[i]);
                         }
                     }
-                    if (len === prevFiles.length) {
-                        return;
-                    }
-                    files = [].concat(prevFiles);
+                    files = prevFiles;
                 } else {
-                    files = (ngModel.$modelValue || []).concat(files);
+                    files = prevFiles.concat(files);
                 }
             }
             if (ngModel) {
