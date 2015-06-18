@@ -3,11 +3,11 @@
   <metadata>
     <id>angular-file-upload</id>
     <title>Angular file upload</title>
-    <version>5.0.8</version>
+    <version>5.0.9</version>
     <authors>Danial Farid, Georgios Diamantopoulos (nuget package)</authors>
     <owners>Danial Farid</owners>
-    <licenseUrl>https://github.com/danialfarid/angular-file-upload/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/danialfarid/angular-file-upload</projectUrl>
+    <licenseUrl>https://github.com/danialfarid/ng-file-upload/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/danialfarid/ng-file-upload</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Light-weight HTML5 and cross-browser AngularJS directives for file upload, progress, abort, drag and drop</description>
     <tags>angularjs upload</tags>

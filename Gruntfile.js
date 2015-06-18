@@ -16,7 +16,7 @@ module.exports = function (grunt) {
         files: {
           'dist/ng-file-upload.js': ['src/upload.js', 'src/select.js', 'src/drop.js'],
           'dist/ng-file-upload-shim.js': ['src/shim-upload.js', 'src/shim-elem.js', 'src/shim-filereader.js'],
-          'dist/ng-file-upload-all.js': ['dist/ng-file-upload.js', 'dist/ng-file-upload-shim.js']
+          'dist/ng-file-upload-all.js': ['dist/ng-file-upload-shim.js', 'dist/ng-file-upload.js']
         }
       }
     },
