@@ -86,8 +86,6 @@
         }
 
         function createFileInput(evt, resetOnClick) {
-            if (elem.attr('disabled') || disabled) return;
-
             if (!resetOnClick && (evt || isInputTypeFile())) return elem.$$ngfRefElem || elem;
 
             var fileElem = angular.element('<input type="file">');
@@ -117,6 +115,7 @@
         }
 
         function clickHandler(evt) {
+            if (elem.attr('disabled') || disabled) return false;
             if (evt != null) {
                 evt.preventDefault();
                 evt.stopPropagation();
