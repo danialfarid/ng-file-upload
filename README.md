@@ -2,12 +2,12 @@ ng-file-upload
 ===================
 
 Lightweight Angular JS directive to upload files.
+
 **Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
 **Migration notes**: [version 3.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0)
 
 For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). If you need support send me an [email](mailto:danial.farid@gmail.com) to set up sessions through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for other concerns.
-
 If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
 
