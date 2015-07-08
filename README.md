@@ -169,7 +169,7 @@ var upload = Upload.upload({
   formDataAppender: function(formData, key, val){},
   /*
   data will be sent as a separate form data field called "data".*/
-  data: {}. 
+  data: {}, 
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
