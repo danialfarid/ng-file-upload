@@ -76,6 +76,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                     console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
                 }).success(function (data, status, headers, config) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                }).error(function (data, status, headers, config) {
+                    console.log('error status: ' + status);
                 });
             }
         }
@@ -177,7 +179,7 @@ var upload = Upload.upload({
 }).success(function(data, status, headers, config) {
   // file is uploaded successfully
   console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
-}).error(...
+}).error(function(data, status, headers, config) {
 /* access or attach event listeners to the underlying XMLHttpRequest */
 }).xhr(function(xhr){xhr.upload.addEventListener(...) 
 /* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
