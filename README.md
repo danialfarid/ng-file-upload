@@ -180,11 +180,12 @@ var upload = Upload.upload({
   // file is uploaded successfully
   console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
 }).error(function(data, status, headers, config) {
-/* access or attach event listeners to the underlying XMLHttpRequest */
-}).xhr(function(xhr){xhr.upload.addEventListener(...) 
-/* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
+  // handle error
+}).xhr(function(xhr){
+  //access or attach event listeners to the underlying XMLHttpRequest
+  xhr.upload.addEventListener(...) 
 });
-/* then promise (note that returned promise doesn't have progress, xhr and cancel functions. */
+/* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
 var promise = upload.then(success, error, progress);
 
 /* cancel/abort the upload in progress. */
