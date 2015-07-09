@@ -78,11 +78,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
                 }).error(function (data, status, headers, config) {
                     console.log('error status: ' + status);
-                }).then(function(response) {
-                    // Promise alternative to .success()
-                }).catch(function(response) {
-                    // Promise alternative to .error()
-                });
+                })
             }
         }
     };
@@ -189,8 +185,10 @@ var upload = Upload.upload({
   //access or attach event listeners to the underlying XMLHttpRequest
   xhr.upload.addEventListener(...) 
 });
-/* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
+/* return $http promise then,catch or finally. Note that this promise does NOT have progress/abort/xhr functions */
 var promise = upload.then(success, error, progress);
+              upload.catch(errorCallback);
+              upload.finally(callback, notifyCallback);
 
 /* cancel/abort the upload in progress. */
 upload.abort();
