@@ -186,7 +186,7 @@ var upload = Upload.upload({
   xhr.upload.addEventListener(...) 
 });
 /* return $http promise then,catch or finally. 
-Note that this promise does NOT have progress,abort or xhr functions */
+Note that this promise does NOT have progress, abort or xhr functions */
 var promise = upload.then(success, error, progress);
               upload.catch(errorCallback);
               upload.finally(callback, notifyCallback);
