@@ -78,6 +78,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
                 }).error(function (data, status, headers, config) {
                     console.log('error status: ' + status);
+                }).then(function(response) {
+                    // Promise alternative to .success()
+                }).catch(function(response) {
+                    // Promise alternative to .error()
                 });
             }
         }
