@@ -221,7 +221,7 @@ Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10
 **ngf-reset-on-click and ngf-reset-model-on-click**:
 These two options are for testing purposes or rare cases, be aware that they might make the file select behave differently on different browsers.
 By default since there is no cross-browser way to detect cancel on the file popup everytime you click on the file select it would create a new element and click on that and the model value will be reset to empty. This would also allow selecting the same file again which normally will not trigger a change event.
-Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would recieve a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
+Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would receive a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
 
 ##<a name="old_browsers"></a> Old browsers
 
@@ -306,7 +306,7 @@ These two values are generated from the json policy document which looks like th
 ]
 }
 ```
-The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to genenrate signature and policy to protect your aws secret key which should never be shared.
+The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to generate signature and policy to protect your aws secret key which should never be shared.
 
 Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit CORS Configuration. Samples of these two files:
 ```
