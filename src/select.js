@@ -24,6 +24,8 @@
         /** @namespace attr.ngfResetModelOnClick */
         /** @namespace attr.ngfKeep */
         /** @namespace attr.ngfKeepDistinct */
+        
+        var initialTouchStartY = 0;
 
         if (elem.attr('__ngf_gen__')) {
             return;
@@ -116,19 +118,32 @@
 
         function clickHandler(evt) {
             if (elem.attr('disabled') || disabled) return false;
+            
             if (evt != null) {
-                evt.preventDefault();
-                evt.stopPropagation();
+                if (evt.type === 'touchstart') {
+                    initialTouchStartY = evt.originalEvent.touches[0].clientY;
+                    return true; // don't block event default
+                } else {
+                    evt.stopPropagation();
+                    evt.preventDefault();       
+                    
+                    // prevent scroll from triggering event
+                    if (evt.type === 'touchend') {
+                        var currentLocation = evt.originalEvent.changedTouches[0].clientY;
+                        if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
+                    }
+                }
             }
+
             var resetOnClick = $parse(attr.ngfResetOnClick)(scope) !== false;
             var fileElem = createFileInput(evt, resetOnClick);
-
+  
             function clickAndAssign(evt) {
                 if (evt) {
                     fileElem[0].click();
                 }
                 if (isInputTypeFile() || !evt) {
-                    elem.bind('click touchend', clickHandler);
+                    elem.bind('click touchend touchstart', clickHandler);
                 }
             }
 
@@ -145,6 +160,7 @@
                     clickAndAssign(evt);
                 }
             }
+
             return false;
         }
 
