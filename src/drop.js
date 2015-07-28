@@ -1,6 +1,7 @@
 (function () {
   var validate = ngFileUpload.validate;
   var updateModel = ngFileUpload.updateModel;
+  var getAttr = ngFileUpload.getAttrWithDefaults;
 
   ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', function ($parse, $timeout, $location) {
     return {
@@ -21,7 +22,7 @@
   ngFileUpload.directive('ngfDropAvailable', ['$parse', '$timeout', function ($parse, $timeout) {
     return function (scope, elem, attr) {
       if (dropAvailable()) {
-        var fn = $parse(attr.ngfDropAvailable);
+        var fn = $parse(getAttr(attr, 'ngfDropAvailable'));
         $timeout(function () {
           fn(scope);
           if (fn.assign) {
@@ -34,31 +35,31 @@
 
   function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
     var available = dropAvailable();
-    if (attr.dropAvailable) {
+    if (getAttr(attr, 'dropAvailable')) {
       $timeout(function () {
-        if (scope[attr.dropAvailable]) {
-          scope[attr.dropAvailable].value = available;
+        if (scope[getAttr(attr, 'dropAvailable')]) {
+          scope[getAttr(attr, 'dropAvailable')].value = available;
         } else {
-          scope[attr.dropAvailable] = available;
+          scope[getAttr(attr, 'dropAvailable')] = available;
         }
       });
     }
     if (!available) {
-      if ($parse(attr.ngfHideOnDropNotAvailable)(scope) === true) {
+      if ($parse(getAttr(attr, 'ngfHideOnDropNotAvailable'))(scope) === true) {
         elem.css('display', 'none');
       }
       return;
     }
 
     var disabled = false;
-    if (attr.ngfDrop.search(/\W+$files\W+/) === -1) {
-      scope.$watch(attr.ngfDrop, function(val) {
+    if (getAttr(attr, 'ngfDrop').search(/\W+$files\W+/) === -1) {
+      scope.$watch(getAttr(attr, 'ngfDrop'), function(val) {
         disabled = val === false;
       });
     }
 
     var leaveTimeout = null;
-    var stopPropagation = $parse(attr.ngfStopPropagation);
+    var stopPropagation = $parse(getAttr(attr, 'ngfStopPropagation'));
     var dragOverDelay = 1;
     var actualDragOverClass;
 
@@ -97,8 +98,9 @@
       actualDragOverClass = null;
       extractFiles(evt, function (files, rejFiles) {
         updateModel($parse, $timeout, scope, ngModel, attr,
-          attr.ngfChange || attr.ngfDrop, files, rejFiles, evt);
-      }, $parse(attr.ngfAllowDir)(scope) !== false, attr.multiple || $parse(attr.ngfMultiple)(scope));
+          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfDrop'), files, rejFiles, evt);
+      }, $parse(getAttr(attr, 'ngfAllowDir'))(scope) !== false,
+        getAttr(attr, 'multiple') || $parse(getAttr(attr, 'ngfMultiple'))(scope));
     }, false);
 
     function calculateDragOverClass(scope, attr, evt) {
@@ -111,12 +113,12 @@
             validate(scope, $parse, attr, items[i], evt);
         }
       }
-      var clazz = $parse(attr.ngfDragOverClass)(scope, {$event: evt});
+      var clazz = $parse(getAttr(attr, 'ngfDragOverClass'))(scope, {$event: evt});
       if (clazz) {
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept) clazz = accepted ? clazz.accept : clazz.reject;
       }
-      return clazz || attr.ngfDragOverClass || 'dragover';
+      return clazz || getAttr(attr, 'ngfDragOverClass') || 'dragover';
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
@@ -223,41 +225,6 @@
       })();
     }
   }
-
-  ngFileUpload.directive('ngfSrc', ['$parse', '$timeout', function ($parse, $timeout) {
-    return {
-      restrict: 'AE',
-      link: function (scope, elem, attr) {
-        if (window.FileReader) {
-          scope.$watch(attr.ngfSrc, function (file) {
-            if (file &&
-              validate(scope, $parse, attr, file, null) &&
-              (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
-              (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
-              $timeout(function () {
-                //prefer URL.createObjectURL for handling refrences to files of all sizes
-                //since it doesn´t build a large string in memory
-                var URL = window.URL || window.webkitURL;
-                if (URL && URL.createObjectURL) {
-                  elem.attr('src', URL.createObjectURL(file));
-                } else {
-                  var fileReader = new FileReader();
-                  fileReader.readAsDataURL(file);
-                  fileReader.onload = function (e) {
-                    $timeout(function () {
-                      elem.attr('src', e.target.result);
-                    });
-                  };
-                }
-              });
-            } else {
-              elem.attr('src', attr.ngfDefaultSrc || '');
-            }
-          });
-        }
-      }
-    };
-  }]);
 
   function dropAvailable() {
     var div = document.createElement('div');

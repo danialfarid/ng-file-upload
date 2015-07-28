@@ -2,11 +2,11 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '5.0.8';
+var version = '5.1.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
     $scope.usingFlash = FileAPI && FileAPI.upload != null;
-
+    //Upload.setDefaults({ngfKeep: true, ngfResetModelOnClick: false, ngfResetOnClick:false});
     $scope.changeAngularVersion = function () {
         window.location.hash = $scope.angularVersion;
         window.location.reload(true);
