@@ -293,8 +293,7 @@ Upload.upload({
         file: file,
       });
 ```
-This article explain more about these fields: see [http://aws.amazon.com/articles/1434/](http://aws.amazon.com/articles/1434/)
-To generate the policy and signature you need a server side tool as described [this](http://aws.amazon.com/articles/1434/) article.
+[This article](http://aws.amazon.com/articles/1434/) explains more about these fields and provides instructions on how to generate the policy and signature using a server side tool.
 These two values are generated from the json policy document which looks like this:
 ```
 {"expiration": "2020-01-01T00:00:00Z",
