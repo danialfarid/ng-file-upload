@@ -114,6 +114,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
     *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
     ng-model="myFiles" // binds the dropped files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
+    ng-disable="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
     ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
