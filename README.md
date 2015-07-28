@@ -142,8 +142,8 @@ Drop files here
 #### File preview
 ```html
 <img|audio|video 
-    ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
-    ngf-background="file" //sets background-image style to the file's data url.
+    ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
+    ngf-background="file" //sets background-image style to the file data url.
     ngf-default-src="'placeholder.jpg'" // default src in case no file is available
     ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
     ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
