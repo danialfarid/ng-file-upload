@@ -141,8 +141,11 @@ Drop files here
 
 #### File preview
 ```html
-<img|audio|video ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
+<img|audio|video 
+    ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
+    ngf-background="file" //sets background-image style to the file's data url.
     ngf-default-src="'placeholder.jpg'" // default src in case no file is available
+    ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
@@ -224,6 +227,9 @@ Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10
 These two options are for testing purposes or rare cases, be aware that they might make the file select behave differently on different browsers.
 By default since there is no cross-browser way to detect cancel on the file popup everytime you click on the file select it would create a new element and click on that and the model value will be reset to empty. This would also allow selecting the same file again which normally will not trigger a change event.
 Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would receive a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
+
+**ng-model-rejected**:
+You can find the reason for rejection using `file.$error` which would be one of these values 'accept', 'minSize', or 'maxSize'. The first one is for the case the file doesn't match the ngf-accept criteria.
 
 ##<a name="old_browsers"></a> Old browsers
 
