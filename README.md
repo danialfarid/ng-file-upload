@@ -146,6 +146,7 @@ Drop files here
     ngf-background="file" //sets background-image style to the file's data url.
     ngf-default-src="'placeholder.jpg'" // default src in case no file is available
     ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
+    ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
