@@ -40,8 +40,10 @@ Table of Content:
 
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
-    <div class="button" ngf-select ng-model="files">Upload using model $watch</div>
-    <div class="button" ngf-select ngf-change="upload($files)">Upload on file change</div>
+    <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
+    <div class="button" ngf-select ng-model="files" ngf-multiple="true">Upload multiple using model $watch</div>
+    <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
+    <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true">Upload multiple on file change</div>
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
         ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
@@ -62,7 +64,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.$watch('files', function () {
         $scope.upload($scope.files);
     });
-
+    // set default directive values
+    // Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
     $scope.upload = function (files) {
         if (files && files.length) {
             for (var i = 0; i < files.length; i++) {
@@ -92,7 +95,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```html
 <button|div|input type="file"|ngf-select|...
     *ngf-select="true" or "false" // default true, enables file select directive on this element
-    ng-model="myFiles" // binds the selected files to the scope model
+    ng-model="myFiles" // binds the selected file or files to the scope model 
+                       // (could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
     ngf-change="fileSelected($files, $event)" // called when files are selected or removed
@@ -113,7 +117,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
     *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
-    ng-model="myFiles" // binds the dropped files to the scope model
+    ng-model="myFiles" // binds the dropped file or files to the scope model 
+                       // (could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
@@ -216,6 +221,12 @@ Upload.http({
 */
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
 ```
+**ng-model**
+The model value will be a single file instead of an array if all of the followings are true:
+  * `ngf-multiple` is not set or is resolved to false.
+  * `multiple` attribute is not set on the element 
+  * `ngf-keep` is not set or is resolved to false.
+
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
