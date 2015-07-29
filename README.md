@@ -50,9 +50,9 @@ Table of Content:
         ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
     <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
     
-    Image thumbnail: <img ngf-src="files[0]" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
-    Audio preview: <audio controls ngf-src="files[0]" ngf-accept="'audio/*'"></audio>
-    Video preview: <video controls ngf-src="files[0]" ngf-accept="'video/*'"></video>
+    Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
+    Audio preview: <audio controls ngf-src="file" ngf-accept="'audio/*'"></audio>
+    Video preview: <video controls ngf-src="file" ngf-accept="'video/*'"></video>
 </div>
 ```
 JS:
