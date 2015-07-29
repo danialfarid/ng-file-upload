@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.0.0
+ * @version 6.0.1
  */
 
 (function () {
@@ -430,7 +430,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.0.0
+ * @version 6.0.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -451,7 +451,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '6.0.0';
+ngFileUpload.version = '6.0.1';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -685,7 +685,6 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     /** @namespace attr.ngModel */
     /** @namespace attr.ngModelRejected */
     /** @namespace attr.ngfModel */
-    /** @namespace attr.ngfModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
@@ -752,6 +751,10 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         if ((isInputTypeFile() && attribute.name !== 'type') ||
           (attribute.name !== 'type' && attribute.name !== 'class' &&
           attribute.name !== 'id' && attribute.name !== 'style')) {
+          if (attribute.value == null || attribute.value === '') {
+            if (attribute.name === 'required') attribute.value = 'required';
+            if (attribute.name === 'multiple') attribute.value = 'multiple';
+          }
           fileElem.attr(attribute.name, attribute.value);
         }
       }

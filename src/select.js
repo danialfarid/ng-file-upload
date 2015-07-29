@@ -24,7 +24,6 @@
     /** @namespace attr.ngModel */
     /** @namespace attr.ngModelRejected */
     /** @namespace attr.ngfModel */
-    /** @namespace attr.ngfModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
@@ -91,6 +90,10 @@
         if ((isInputTypeFile() && attribute.name !== 'type') ||
           (attribute.name !== 'type' && attribute.name !== 'class' &&
           attribute.name !== 'id' && attribute.name !== 'style')) {
+          if (attribute.value == null || attribute.value === '') {
+            if (attribute.name === 'required') attribute.value = 'required';
+            if (attribute.name === 'multiple') attribute.value = 'multiple';
+          }
           fileElem.attr(attribute.name, attribute.value);
         }
       }
