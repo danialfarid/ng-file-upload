@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '5.2.0';
+var version = '6.0.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
     $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -18,19 +18,22 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.$watch('files', function (files) {
         $scope.formUpload = false;
         if (files != null) {
+            if (!angular.isArray(files)) {
+                $scope.files = files = [files];
+            }
             for (var i = 0; i < files.length; i++) {
                 $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
+                (function (f) {
+                    upload(f);
                 })(files[i]);
             }
         }
     });
 
-    $scope.uploadPic = function (files) {
+    $scope.uploadPic = function(file) {
         $scope.formUpload = true;
-        if (files != null) {
-            upload(files[0])
+        if (file != null) {
+            upload(file)
         }
     };
 
@@ -164,7 +167,8 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     (function handleDynamicEditingOfScriptsAndHtml($scope) {
         $scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '');
 
-        $scope.editHtml = (localStorage && localStorage.getItem('editHtml' + version)) || $scope.defaultHtml;
+        var fromLocal = (localStorage && localStorage.getItem('editHtml' + version));
+        $scope.editHtml = fromLocal || $scope.defaultHtml;
         function htmlEdit() {
             document.getElementById('editArea').innerHTML = $scope.editHtml;
             $compile(document.getElementById('editArea'))($scope);
@@ -226,5 +230,4 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
             localStorage.setItem('keepDistinct' + version, $scope.keepDistinct);
         });
     });
-
 }]);

@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width">
   <link type="text/css" rel="stylesheet" href="common.css">
   <title>Angular file upload sample</title>
 
@@ -26,7 +27,7 @@
     var angularVersion = window.location.hash.substring(1);
     if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1);
     document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' +
-    (angularVersion || '1.2.20') + '/angular.js"><\/script>');
+        (angularVersion || '1.2.20') + '/angular.js"><\/script>');
   </script>
   <script src="js/ng-file-upload-shim.js"></script>
   <script src="js/ng-file-upload.js"></script>
@@ -45,7 +46,7 @@
   Angular Version: <input type="text" ng-model="angularVersion">
   <input type="button" data-ng-click="changeAngularVersion()" value="Go">
 </div>
-<h1>Angular file upload Demo</h1>
+<h2>Angular file upload Demo</h2>
 
 <h3>
   Visit <a href="https://github.com/danialfarid/ng-file-upload">ng-file-upload</a> on github
@@ -62,7 +63,7 @@
 
   <div class="upload-buttons">
     <div id="editArea">
-      <div style="float:left; margin-right: 10px;">
+      <div>
         <form name="myForm">
           <fieldset>
             <legend>Upload on form submit</legend>
@@ -73,53 +74,17 @@
             <br/>
 
             <button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
-            <img ng-show="picFile[0] != null" ngf-src="picFile[0]" class="thumb">
-            <span class="progress" ng-show="picFile[0].progress >= 0">
-                <div style="width:{{picFile[0].progress}}%" ng-bind="picFile[0].progress + '%'"></div>
+            <img ng-show="picFile != null" ngf-src="picFile" class="thumb">
+            <span class="progress" ng-show="picFile.progress >= 0">
+                <div style="width:{{picFile.progress}}%" ng-bind="picFile.progress + '%'"></div>
             </span>
-            <span ng-show="picFile[0].result">Upload Successful</span>
+            <span ng-show="picFile.result">Upload Successful</span>
           </fieldset>
           <br/>
         </form>
-        <fieldset>
-          <legend>Upload right away</legend>
-          <div class="up-buttons">
-            <div ngf-select ng-model="files" class="upload-button"
-                 ngf-multiple="false" ngf-accept="'*.pdf,*.jpg,*.png'" ng-model-rejected="rejFiles"
-                 tabindex="0">Attach an Image or PDF
-            </div>
-            <br/>
-            <button ngf-select ng-model="files"
-                    ngf-multiple="true">Attach Any File
-            </button>
-          </div>
-          <div ngf-drop ngf-select ng-model="files" ng-model-rejected="rejFiles"
-               ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
-               ngf-multiple="true" ngf-allow-dir="true" ngf-accept="'image/*,application/pdf'"
-               ngf-drop-available="dropAvailable">
-            <div ng-hide="dropAvailable">File Drop not available</div>
-            <div ng-show="dropAvailable">Drop Images or PDFs</div>
-            <div>click to select</div>
-          </div>
-        </fieldset>
       </div>
       <fieldset>
-        <legend>Play with attributes</legend>
-        <label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
-        <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
-        <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
-        <label>ngf-min-size: <input type="text" ng-model="minSize"></label><br/>
-        <label>ngf-max-size: <input type="text" ng-model="maxSize"></label><br/>
-        <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
-        <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
-        <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
-        <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in ng-model)</label><br/>
-        <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow duplicates)</label><br/>
-        <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click (reset file input and model on
-          click)</label><br/>
-        <label><input type="checkbox" ng-model="resetModelOnClick">ngf-reset-model-on-click (reset model on
-          click)</label><br/>
-
+        <legend>Play with options</legend>
         <div class="up-buttons">
           <div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
                ngf-multiple="multiple" ngf-accept="accept" accept="{{acceptSelect}}"
@@ -132,6 +97,23 @@
             <span ng-show="dropAvailable">or Drop</span></div>
           <br/>
         </div>
+        <div class="custom">
+          <label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
+          <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
+          <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
+          <label>ngf-min-size: <input type="text" ng-model="minSize"></label><br/>
+          <label>ngf-max-size: <input type="text" ng-model="maxSize"></label><br/>
+          <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
+          <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
+          <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
+          <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in ng-model)</label><br/>
+          <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow duplicates)</label><br/>
+          <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click (reset file input and model on
+            click)</label><br/>
+          <label><input type="checkbox" ng-model="resetModelOnClick">ngf-reset-model-on-click (reset model on
+            click)</label><br/>
+        </div>
+
         <div class="preview">
           <div>Preview image/audio/video:</div>
           <img ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
@@ -194,8 +176,8 @@
                   ng-disabled="usingFlash">$upload.http(): binary content with file's
       Content-Type</label>
 
-    <div class="sub">Can be used to upload files directory into<a
-      href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>,
+    <div class="sub">Can be used to upload files directory into <a
+        href="https://github.com/danialfarid/angular-file-upload/issues/88">CouchDB</a>,
       <a href="https://github.com/danialfarid/angular-file-upload/issues/87">imgur</a>, etc... without multipart form
       data (HTML5 FileReader browsers only)<br/>
     </div>
@@ -241,6 +223,6 @@
 <a style="position:fixed;bottom:45px;right:10px;font-size:smaller;"
    href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
 
-<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-07-28</div>
+<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-07-29</div>
 </body>
 </html>

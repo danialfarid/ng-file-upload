@@ -22,8 +22,9 @@
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
-    /** @namespace attr.ngfModel */
     /** @namespace attr.ngModelRejected */
+    /** @namespace attr.ngfModel */
+    /** @namespace attr.ngfModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
@@ -277,20 +278,21 @@
           files = prevFiles.concat(files);
         }
       }
-      var file = files && files[0];
+      var file = files && files.length ? files[0] : null;
       if (ngModel) {
-        $parse(getAttr(attr, 'ngModel')).assign(scope, files);
-        var singleModel = !$parse(getAttr(attr, 'multiple'))(scope) && !keep;
-        var ngfModel = getAttr(attr, 'ngfModel');
-        if (ngfModel) {
-          $parse(ngfModel).assign(scope, singleModel ? file : files);
-        }
+        var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && ! getAttr(attr, 'multiple') && !keep;
+        $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
         $timeout(function () {
           if (ngModel) {
-            ngModel.$setViewValue(files != null && files.length === 0 ? null : files);
+            ngModel.$setViewValue(singleModel ? file : (files != null && files.length === 0 ? null : files));
           }
         });
       }
+      var ngfModel = getAttr(attr, 'ngfModel');
+      if (ngfModel) {
+        $parse(ngfModel).assign(scope, files);
+      }
+
       if (getAttr(attr, 'ngModelRejected')) {
         $parse(getAttr(attr, 'ngModelRejected')).assign(scope, rejFiles);
       }

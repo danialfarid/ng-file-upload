@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.2.0
+ * @version 6.0.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '5.2.0';
+ngFileUpload.version = '6.0.0';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -254,8 +254,9 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
-    /** @namespace attr.ngfModel */
     /** @namespace attr.ngModelRejected */
+    /** @namespace attr.ngfModel */
+    /** @namespace attr.ngfModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
@@ -509,20 +510,21 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
           files = prevFiles.concat(files);
         }
       }
-      var file = files && files[0];
+      var file = files && files.length ? files[0] : null;
       if (ngModel) {
-        $parse(getAttr(attr, 'ngModel')).assign(scope, files);
-        var singleModel = !$parse(getAttr(attr, 'multiple'))(scope) && !keep;
-        var ngfModel = getAttr(attr, 'ngfModel');
-        if (ngfModel) {
-          $parse(ngfModel).assign(scope, singleModel ? file : files);
-        }
+        var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && ! getAttr(attr, 'multiple') && !keep;
+        $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
         $timeout(function () {
           if (ngModel) {
-            ngModel.$setViewValue(files != null && files.length === 0 ? null : files);
+            ngModel.$setViewValue(singleModel ? file : (files != null && files.length === 0 ? null : files));
           }
         });
       }
+      var ngfModel = getAttr(attr, 'ngfModel');
+      if (ngfModel) {
+        $parse(ngfModel).assign(scope, files);
+      }
+
       if (getAttr(attr, 'ngModelRejected')) {
         $parse(getAttr(attr, 'ngModelRejected')).assign(scope, rejFiles);
       }
