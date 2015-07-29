@@ -99,7 +99,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                        // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
-    ngf-change="fileSelected($files, $event)" // called when files are selected or removed
+    ngf-change="fileSelected($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
     ngf-multiple="true" or "false" // default false, allows selecting multiple files
     ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
     accept="image/*" // see standard HTML file input accept attribute
@@ -121,7 +121,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
                        // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
-    ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
+    ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
     ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
