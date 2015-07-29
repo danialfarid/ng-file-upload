@@ -2,15 +2,19 @@
 
   function fileToSrc(Upload, scope, $parse, attr, name, defaultName, callback) {
       scope.$watch(name, function (file) {
-        if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {
-        Upload.dataUrl(file, function(url) {
-          if (callback) {
-            callback(url);
-          } else {
-            file.dataUrl = url || $parse(defaultName)(scope);
+        if (!angular.isString(file)) {
+          if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {
+            Upload.dataUrl(file, function (url) {
+              if (callback) {
+                callback(url);
+              } else {
+                file.dataUrl = url || $parse(defaultName)(scope);
+              }
+            }, $parse(attr.ngfNoObjectUrl)(scope));
           }
-        }, $parse(attr.ngfNoObjectUrl)(scope));
-      }
+        } else {
+          callback(file);
+        }
       });
   }
 

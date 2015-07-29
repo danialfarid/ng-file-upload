@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.0.1
+ * @version 6.0.2
  */
 
 (function () {
@@ -430,7 +430,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.0.1
+ * @version 6.0.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -451,7 +451,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '6.0.1';
+ngFileUpload.version = '6.0.2';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -1223,15 +1223,19 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
   function fileToSrc(Upload, scope, $parse, attr, name, defaultName, callback) {
       scope.$watch(name, function (file) {
-        if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {
-        Upload.dataUrl(file, function(url) {
-          if (callback) {
-            callback(url);
-          } else {
-            file.dataUrl = url || $parse(defaultName)(scope);
+        if (!angular.isString(file)) {
+          if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {
+            Upload.dataUrl(file, function (url) {
+              if (callback) {
+                callback(url);
+              } else {
+                file.dataUrl = url || $parse(defaultName)(scope);
+              }
+            }, $parse(attr.ngfNoObjectUrl)(scope));
           }
-        }, $parse(attr.ngfNoObjectUrl)(scope));
-      }
+        } else {
+          callback(file);
+        }
       });
   }
 
