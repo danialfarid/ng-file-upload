@@ -96,7 +96,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 <button|div|input type="file"|ngf-select|...
     *ngf-select="true" or "false" // default true, enables file select directive on this element
     ng-model="myFiles" // binds the selected file or files to the scope model 
-                       // (could be an array or single file depending on ngf-multiple and ngf-keep values.
+                       // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
     ngf-change="fileSelected($files, $event)" // called when files are selected or removed
@@ -118,7 +118,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
     *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
     ng-model="myFiles" // binds the dropped file or files to the scope model 
-                       // (could be an array or single file depending on ngf-multiple and ngf-keep values.
+                       // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
