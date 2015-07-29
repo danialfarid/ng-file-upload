@@ -22,6 +22,7 @@
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
+    /** @namespace attr.ngfModel */
     /** @namespace attr.ngModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
@@ -256,7 +257,8 @@
   ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
                                        files, rejFiles, evt, noDelay) {
     function update() {
-      if ($parse(getAttr(attr, 'ngfKeep'))(scope) === true) {
+      var keep = $parse(getAttr(attr, 'ngfKeep'))(scope);
+      if (keep === true) {
         var prevFiles = (ngModel.$modelValue || []).slice(0);
         if (!files || !files.length) {
           files = prevFiles;
@@ -275,8 +277,14 @@
           files = prevFiles.concat(files);
         }
       }
+      var file = files && files[0];
       if (ngModel) {
         $parse(getAttr(attr, 'ngModel')).assign(scope, files);
+        var singleModel = !$parse(getAttr(attr, 'multiple'))(scope) && !keep;
+        var ngfModel = getAttr(attr, 'ngfModel');
+        if (ngfModel) {
+          $parse(ngfModel).assign(scope, singleModel ? file : files);
+        }
         $timeout(function () {
           if (ngModel) {
             ngModel.$setViewValue(files != null && files.length === 0 ? null : files);
@@ -289,6 +297,7 @@
       if (fileChange) {
         $parse(fileChange)(scope, {
           $files: files,
+          $file: file,
           $rejectedFiles: rejFiles,
           $event: evt
         });

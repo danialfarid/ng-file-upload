@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.1.0
+ * @version 5.2.0
  */
 
 (function () {
@@ -430,7 +430,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 5.1.0
+ * @version 5.2.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -451,7 +451,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '5.1.0';
+ngFileUpload.version = '5.2.0';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -683,6 +683,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
+    /** @namespace attr.ngfModel */
     /** @namespace attr.ngModelRejected */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
@@ -917,7 +918,8 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
   ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
                                        files, rejFiles, evt, noDelay) {
     function update() {
-      if ($parse(getAttr(attr, 'ngfKeep'))(scope) === true) {
+      var keep = $parse(getAttr(attr, 'ngfKeep'))(scope);
+      if (keep === true) {
         var prevFiles = (ngModel.$modelValue || []).slice(0);
         if (!files || !files.length) {
           files = prevFiles;
@@ -936,8 +938,14 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
           files = prevFiles.concat(files);
         }
       }
+      var file = files && files[0];
       if (ngModel) {
         $parse(getAttr(attr, 'ngModel')).assign(scope, files);
+        var singleModel = !$parse(getAttr(attr, 'multiple'))(scope) && !keep;
+        var ngfModel = getAttr(attr, 'ngfModel');
+        if (ngfModel) {
+          $parse(ngfModel).assign(scope, singleModel ? file : files);
+        }
         $timeout(function () {
           if (ngModel) {
             ngModel.$setViewValue(files != null && files.length === 0 ? null : files);
@@ -950,6 +958,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       if (fileChange) {
         $parse(fileChange)(scope, {
           $files: files,
+          $file: file,
           $rejectedFiles: rejFiles,
           $event: evt
         });
