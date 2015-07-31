@@ -142,7 +142,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 Drop files here
 </div>
 
-<div|... ng-no-file-drop>File Drag/drop is not supported</div>
+<div|... ngf-no-file-drop>File Drag/drop is not supported</div>
 ```
 
 #### File preview
