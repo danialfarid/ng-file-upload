@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.0.2
+ * @version 6.0.3
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '6.0.2';
+ngFileUpload.version = '6.0.3';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -333,6 +333,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
     function createFileInput(evt, resetOnClick) {
       if (!resetOnClick && (evt || isInputTypeFile())) return elem.$$ngfRefElem || elem;
+      if (elem.$$ngfProgramClick) return elem;
 
       var fileElem = angular.element('<input type="file">');
       bindAttrToFileInput(fileElem);
@@ -344,7 +345,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         $compile(elem)(scope);
       } else {
         fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
-          .css('width', '0px').css('height', '0px').css('z-index', '-100000').css('border', 'none')
+          .css('width', '0px').css('height', '0px').css('border', 'none')
           .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
         if (elem.$$ngfRefElem) {
           elem.$$ngfRefElem.remove();
@@ -362,13 +363,13 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     }
 
     var initialTouchStartY = 0;
-
     function clickHandler(evt) {
       if (elem.attr('disabled') || disabled) return false;
 
       if (evt != null) {
+        var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
         if (evt.type === 'touchstart') {
-          initialTouchStartY = evt.originalEvent.touches[0].clientY;
+          initialTouchStartY = touches ? touches[0].clientY : 0;
           return true; // don't block event default
         } else {
           evt.stopPropagation();
@@ -376,7 +377,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
           // prevent scroll from triggering event
           if (evt.type === 'touchend') {
-            var currentLocation = evt.originalEvent.changedTouches[0].clientY;
+            var currentLocation = touches ? touches[0].clientY : 0;
             if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
           }
         }
@@ -386,11 +387,15 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       var fileElem = createFileInput(evt, resetOnClick);
 
       function clickAndAssign(evt) {
-        if (evt && evt.clientY > 0) {
+        if (evt && !elem.$$ngfProgramClick) {
+          elem.$$ngfProgramClick = true;
           fileElem[0].click();
+          $timeout(function() {
+            delete elem.$$ngfProgramClick;
+          }, 500);
         }
         if ((isInputTypeFile() || !evt) && resetOnClick) {
-          elem.bind('click touchend touchstart', clickHandler);
+          elem.bind('click touchstart touchend', clickHandler);
         }
       }
 
@@ -659,6 +664,15 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       }, $parse(getAttr(attr, 'ngfAllowDir'))(scope) !== false,
         getAttr(attr, 'multiple') || $parse(getAttr(attr, 'ngfMultiple'))(scope));
     }, false);
+    elem[0].addEventListener('paste', function (evt) {
+      if (elem.attr('disabled') || disabled) return;
+      evt.preventDefault();
+      if (stopPropagation(scope)) evt.stopPropagation();
+      extractFiles(evt, function (files, rejFiles) {
+        updateModel($parse, $timeout, scope, ngModel, attr,
+          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfDrop'), files, rejFiles, evt);
+      }, false, getAttr(attr, 'multiple') || $parse(getAttr(attr, 'ngfMultiple'))(scope));
+    }, false);
 
     function calculateDragOverClass(scope, attr, evt) {
       var accepted = true;
@@ -679,7 +693,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
-      var files = [], rejFiles = [], items = evt.dataTransfer.items, processing = 0;
+      var files = [], rejFiles = [], processing = 0;
 
       function addFile(file) {
         if (validate(scope, $parse, attr, file, evt)) {
@@ -736,50 +750,64 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         }
       }
 
-      if (items && items.length > 0 && $location.protocol() !== 'file') {
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
-            var entry = items[i].webkitGetAsEntry();
-            if (entry.isDirectory && !allowDir) {
-              continue;
+      if (evt.type === 'paste') {
+        var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
+        if (clipboard && clipboard.items) {
+          for (var k = 0; k < clipboard.items.length; k++) {
+            if (clipboard.items[k].type.indexOf('image') !== -1) {
+              addFile(clipboard.items[k].getAsFile());
             }
-            if (entry != null) {
-              traverseFileTree(files, entry);
-            }
-          } else {
-            var f = items[i].getAsFile();
-            if (f != null) addFile(f);
           }
-          if (!multiple && files.length > 0) break;
+          callback(files, rejFiles);
         }
       } else {
-        var fileList = evt.dataTransfer.files;
-        if (fileList != null) {
-          for (var j = 0; j < fileList.length; j++) {
-            addFile(fileList.item(j));
-            if (!multiple && files.length > 0) {
-              break;
+        var items = evt.dataTransfer.items;
+
+        if (items && items.length > 0 && $location.protocol() !== 'file') {
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
+              var entry = items[i].webkitGetAsEntry();
+              if (entry.isDirectory && !allowDir) {
+                continue;
+              }
+              if (entry != null) {
+                traverseFileTree(files, entry);
+              }
+            } else {
+              var f = items[i].getAsFile();
+              if (f != null) addFile(f);
+            }
+            if (!multiple && files.length > 0) break;
+          }
+        } else {
+          var fileList = evt.dataTransfer.files;
+          if (fileList != null) {
+            for (var j = 0; j < fileList.length; j++) {
+              addFile(fileList.item(j));
+              if (!multiple && files.length > 0) {
+                break;
+              }
             }
           }
         }
+        var delays = 0;
+        (function waitForProcess(delay) {
+          $timeout(function () {
+            if (!processing) {
+              if (!multiple && files.length > 1) {
+                i = 0;
+                while (files[i].type === 'directory') i++;
+                files = [files[i]];
+              }
+              callback(files, rejFiles);
+            } else {
+              if (delays++ * 10 < 20 * 1000) {
+                waitForProcess(10);
+              }
+            }
+          }, delay || 0);
+        })();
       }
-      var delays = 0;
-      (function waitForProcess(delay) {
-        $timeout(function () {
-          if (!processing) {
-            if (!multiple && files.length > 1) {
-              i = 0;
-              while (files[i].type === 'directory') i++;
-              files = [files[i]];
-            }
-            callback(files, rejFiles);
-          } else {
-            if (delays++ * 10 < 20 * 1000) {
-              waitForProcess(10);
-            }
-          }
-        }, delay || 0);
-      })();
     }
   }
 
@@ -793,6 +821,9 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 (function () {
 
   function fileToSrc(Upload, scope, $parse, attr, name, defaultName, callback) {
+      if (defaultName) {
+        callback($parse(defaultName)(scope));
+      }
       scope.$watch(name, function (file) {
         if (!angular.isString(file)) {
           if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {

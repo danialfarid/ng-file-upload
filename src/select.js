@@ -101,6 +101,7 @@
 
     function createFileInput(evt, resetOnClick) {
       if (!resetOnClick && (evt || isInputTypeFile())) return elem.$$ngfRefElem || elem;
+      if (elem.$$ngfProgramClick) return elem;
 
       var fileElem = angular.element('<input type="file">');
       bindAttrToFileInput(fileElem);
@@ -112,7 +113,7 @@
         $compile(elem)(scope);
       } else {
         fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
-          .css('width', '0px').css('height', '0px').css('z-index', '-100000').css('border', 'none')
+          .css('width', '0px').css('height', '0px').css('border', 'none')
           .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
         if (elem.$$ngfRefElem) {
           elem.$$ngfRefElem.remove();
@@ -130,13 +131,13 @@
     }
 
     var initialTouchStartY = 0;
-
     function clickHandler(evt) {
       if (elem.attr('disabled') || disabled) return false;
 
       if (evt != null) {
+        var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
         if (evt.type === 'touchstart') {
-          initialTouchStartY = evt.originalEvent.touches[0].clientY;
+          initialTouchStartY = touches ? touches[0].clientY : 0;
           return true; // don't block event default
         } else {
           evt.stopPropagation();
@@ -144,7 +145,7 @@
 
           // prevent scroll from triggering event
           if (evt.type === 'touchend') {
-            var currentLocation = evt.originalEvent.changedTouches[0].clientY;
+            var currentLocation = touches ? touches[0].clientY : 0;
             if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
           }
         }
@@ -154,11 +155,15 @@
       var fileElem = createFileInput(evt, resetOnClick);
 
       function clickAndAssign(evt) {
-        if (evt && evt.clientY > 0) {
+        if (evt && !elem.$$ngfProgramClick) {
+          elem.$$ngfProgramClick = true;
           fileElem[0].click();
+          $timeout(function() {
+            delete elem.$$ngfProgramClick;
+          }, 500);
         }
         if ((isInputTypeFile() || !evt) && resetOnClick) {
-          elem.bind('click touchend touchstart', clickHandler);
+          elem.bind('click touchstart touchend', clickHandler);
         }
       }
 

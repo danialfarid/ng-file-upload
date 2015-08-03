@@ -1,6 +1,9 @@
 (function () {
 
   function fileToSrc(Upload, scope, $parse, attr, name, defaultName, callback) {
+      if (defaultName) {
+        callback($parse(defaultName)(scope));
+      }
       scope.$watch(name, function (file) {
         if (!angular.isString(file)) {
           if (window.FileReader && ngFileUpload.validate(scope, $parse, attr, file, null)) {
