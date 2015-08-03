@@ -7,7 +7,8 @@ Lightweight Angular JS directive to upload files.
 
 **Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0)
 
-For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). If you need support send me an [email](mailto:danial.farid@gmail.com) to set up sessions through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for other concerns.
+For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response please create a jsfiddle fork from the sample [here](http://jsfiddle.net/ew4jakn5/) or post your code with as much details as you can. If you need support send me an [email](mailto:danial.farid@gmail.com) to set up sessions through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for other concerns.
+
 If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
 
@@ -22,7 +23,7 @@ Table of Content:
 * [Install](#install) ([Manual](#manual), [Bower](#bower), [Yeoman](#yeoman), [NuGet](#nuget), [npm](#npm))
 
 ##<a name="features"></a> Features
-* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show preview of selected images/audio/videos.
+* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), Paste image (html5), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show preview of selected images/audio/videos.
 * Cross browser file upload and FileReader (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
 * Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
@@ -31,7 +32,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Sample:
-[jsfiddle http://jsfiddle.net/18yao91v/](http://jsfiddle.net/18yao91v/)
+[jsfiddle http://jsfiddle.net/ew4jakn5/](http://jsfiddle.net/ew4jakn5/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -99,7 +100,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
                        // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
-    ngf-change="fileSelected($files, $event)" // called when files are selected or removed
+    ngf-change="fileSelected($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
     ngf-multiple="true" or "false" // default false, allows selecting multiple files
     ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
     accept="image/*" // see standard HTML file input accept attribute
@@ -121,7 +122,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
                        // could be an array or single file depending on ngf-multiple and ngf-keep values.
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
-    ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
+    ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
     ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
@@ -141,7 +142,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 Drop files here
 </div>
 
-<div|... ng-no-file-drop>File Drag/drop is not supported</div>
+<div|... ngf-no-file-drop>File Drag/drop is not supported</div>
 ```
 
 #### File preview
@@ -220,6 +221,10 @@ Upload.http({
 /* Set the default values for ngf-select and ngf-drop directives
 */
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
+
+/* Convert the file to base64 data url
+*/
+Upload.dataUrl(file, callback, disallowObjectUrl);
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
@@ -232,8 +237,6 @@ Non-html5 browsers due to flash limitation will still upload array of files one 
 
 **Upload.http()**:
 This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
-
-**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
 Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
@@ -292,8 +295,10 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
 [Another wiki](https://github.com/danialfarid/ng-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
 * <a name="rails"></a>**Rails**
-[Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank)
-**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
+  * [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank). 
+  * [Blog post](http://www.coshx.com/blog/2015/07/10/file-attachments-in-angular/)
+provided by [Coshx Labs](http://www.coshx.com/).
+  * **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 * <a name="php"></a>**PHP**
 [Wiki Sample] (https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/ng-file-upload/issues/475)
 * <a name="net"></a>**.Net**
