@@ -221,6 +221,10 @@ Upload.http({
 /* Set the default values for ngf-select and ngf-drop directives
 */
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
+
+/* Convert the file to base64 data url
+*/
+Upload.dataUrl(file, callback, disallowObjectUrl);
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
