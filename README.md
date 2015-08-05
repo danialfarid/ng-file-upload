@@ -24,14 +24,14 @@ Table of Content:
 
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
-* file drag and drop and paste images.
+* file drag and drop and paste images
 * abort/cancel upload
 * file type/size validation and `ng-required` support.
 * show preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
-* plenty of sample server side code.
+* plenty of sample server side code, available on nuget
 * on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
-* HTML5 FileReader shim.
+* HTML5 FileReader shim
 
 ##<a name="usage"></a> Usage
 
