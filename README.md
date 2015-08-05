@@ -1,15 +1,15 @@
 ng-file-upload
 ===================
 
-Lightweight Angular JS directive to upload files.
+Lightweight Angular directive to upload files.
 
-**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
+**See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
 **Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0)
 
 For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response please create a jsfiddle fork from the sample [here](http://jsfiddle.net/ew4jakn5/) or post your code with as much details as you can. If you need support send me an [email](mailto:danial.farid@gmail.com) to set up sessions through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for other concerns.
 
-If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
+If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
 
 Table of Content:
@@ -23,11 +23,15 @@ Table of Content:
 * [Install](#install) ([Manual](#manual), [Bower](#bower), [Yeoman](#yeoman), [NuGet](#nuget), [npm](#npm))
 
 ##<a name="features"></a> Features
-* Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), Paste image (html5), CORS, `PUT(html5)`/`POST` methods, validation of file type and size, show preview of selected images/audio/videos.
-* Cross browser file upload and FileReader (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
-* Direct upload to db services CouchDB, imgur, etc... with file's content type using `Upload.http()`. This enables progress event for angular http `POST`/`PUT` requests.
-* Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
-* Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
+* file upload progress, cancel/abort
+* file drag and drop and paste images.
+* abort/cancel upload
+* file type/size validation and `ng-required` support.
+* show preview of selected images/audio/videos
+* supports CORS and direct upload of file's binary data using `Upload.$http()`
+* plenty of sample server side code.
+* on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
+* HTML5 FileReader shim.
 
 ##<a name="usage"></a> Usage
 
@@ -41,50 +45,47 @@ Table of Content:
 
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
-    <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
-    <div class="button" ngf-select ng-model="files" ngf-multiple="true">Upload multiple using model $watch</div>
-    <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-    <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true">Upload multiple on file change</div>
-    Drop File:
-    <div ngf-drop ng-model="files" class="drop-box" 
-        ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-        ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
-    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
-    
-    Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
-    Audio preview: <audio controls ngf-src="file" ngf-accept="'audio/*'"></audio>
-    Video preview: <video controls ngf-src="file" ngf-accept="'video/*'"></video>
+  <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
+  <div class="button" ngf-select ng-model="files" ngf-multiple="true">Upload multiple using model $watch</div>
+  <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
+  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true">Upload multiple on file change</div>
+  Drop File:
+  <div ngf-drop ng-model="files" class="drop-box" 
+  ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
+  ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+  <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+
+  Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
+  Audio preview: <audio controls ngf-src="file" ngf-accept="'audio/*'"></audio>
+  Video preview: <video controls ngf-src="file" ngf-accept="'video/*'"></video>
 </div>
 ```
 JS:
 ```js
-//inject angular file upload directives and services.
+//inject directives and services.
 var app = angular.module('fileUpload', ['ngFileUpload']);
 
 app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
-    $scope.$watch('files', function () {
-        $scope.upload($scope.files);
+    $scope.$watch('file', function (file) {
+      $scope.upload($scope.file);
     });
-    // set default directive values
-    // Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
-    $scope.upload = function (files) {
-        if (files && files.length) {
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                Upload.upload({
-                    url: 'upload/url',
-                    fields: {'username': $scope.username},
-                    file: file
-                }).progress(function (evt) {
-                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                }).success(function (data, status, headers, config) {
-                    console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-                }).error(function (data, status, headers, config) {
-                    console.log('error status: ' + status);
-                })
-            }
-        }
+    
+    /* optional: set default directive values */
+    //Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
+    
+    $scope.upload = function (file) {
+        Upload.upload({
+            url: 'upload/url',
+            fields: {'username': $scope.username},
+            file: file
+        }).progress(function (evt) {
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+        }).success(function (data, status, headers, config) {
+            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+        }).error(function (data, status, headers, config) {
+            console.log('error status: ' + status);
+        })
     };
 }]);
 ```
@@ -95,49 +96,49 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ```html
 <button|div|input type="file"|ngf-select|...
-    *ngf-select="true" or "false" // default true, enables file select directive on this element
-    ng-model="myFiles" // binds the selected file or files to the scope model 
-                       // could be an array or single file depending on ngf-multiple and ngf-keep values.
-    ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
-    ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
-    ngf-change="fileSelected($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
-    ngf-multiple="true" or "false" // default false, allows selecting multiple files
-    ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
-    accept="image/*" // see standard HTML file input accept attribute
-    ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-    ngf-min-size='10' // minimum acceptable file size in bytes
-    ngf-max-size='10' // maximum acceptable file size in bytes
-    ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
-    ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
-    ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
-    ngf-reset-model-on-click="true" or "false" // default true, reset the model upon click. see note below.
+  *ngf-select="true" or "false" // default true, enables file select directive on this element
+  ng-model="myFiles" // binds the selected file or files to the scope model 
+                     // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
+  ng-disabled="selectDisabled" // bind to a boolean value that triggers deactivation of the file select
+  ngf-change="fileSelected($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
+  ngf-multiple="true" or "false" // default false, allows selecting multiple files
+  ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
+  accept="image/*" // see standard HTML file input accept attribute
+  ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  ngf-min-size='10' // minimum acceptable file size in bytes
+  ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
+  ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
+  ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
+  ngf-reset-model-on-click="true" or "false" // default true, reset the model upon click. see note below.
 >Upload</button>
 ```
 #### File drop
 ```html
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-    *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
-    ng-model="myFiles" // binds the dropped file or files to the scope model 
-                       // could be an array or single file depending on ngf-multiple and ngf-keep values.
-    ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
-    ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
-    ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
-    ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
-    ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-    ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
-    ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
+  ngf-drop="true" or "false" // default true, enables file drop directive on this element 
+  ng-model="myFiles" // binds the dropped file or files to the scope model 
+                     // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
+  ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
+  ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
+  ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
+  ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
+  ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
               // accept/reject class only works in Chrome and on the file mime type so ngf-accept
               // needs to check the file mime type for it to work.
-    ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
-                                  // drag&drop support for this browser
-    ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
-    ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
-    ngf-min-size='10' // minimum acceptable file size in bytes
-    ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
+                                     // drag&drop support for this browser
+  ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
+  ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
+  ngf-min-size='10' // minimum acceptable file size in bytes
+  ngf-max-size='10' // maximum acceptable file size in bytes
 >
 Drop files here
 </div>
@@ -148,14 +149,14 @@ Drop files here
 #### File preview
 ```html
 <img|audio|video 
-    ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
-    ngf-background="file" //sets background-image style to the file data url.
-    ngf-default-src="'placeholder.jpg'" // default src in case no file is available
-    ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
-    ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
-    ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-    ngf-min-size='10' // minimum acceptable file size in bytes
-    ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
+  ngf-background="file" //sets background-image style to the file data url.
+  ngf-default-src="'placeholder.jpg'" // default src in case no file is available
+  ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
+  ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
+  ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  ngf-min-size='10' // minimum acceptable file size in bytes
+  ngf-max-size='10' // maximum acceptable file size in bytes
 > 
 ```
 
@@ -164,7 +165,7 @@ Drop files here
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
   *file: file,  // single file or an array of files (array is for html5 only)
-  method: 'POST' or 'PUT', default POST,
+  method: 'POST' or 'PUT'(html5), default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
   fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
   /* 
@@ -208,14 +209,14 @@ upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
    Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
-   It could also be used to monitor the progress of a normal http post/put request. 
+   It could also be used to enable progress for regualr angular $http() post/put requests.
 */
 Upload.http({
-			url: '/server/upload/url',
-			headers : {
-				'Content-Type': file.type
-			},
-			data: file
+  url: '/server/upload/url',
+  headers : {
+    'Content-Type': file.type
+  },
+  data: file
 })
 
 /* Set the default values for ngf-select and ngf-drop directives
