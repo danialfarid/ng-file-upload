@@ -21,7 +21,7 @@ If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/
 
 Table of Content:
 * [Features](#features)
-* [Install](#install) ([Manual](#manual), [Bower](#bower), [NuGet](#nuget), [npm](#npm))
+* [Install](#install) ([Manual](#manual), [Bower](#bower), [NuGet](#nuget), [NPM](#npm))
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
 * [Server Side](#server) 
@@ -46,7 +46,7 @@ Table of Content:
 * <a name="bower"></a>**Bower**: 
   * `bower install ng-file-upload-shim --save`(for non html5 suppport)
   * `bower install ng-file-upload --save`
-* <a name="nuget"></a>**Nuget**: `PM> Install-Package angular-file-upload` (thanks to [Georgios Diamantopoulos](https://github.com/georgiosd))
+* <a name="nuget"></a>**NuGet**: `PM> Install-Package angular-file-upload` (thanks to [Georgios Diamantopoulos](https://github.com/georgiosd))
 * <a name="npm"></a>**NPM**: `npm install ng-file-upload`
 ```html
 <script src="angular(.min).js"></script>
