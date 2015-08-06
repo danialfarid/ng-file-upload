@@ -1,3 +1,10 @@
+[![npm version](https://badge.fury.io/js/ng-file-upload.svg)](http://badge.fury.io/js/ng-file-upload)
+[![Downloads](http://img.shields.io/npm/dm/ng-file-upload.svg)](https://npmjs.org/package/ng-file-upload)
+[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/pr)](http://issuestats.com/github/danialfarid/ng-file-upload)
+[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/issue)](http://issuestats.com/github/danialfarid/ng-file-upload)<br/>
+[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+[![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?style=social&label=Donate)](http://img.shields.io/gratipay/danialfarid)
+
 ng-file-upload
 ===================
 
@@ -7,20 +14,20 @@ Lightweight Angular directive to upload files.
 
 **Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0)
 
-For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response please create a jsfiddle fork from the sample [here](http://jsfiddle.net/ew4jakn5/) or post your code with as much details as you can. If you need support send me an [email](mailto:danial.farid@gmail.com) to set up sessions through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for other concerns.
-
-If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
+Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.
+Bug report or feature request: search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response provide steps to reprodce/versions with a jsfiddle from [here](http://jsfiddle.net/ew4jakn5/). Need paid support contact [me](mailto:danial.farid@gmail.com).
+If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload).
 
 
 Table of Content:
 * [Features](#features)
+* [Install](#install) [Manual](#manual), [Bower](#bower), [NuGet](#nuget), [npm](#npm))
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
 * [Server Side](#server) 
   * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
-  * [Amazon S3 Upload](#s3)
   * [CORS](#cors)
-* [Install](#install) ([Manual](#manual), [Bower](#bower), [Yeoman](#yeoman), [NuGet](#nuget), [npm](#npm))
+  * [Amazon S3 Upload](#s3)
 
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
@@ -32,6 +39,20 @@ Table of Content:
 * plenty of sample server side code, available on nuget
 * on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
 * HTML5 FileReader shim
+
+##<a name="install"></a> Install
+
+* <a name="manual"></a>manual: download latest from [here](https://github.com/danialfarid/ng-file-upload-bower/releases/latest)
+* <a name="bower"></a>bower: 
+  * `bower install ng-file-upload-shim --save`(for non html5 suppport)
+  * `bower install ng-file-upload --save`
+* <a name="nuget"></a>nuget: `PM> Install-Package angular-file-upload` (thanks to [Georgios Diamantopoulos](https://github.com/georgiosd))
+* <a name="npm"></a>npm: `npm install ng-file-upload`
+```html
+<script src="angular(.min).js"></script>
+<script src="ng-file-upload-shim(.min).js"></script> <!-- for no html5 browsers support -->
+<script src="ng-file-upload(.min).js"></script> 
+```
 
 ##<a name="usage"></a> Usage
 
@@ -60,7 +81,7 @@ Table of Content:
   Video preview: <video controls ngf-src="file" ngf-accept="'video/*'"></video>
 </div>
 ```
-JS:
+Javascript code:
 ```js
 //inject directives and services.
 var app = angular.module('fileUpload', ['ngFileUpload']);
@@ -305,6 +326,24 @@ provided by [Coshx Labs](http://www.coshx.com/).
 * <a name="net"></a>**.Net**
 Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
+##<a name="cors"></a>CORS
+To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
+([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
+```java
+httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
+httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
+httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
+```
+For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
+<a name="crossdomain"></a>([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
+```xml
+<cross-domain-policy>
+  <site-control permitted-cross-domain-policies="all"/>
+  <allow-access-from domain="angular-file-upload.appspot.com"/>
+  <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
+</cross-domain-policy>
+```
+
 #### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
@@ -385,60 +424,6 @@ For IE8-9 flash polyfill you need to have a <a href='#crossdomain'>crossdomain.x
 
 
 You can also have a look at [https://github.com/nukulb/s3-angular-file-upload](https://github.com/nukulb/s3-angular-file-upload) for another example with [this](https://github.com/danialfarid/ng-file-upload/issues/814#issuecomment-112198426) fix.
-
-##<a name="cors"></a>CORS
-To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
-([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
-```java
-httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
-httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
-httpResp.setHeader("Access-Control-Allow-Headers", "Content-Type"));
-```
-For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the root of your server to allow CORS for flash:
-<a name="crossdomain"></a>([sample xml](https://angular-file-upload.appspot.com/crossdomain.xml))
-```xml
-<cross-domain-policy>
-  <site-control permitted-cross-domain-policies="all"/>
-  <allow-access-from domain="angular-file-upload.appspot.com"/>
-  <allow-http-request-headers-from domain="*" headers="*" secure="false"/>
-</cross-domain-policy>
-```
-
-
-##<a name="install"></a> Install
-
-####<a name="manual"></a> Manual download 
-Download latest release from [here](https://github.com/danialfarid/ng-file-upload-bower/releases)
-
-####<a name="bower"></a> Bower
-```sh
-#notice 'ng' at the beginning of the module name not 'angular'
-bower install ng-file-upload 
-```
-```html
-<script src="angular(.min).js"></script>
-<script src="ng-file-upload-shim(.min).js"></script> <!-- for no html5 browsers support -->
-<script src="ng-file-upload(.min).js"></script> 
-```
-
-####<a name="yeoman"></a> Yeoman with bower automatic include
-```
-bower install ng-file-upload --save
-bower install ng-file-upload-shim --save 
-```
-bower.json
-```
-{
-  "dependencies": [..., "ng-file-upload-shim", "ng-file-upload", ...],
-}
-```
-####<a name="nuget"></a> NuGet
-Package is also available on NuGet: http://www.nuget.org/packages/angular-file-upload with the help of [Georgios Diamantopoulos](https://github.com/georgiosd)
-
-####<a name="npm"></a> NPM
-```
-npm install ng-file-upload
-```
 
 
 
