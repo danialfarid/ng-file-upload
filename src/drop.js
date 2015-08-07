@@ -104,8 +104,6 @@
     }, false);
     elem[0].addEventListener('paste', function (evt) {
       if (elem.attr('disabled') || disabled) return;
-      evt.preventDefault();
-      if (stopPropagation(scope)) evt.stopPropagation();
       extractFiles(evt, function (files, rejFiles) {
         updateModel($parse, $timeout, scope, ngModel, attr,
           getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfDrop'), files, rejFiles, evt);
