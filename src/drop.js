@@ -52,7 +52,7 @@
     }
 
     var disabled = false;
-    if (getAttr(attr, 'ngfDrop').search(/\W+$files\W+/) === -1) {
+    if (getAttr(attr, 'ngfDrop').search(/\W+\$files\W+/) === -1) {
       scope.$watch(getAttr(attr, 'ngfDrop'), function(val) {
         disabled = val === false;
       });
