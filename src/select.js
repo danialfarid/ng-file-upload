@@ -234,9 +234,13 @@
       return result;
     }
 
+    var custom = $parse(getAttr(attr, 'ngfValidate'))(scope, {$file: file, $event: evt});
     var accept = $parse(getAttr(attr, 'ngfAccept'))(scope, {$file: file, $event: evt});
     var fileSizeMax = $parse(getAttr(attr, 'ngfMaxSize'))(scope, {$file: file, $event: evt}) || 9007199254740991;
     var fileSizeMin = $parse(getAttr(attr, 'ngfMinSize'))(scope, {$file: file, $event: evt}) || -1;
+    if (custom === false) {
+      return false;
+    }
     if (accept != null && angular.isString(accept)) {
       var regexp = new RegExp(globStringToRegex(accept), 'gi');
       accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||
