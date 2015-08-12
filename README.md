@@ -127,6 +127,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   accept="image/*" // see standard HTML file input accept attribute
   ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  nfg-validate="validate($file)" //function to provide custom validation
   ngf-min-size='10' // minimum acceptable file size in bytes
   ngf-max-size='10' // maximum acceptable file size in bytes
   ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
@@ -147,6 +148,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
   ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
   ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
   ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  nfg-validate="validate($file)" //function to provide custom validation
   ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
