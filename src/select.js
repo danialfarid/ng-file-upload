@@ -27,6 +27,7 @@
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
+    /** @namespace attr.ngfValidate */
     /** @namespace attr.ngfMaxSize */
     /** @namespace attr.ngfMinSize */
     /** @namespace attr.ngfResetOnClick */
@@ -43,7 +44,7 @@
     });
 
     var disabled = false;
-    if (getAttr(attr, 'ngfSelect').search(/\W+$files\W+/) === -1) {
+    if (getAttr(attr, 'ngfSelect').search(/\W+\$files\W+/) === -1) {
       scope.$watch(getAttr(attr, 'ngfSelect'), function (val) {
         disabled = val === false;
       });
@@ -235,12 +236,13 @@
     }
 
     var custom = $parse(getAttr(attr, 'ngfValidate'))(scope, {$file: file, $event: evt});
+    if (custom != null && (custom === false || custom.length > 0)) {
+      file.$error = custom ? custom : 'validate';
+      return false;
+    }
     var accept = $parse(getAttr(attr, 'ngfAccept'))(scope, {$file: file, $event: evt});
     var fileSizeMax = $parse(getAttr(attr, 'ngfMaxSize'))(scope, {$file: file, $event: evt}) || 9007199254740991;
     var fileSizeMin = $parse(getAttr(attr, 'ngfMinSize'))(scope, {$file: file, $event: evt}) || -1;
-    if (custom === false) {
-      return false;
-    }
     if (accept != null && angular.isString(accept)) {
       var regexp = new RegExp(globStringToRegex(accept), 'gi');
       accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||

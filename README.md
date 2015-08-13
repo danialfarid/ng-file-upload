@@ -126,10 +126,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   ngf-multiple="true" or "false" // default false, allows selecting multiple files
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   accept="image/*" // see standard HTML file input accept attribute
-  ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-  nfg-validate="validate($file)" //function to provide custom validation
+  ngf-accept="'image/*'" // comma separated wildcard to filter files allowed
+  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
   ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-max-size='1000' // maximum acceptable file size in bytes
   ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
   ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
   ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
@@ -147,8 +147,8 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
   ng-disabled="dropDisabled" // bind to a boolean value that triggers deactivation of the file drop
   ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
   ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
-  ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-  nfg-validate="validate($file)" //function to provide custom validation
+  ngf-accept="'.pdf,.jpg'" // comma separated wildcard to filter files allowed
+  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
   ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
@@ -161,7 +161,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
   ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
   ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
   ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-max-size='1000' // maximum acceptable file size in bytes
 >
 Drop files here
 </div>
@@ -177,9 +177,10 @@ Drop files here
   ngf-default-src="'placeholder.jpg'" // default src in case no file is available
   ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
   ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
-  ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
+  ngf-accept="'.pdf,.jpg'" // comma separated wildcard to filter files allowed
+  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
   ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='10' // maximum acceptable file size in bytes
+  ngf-max-size='1000' // maximum acceptable file size in bytes
 > 
 ```
 
@@ -272,7 +273,9 @@ By default since there is no cross-browser way to detect cancel on the file popu
 Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would receive a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
 
 **ng-model-rejected**:
-You can find the reason for rejection using `file.$error` which would be one of these values `accept`, `minSize`, or `maxSize`. The first one is for the case the file doesn't match the ngf-accept criteria.
+You can find the reason for rejection using `file.$error` which would be one of these values `accept`, `minSize`, `maxSize`, `validate`, or a custom error returned by `ngf-validate` function.
+`accept` is for the case the file doesn't match the `ngf-accept` criteria.
+`validate` is for the case when the ngf-validate function returns false for that file.
 
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values. 
