@@ -25,7 +25,7 @@ var ngFileUpload = angular.module('ngFileUpload', []);
 ngFileUpload.version = '<%= pkg.version %>';
 ngFileUpload.defaults = {};
 
-ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
+ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
     config.method = config.method || 'POST';
     config.headers = config.headers || {};
@@ -198,34 +198,10 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     return sendHttp(config);
   };
 
-  this.dataUrl = function (file, callback, disallowObjectUrl) {
-    if (window.FileReader && file &&
-      (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
-      (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
-      $timeout(function () {
-        //prefer URL.createObjectURL for handling refrences to files of all sizes
-        //since it doesn´t build a large string in memory
-        var URL = window.URL || window.webkitURL;
-        if (URL && URL.createObjectURL && !disallowObjectUrl) {
-          callback(URL.createObjectURL(file));
-        } else {
-          var fileReader = new FileReader();
-          fileReader.readAsDataURL(file);
-          fileReader.onload = function (e) {
-            $timeout(function () {
-              callback(e.target.result);
-            });
-          };
-        }
-      });
-    } else {
-      callback(null);
-    }
-  };
-
   this.setDefaults = function(defaults) {
     ngFileUpload.defaults = defaults || {};
   };
+  ngFileUpload.Upload = this;
 }
 
 ]);

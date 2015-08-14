@@ -90,7 +90,7 @@
                ngf-multiple="multiple" ngf-accept="accept" accept="{{acceptSelect}}"
                ng-disabled="disabled" ngf-capture="capture"
                ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-               ngf-min-size="minSize" ngf-max-size="maxSize"
+               ngf-validate="validateObj"
                ngf-keep="keep" ngf-keep-distinct="keepDistinct" ngf-reset-on-click="resetOnClick"
                ngf-reset-model-on-click="resetModelOnClick"
                ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File,
@@ -102,8 +102,7 @@
           <label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
           <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
           <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
-          <label>ngf-min-size: <input type="text" ng-model="minSize"></label><br/>
-          <label>ngf-max-size: <input type="text" ng-model="maxSize"></label><br/>
+          <label>ngf-validate: <input type="text" ng-model="validate" size="49"></label><br/>
           <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
           <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
           <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
@@ -117,10 +116,10 @@
 
         <div class="preview">
           <div>Preview image/audio/video:</div>
-          <img ngf-src="files[0]" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
-          <audio controls ngf-src="files[0]" ng-show="files[0].type.indexOf('audio') > -1"
+          <img ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
+          <audio controls ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('audio') > -1"
                  ngf-accept="'audio/*'"></audio>
-          <video controls ngf-src="files[0]" ng-show="files[0].type.indexOf('video') > -1"
+          <video controls ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('video') > -1"
                  ngf-accept="'video/*'"></video>
         </div>
       </fieldset>
@@ -129,12 +128,12 @@
   </div>
   <ul style="clear:both" ng-show="rejFiles.length > 0" class="response">
     <li class="sel-file" ng-repeat="f in rejFiles">
-      Rejected file: {{f.$error}}, {{f.name}} - size: {{f.size}}B - type: {{f.type}}
+      Rejected file: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type: {{f.type}}
     </li>
   </ul>
   <ul style="clear:both" ng-show="files.length > 0" class="response">
     <li class="sel-file" ng-repeat="f in files">
-      <img ng-show="f.type.indexOf('image') > -1" ngf-src="f" class="thumb" ngf-accept="'image/*'">
+      <img ng-show="f.type.indexOf('image') > -1" ng-src="{{f | ngfDataUrl}}" class="thumb" ngf-accept="'image/*'">
 				<span class="progress" ng-show="f.progress >= 0">
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>

@@ -1,14 +1,15 @@
 (function () {
-  ngFileUpload.getAttrWithDefaults = function(attr, name) {
+  ngFileUpload.getAttrWithDefaults = function (attr, name) {
     return attr[name] != null ? attr[name] :
       (ngFileUpload.defaults[name] == null ?
         ngFileUpload.defaults[name] : ngFileUpload.defaults[name].toString());
   };
 
-  var getAttr = ngFileUpload.getAttrWithDefaults;
+  var getAttr = ngFileUpload.getAttrWithDefaults, uploadService;
 
-  ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile',
-    function ($parse, $timeout, $compile) {
+  ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
+    function ($parse, $timeout, $compile, Upload) {
+      uploadService = Upload;
       return {
         restrict: 'AEC',
         require: '?ngModel',
@@ -28,8 +29,9 @@
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfAccept */
     /** @namespace attr.ngfValidate */
-    /** @namespace attr.ngfMaxSize */
-    /** @namespace attr.ngfMinSize */
+    /** @namespace attr.ngfDuration*/
+    /** @namespace attr.ngfWidth*/
+    /** @namespace attr.ngfHeight*/
     /** @namespace attr.ngfResetOnClick */
     /** @namespace attr.ngfResetModelOnClick */
     /** @namespace attr.ngfKeep */
@@ -53,34 +55,17 @@
       return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
     }
 
-    var isUpdating = false;
-
     function changeFn(evt) {
-      if (!isUpdating) {
-        isUpdating = true;
-        try {
-          var fileList = evt.__files_ || (evt.target && evt.target.files);
-          var files = [], rejFiles = [];
-
-          for (var i = 0; i < fileList.length; i++) {
-            var file = fileList.item(i);
-            if (validate(scope, $parse, attr, file, evt)) {
-              files.push(file);
-            } else {
-              rejFiles.push(file);
-            }
-          }
-          elem.$$ngfHasFile = true;
-          updateModel($parse, $timeout, scope, ngModel, attr,
-            getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
-          if (files.length === 0) evt.target.value = files;
+      var fileList = evt.__files_ || (evt.target && evt.target.files);
+      uploadService.validate(scope, $parse, attr, fileList, evt, function(files, rejFiles) {
+        elem.$$ngfHasFile = true;
+        ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
+          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
+        if (files.length === 0) evt.target.value = files;
 //                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
 //                    angular.element(evt.target).remove();
 //                }
-        } finally {
-          isUpdating = false;
-        }
-      }
+      });
     }
 
     function bindAttrToFileInput(fileElem) {
@@ -129,13 +114,14 @@
 
     function resetModel(evt) {
       if (elem.$$ngfHasFile) {
-        updateModel($parse, $timeout, scope, ngModel, attr,
+        ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
           getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
         delete elem.$$ngfHasFile;
       }
     }
 
     var initialTouchStartY = 0;
+
     function clickHandler(evt) {
       if (elem.attr('disabled') || disabled) return false;
 
@@ -163,7 +149,7 @@
         if (evt && !elem.$$ngfProgramClick) {
           elem.$$ngfProgramClick = true;
           fileElem[0].click();
-          $timeout(function() {
+          $timeout(function () {
             delete elem.$$ngfProgramClick;
           }, 500);
         }
@@ -213,66 +199,6 @@
     return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
   }
 
-  ngFileUpload.validate = function (scope, $parse, attr, file, evt) {
-    if (file == null) {
-      return false;
-    }
-    function globStringToRegex(str) {
-      if (str.length > 2 && str[0] === '/' && str[str.length - 1] === '/') {
-        return str.substring(1, str.length - 1);
-      }
-      var split = str.split(','), result = '';
-      if (split.length > 1) {
-        for (var i = 0; i < split.length; i++) {
-          result += '(' + globStringToRegex(split[i]) + ')';
-          if (i < split.length - 1) {
-            result += '|';
-          }
-        }
-      } else {
-        if (str.indexOf('.') === 0) {
-          str = '*' + str;
-        }
-        result = '^' + str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + '-]', 'g'), '\\$&') + '$';
-        result = result.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
-      }
-      return result;
-    }
-
-    var custom = $parse(getAttr(attr, 'ngfValidate'))(scope, {$file: file, $event: evt});
-    if (custom != null && (custom === false || custom.length > 0)) {
-      file.$error = custom ? custom : 'validate';
-      return false;
-    }
-    var accept = $parse(getAttr(attr, 'ngfAccept'))(scope, {$file: file, $event: evt});
-    var fileSizeMax = $parse(getAttr(attr, 'ngfMaxSize'))(scope, {$file: file, $event: evt}) || 9007199254740991;
-    var fileSizeMin = $parse(getAttr(attr, 'ngfMinSize'))(scope, {$file: file, $event: evt}) || -1;
-    if (accept != null && angular.isString(accept)) {
-      var regexp = new RegExp(globStringToRegex(accept), 'gi');
-      accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||
-        (file.name != null && regexp.test(file.name.toLowerCase()));
-      if (!accept) {
-        file.$error = 'accept';
-        return false;
-      }
-    } else {
-      if (accept === false) {
-        file.$error = 'accept';
-        return false;
-      }
-    }
-    if (file.size == null) return true;
-    if (file.size > fileSizeMax) {
-      file.$error = 'maxSize';
-      return false;
-    }
-    if (file.size < fileSizeMin) {
-      file.$error = 'minSize';
-      return false;
-    }
-    return true;
-  };
-
   ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
                                        files, rejFiles, evt, noDelay) {
     function update() {
@@ -298,8 +224,10 @@
       }
       var file = files && files.length ? files[0] : null;
       if (ngModel) {
-        var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && ! getAttr(attr, 'multiple') && !keep;
-        $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
+        var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && !getAttr(attr, 'multiple') && !keep;
+        $timeout(function() {
+          $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
+        });
         $timeout(function () {
           if (ngModel) {
             ngModel.$setViewValue(singleModel ? file : (files != null && files.length === 0 ? null : files));
@@ -332,8 +260,5 @@
       });
     }
   };
-
-  var validate = ngFileUpload.validate;
-  var updateModel = ngFileUpload.updateModel;
 
 })();

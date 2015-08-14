@@ -24,6 +24,7 @@
     "ngFileUpload":true,
     "FormData":true,
     "Blob":true,
-    "ActiveXObject":false
+    "ActiveXObject":false,
+    "$document":false
   }
 }
