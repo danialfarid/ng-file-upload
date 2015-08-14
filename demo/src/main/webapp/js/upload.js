@@ -18,7 +18,10 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
         $scope.formUpload = false;
         if (files != null) {
             if (!angular.isArray(files)) {
-                $scope.files = files = [files];
+                $timeout(function() {
+                    $scope.files = files = [files];
+                });
+                return;
             }
             for (var i = 0; i < files.length; i++) {
                 $scope.errorMsg = null;

@@ -320,6 +320,9 @@
       }
     }
 
+    if ((!files || files.length === 0) && (!ngModel.$modelValue || ngModel.$modelValue.length === 0)) {
+      return;
+    }
     if (noDelay) {
       update();
     } else {
