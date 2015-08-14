@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.1.1
+ * @version 6.1.2
  */
 
 (function () {
@@ -430,7 +430,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.1.1
+ * @version 6.1.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -451,7 +451,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '6.1.1';
+ngFileUpload.version = '6.1.2';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -731,6 +731,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
               rejFiles.push(file);
             }
           }
+          elem.$$ngfHasFile = true;
           updateModel($parse, $timeout, scope, ngModel, attr,
             getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
           if (files.length === 0) evt.target.value = files;
@@ -788,8 +789,11 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     }
 
     function resetModel(evt) {
-      updateModel($parse, $timeout, scope, ngModel, attr,
-        getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
+      if (elem.$$ngfHasFile) {
+        updateModel($parse, $timeout, scope, ngModel, attr,
+          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
+        delete elem.$$ngfHasFile;
+      }
     }
 
     var initialTouchStartY = 0;
@@ -981,9 +985,6 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       }
     }
 
-    if ((!files || files.length === 0) && (!ngModel.$modelValue || ngModel.$modelValue.length === 0)) {
-      return;
-    }
     if (noDelay) {
       update();
     } else {

@@ -70,6 +70,7 @@
               rejFiles.push(file);
             }
           }
+          elem.$$ngfHasFile = true;
           updateModel($parse, $timeout, scope, ngModel, attr,
             getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
           if (files.length === 0) evt.target.value = files;
@@ -127,8 +128,11 @@
     }
 
     function resetModel(evt) {
-      updateModel($parse, $timeout, scope, ngModel, attr,
-        getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
+      if (elem.$$ngfHasFile) {
+        updateModel($parse, $timeout, scope, ngModel, attr,
+          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
+        delete elem.$$ngfHasFile;
+      }
     }
 
     var initialTouchStartY = 0;
@@ -320,9 +324,6 @@
       }
     }
 
-    if ((!files || files.length === 0) && (!ngModel.$modelValue || ngModel.$modelValue.length === 0)) {
-      return;
-    }
     if (noDelay) {
       update();
     } else {
