@@ -73,8 +73,10 @@
 
   ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
     return function (file, disallowObjectUrl) {
-      //return 'aaaa' + file + disallowObjectUrl + $sce + UploadDataUrl;
-      if (file && !file.dataUrl && !angular.isString(file)) {
+      if (angular.isString(file)) {
+        return $sce.trustAsResourceUrl(file);
+      }
+      if (file && !file.dataUrl) {
         if (file.dataUrl === undefined && angular.isObject(file)) {
           file.dataUrl = null;
           UploadDataUrl.dataUrl(file, function (url, file) {

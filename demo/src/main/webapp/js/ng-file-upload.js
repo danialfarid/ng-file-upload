@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 6.2.0
+ * @version 6.2.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '6.2.0';
+ngFileUpload.version = '6.2.1';
 ngFileUpload.defaults = {};
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
@@ -546,8 +546,10 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
   ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
     return function (file, disallowObjectUrl) {
-      //return 'aaaa' + file + disallowObjectUrl + $sce + UploadDataUrl;
-      if (file && !file.dataUrl && !angular.isString(file)) {
+      if (angular.isString(file)) {
+        return $sce.trustAsResourceUrl(file);
+      }
+      if (file && !file.dataUrl) {
         if (file.dataUrl === undefined && angular.isObject(file)) {
           file.dataUrl = null;
           UploadDataUrl.dataUrl(file, function (url, file) {
