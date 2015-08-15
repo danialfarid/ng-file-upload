@@ -12,7 +12,8 @@ Lightweight Angular directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
-**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0)
+**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0)
+
 
 Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.<br/>
 For bug report or feature request please search through existing [issues](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response provide steps to reprodce/versions with a jsfiddle from [here](http://jsfiddle.net/ew4jakn5/). Need paid support contact [me](mailto:danial.farid@gmail.com).<br/>
@@ -33,7 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop and paste images
 * abort/cancel upload
-* file type/size validation and `ng-required` support.
+* validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
@@ -67,18 +68,19 @@ Table of Content:
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
   <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
-  <div class="button" ngf-select ng-model="files" ngf-multiple="true">Upload multiple using model $watch</div>
+  <div class="button" ngf-select ng-model="files" ngf-multiple="true" ngf-accept="'image/*" accept="image/*">Upload multiple images using model $watch</div>
   <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true">Upload multiple on file change</div>
+  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" 
+       ngf-validate="{size: {min:'10KB', max:'20MB'}}">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box" 
   ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
   ngf-accept="'image/*,application/pdf'">Drop Images or PDFs files here</div>
   <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
-  Image thumbnail: <img ngf-src="file" ngf-default-src="'/thumb.jpg'" ngf-accept="'image/*'">
-  Audio preview: <audio controls ngf-src="file" ngf-accept="'audio/*'"></audio>
-  Video preview: <video controls ngf-src="file" ngf-accept="'video/*'"></video>
+  Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
+  Audio preview: <audio controls ngf-src="file"></audio>
+  Video preview: <video controls ngf-src="file"></video>
 </div>
 ```
 Javascript code:
@@ -125,11 +127,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   ngf-change="fileSelected($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
   ngf-multiple="true" or "false" // default false, allows selecting multiple files
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
-  accept="image/*" // see standard HTML file input accept attribute
+  accept="image/*" // see standard HTML file input accept attribute (browser dependent)
   ngf-accept="'image/*'" // comma separated wildcard to filter files allowed
-  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
-  ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='1000' // maximum acceptable file size in bytes
+  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, 
+                height: {min: 100, max: 300}, duration: {min: '10s', max: '5m'}, accept: '.jpg'}" 
+                or "validate($file)"
+                // see notes below after the code
   ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
   ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
   ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
@@ -148,7 +151,10 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
   ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
   ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
   ngf-accept="'.pdf,.jpg'" // comma separated wildcard to filter files allowed
-  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
+  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, 
+                height: {min: 100, max: 300}, duration: {min: '10s', max: '5m'}, accept: '.jpg'}" 
+                or "validate($file)"
+                // see notes below after the code
   ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
@@ -160,8 +166,6 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
                                      // drag&drop support for this browser
   ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
   ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
-  ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='1000' // maximum acceptable file size in bytes
 >
 Drop files here
 </div>
@@ -174,13 +178,7 @@ Drop files here
 <img|audio|video 
   ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
   ngf-background="file" //sets background-image style to the file data url.
-  ngf-default-src="'placeholder.jpg'" // default src in case no file is available
-  ngf-default-background="'placeholder.jpg'" // default background-image style in case no file is available
   ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
-  ngf-accept="'.pdf,.jpg'" // comma separated wildcard to filter files allowed
-  ngf-validate="validate($file)" // custom validation, to reject return false or non-empty string for file.$error
-  ngf-min-size='10' // minimum acceptable file size in bytes
-  ngf-max-size='1000' // maximum acceptable file size in bytes
 > 
 ```
 
@@ -257,6 +255,27 @@ The model value will be a single file instead of an array if all of the followin
   * `multiple` attribute is not set on the element 
   * `ngf-keep` is not set or is resolved to false.
 
+**ngf-validate**
+Either an object containing the restrictions or a custom function. 
+restriction object could have any of these fields to restrict the accepted files. The files that are not valid according to these rules will be assigned to `ng-model-rejected` model object.
+```
+{
+ size: {min: 10, max: '2.5MB'}, 
+ width: {min: 100, max: 10000, soft: true}, 
+ height: {min: 100, max: 300, soft: true}, 
+ duration: {min: '10s', max: '5m', soft: false}, 
+ accept: 'image/*'
+} 
+```
+  * `size` is to restrict the allowed file size, integer value will be in bytes, you can use shorthand string form with 'B', 'KB', 'MB', 'GB' endings.<br/>
+  * `width` and `height` are to restrict the image file dimensions, values are in integer `px`. <br/>
+  * `duration` is to restrict the audio or video duration, float values representing seconds, or you can use string ending in 's', 'm' or 'h' for seconds, minutes, or hours.<br/>
+  * `soft` option true would allow the file to be accepted if loading of the file and calculating its width, height or duration fails. Default is false which make the file to be rejected if any of those values are specified but it cannot be calculated from the given file.
+
+
+For custom function return false or non-empty string to reject the file. The file.$error would be 'validate' and the file.$errorParam would be the string returned by the function for that file.
+
+
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
@@ -273,9 +292,9 @@ By default since there is no cross-browser way to detect cancel on the file popu
 Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would receive a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
 
 **ng-model-rejected**:
-You can find the reason for rejection using `file.$error` which would be one of these values `accept`, `minSize`, `maxSize`, `validate`, or a custom error returned by `ngf-validate` function.
-`accept` is for the case the file doesn't match the `ngf-accept` criteria.
-`validate` is for the case when the ngf-validate function returns false for that file.
+You can find the reason for rejection using `file.$error` which would be one of these values `accept`, `validate`, `size.min`, `size.max`, `width.min`, `width.max`, `height.min`, `height.max`, `duration.min`, `duration.max`. Extra information about the error is available through `file.$errorParam` which for example could be the maximum file limit in case the error is `size.max`.
+`accept` is for the case the file doesn't match the `ngf-accept` or `ngf-validate.accept` criteria.
+`validate` is for the case when the ngf-validate is a custom function and returns false or non empty string for that file.
 
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values. 
