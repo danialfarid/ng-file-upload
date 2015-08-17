@@ -12,12 +12,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     window.location.reload(true);
   };
   $scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ?
-    window.location.hash.substring(2) : window.location.hash.substring(1)) : '1.2.20';
+    window.location.hash.substring(2) : window.location.hash.substring(1)) : '1.4.4';
 
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
     if (files != null) {
-      if (!angular.isArray(files)) {
+      if (!files.length) {
         $timeout(function () {
           $scope.files = files = [files];
         });

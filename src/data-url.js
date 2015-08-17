@@ -1,11 +1,20 @@
 (function () {
 
-  ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', function(UploadBase, $timeout) {
-    UploadBase.dataUrl = function (file, callback, disallowObjectUrl) {
-      if (window.FileReader && file &&
-        (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
-        (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
-        $timeout(function () {
+  ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
+    UploadBase.dataUrl = function (file, disallowObjectUrl) {
+      var deferred;
+      if (file.dataUrl) {
+        deferred = $q.defer();
+        $timeout(function() {deferred.resolve(file.dataUrl);});
+        return deferred.promise;
+      }
+      if (file.$dataUrlPromise) return file.$dataUrlPromise;
+
+      deferred = $q.defer();
+      $timeout(function () {
+        if (window.FileReader && file &&
+          (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
+          (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
           //prefer URL.createObjectURL for handling refrences to files of all sizes
           //since it doesn´t build a large string in memory
           var URL = window.URL || window.webkitURL;
@@ -13,23 +22,26 @@
             var url;
             try {
               url = URL.createObjectURL(file);
-            } catch(e) {
-              callback('', file);
+            } catch (e) {
+              deferred.resolve('');
             }
-            if (url) callback(url, file);
+            if (url) deferred.resolve(url);
           } else {
             var fileReader = new FileReader();
             fileReader.readAsDataURL(file);
             fileReader.onload = function (e) {
               $timeout(function () {
-                callback(e.target.result, file);
+                deferred.resolve(e.target.result);
               });
             };
           }
-        });
-      } else {
-        callback(null, file);
-      }
+        } else {
+          deferred.resolve(null);
+        }
+      });
+
+      file.$dataUrlPromise = deferred.promise;
+      return file.$dataUrlPromise;
     };
     return UploadBase;
   }]);
@@ -40,7 +52,7 @@
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
-        $timeout(function() {
+        $timeout(function () {
           elem.attr('src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
           attr.$set('ngfSrc', null);
@@ -56,7 +68,7 @@
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
-        $timeout(function() {
+        $timeout(function () {
           elem.attr('style', elem.attr('style') + ';background-image:url(\'{{(' + attr.ngfBackground + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}\')');
           attr.$set('ngfBackground', null);
@@ -67,8 +79,8 @@
   }]);
 
   ngFileUpload.config(['$compileProvider', function ($compileProvider) {
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
+    if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
+    if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
   }]);
 
   ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {

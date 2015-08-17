@@ -37,6 +37,24 @@
     /** @namespace attr.ngfKeep */
     /** @namespace attr.ngfKeepDistinct */
 
+    uploadService.registerValidators(ngModel, scope, function(name) {
+      return $parse(getAttr(attr, name))(scope);
+    });
+
+    //ngModel.$formatters.push(function(val) {
+    //  var file = val && val.length ? val[val.length - 1] : val;
+    //  if (file && file.$error) {
+    //    ngModel.$setValidity(file.$error, false);
+    //    ngModel.$$ngfPrevError = file.$error;
+    //  } else {
+    //    if (ngModel.$$ngfPrevError) ngModel.$setValidity(ngModel.$$ngfPrevError, true);
+    //  }
+    //  //if (ngModel.$commitViewValue) ngModel.$commitViewValue();
+    //  //if (ngModel.$$parseAndValidate) ngModel.$$parseAndValidate();
+    //  ngModel.$setViewValue(val);
+    //  return val;
+    //});
+
     if (elem.attr('__ngf_gen__')) {
       return;
     }
@@ -46,26 +64,28 @@
     });
 
     var disabled = false;
-    if (getAttr(attr, 'ngfSelect').search(/\W+\$files\W+/) === -1) {
-      scope.$watch(getAttr(attr, 'ngfSelect'), function (val) {
-        disabled = val === false;
-      });
-    }
+
+    attr.$observe('ngfSelect', function(value) {
+      if (value === false) elem.attr('disabled', 'disabled');
+      else if (value === true) elem.removeAttr('disabled');
+    });
+
     function isInputTypeFile() {
       return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
     }
 
     function changeFn(evt) {
       var fileList = evt.__files_ || (evt.target && evt.target.files);
-      uploadService.validate(scope, $parse, attr, fileList, evt, function(files, rejFiles) {
-        elem.$$ngfHasFile = true;
+      elem.attr('__ngf_has_val_', true);
+      var files = fileList, rejFiles = [];
+      //uploadService.validate(scope, $parse, attr, fileList, evt, function(files, rejFiles) {
         ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
           getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
         if (files.length === 0) evt.target.value = files;
 //                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
 //                    angular.element(evt.target).remove();
 //                }
-      });
+//      });
     }
 
     function bindAttrToFileInput(fileElem) {
@@ -113,10 +133,10 @@
     }
 
     function resetModel(evt) {
-      if (elem.$$ngfHasFile) {
+      if (elem.attr('__ngf_has_val_')) {
         ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
           getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
-        delete elem.$$ngfHasFile;
+        elem.removeAttr('__ngf_has_val_');
       }
     }
 
@@ -222,16 +242,12 @@
           files = prevFiles.concat(files);
         }
       }
+
       var file = files && files.length ? files[0] : null;
       if (ngModel) {
         var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && !getAttr(attr, 'multiple') && !keep;
         $timeout(function() {
           $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
-        });
-        $timeout(function () {
-          if (ngModel) {
-            ngModel.$setViewValue(singleModel ? file : (files != null && files.length === 0 ? null : files));
-          }
         });
       }
       var ngfModel = getAttr(attr, 'ngfModel');

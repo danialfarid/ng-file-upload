@@ -52,11 +52,10 @@
     }
 
     var disabled = false;
-    if (getAttr(attr, 'ngfDrop').search(/\W+\$files\W+/) === -1) {
-      scope.$watch(getAttr(attr, 'ngfDrop'), function (val) {
-        disabled = val === false;
-      });
-    }
+    attr.$observe('ngfDrop', function(value) {
+      if (value === false) elem.attr('disabled', 'disabled');
+      else if (value === true) elem.removeAttr('disabled');
+    });
 
     var leaveTimeout = null;
     var stopPropagation = $parse(getAttr(attr, 'ngfStopPropagation'));

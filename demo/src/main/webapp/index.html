@@ -27,7 +27,7 @@
     var angularVersion = window.location.hash.substring(1);
     if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1);
     document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' +
-        (angularVersion || '1.2.20') + '/angular.js"><\/script>');
+        (angularVersion || '1.4.4') + '/angular.js"><\/script>');
   </script>
   <script src="js/ng-file-upload-shim.js"></script>
   <script src="js/ng-file-upload.js"></script>
@@ -105,8 +105,10 @@
           <label>ngf-validate: <input type="text" ng-model="validate" size="49"></label><br/>
           <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
           <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
-          <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome only)</label><br/>
-          <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in ng-model)</label><br/>
+          <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome
+            only)</label><br/>
+          <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in
+            ng-model)</label><br/>
           <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow duplicates)</label><br/>
           <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click (reset file input and model on
             click)</label><br/>
@@ -126,36 +128,35 @@
       <br/>
     </div>
   </div>
-  <ul style="clear:both" ng-show="rejFiles.length > 0" class="response">
-    <li class="sel-file" ng-repeat="f in rejFiles">
-      Rejected file: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type: {{f.type}}
-    </li>
-  </ul>
   <ul style="clear:both" ng-show="files.length > 0" class="response">
     <li class="sel-file" ng-repeat="f in files">
-      <img ng-show="f.type.indexOf('image') > -1" ng-src="{{f | ngfDataUrl}}" class="thumb" ngf-accept="'image/*'">
+      <div ng-show="f.$error">Invalid File: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:
+        {{f.type}}
+      </div>
+      <div ng-hide="f.$error">
+        <img ng-show="f.type.indexOf('image') > -1" ng-src="{{f | ngfDataUrl}}" class="thumb" ngf-accept="'image/*'">
 				<span class="progress" ng-show="f.progress >= 0">
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>
-      <button class="button" ng-click="f.upload.abort();f.upload.aborted=true"
-              ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort
-      </button>
-      {{f.name}} - size: {{f.size}}B - type: {{f.type}}
-      <a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>
+        <button class="button" ng-click="f.upload.abort();f.upload.aborted=true"
+                ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort
+        </button>
+        {{f.name}} - size: {{f.size}}B - type: {{f.type}}
+        <a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>
 
-      <div ng-show="f.showDetail">
-        <br/>
-
-        <div data-ng-show="f.result.result == null">{{f.result}}</div>
-        <ul>
-          <li ng-repeat="item in f.result.result">
-            <div data-ng-show="item.name">file name: {{item.name}}</div>
-            <div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
-            <div data-ng-show="item.size">size on the serve: {{item.size}}</div>
-            <div data-ng-show="item.value">value: {{item.value}}</div>
-          </li>
-        </ul>
-        <div data-ng-show="f.result.requestHeaders" class="reqh">request headers: {{f.result.requestHeaders}}</div>
+        <div ng-show="f.showDetail">
+          <br/>
+          <div data-ng-show="f.result.result == null">{{f.result}}</div>
+          <ul>
+            <li ng-repeat="item in f.result.result">
+              <div data-ng-show="item.name">file name: {{item.name}}</div>
+              <div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
+              <div data-ng-show="item.size">size on the serve: {{item.size}}</div>
+              <div data-ng-show="item.value">value: {{item.value}}</div>
+            </li>
+          </ul>
+          <div data-ng-show="f.result.requestHeaders" class="reqh">request headers: {{f.result.requestHeaders}}</div>
+        </div>
       </div>
     </li>
   </ul>
