@@ -1,14 +1,11 @@
 (function () {
-  var getAttr = ngFileUpload.getAttrWithDefaults, uploadService;
-
   ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload',
     function ($parse, $timeout, $location, Upload) {
-      uploadService = Upload;
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload);
         }
       };
     }]);
@@ -19,37 +16,44 @@
     };
   });
 
-  ngFileUpload.directive('ngfDropAvailable', ['$parse', '$timeout', function ($parse, $timeout) {
+  ngFileUpload.directive('ngfDropAvailable', ['$parse', '$timeout', 'Upload', function ($parse, $timeout, Upload) {
     return function (scope, elem, attr) {
       if (dropAvailable()) {
-        var fn = $parse(getAttr(attr, 'ngfDropAvailable'));
+        var model = $parse(Upload.attrGetter('ngfDropAvailable', attr));
         $timeout(function () {
-          fn(scope);
-          if (fn.assign) {
-            fn.assign(scope, true);
+          model(scope);
+          if (model.assign) {
+            model.assign(scope, true);
           }
         });
       }
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload) {
     var available = dropAvailable();
-    if (getAttr(attr, 'dropAvailable')) {
+
+    var attrGetter = function (name, scope, params) {
+      return upload.attrGetter(name, attr, scope, params);
+    };
+
+    if (attrGetter('dropAvailable')) {
       $timeout(function () {
-        if (scope[getAttr(attr, 'dropAvailable')]) {
-          scope[getAttr(attr, 'dropAvailable')].value = available;
+        if (scope[attrGetter('dropAvailable')]) {
+          scope[attrGetter('dropAvailable')].value = available;
         } else {
-          scope[getAttr(attr, 'dropAvailable')] = available;
+          scope[attrGetter('dropAvailable')] = available;
         }
       });
     }
     if (!available) {
-      if ($parse(getAttr(attr, 'ngfHideOnDropNotAvailable'))(scope) === true) {
+      if (attrGetter('ngfHideOnDropNotAvailable', scope) === true) {
         elem.css('display', 'none');
       }
       return;
     }
+
+    upload.registerValidators(ngModel, attr, scope);
 
     var disabled = false;
     attr.$observe('ngfDrop', function(value) {
@@ -58,7 +62,7 @@
     });
 
     var leaveTimeout = null;
-    var stopPropagation = $parse(getAttr(attr, 'ngfStopPropagation'));
+    var stopPropagation = attrGetter('ngfStopPropagation', scope);
     var dragOverDelay = 1;
     var actualDragOverClass;
 
@@ -98,11 +102,10 @@
       if (stopPropagation(scope)) evt.stopPropagation();
       elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      extractFiles(evt, function (files, rejFiles) {
-          ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
-            getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfDrop'), files, rejFiles, evt);
-        }, $parse(getAttr(attr, 'ngfAllowDir'))(scope) !== false,
-        getAttr(attr, 'multiple') || $parse(getAttr(attr, 'ngfMultiple'))(scope));
+      extractFiles(evt, function (files) {
+          upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        }, attrGetter('ngfAllowDir', scope) !== false,
+        attrGetter('multiple') || attrGetter('ngfMultiple', scope));
     }, false);
     elem[0].addEventListener('paste', function (evt) {
       if (elem.attr('disabled') || disabled) return;
@@ -114,30 +117,33 @@
             files.push(clipboard.items[k].getAsFile());
           }
         }
-        uploadService.validate(scope, $parse, attr, files, evt, function (files, rejFiles) {
-          ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
-            getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfDrop'), files, rejFiles, evt);
-        });
+        upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
       }
     }, false);
 
     function calculateDragOverClass(scope, attr, evt, callback) {
-      var items = evt.dataTransfer.items, files = [];
-      if (items != null) {
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].kind === 'file' || items[i].kind === '') {
-            files.push(items[i]);
+      var clazz = attrGetter('ngfDragOverClass', scope, {$event: evt});
+      if (clazz) {
+        if (clazz.delay) dragOverDelay = clazz.delay;
+        if (clazz.accept || clazz.reject) {
+          var items = evt.dataTransfer.items, files = [];
+          if (items != null) {
+            var pattern;
+            for (var i = 0; i < items.length; i++) {
+              if (items[i].kind === 'file' || items[i].kind === '') {
+                files.push();
+                pattern = pattern || attrGetter('ngfPattern', scope, {$event: evt});
+                if (!upload.validatePattern(items[i], pattern)) {
+                  clazz = clazz.reject;
+                  break;
+                }
+              }
+            }
+            clazz = clazz.accept;
           }
         }
       }
-      uploadService.validate(scope, $parse, attr, files, evt, function (files, rejFiles) {
-        var clazz = $parse(getAttr(attr, 'ngfDragOverClass'))(scope, {$event: evt});
-        if (clazz) {
-          if (clazz.delay) dragOverDelay = clazz.delay;
-          if (clazz.accept) clazz = !rejFiles || !rejFiles.length ? clazz.accept : clazz.reject;
-        }
-        callback(clazz || getAttr(attr, 'ngfDragOverClass') || 'dragover');
-      });
+      callback(clazz || attrGetter('ngfDragOverClass') || 'dragover');
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
@@ -228,9 +234,7 @@
               while (files[i].type === 'directory') i++;
               files = [files[i]];
             }
-            uploadService.validate(scope, $parse, attr, files, evt, function (files, rejFiles) {
-              callback(files, rejFiles);
-            });
+            callback(files);
           } else {
             if (delays++ * 10 < 20 * 1000) {
               waitForProcess(10);

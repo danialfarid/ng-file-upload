@@ -14,7 +14,7 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'dist/ng-file-upload.js': ['src/upload.js', 'src/select.js', 'src/data-url.js', 'src/validate.js', 'src/drop.js'],
+          'dist/ng-file-upload.js': ['src/upload.js', 'src/model.js', 'src/select.js', 'src/data-url.js', 'src/validate.js', 'src/drop.js'],
           'dist/ng-file-upload-shim.js': ['src/shim-upload.js', 'src/shim-elem.js', 'src/shim-filereader.js'],
           'dist/ng-file-upload-all.js': ['dist/ng-file-upload-shim.js', 'dist/ng-file-upload.js']
         }
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
     watch: {
       js: {
         files: ['src/{,*/}*.js'],
-        tasks: ['jshint:all', 'concat:all', 'uglify', 'copy:build']
+        tasks: ['jshint:all', 'concat:all', 'copy:build']
       }
     },
     jshint: {

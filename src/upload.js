@@ -23,7 +23,6 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 var ngFileUpload = angular.module('ngFileUpload', []);
 
 ngFileUpload.version = '<%= pkg.version %>';
-ngFileUpload.defaults = {};
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -199,9 +198,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   };
 
   this.setDefaults = function(defaults) {
-    ngFileUpload.defaults = defaults || {};
+    this.defaults = defaults || {};
   };
-  ngFileUpload.Upload = this;
+
+  this.defaults = {};
+  this.version = ngFileUpload.version;
 }
 
 ]);

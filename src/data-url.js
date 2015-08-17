@@ -1,16 +1,16 @@
 (function () {
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
-    UploadBase.dataUrl = function (file, disallowObjectUrl) {
-      var deferred;
+    var promises = {}, upload = UploadBase;
+    upload.dataUrl = function (file, disallowObjectUrl) {
       if (file.dataUrl) {
-        deferred = $q.defer();
-        $timeout(function() {deferred.resolve(file.dataUrl);});
-        return deferred.promise;
+        var d = $q.defer();
+        $timeout(function() {d.resolve(file.dataUrl);});
+        return d.promise;
       }
-      if (file.$dataUrlPromise) return file.$dataUrlPromise;
+      if (promises[file]) return promises[file];
 
-      deferred = $q.defer();
+      var deferred = $q.defer();
       $timeout(function () {
         if (window.FileReader && file &&
           (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
@@ -23,7 +23,8 @@
             try {
               url = URL.createObjectURL(file);
             } catch (e) {
-              deferred.resolve('');
+              deferred.reject();
+              return;
             }
             if (url) deferred.resolve(url);
           } else {
@@ -34,16 +35,24 @@
                 deferred.resolve(e.target.result);
               });
             };
+            fileReader.onerror = function() {
+              $timeout(function () {
+                deferred.reject();
+              });
+            };
           }
         } else {
-          deferred.resolve(null);
+          deferred.reject();
         }
       });
 
-      file.$dataUrlPromise = deferred.promise;
-      return file.$dataUrlPromise;
+      promises[file] = deferred.promise;
+      promises[file].finally(function() {
+        delete promises[file];
+      });
+      return promises[file];
     };
-    return UploadBase;
+    return upload;
   }]);
 
   /** @namespace attr.ngfSrc */

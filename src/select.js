@@ -1,25 +1,17 @@
 (function () {
-  ngFileUpload.getAttrWithDefaults = function (attr, name) {
-    return attr[name] != null ? attr[name] :
-      (ngFileUpload.defaults[name] == null ?
-        ngFileUpload.defaults[name] : ngFileUpload.defaults[name].toString());
-  };
-
-  var getAttr = ngFileUpload.getAttrWithDefaults, uploadService;
 
   ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     function ($parse, $timeout, $compile, Upload) {
-      uploadService = Upload;
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile);
+          linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, Upload);
         }
       };
     }]);
 
-  function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) {
+  function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, upload) {
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
@@ -36,28 +28,15 @@
     /** @namespace attr.ngfResetModelOnClick */
     /** @namespace attr.ngfKeep */
     /** @namespace attr.ngfKeepDistinct */
-
-    uploadService.registerValidators(ngModel, scope, function(name) {
-      return $parse(getAttr(attr, name))(scope);
-    });
-
-    //ngModel.$formatters.push(function(val) {
-    //  var file = val && val.length ? val[val.length - 1] : val;
-    //  if (file && file.$error) {
-    //    ngModel.$setValidity(file.$error, false);
-    //    ngModel.$$ngfPrevError = file.$error;
-    //  } else {
-    //    if (ngModel.$$ngfPrevError) ngModel.$setValidity(ngModel.$$ngfPrevError, true);
-    //  }
-    //  //if (ngModel.$commitViewValue) ngModel.$commitViewValue();
-    //  //if (ngModel.$$parseAndValidate) ngModel.$$parseAndValidate();
-    //  ngModel.$setViewValue(val);
-    //  return val;
-    //});
+    upload.registerValidators(ngModel, attr, scope);
 
     if (elem.attr('__ngf_gen__')) {
       return;
     }
+
+    var attrGetter = function (name, scope) {
+      return upload.attrGetter(name, attr, scope);
+    };
 
     scope.$on('$destroy', function () {
       if (elem.$$ngfRefElem) elem.$$ngfRefElem.remove();
@@ -65,7 +44,7 @@
 
     var disabled = false;
 
-    attr.$observe('ngfSelect', function(value) {
+    attr.$observe('ngfSelect', function (value) {
       if (value === false) elem.attr('disabled', 'disabled');
       else if (value === true) elem.removeAttr('disabled');
     });
@@ -74,14 +53,16 @@
       return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
     }
 
+    function fileChangeAttr() {
+      return attrGetter('ngfChange') || attrGetter('ngfSelect');
+    }
+
     function changeFn(evt) {
-      var fileList = evt.__files_ || (evt.target && evt.target.files);
+      var files = evt.__files_ || (evt.target && evt.target.files);
       elem.attr('__ngf_has_val_', true);
-      var files = fileList, rejFiles = [];
       //uploadService.validate(scope, $parse, attr, fileList, evt, function(files, rejFiles) {
-        ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
-          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), files, rejFiles, evt);
-        if (files.length === 0) evt.target.value = files;
+      upload.updateModel(ngModel,  attr, scope, fileChangeAttr(), files, evt);
+      if (files.length === 0) evt.target.value = files;
 //                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
 //                    angular.element(evt.target).remove();
 //                }
@@ -89,9 +70,9 @@
     }
 
     function bindAttrToFileInput(fileElem) {
-      if (getAttr(attr, 'ngfMultiple')) fileElem.attr('multiple', $parse(getAttr(attr, 'ngfMultiple'))(scope));
-      if (getAttr(attr, 'ngfCapture')) fileElem.attr('capture', $parse(getAttr(attr, 'ngfCapture'))(scope));
-      if (getAttr(attr, 'accept')) fileElem.attr('accept', getAttr(attr, 'accept'));
+      if (attrGetter('ngfMultiple')) fileElem.attr('multiple', $parse(attrGetter('ngfMultiple'))(scope));
+      if (attrGetter('ngfCapture')) fileElem.attr('capture', $parse(attrGetter('ngfCapture'))(scope));
+      if (attrGetter('accept')) fileElem.attr('accept', attrGetter('accept'));
       for (var i = 0; i < elem[0].attributes.length; i++) {
         var attribute = elem[0].attributes[i];
         if ((isInputTypeFile() && attribute.name !== 'type') ||
@@ -134,8 +115,7 @@
 
     function resetModel(evt) {
       if (elem.attr('__ngf_has_val_')) {
-        ngFileUpload.updateModel($parse, $timeout, scope, ngModel, attr,
-          getAttr(attr, 'ngfChange') || getAttr(attr, 'ngfSelect'), [], [], evt, true);
+        upload.updateModel(ngModel,  attr, scope, fileChangeAttr(), [], evt, true);
         elem.removeAttr('__ngf_has_val_');
       }
     }
@@ -162,7 +142,7 @@
         }
       }
 
-      var resetOnClick = $parse(getAttr(attr, 'ngfResetOnClick'))(scope) !== false;
+      var resetOnClick = attrGetter('ngfResetOnClick', scope) !== false;
       var fileElem = createFileInput(evt, resetOnClick);
 
       function clickAndAssign(evt) {
@@ -180,7 +160,7 @@
 
       if (fileElem) {
         if (!evt || resetOnClick) fileElem.bind('change', changeFn);
-        if (evt && resetOnClick && $parse(getAttr(attr, 'ngfResetModelOnClick'))(scope) !== false) {
+        if (evt && resetOnClick && attrGetter('ngfResetModelOnClick', scope) !== false) {
           resetModel(evt);
         }
 
@@ -205,76 +185,19 @@
       //  elem.bind('click touchend', clickHandler);
       //}
     }
+
+    function shouldClickLater(ua) {
+      // android below 4.4
+      var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
+      if (m && m.length > 2) {
+        var v = upload.defaults.androidFixMinorVersion || 4;
+        return parseInt(m[1]) < 4 || (parseInt(m[1]) === v && parseInt(m[2]) < v);
+      }
+
+      // safari on windows
+      return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
+    }
   }
 
-  function shouldClickLater(ua) {
-    // android below 4.4
-    var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
-    if (m && m.length > 2) {
-      var v = ngFileUpload.defaults.androidFixMinorVersion || 4;
-      return parseInt(m[1]) < 4 || (parseInt(m[1]) === v && parseInt(m[2]) < v);
-    }
-
-    // safari on windows
-    return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
-  }
-
-  ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
-                                       files, rejFiles, evt, noDelay) {
-    function update() {
-      var keep = $parse(getAttr(attr, 'ngfKeep'))(scope);
-      if (keep === true) {
-        var prevFiles = (ngModel.$modelValue || []).slice(0);
-        if (!files || !files.length) {
-          files = prevFiles;
-        } else if ($parse(getAttr(attr, 'ngfKeepDistinct'))(scope) === true) {
-          var len = prevFiles.length;
-          for (var i = 0; i < files.length; i++) {
-            for (var j = 0; j < len; j++) {
-              if (files[i].name === prevFiles[j].name) break;
-            }
-            if (j === len) {
-              prevFiles.push(files[i]);
-            }
-          }
-          files = prevFiles;
-        } else {
-          files = prevFiles.concat(files);
-        }
-      }
-
-      var file = files && files.length ? files[0] : null;
-      if (ngModel) {
-        var singleModel = !$parse(getAttr(attr, 'ngfMultiple'))(scope) && !getAttr(attr, 'multiple') && !keep;
-        $timeout(function() {
-          $parse(getAttr(attr, 'ngModel')).assign(scope, singleModel ? file : files);
-        });
-      }
-      var ngfModel = getAttr(attr, 'ngfModel');
-      if (ngfModel) {
-        $parse(ngfModel).assign(scope, files);
-      }
-
-      if (getAttr(attr, 'ngModelRejected')) {
-        $parse(getAttr(attr, 'ngModelRejected')).assign(scope, rejFiles);
-      }
-      if (fileChange) {
-        $parse(fileChange)(scope, {
-          $files: files,
-          $file: file,
-          $rejectedFiles: rejFiles,
-          $event: evt
-        });
-      }
-    }
-
-    if (noDelay) {
-      update();
-    } else {
-      $timeout(function () {
-        update();
-      });
-    }
-  };
 
 })();
