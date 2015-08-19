@@ -76,7 +76,7 @@ Table of Content:
   <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
   <div class="button" ngf-select ng-model="files" ngf-multiple="true" ngf-pattern="'image/*" accept="image/*">Upload multiple images using model $watch</div>
   <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2M'">Upload multiple with size limitation</div>
+  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box" 
     ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
