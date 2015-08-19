@@ -60,11 +60,11 @@ Table of Content:
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
 * Upload multiple files on file select: 
-[http://jsfiddle.net/danialfarid/2vq88rfs/1/](http://jsfiddle.net/danialfarid/2vq88rfs/1/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/2/](http://jsfiddle.net/danialfarid/2vq88rfs/2/)
 * Upload single file on file select: 
-[http://jsfiddle.net/danialfarid/0mz6ff9o/2/](http://jsfiddle.net/danialfarid/0mz6ff9o/2/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/3/](http://jsfiddle.net/danialfarid/0mz6ff9o/3/)
 * Drop and upload on watch: 
-[http://jsfiddle.net/danialfarid/s8kc7wg0/](http://jsfiddle.net/danialfarid/s8kc7wg0/)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
