@@ -112,27 +112,34 @@
           });
           if (valid != null) {
             ngModel.$ngfValidations[name] = valid;
+            return valid;
           }
         }
+        return true;
       }
 
-      validateSync('pattern', function (cons) {
+      var valid = true;
+      valid = valid && validateSync('pattern', function (cons) {
         return cons.pattern;
       }, upload.validatePattern);
-      validateSync('minSize', function (cons) {
+      valid = valid && validateSync('minSize', function (cons) {
         return cons.size && cons.size.min;
       }, function (file, val) {
         return file.size >= translateScalars(val);
       });
-      validateSync('maxSize', function (cons) {
+      valid = valid && validateSync('maxSize', function (cons) {
         return cons.size && cons.size.max;
       }, function (file, val) {
         return file.size <= translateScalars(val);
       });
 
-      validateSync('validateFn', function () {return null;}, function (file, r) {
+      valid = valid && validateSync('validateFn', function () {return null;}, function (file, r) {
         return r === true || r === null || r === '';
       });
+
+      if (!valid) {
+        callback.call(ngModel, ngModel.$ngfValidations);
+      }
 
       var pendings = 0;
 

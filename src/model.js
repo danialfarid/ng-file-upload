@@ -11,10 +11,19 @@
 
       upload.attrGetter = function (name, attr, scope, params) {
         if (scope) {
-          if (params) {
-            return $parse(this.getAttrWithDefaults(attr, name))(scope, params);
-          } else {
-            return $parse(this.getAttrWithDefaults(attr, name))(scope);
+          try {
+            if (params) {
+              return $parse(this.getAttrWithDefaults(attr, name))(scope, params);
+            } else {
+              return $parse(this.getAttrWithDefaults(attr, name))(scope);
+            }
+          } catch(e) {
+            // hangle string value without single qoute
+            if (name.search(/min|max|pattern/i)) {
+              return this.getAttrWithDefaults(attr, name);
+            } else {
+              throw e;
+            }
           }
         } else {
           return this.getAttrWithDefaults(attr, name);

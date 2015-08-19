@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.1
+ * @version 7.0.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.1';
+ngFileUpload.version = '7.0.2';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -220,10 +220,19 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
       upload.attrGetter = function (name, attr, scope, params) {
         if (scope) {
-          if (params) {
-            return $parse(this.getAttrWithDefaults(attr, name))(scope, params);
-          } else {
-            return $parse(this.getAttrWithDefaults(attr, name))(scope);
+          try {
+            if (params) {
+              return $parse(this.getAttrWithDefaults(attr, name))(scope, params);
+            } else {
+              return $parse(this.getAttrWithDefaults(attr, name))(scope);
+            }
+          } catch(e) {
+            // hangle string value without single qoute
+            if (name.search(/min|max|pattern/i)) {
+              return this.getAttrWithDefaults(attr, name);
+            } else {
+              throw e;
+            }
           }
         } else {
           return this.getAttrWithDefaults(attr, name);
@@ -730,27 +739,34 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           });
           if (valid != null) {
             ngModel.$ngfValidations[name] = valid;
+            return valid;
           }
         }
+        return true;
       }
 
-      validateSync('pattern', function (cons) {
+      var valid = true;
+      valid = valid && validateSync('pattern', function (cons) {
         return cons.pattern;
       }, upload.validatePattern);
-      validateSync('minSize', function (cons) {
+      valid = valid && validateSync('minSize', function (cons) {
         return cons.size && cons.size.min;
       }, function (file, val) {
         return file.size >= translateScalars(val);
       });
-      validateSync('maxSize', function (cons) {
+      valid = valid && validateSync('maxSize', function (cons) {
         return cons.size && cons.size.max;
       }, function (file, val) {
         return file.size <= translateScalars(val);
       });
 
-      validateSync('validateFn', function () {return null;}, function (file, r) {
+      valid = valid && validateSync('validateFn', function () {return null;}, function (file, r) {
         return r === true || r === null || r === '';
       });
+
+      if (!valid) {
+        callback.call(ngModel, ngModel.$ngfValidations);
+      }
 
       var pendings = 0;
 
