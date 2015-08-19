@@ -57,8 +57,14 @@ Table of Content:
 
 ##<a name="usage"></a> Usage
 
-###Sample:
-[jsfiddle http://jsfiddle.net/j312a26n/](http://jsfiddle.net/j312a26n/)
+###Samples:
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
+* Upload multiple files on file select: 
+[http://jsfiddle.net/danialfarid/2vq88rfs/](http://jsfiddle.net/danialfarid/2vq88rfs/)
+* Upload single file on file select: 
+[http://jsfiddle.net/danialfarid/0mz6ff9o/](http://jsfiddle.net/danialfarid/0mz6ff9o/)
+* Drop and upload on watch: 
+[http://jsfiddle.net/danialfarid/s8kc7wg0/](http://jsfiddle.net/danialfarid/s8kc7wg0/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
