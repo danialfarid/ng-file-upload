@@ -79,8 +79,8 @@ Table of Content:
   <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2M'">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box" 
-  ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-  ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+    ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
+    ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
   <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
   Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
