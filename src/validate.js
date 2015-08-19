@@ -46,6 +46,8 @@
     var upload = UploadDataUrl;
 
     upload.registerValidators = function (ngModel, attr, scope, later) {
+      if (!ngModel) return;
+
       ngModel.$ngfValidations = ngModel.$ngfValidations || {};
 
       function setValidities(ngModel) {
@@ -83,6 +85,9 @@
     };
 
     upload.validate = function (files, ngModel, attr, scope, later, callback) {
+      ngModel = ngModel || {};
+      ngModel.$ngfValidations = ngModel.$ngfValidations || {};
+
       var attrGetter = function (name, params) {
         return upload.attrGetter(name, attr, scope, params);
       };
@@ -120,22 +125,24 @@
 
       var valid = true;
       valid = valid && validateSync('pattern', function (cons) {
-        return cons.pattern;
-      }, upload.validatePattern);
+          return cons.pattern;
+        }, upload.validatePattern);
       valid = valid && validateSync('minSize', function (cons) {
-        return cons.size && cons.size.min;
-      }, function (file, val) {
-        return file.size >= translateScalars(val);
-      });
+          return cons.size && cons.size.min;
+        }, function (file, val) {
+          return file.size >= translateScalars(val);
+        });
       valid = valid && validateSync('maxSize', function (cons) {
-        return cons.size && cons.size.max;
-      }, function (file, val) {
-        return file.size <= translateScalars(val);
-      });
+          return cons.size && cons.size.max;
+        }, function (file, val) {
+          return file.size <= translateScalars(val);
+        });
 
-      valid = valid && validateSync('validateFn', function () {return null;}, function (file, r) {
-        return r === true || r === null || r === '';
-      });
+      valid = valid && validateSync('validateFn', function () {
+          return null;
+        }, function (file, r) {
+          return r === true || r === null || r === '';
+        });
 
       if (!valid) {
         callback.call(ngModel, ngModel.$ngfValidations);
@@ -211,7 +218,9 @@
         return d >= translateScalars(val);
       });
 
-      validateASync('validateAsyncFn', function () {return null;}, /./, function (file, val) {
+      validateASync('validateAsyncFn', function () {
+        return null;
+      }, /./, function (file, val) {
         return val;
       }, function (r) {
         return r === true || r === null || r === '';
