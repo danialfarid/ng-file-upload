@@ -146,6 +146,7 @@
 
       if (!valid) {
         callback.call(ngModel, ngModel.$ngfValidations);
+        return;
       }
 
       var pendings = 0;
