@@ -128,11 +128,10 @@
         if (clazz.accept || clazz.reject) {
           var items = evt.dataTransfer.items, files = [];
           if (items != null) {
-            var pattern;
+            var pattern = attrGetter('ngfPattern', scope, {$event: evt});
             for (var i = 0; i < items.length; i++) {
               if (items[i].kind === 'file' || items[i].kind === '') {
                 files.push();
-                pattern = pattern || attrGetter('ngfPattern', scope, {$event: evt});
                 if (!upload.validatePattern(items[i], pattern)) {
                   clazz = clazz.reject;
                   break;

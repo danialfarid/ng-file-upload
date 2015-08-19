@@ -44,38 +44,66 @@
 
   ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', function (UploadDataUrl, $q, $timeout) {
     var upload = UploadDataUrl;
-    upload.registerValidators = function (ngModel, attr, scope) {
-      var attrGetter = function (name) {
-        return upload.attrGetter(name, attr, scope);
-      };
 
-      function observeSync(name, validatorVal, fn) {
-        attr.$observe('ngf' + name[0].toUpperCase() + name.substr(1), function () {
-          registerSync(name, validatorVal, fn);
-        });
-        attr.$observe('ngfValidate', function () {
-          registerSync(name, validatorVal, fn);
-        });
+    upload.registerValidators = function (ngModel, attr, scope, later) {
+      ngModel.$ngfValidations = ngModel.$ngfValidations || {};
+
+      function setValidities(ngModel) {
+        for (var k in ngModel.$ngfValidations) {
+          if (ngModel.$ngfValidations.hasOwnProperty(k)) {
+            ngModel.$setValidity(k, ngModel.$ngfValidations[k]);
+          }
+        }
       }
 
-      function registerSync(name, validatorVal, fn) {
-        var val = attrGetter('ngf' + name[0].toUpperCase() + name.substr(1)) ||
-          validatorVal(attrGetter('ngfValidate') || {});
-        if (val) {
-          ngModel.$validators[name] = function (files) {
-            var valid = true;
-            if (files) {
-              angular.forEach(files.length ? files : [files], function (file) {
-                if (!fn(file, val)) {
-                  file.$error = name;
-                  file.$errorParam = val;
-                  valid = false;
-                  return false;
-                }
-              });
+      ngModel.$formatters.push(function (val) {
+        if (later) {
+          upload.validate(val, ngModel, attr, scope, false, function () {
+            setValidities(ngModel);
+          });
+        } else {
+          for (var k in ngModel.$ngfValidations) {
+            if (ngModel.$ngfValidations.hasOwnProperty(k)) {
+              ngModel.$setValidity(k, ngModel.$ngfValidations[k]);
             }
-            return valid;
-          };
+          }
+          setValidities(ngModel);
+        }
+        return val;
+      });
+    };
+
+    upload.validate = function (files, ngModel, attr, scope, later, callback) {
+      var attrGetter = function (name, params) {
+        return upload.attrGetter(name, attr, scope, params);
+      };
+
+      if (later) {
+        callback.call(ngModel);
+        return;
+      }
+
+      function validateSync(name, validatorVal, fn) {
+        if (files) {
+          var valid = null, dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
+          angular.forEach(files.length === undefined ? [files] : files, function (file) {
+            var val = attrGetter(dName, {'$file': file});
+            if (val == null) {
+              val = validatorVal(attrGetter('ngfValidate') || {});
+            }
+            if (val != null) {
+              valid = true;
+              if (!fn(file, val)) {
+                file.$error = name;
+                file.$errorParam = val;
+                valid = false;
+                return false;
+              }
+            }
+          });
+          if (valid != null) {
+            ngModel.$ngfValidations[name] = valid;
+          }
         }
       }
 
@@ -85,98 +113,103 @@
           (file.name != null && regexp.test(file.name.toLowerCase()));
       };
 
-      observeSync('pattern', function (cons) {
+      validateSync('pattern', function (cons) {
         return cons.pattern;
       }, upload.validatePattern);
-      observeSync('minSize', function (cons) {
+      validateSync('minSize', function (cons) {
         return cons.size && cons.size.min;
       }, function (file, val) {
         return file.size >= translateScalars(val);
       });
-      observeSync('maxSize', function (cons) {
+      validateSync('maxSize', function (cons) {
         return cons.size && cons.size.max;
       }, function (file, val) {
         return file.size <= translateScalars(val);
       });
 
-      function observeAsync(name, validatorVal, type, asyncFn, fn) {
-        attr.$observe('ngf' + name[0].toUpperCase() + name.substr(1), function () {
-          registerAsync(name, validatorVal, type, asyncFn, fn);
-        });
-        attr.$observe('ngfValidate', function () {
-          registerAsync(name, validatorVal, type, asyncFn, fn);
-        });
-      }
+      validateSync('validateFn', function () {return null;}, function (file, r) {
+        return r === true || r === null || r === '';
+      });
 
-      function registerAsync(name, validatorVal, type, asyncFn, fn) {
-        var val = attrGetter('ngf' + name[0].toUpperCase() + name.substr(1)) ||
-          validatorVal(attrGetter('ngfValidate') || {});
-        if (val) {
-          ngModel.$asyncValidators[name] = function (files) {
-            if (files) {
-              var deferred = $q.defer(), validated = 0, hasError = false;
-              files = files.length ? files : [files];
-              angular.forEach(files, function (file) {
-                if (file.type.search(type) !== 0) {
-                  var d = $q.defer();
-                  $timeout(function () {
-                    d.resolve();
-                  });
-                  return d.promise;
-                }
-                asyncFn(file).then(function (d) {
-                  if (!fn(d, val)) {
-                    file.$error = name;
-                    file.$errorParam = val;
-                    hasError = true;
-                  }
-                }, function () {
+      var pendings = 0;
+
+      function validateASync(name, validatorVal, type, asyncFn, fn) {
+        if (files) {
+          var thisPendings = 0, hasError = false, dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
+          files = files.length === undefined ? [files] : files;
+          angular.forEach(files, function (file) {
+            if (file.type.search(type) !== 0) {
+              return true;
+            }
+            var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate') || {});
+            if (val) {
+              pendings++;
+              thisPendings++;
+              asyncFn(file, val).then(function (d) {
+                if (!fn(d, val)) {
                   file.$error = name;
                   file.$errorParam = val;
                   hasError = true;
-                }).finally(function () {
-                  validated++;
-                  if (validated === files.length) {
-                    if (hasError) deferred.reject(); else deferred.resolve();
-                  }
-                });
+                }
+              }, function () {
+                file.$error = name;
+                file.$errorParam = val;
+                hasError = true;
+              }).finally(function () {
+                pendings--;
+                thisPendings--;
+                if (!thisPendings) {
+                  ngModel.$ngfValidations[name] = !hasError;
+                }
+                if (!pendings) {
+                  callback.call(ngModel, ngModel.$ngfValidations);
+                }
               });
-              return deferred.promise;
             }
-          };
+          });
         }
       }
 
-      observeAsync('maxHeight', function (cons) {
+      validateASync('maxHeight', function (cons) {
         return cons.height && cons.height.max;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.height <= val;
       });
-      observeAsync('minHeight', function (cons) {
+      validateASync('minHeight', function (cons) {
         return cons.height && cons.height.min;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.height >= val;
       });
-      observeAsync('maxWidth', function (cons) {
+      validateASync('maxWidth', function (cons) {
         return cons.height && cons.width.max;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width <= val;
       });
-      observeAsync('minWidth', function (cons) {
+      validateASync('minWidth', function (cons) {
         return cons.height && cons.width.min;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width >= val;
       });
-      observeAsync('maxDuration', function (cons) {
+      validateASync('maxDuration', function (cons) {
         return cons.height && cons.duration.max;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d <= translateScalars(val);
       });
-      observeAsync('minDuration', function (cons) {
+      validateASync('minDuration', function (cons) {
         return cons.height && cons.duration.min;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d >= translateScalars(val);
       });
+
+      validateASync('validateAsyncFn', function () {return null;}, /./, function (file, val) {
+        return val;
+      }, function (r) {
+        return r === true || r === null || r === '';
+      });
+
+      if (!pendings) {
+        callback.call(ngModel, ngModel.$ngfValidations);
+      }
     };
 
     var dimensionPromises = {}, durationPromises = {};
@@ -266,5 +299,8 @@
       return durationPromises[file];
     };
     return upload;
-  }]);
-})();
+  }
+  ])
+  ;
+})
+();

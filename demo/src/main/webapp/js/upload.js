@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '6.2.0';
+var version = '7.0.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -26,7 +26,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       for (var i = 0; i < files.length; i++) {
         $scope.errorMsg = null;
         (function (f) {
-          upload(f);
+          if (!f.$error) {
+            upload(f);
+          }
         })(files[i]);
       }
     }

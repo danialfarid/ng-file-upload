@@ -44,7 +44,7 @@
             }
           }
 
-          var file = files && files.length ? files[0] : null;
+          var file = files && files.length  ? files[0] : null;
           if (ngModel) {
             var singleModel = !upload.attrGetter('ngfMultiple', attr, scope) && !upload.attrGetter('multiple', attr) && !keep;
             $timeout(function () {
@@ -65,13 +65,16 @@
           }
         }
 
-        if (noDelay) {
-          update();
-        } else {
-          $timeout(function () {
-            update();
-          });
-        }
+        if (upload.validate(files, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr),
+            function () {
+              if (noDelay) {
+                update();
+              } else {
+                $timeout(function () {
+                  update();
+                });
+              }
+            }));
       };
 
       return upload;

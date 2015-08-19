@@ -26,22 +26,26 @@
               deferred.reject();
               return;
             }
+            file.dataUrl = url;
             if (url) deferred.resolve(url);
           } else {
             var fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
             fileReader.onload = function (e) {
               $timeout(function () {
+                file.dataUrl = e.target.result;
                 deferred.resolve(e.target.result);
               });
             };
             fileReader.onerror = function() {
               $timeout(function () {
+                file.dataUrl = '';
                 deferred.reject();
               });
             };
+            fileReader.readAsDataURL(file);
           }
         } else {
+          file.dataUrl = '';
           deferred.reject();
         }
       });
@@ -100,9 +104,11 @@
       if (file && !file.dataUrl) {
         if (file.dataUrl === undefined && angular.isObject(file)) {
           file.dataUrl = null;
-          UploadDataUrl.dataUrl(file, function (url, file) {
+          UploadDataUrl.dataUrl(file, disallowObjectUrl).then(function (url) {
             file.dataUrl = url;
-          }, disallowObjectUrl);
+          }, function() {
+            file.dataUrl = '';
+          });
         }
         return '';
       }

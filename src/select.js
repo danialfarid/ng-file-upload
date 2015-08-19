@@ -28,19 +28,11 @@
     /** @namespace attr.ngfResetModelOnClick */
     /** @namespace attr.ngfKeep */
     /** @namespace attr.ngfKeepDistinct */
-    upload.registerValidators(ngModel, attr, scope);
-
-    if (elem.attr('__ngf_gen__')) {
-      return;
-    }
-
     var attrGetter = function (name, scope) {
       return upload.attrGetter(name, attr, scope);
     };
 
-    scope.$on('$destroy', function () {
-      if (elem.$$ngfRefElem) elem.$$ngfRefElem.remove();
-    });
+    upload.registerValidators(ngModel, attr, scope);
 
     var disabled = false;
 
@@ -58,66 +50,54 @@
     }
 
     function changeFn(evt) {
-      var files = evt.__files_ || (evt.target && evt.target.files);
-      elem.attr('__ngf_has_val_', true);
-      //uploadService.validate(scope, $parse, attr, fileList, evt, function(files, rejFiles) {
-      upload.updateModel(ngModel,  attr, scope, fileChangeAttr(), files, evt);
-      if (files.length === 0) evt.target.value = files;
+      var fileList = evt.__files_ || (evt.target && evt.target.files), files = [];
+      for (var i = 0; i < fileList.length; i++) {
+        files.push(fileList[i]);
+      }
+      upload.updateModel(ngModel, attr, scope, fileChangeAttr(), files.length ? files : null, evt);
+      //if (files.length === 0) evt.target.value = files;
 //                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
 //                    angular.element(evt.target).remove();
 //                }
-//      });
     }
 
     function bindAttrToFileInput(fileElem) {
       if (attrGetter('ngfMultiple')) fileElem.attr('multiple', $parse(attrGetter('ngfMultiple'))(scope));
       if (attrGetter('ngfCapture')) fileElem.attr('capture', $parse(attrGetter('ngfCapture'))(scope));
       if (attrGetter('accept')) fileElem.attr('accept', attrGetter('accept'));
-      for (var i = 0; i < elem[0].attributes.length; i++) {
-        var attribute = elem[0].attributes[i];
-        if ((isInputTypeFile() && attribute.name !== 'type') ||
-          (attribute.name !== 'type' && attribute.name !== 'class' &&
-          attribute.name !== 'id' && attribute.name !== 'style')) {
-          if (attribute.value == null || attribute.value === '') {
-            if (attribute.name === 'required') attribute.value = 'required';
-            if (attribute.name === 'multiple') attribute.value = 'multiple';
+      if (elem !== fileElem) {
+        for (var i = 0; i < elem[0].attributes.length; i++) {
+          var attribute = elem[0].attributes[i];
+          if (attribute.name !== 'type' && attribute.name !== 'class' &&
+            attribute.name !== 'id' && attribute.name !== 'style') {
+            if (attribute.value == null || attribute.value === '') {
+              if (attribute.name === 'required') attribute.value = 'required';
+              if (attribute.name === 'multiple') attribute.value = 'multiple';
+            }
+            fileElem.attr(attribute.name, attribute.value);
           }
-          fileElem.attr(attribute.name, attribute.value);
         }
       }
     }
 
-    function createFileInput(evt, resetOnClick) {
-      if (!resetOnClick && (evt || isInputTypeFile())) return elem.$$ngfRefElem || elem;
-      if (elem.$$ngfProgramClick) return elem;
+    function createFileInput() {
+      if (isInputTypeFile()) {
+        return elem;
+      }
 
       var fileElem = angular.element('<input type="file">');
       bindAttrToFileInput(fileElem);
 
-      if (isInputTypeFile()) {
-        elem.replaceWith(fileElem);
-        elem = fileElem;
-        fileElem.attr('__ngf_gen__', true);
-        $compile(elem)(scope);
-      } else {
-        fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
-          .css('width', '0px').css('height', '0px').css('border', 'none')
-          .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-        if (elem.$$ngfRefElem) {
-          elem.$$ngfRefElem.remove();
-        }
-        elem.$$ngfRefElem = fileElem;
-        document.body.appendChild(fileElem[0]);
+      fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
+        .css('width', '0px').css('height', '0px').css('border', 'none')
+        .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
+      if (elem.$$ngfRefElem) {
+        elem.$$ngfRefElem.remove();
       }
+      elem.$$ngfRefElem = fileElem;
+      document.body.appendChild(fileElem[0]);
 
       return fileElem;
-    }
-
-    function resetModel(evt) {
-      if (elem.attr('__ngf_has_val_')) {
-        upload.updateModel(ngModel,  attr, scope, fileChangeAttr(), [], evt, true);
-        elem.removeAttr('__ngf_has_val_');
-      }
     }
 
     var initialTouchStartY = 0;
@@ -125,65 +105,36 @@
     function clickHandler(evt) {
       if (elem.attr('disabled') || disabled) return false;
 
-      if (evt != null) {
-        var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
-        if (evt.type === 'touchstart') {
-          initialTouchStartY = touches ? touches[0].clientY : 0;
-          return true; // don't block event default
-        } else {
-          evt.stopPropagation();
-          evt.preventDefault();
+      var r = handleTouch(evt);
+      if (r != null) return r;
 
-          // prevent scroll from triggering event
-          if (evt.type === 'touchend') {
-            var currentLocation = touches ? touches[0].clientY : 0;
-            if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
-          }
-        }
-      }
-
-      var resetOnClick = attrGetter('ngfResetOnClick', scope) !== false;
-      var fileElem = createFileInput(evt, resetOnClick);
-
-      function clickAndAssign(evt) {
-        if (evt && !elem.$$ngfProgramClick) {
-          elem.$$ngfProgramClick = true;
+      // fix for android native browser < 4.4
+      if (shouldClickLater(navigator.userAgent)) {
+        setTimeout(function () {
           fileElem[0].click();
-          $timeout(function () {
-            delete elem.$$ngfProgramClick;
-          }, 500);
-        }
-        if ((isInputTypeFile() || !evt) && resetOnClick) {
-          elem.bind('click touchstart touchend', clickHandler);
-        }
-      }
-
-      if (fileElem) {
-        if (!evt || resetOnClick) fileElem.bind('change', changeFn);
-        if (evt && resetOnClick && attrGetter('ngfResetModelOnClick', scope) !== false) {
-          resetModel(evt);
-        }
-
-        // fix for android native browser < 4.4
-        if (shouldClickLater(navigator.userAgent)) {
-          setTimeout(function () {
-            clickAndAssign(evt);
-          }, 0);
-        } else {
-          clickAndAssign(evt);
-        }
+        }, 0);
+      } else {
+        fileElem[0].click();
       }
 
       return false;
     }
 
-    if (window.FileAPI && window.FileAPI.ngfFixIE) {
-      window.FileAPI.ngfFixIE(elem, createFileInput, bindAttrToFileInput, changeFn);
-    } else {
-      clickHandler();
-      //if (!isInputTypeFile()) {
-      //  elem.bind('click touchend', clickHandler);
-      //}
+    function handleTouch(evt) {
+      var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
+      if (evt.type === 'touchstart') {
+        initialTouchStartY = touches ? touches[0].clientY : 0;
+        return true; // don't block event default
+      } else {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        // prevent scroll from triggering event
+        if (evt.type === 'touchend') {
+          var currentLocation = touches ? touches[0].clientY : 0;
+          if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
+        }
+      }
     }
 
     function shouldClickLater(ua) {
@@ -197,7 +148,63 @@
       // safari on windows
       return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
     }
+
+    var fileElem = elem;
+
+    function resetModel(evt) {
+      if (fileElem.val()) {
+        fileElem.val(null);
+        upload.updateModel(ngModel, attr, scope, fileChangeAttr(), null, evt, true);
+      }
+    }
+
+    if (!isInputTypeFile()) {
+      fileElem = createFileInput();
+    }
+    fileElem.bind('change', changeFn);
+
+    if (!isInputTypeFile()) {
+      elem.bind('click touchstart touchend', clickHandler);
+    }
+
+    if (navigator.userAgent.indexOf('Chrome') === -1) {
+      elem.bind('click', function (e) {
+        resetModel(e);
+      });
+    }
+
+    function ie10SameFileSelectFix(evt) {
+      if (fileElem && !fileElem.attr('__ngf_ie10_Fix_')) {
+        if (!fileElem[0].parentNode) {
+          fileElem = null;
+          return;
+        }
+        evt.preventDefault();
+        evt.stopPropagation();
+        fileElem.unbind('click');
+        var clone = fileElem.clone();
+        fileElem.replaceWith(clone);
+        fileElem = clone;
+        fileElem.attr('__ngf_ie10_Fix_', 'true');
+        fileElem.bind('change', changeFn);
+        fileElem.bind('click', ie10SameFileSelectFix);
+        fileElem[0].click();
+        return false;
+      } else {
+        fileElem.removeAttr('__ngf_ie10_Fix_');
+      }
+    }
+
+    if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
+      fileElem.bind('click', ie10SameFileSelectFix);
+    }
+
+    scope.$on('$destroy', function () {
+      if (!isInputTypeFile()) fileElem.remove();
+    });
+
+    if (window.FileAPI && window.FileAPI.ngfFixIE) {
+      window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
+    }
   }
-
-
 })();
