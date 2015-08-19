@@ -60,11 +60,11 @@ Table of Content:
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
 * Upload multiple files on file select: 
-[http://jsfiddle.net/danialfarid/2vq88rfs/1/](http://jsfiddle.net/danialfarid/2vq88rfs/1/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/2/](http://jsfiddle.net/danialfarid/2vq88rfs/2/)
 * Upload single file on file select: 
-[http://jsfiddle.net/danialfarid/0mz6ff9o/2/](http://jsfiddle.net/danialfarid/0mz6ff9o/2/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/3/](http://jsfiddle.net/danialfarid/0mz6ff9o/3/)
 * Drop and upload on watch: 
-[http://jsfiddle.net/danialfarid/s8kc7wg0/](http://jsfiddle.net/danialfarid/s8kc7wg0/)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -76,7 +76,7 @@ Table of Content:
   <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
   <div class="button" ngf-select ng-model="files" ngf-multiple="true" ngf-pattern="'image/*" accept="image/*">Upload multiple images using model $watch</div>
   <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2M'">Upload multiple with size limitation</div>
+  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box" 
     ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
@@ -209,7 +209,7 @@ var upload = Upload.upload({
   headers: {'Authorization': 'xxx'}, // only for html5
   fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
   /* 
-  file formData name ('Content-Disposition'), server side request form name could be
+  file formData name ('Content-Disposition'), server side request file parameter name could be
   an array  of names for multiple files (html5). Default is 'file' */
   fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
   /* 
