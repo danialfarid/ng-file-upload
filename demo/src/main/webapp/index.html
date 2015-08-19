@@ -87,7 +87,7 @@
         <legend>Play with options</legend>
         <div class="up-buttons">
           <div ngf-select ngf-drop ng-model="files" ng-model-rejected="rejFiles"
-               ngf-multiple="multiple" ngf-accept="accept" accept="{{acceptSelect}}"
+               ngf-multiple="multiple" ngf-pattern="pattern" accept="{{acceptSelect}}"
                ng-disabled="disabled" ngf-capture="capture"
                ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
                ngf-validate="validateObj"
@@ -99,9 +99,9 @@
           <br/>
         </div>
         <div class="custom">
-          <label>ngf-accept (accept/reject file model): <input type="text" ng-model="accept"></label><br/>
           <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
           <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
+          <label>ngf-pattern (validate file model): <input type="text" ng-model="pattern"></label><br/>
           <label>ngf-validate: <input type="text" ng-model="validate" size="49"></label><br/>
           <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
           <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>

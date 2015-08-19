@@ -62,7 +62,7 @@
     });
 
     var leaveTimeout = null;
-    var stopPropagation = attrGetter('ngfStopPropagation', scope);
+    var stopPropagation = $parse(attrGetter('ngfStopPropagation'));
     var dragOverDelay = 1;
     var actualDragOverClass;
 
@@ -122,27 +122,32 @@
     }, false);
 
     function calculateDragOverClass(scope, attr, evt, callback) {
-      var clazz = attrGetter('ngfDragOverClass', scope, {$event: evt});
+      var clazz = attrGetter('ngfDragOverClass', scope, {$event: evt}),
+        dClass = attrGetter('ngfDragOverClass') || 'dragover';
+      if (angular.isString(clazz)) {
+        callback(clazz);
+        return;
+      }
       if (clazz) {
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept || clazz.reject) {
-          var items = evt.dataTransfer.items, files = [];
+          var items = evt.dataTransfer.items;
           if (items != null) {
             var pattern = attrGetter('ngfPattern', scope, {$event: evt});
             for (var i = 0; i < items.length; i++) {
               if (items[i].kind === 'file' || items[i].kind === '') {
-                files.push();
                 if (!upload.validatePattern(items[i], pattern)) {
-                  clazz = clazz.reject;
+                  dClass = clazz.reject;
                   break;
+                } else {
+                  dClass = clazz.accept;
                 }
               }
             }
-            clazz = clazz.accept;
           }
         }
       }
-      callback(clazz || attrGetter('ngfDragOverClass') || 'dragover');
+      callback(dClass);
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {

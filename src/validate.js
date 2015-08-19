@@ -73,6 +73,15 @@
       });
     };
 
+    upload.validatePattern = function (file, val) {
+      if (!val) {
+        return true;
+      }
+      var regexp = new RegExp(globStringToRegex(val), 'gi');
+      return (file.type != null && regexp.test(file.type.toLowerCase())) ||
+        (file.name != null && regexp.test(file.name.toLowerCase()));
+    };
+
     upload.validate = function (files, ngModel, attr, scope, later, callback) {
       var attrGetter = function (name, params) {
         return upload.attrGetter(name, attr, scope, params);
@@ -106,12 +115,6 @@
           }
         }
       }
-
-      upload.validatePattern = function (file, val) {
-        var regexp = new RegExp(globStringToRegex(val), 'gi');
-        return (file.type != null && regexp.test(file.type.toLowerCase())) ||
-          (file.name != null && regexp.test(file.name.toLowerCase()));
-      };
 
       validateSync('pattern', function (cons) {
         return cons.pattern;

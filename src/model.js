@@ -28,7 +28,7 @@
             var prevFiles = (ngModel.$modelValue || []).slice(0);
             if (!files || !files.length) {
               files = prevFiles;
-            } else if (upload.attrGetter('ngfKeepDistinct', attr.scope) === true) {
+            } else if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
               var len = prevFiles.length;
               for (var i = 0; i < files.length; i++) {
                 for (var j = 0; j < len; j++) {

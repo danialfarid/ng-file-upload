@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '7.0.0';
+var version = '7.0.1';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -216,7 +216,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
 
   $timeout(function () {
     $scope.capture = localStorage.getItem('capture' + version) || 'camera';
-    $scope.accept = localStorage.getItem('accept' + version) || 'image/*,audio/*,video/*';
+    $scope.pattern = localStorage.getItem('pattern' + version) || 'image/*,audio/*,video/*';
     $scope.acceptSelect = localStorage.getItem('acceptSelect' + version) || 'image/*,audio/*,video/*';
     $scope.disabled = localStorage.getItem('disabled' + version) == 'true' || false;
     $scope.multiple = localStorage.getItem('multiple' + version) == 'true' || false;
@@ -226,9 +226,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.resetModelOnClick = localStorage.getItem('resetModelOnClick' + version) == 'true' || true;
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
-    $scope.$watch('validate+capture+accept+acceptSelect+disabled+capture+multiple+allowDir+resetOnClick+resetModelOnClick+keep+keepDistinct', function () {
+    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+resetOnClick+resetModelOnClick+keep+keepDistinct', function () {
       localStorage.setItem('capture' + version, $scope.capture);
-      localStorage.setItem('accept' + version, $scope.accept);
+      localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
       localStorage.setItem('disabled' + version, $scope.disabled);
       localStorage.setItem('multiple' + version, $scope.multiple);

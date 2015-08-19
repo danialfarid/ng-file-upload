@@ -15,17 +15,10 @@
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
-    /** @namespace attr.ngModelRejected */
     /** @namespace attr.ngfModel */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
-    /** @namespace attr.ngfAccept */
     /** @namespace attr.ngfValidate */
-    /** @namespace attr.ngfDuration*/
-    /** @namespace attr.ngfWidth*/
-    /** @namespace attr.ngfHeight*/
-    /** @namespace attr.ngfResetOnClick */
-    /** @namespace attr.ngfResetModelOnClick */
     /** @namespace attr.ngfKeep */
     /** @namespace attr.ngfKeepDistinct */
     var attrGetter = function (name, scope) {
@@ -55,16 +48,18 @@
         files.push(fileList[i]);
       }
       upload.updateModel(ngModel, attr, scope, fileChangeAttr(), files.length ? files : null, evt);
-      //if (files.length === 0) evt.target.value = files;
-//                if (evt.target && evt.target.getAttribute('__ngf_gen__')) {
-//                    angular.element(evt.target).remove();
-//                }
     }
 
+    scope.$watch(attrGetter('ngfMultiple'), function() {
+      fileElem.attr('multiple', attrGetter('ngfMultiple', scope));
+    });
+    scope.$watch(attrGetter('ngfCapture'), function() {
+      fileElem.attr('capture', attrGetter('ngfCapture', scope));
+    });
+    attr.$observe('accept', function() {
+      fileElem.attr('accept', attrGetter('accept'));
+    });
     function bindAttrToFileInput(fileElem) {
-      if (attrGetter('ngfMultiple')) fileElem.attr('multiple', $parse(attrGetter('ngfMultiple'))(scope));
-      if (attrGetter('ngfCapture')) fileElem.attr('capture', $parse(attrGetter('ngfCapture'))(scope));
-      if (attrGetter('accept')) fileElem.attr('accept', attrGetter('accept'));
       if (elem !== fileElem) {
         for (var i = 0; i < elem[0].attributes.length; i++) {
           var attribute = elem[0].attributes[i];
