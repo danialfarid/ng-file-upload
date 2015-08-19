@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.5
+ * @version 7.0.6
  */
 
 (function () {
@@ -418,7 +418,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.5
+ * @version 7.0.6
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -439,7 +439,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.5';
+ngFileUpload.version = '7.0.6';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -804,10 +804,6 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      if (elem.$$ngfRefElem) {
-        elem.$$ngfRefElem.remove();
-      }
-      elem.$$ngfRefElem = fileElem;
       document.body.appendChild(fileElem[0]);
 
       return fileElem;
@@ -925,14 +921,14 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 (function () {
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
-    var promises = {}, upload = UploadBase;
+    var upload = UploadBase;
     upload.dataUrl = function (file, disallowObjectUrl) {
       if (file.dataUrl) {
         var d = $q.defer();
         $timeout(function() {d.resolve(file.dataUrl);});
         return d.promise;
       }
-      if (promises[file]) return promises[file];
+      if (file.$ngfDataUrlPromise) return file.$ngfDataUrlPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -974,11 +970,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         }
       });
 
-      promises[file] = deferred.promise;
-      promises[file].finally(function() {
-        delete promises[file];
+      file.$ngfDataUrlPromise = deferred.promise;
+      file.$ngfDataUrlPromise.finally(function() {
+        delete file.$ngfDataUrlPromise;
       });
-      return promises[file];
+      return file.$ngfDataUrlPromise;
     };
     return upload;
   }]);
@@ -990,7 +986,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          elem.attr('src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
+          elem.attr('ng-src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
           attr.$set('ngfSrc', null);
           var clone = elem.clone();
@@ -1280,7 +1276,6 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       }
     };
 
-    var dimensionPromises = {}, durationPromises = {};
     upload.imageDimensions = function (file) {
       if (file.width && file.height) {
         var d = $q.defer();
@@ -1289,7 +1284,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         });
         return d.promise;
       }
-      if (dimensionPromises[file]) return dimensionPromises[file];
+      if (file.$ngfDimensionPromise) return file.$ngfDimensionPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -1317,11 +1312,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         });
       });
 
-      dimensionPromises[file] = deferred.promise;
-      dimensionPromises[file].finally(function () {
-        delete dimensionPromises[file];
+      file.$ngfDimensionPromise = deferred.promise;
+      file.$ngfDimensionPromise.finally(function () {
+        delete file.$ngfDimensionPromise;
       });
-      return dimensionPromises[file];
+      return file.$ngfDimensionPromise;
     };
 
     upload.mediaDuration = function (file) {
@@ -1332,7 +1327,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         });
         return d.promise;
       }
-      if (durationPromises[file]) return durationPromises[file];
+      if (file.$ngfDurationPromise) return file.$ngfDurationPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -1360,11 +1355,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         });
       });
 
-      durationPromises[file] = deferred.promise;
-      durationPromises[file].finally(function () {
-        delete durationPromises[file];
+      file.$ngfDurationPromise = deferred.promise;
+      file.$ngfDurationPromise.finally(function () {
+        delete file.$ngfDurationPromise;
       });
-      return durationPromises[file];
+      return file.$ngfDurationPromise;
     };
     return upload;
   }

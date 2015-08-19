@@ -86,10 +86,6 @@
       fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      if (elem.$$ngfRefElem) {
-        elem.$$ngfRefElem.remove();
-      }
-      elem.$$ngfRefElem = fileElem;
       document.body.appendChild(fileElem[0]);
 
       return fileElem;

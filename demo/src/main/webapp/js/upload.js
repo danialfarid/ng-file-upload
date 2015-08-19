@@ -6,7 +6,7 @@ var version = '7.0.1';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
-  //Upload.setDefaults({ngfKeep: true, ngfResetModelOnClick: false, ngfResetOnClick:false});
+  //Upload.setDefaults({ngfKeep: true, ngfPattern:'image/*'});
   $scope.changeAngularVersion = function () {
     window.location.hash = $scope.angularVersion;
     window.location.reload(true);
@@ -222,11 +222,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.multiple = localStorage.getItem('multiple' + version) == 'true' || false;
     $scope.allowDir = localStorage.getItem('allowDir' + version) == 'true' || true;
     $scope.validate = localStorage.getItem('validate' + version) || '{size: {max: \'20MB\', min: \'10B\'}, height: {max: 5000}, width: {max: 5000}, duration: {max: \'5m\'}}';
-    $scope.resetOnClick = localStorage.getItem('resetOnClick' + version) == 'true' || true;
-    $scope.resetModelOnClick = localStorage.getItem('resetModelOnClick' + version) == 'true' || true;
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
-    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+resetOnClick+resetModelOnClick+keep+keepDistinct', function () {
+    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+keepDistinct', function () {
       localStorage.setItem('capture' + version, $scope.capture);
       localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
@@ -234,8 +232,6 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       localStorage.setItem('multiple' + version, $scope.multiple);
       localStorage.setItem('allowDir' + version, $scope.allowDir);
       localStorage.setItem('validate' + version, $scope.validate);
-      localStorage.setItem('resetOnClick' + version, $scope.resetOnClick);
-      localStorage.setItem('resetModelOnClick' + version, $scope.resetModelOnClick);
       localStorage.setItem('keep' + version, $scope.keep);
       localStorage.setItem('keepDistinct' + version, $scope.keepDistinct);
     });

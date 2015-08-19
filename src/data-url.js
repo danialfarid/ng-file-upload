@@ -1,14 +1,14 @@
 (function () {
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
-    var promises = {}, upload = UploadBase;
+    var upload = UploadBase;
     upload.dataUrl = function (file, disallowObjectUrl) {
       if (file.dataUrl) {
         var d = $q.defer();
         $timeout(function() {d.resolve(file.dataUrl);});
         return d.promise;
       }
-      if (promises[file]) return promises[file];
+      if (file.$ngfDataUrlPromise) return file.$ngfDataUrlPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -50,11 +50,11 @@
         }
       });
 
-      promises[file] = deferred.promise;
-      promises[file].finally(function() {
-        delete promises[file];
+      file.$ngfDataUrlPromise = deferred.promise;
+      file.$ngfDataUrlPromise.finally(function() {
+        delete file.$ngfDataUrlPromise;
       });
-      return promises[file];
+      return file.$ngfDataUrlPromise;
     };
     return upload;
   }]);
@@ -66,7 +66,7 @@
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          elem.attr('src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
+          elem.attr('ng-src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
           attr.$set('ngfSrc', null);
           var clone = elem.clone();

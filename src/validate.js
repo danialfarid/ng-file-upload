@@ -232,7 +232,6 @@
       }
     };
 
-    var dimensionPromises = {}, durationPromises = {};
     upload.imageDimensions = function (file) {
       if (file.width && file.height) {
         var d = $q.defer();
@@ -241,7 +240,7 @@
         });
         return d.promise;
       }
-      if (dimensionPromises[file]) return dimensionPromises[file];
+      if (file.$ngfDimensionPromise) return file.$ngfDimensionPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -269,11 +268,11 @@
         });
       });
 
-      dimensionPromises[file] = deferred.promise;
-      dimensionPromises[file].finally(function () {
-        delete dimensionPromises[file];
+      file.$ngfDimensionPromise = deferred.promise;
+      file.$ngfDimensionPromise.finally(function () {
+        delete file.$ngfDimensionPromise;
       });
-      return dimensionPromises[file];
+      return file.$ngfDimensionPromise;
     };
 
     upload.mediaDuration = function (file) {
@@ -284,7 +283,7 @@
         });
         return d.promise;
       }
-      if (durationPromises[file]) return durationPromises[file];
+      if (file.$ngfDurationPromise) return file.$ngfDurationPromise;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -312,11 +311,11 @@
         });
       });
 
-      durationPromises[file] = deferred.promise;
-      durationPromises[file].finally(function () {
-        delete durationPromises[file];
+      file.$ngfDurationPromise = deferred.promise;
+      file.$ngfDurationPromise.finally(function () {
+        delete file.$ngfDurationPromise;
       });
-      return durationPromises[file];
+      return file.$ngfDurationPromise;
     };
     return upload;
   }
