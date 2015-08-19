@@ -57,8 +57,14 @@ Table of Content:
 
 ##<a name="usage"></a> Usage
 
-###Sample:
-[jsfiddle http://jsfiddle.net/j312a26n/](http://jsfiddle.net/j312a26n/)
+###Samples:
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
+* Upload multiple files on file select: 
+[http://jsfiddle.net/danialfarid/2vq88rfs/](http://jsfiddle.net/danialfarid/2vq88rfs/)
+* Upload single file on file select: 
+[http://jsfiddle.net/danialfarid/0mz6ff9o/](http://jsfiddle.net/danialfarid/0mz6ff9o/)
+* Drop and upload on watch: 
+[http://jsfiddle.net/danialfarid/s8kc7wg0/](http://jsfiddle.net/danialfarid/s8kc7wg0/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -73,8 +79,8 @@ Table of Content:
   <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2M'">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box" 
-  ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-  ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+    ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
+    ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
   <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
   Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
