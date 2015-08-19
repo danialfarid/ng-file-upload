@@ -69,7 +69,9 @@
           elem.attr('src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
           attr.$set('ngfSrc', null);
-          $compile(elem)(scope);
+          var clone = elem.clone();
+          elem.replaceWith(clone);
+          $compile(clone)(scope);
         });
       }
     };
@@ -85,7 +87,9 @@
           elem.attr('style', elem.attr('style') + ';background-image:url(\'{{(' + attr.ngfBackground + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}\')');
           attr.$set('ngfBackground', null);
-          $compile(elem)(scope);
+          var clone = elem.clone();
+          elem.replaceWith(clone);
+          $compile(clone)(scope);
         });
       }
     };

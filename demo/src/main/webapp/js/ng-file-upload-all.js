@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.3
+ * @version 7.0.4
  */
 
 (function () {
@@ -418,7 +418,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.3
+ * @version 7.0.4
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -439,7 +439,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.3';
+ngFileUpload.version = '7.0.4';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -993,7 +993,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           elem.attr('src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
           attr.$set('ngfSrc', null);
-          $compile(elem)(scope);
+          var clone = elem.clone();
+          elem.replaceWith(clone);
+          $compile(clone)(scope);
         });
       }
     };
@@ -1009,7 +1011,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           elem.attr('style', elem.attr('style') + ';background-image:url(\'{{(' + attr.ngfBackground + ') | ngfDataUrl' +
             ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}\')');
           attr.$set('ngfBackground', null);
-          $compile(elem)(scope);
+          var clone = elem.clone();
+          elem.replaceWith(clone);
+          $compile(clone)(scope);
         });
       }
     };
