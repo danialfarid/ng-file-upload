@@ -209,7 +209,7 @@ var upload = Upload.upload({
   headers: {'Authorization': 'xxx'}, // only for html5
   fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
   /* 
-  file formData name ('Content-Disposition'), server side request form name could be
+  file formData name ('Content-Disposition'), server side request file parameter name could be
   an array  of names for multiple files (html5). Default is 'file' */
   fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
   /* 
