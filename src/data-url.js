@@ -51,7 +51,7 @@
       });
 
       file.$ngfDataUrlPromise = deferred.promise;
-      file.$ngfDataUrlPromise.finally(function() {
+      file.$ngfDataUrlPromise['finally'](function() {
         delete file.$ngfDataUrlPromise;
       });
       return file.$ngfDataUrlPromise;

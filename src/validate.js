@@ -269,7 +269,7 @@
       });
 
       file.$ngfDimensionPromise = deferred.promise;
-      file.$ngfDimensionPromise.finally(function () {
+      file.$ngfDimensionPromise['finally'](function () {
         delete file.$ngfDimensionPromise;
       });
       return file.$ngfDimensionPromise;
@@ -312,7 +312,7 @@
       });
 
       file.$ngfDurationPromise = deferred.promise;
-      file.$ngfDurationPromise.finally(function () {
+      file.$ngfDurationPromise['finally'](function () {
         delete file.$ngfDurationPromise;
       });
       return file.$ngfDurationPromise;
