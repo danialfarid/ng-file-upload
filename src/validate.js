@@ -151,7 +151,7 @@
 
       var pendings = 0;
 
-      function validateASync(name, validatorVal, type, asyncFn, fn) {
+      function validateAsync(name, validatorVal, type, asyncFn, fn) {
         if (files) {
           var thisPendings = 0, hasError = false, dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
           files = files.length === undefined ? [files] : files;
@@ -173,7 +173,7 @@
                 file.$error = name;
                 file.$errorParam = val;
                 hasError = true;
-              }).finally(function () {
+              })['finally'](function () {
                 pendings--;
                 thisPendings--;
                 if (!thisPendings) {
@@ -188,38 +188,38 @@
         }
       }
 
-      validateASync('maxHeight', function (cons) {
+      validateAsync('maxHeight', function (cons) {
         return cons.height && cons.height.max;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.height <= val;
       });
-      validateASync('minHeight', function (cons) {
+      validateAsync('minHeight', function (cons) {
         return cons.height && cons.height.min;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.height >= val;
       });
-      validateASync('maxWidth', function (cons) {
+      validateAsync('maxWidth', function (cons) {
         return cons.height && cons.width.max;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width <= val;
       });
-      validateASync('minWidth', function (cons) {
+      validateAsync('minWidth', function (cons) {
         return cons.height && cons.width.min;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width >= val;
       });
-      validateASync('maxDuration', function (cons) {
+      validateAsync('maxDuration', function (cons) {
         return cons.height && cons.duration.max;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d <= translateScalars(val);
       });
-      validateASync('minDuration', function (cons) {
+      validateAsync('minDuration', function (cons) {
         return cons.height && cons.duration.min;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d >= translateScalars(val);
       });
 
-      validateASync('validateAsyncFn', function () {
+      validateAsync('validateAsyncFn', function () {
         return null;
       }, /./, function (file, val) {
         return val;
@@ -287,8 +287,8 @@
 
       var deferred = $q.defer();
       $timeout(function () {
-        if (file.type.indexOf('audio') === 0 || file.type.indexOf('video') === 0) {
-          deferred.reject('not image');
+        if (file.type.indexOf('audio') !== 0 && file.type.indexOf('video') !== 0) {
+          deferred.reject('not media');
           return;
         }
         upload.dataUrl(file).then(function (dataUrl) {

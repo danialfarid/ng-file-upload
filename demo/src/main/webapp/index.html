@@ -27,7 +27,7 @@
     var angularVersion = window.location.hash.substring(1);
     if (angularVersion.indexOf('/') == 0) angularVersion = angularVersion.substring(1);
     document.write('<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/' +
-        (angularVersion || '1.4.4') + '/angular.js"><\/script>');
+        (angularVersion || '1.2.24') + '/angular.js"><\/script>');
   </script>
   <script src="js/ng-file-upload-shim.js"></script>
   <script src="js/ng-file-upload.js"></script>
@@ -74,7 +74,7 @@
             <br/>
 
             <button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
-            <img ng-show="picFile != null" ngf-src="picFile" class="thumb">
+            <img ng-show="picFile.dataUrl" ngf-src="picFile" class="thumb">
             <span class="progress" ng-show="picFile.progress >= 0">
                 <div style="width:{{picFile.progress}}%" ng-bind="picFile.progress + '%'"></div>
             </span>
@@ -117,11 +117,9 @@
 
         <div class="preview">
           <div>Preview image/audio/video:</div>
-          <img ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('image') > -1" ngf-accept="'image/*'">
-          <audio controls ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('audio') > -1"
-                 ngf-accept="'audio/*'"></audio>
-          <video controls ng-src="{{files[0] | ngfDataUrl}}" ng-show="files[0].type.indexOf('video') > -1"
-                 ngf-accept="'video/*'"></video>
+          <img ngf-src="!files[0].$error && files[0]">
+          <audio controls ngf-src="!files[0].$error && files[0]"></audio>
+          <video controls ngf-src="!files[0].$error && files[0]"></video>
         </div>
       </fieldset>
       <br/>

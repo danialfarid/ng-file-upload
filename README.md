@@ -126,12 +126,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ```html
 <button|div|input type="file"|ngf-select|...
-  *ngf-select="boolean" or "upload($files, $file)" // default true, enables file select directive
-                     // or could be a function same as ngf-change
+  *ngf-select= "upload($files, $file, $event)" // function same as ngf-change
   ng-model="myFiles" // binds the selected file or files to the scope model 
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
-  ngf-change="upload($files, $file, $event, $rejectedFiles)" // called when files are selected or removed
+  ngf-select-disabled="boolean" // default true, disables file select on this element
+  ngf-change="upload($files, $file, $event)" // called when files are selected or cleared
   ngf-multiple="boolean" // default false, allows selecting multiple files
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -162,12 +162,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```html
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-  *ngf-drop="boolean" or "upload($files, $file)" // default true, enables file drop directive
-                     // or could be a function same as ngf-change
+  *ngf-drop= "upload($files, $file, $event)" // function same as ngf-change
   ng-model="myFiles" // binds the dropped file or files to the scope model 
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
-  ngf-change="fileDropped($files, $file, $event, $rejectedFiles)" //called when files being dropped
+  ngf-drop-disabled="boolean" // default true, disables file drop on this element
+  ngf-change="fileDropped($files, $file, $event)" //called when files being dropped
   ngf-multiple="boolean" // default false, allows selecting multiple files.
   ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
@@ -278,7 +278,11 @@ The model value will be a single file instead of an array if all of the followin
   * `ngf-keep` is not set or is resolved to false.
 
 **validation**
-When any of the validation directives specified the form validation will take place and you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>` for example `form.file.$error.pattern`. If multiple file selection is allowed you can find the error of each individual file with `file.$error` and description of it `file.$errorParam`. 
+When any of the validation directives specified the form validation will take place and 
+you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>` 
+for example `form.file.$error.pattern`. 
+If multiple file selection is allowed you can find the error of each individual file 
+with `file.$error` and description of it `file.$errorParam`. 
 So before uploading you can check if the file is valid by `!file.$error`.
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
@@ -290,16 +294,6 @@ This is equivalent to angular $http() but allow you to listen to the progress ev
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
 Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
-
-**ngf-reset-on-click and ngf-reset-model-on-click**:
-These two options are for testing purposes or rare cases, be aware that they might make the file select behave differently on different browsers.
-By default since there is no cross-browser way to detect cancel on the file popup everytime you click on the file select it would create a new element and click on that and the model value will be reset to empty. This would also allow selecting the same file again which normally will not trigger a change event.
-Setting this to false would not create a new element, and browsers will behave differently when the user cancels the popup, for example for chrome you would receive a change event with empty files but in FireFox there will be no event fired. This could be helpful in some rare cases or for testing when you want to keep the original elements without replacing them. Setting ngf-reset-model-on-click will not reset the model when you click on the file select, that would make reseting model when the user cancels the select popup impossible in some browsers.
-
-**ng-model-rejected**:
-You can find the reason for rejection using `file.$error` which would be one of these values `accept`, `validate`, `size.min`, `size.max`, `width.min`, `width.max`, `height.min`, `height.max`, `duration.min`, `duration.max`. Extra information about the error is available through `file.$errorParam` which for example could be the maximum file limit in case the error is `size.max`.
-`accept` is for the case the file doesn't match the `ngf-accept` or `ngf-validate.accept` criteria.
-`validate` is for the case when the ngf-validate is a custom function and returns false or non empty string for that file.
 
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values. 

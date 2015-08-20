@@ -27,13 +27,6 @@
 
     upload.registerValidators(ngModel, attr, scope);
 
-    var disabled = false;
-
-    attr.$observe('ngfSelect', function (value) {
-      if (value === false) elem.attr('disabled', 'disabled');
-      else if (value === true) elem.removeAttr('disabled');
-    });
-
     function isInputTypeFile() {
       return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
     }
@@ -94,10 +87,12 @@
     var initialTouchStartY = 0;
 
     function clickHandler(evt) {
-      if (elem.attr('disabled') || disabled) return false;
+      if (elem.attr('disabled') || attrGetter('ngfSelectDisabled', scope)) return false;
 
       var r = handleTouch(evt);
       if (r != null) return r;
+
+      resetModel(evt);
 
       // fix for android native browser < 4.4
       if (shouldClickLater(navigator.userAgent)) {
@@ -156,12 +151,8 @@
 
     if (!isInputTypeFile()) {
       elem.bind('click touchstart touchend', clickHandler);
-    }
-
-    if (navigator.userAgent.indexOf('Chrome') === -1) {
-      elem.bind('click', function (e) {
-        resetModel(e);
-      });
+    } else {
+      elem.bind('click', resetModel);
     }
 
     function ie10SameFileSelectFix(evt) {

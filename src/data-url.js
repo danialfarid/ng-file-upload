@@ -5,7 +5,9 @@
     upload.dataUrl = function (file, disallowObjectUrl) {
       if (file.dataUrl) {
         var d = $q.defer();
-        $timeout(function() {d.resolve(file.dataUrl);});
+        $timeout(function () {
+          d.resolve(file.dataUrl);
+        });
         return d.promise;
       }
       if (file.$ngfDataUrlPromise) return file.$ngfDataUrlPromise;
@@ -36,7 +38,7 @@
                 deferred.resolve(e.target.result);
               });
             };
-            fileReader.onerror = function() {
+            fileReader.onerror = function () {
               $timeout(function () {
                 file.dataUrl = '';
                 deferred.reject();
@@ -51,7 +53,7 @@
       });
 
       file.$ngfDataUrlPromise = deferred.promise;
-      file.$ngfDataUrlPromise['finally'](function() {
+      file.$ngfDataUrlPromise['finally'](function () {
         delete file.$ngfDataUrlPromise;
       });
       return file.$ngfDataUrlPromise;
@@ -59,19 +61,38 @@
     return upload;
   }]);
 
+  function getTagType(el) {
+    if (el.tagName.toLowerCase() === 'img') return 'image';
+    if (el.tagName.toLowerCase() === 'audio') return 'audio';
+    if (el.tagName.toLowerCase() === 'video') return 'video';
+    return /\./;
+  }
+
+  var style = document.createElement('style');
+  style.innerHTML = '.ngf-hide{display:none !important}';
+  document.getElementsByTagName('head')[0].appendChild(style);
+
   /** @namespace attr.ngfSrc */
   /** @namespace attr.ngfNoObjectUrl */
-  ngFileUpload.directive('ngfSrc', ['$parse', '$compile', '$timeout', function ($parse, $compile, $timeout) {
+  ngFileUpload.directive('ngfSrc', ['$compile', '$timeout', 'Upload', function ($compile, $timeout, Upload) {
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          elem.attr('ng-src', '{{(' + attr.ngfSrc + ') | ngfDataUrl' +
-            ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}');
-          attr.$set('ngfSrc', null);
-          var clone = elem.clone();
-          elem.replaceWith(clone);
-          $compile(clone)(scope);
+          scope.$watch(attr.ngfSrc, function (file) {
+            if (file && file.type.indexOf(getTagType(elem[0])) === 0) {
+              Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
+                $timeout(function () {
+                  if (file.dataUrl) {
+                    elem.removeClass('ngf-hide');
+                    elem.attr('src', file.dataUrl);
+                  }
+                });
+              });
+            } else {
+              elem.addClass('ngf-hide');
+            }
+          });
         });
       }
     };
@@ -79,17 +100,23 @@
 
   /** @namespace attr.ngfBackground */
   /** @namespace attr.ngfNoObjectUrl */
-  ngFileUpload.directive('ngfBackground', ['$parse', '$compile', '$timeout', function ($parse, $compile, $timeout) {
+  ngFileUpload.directive('ngfBackground', ['Upload', '$compile', '$timeout', function (Upload, $compile, $timeout) {
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          elem.attr('style', elem.attr('style') + ';background-image:url(\'{{(' + attr.ngfBackground + ') | ngfDataUrl' +
-            ($parse(attr.ngfNoObjectUrl)(scope) === true ? ':true' : '') + '}}\')');
-          attr.$set('ngfBackground', null);
-          var clone = elem.clone();
-          elem.replaceWith(clone);
-          $compile(clone)(scope);
+          scope.$watch(attr.ngfBackground, function (file) {
+            console.log(elem[0], elem.css('display'),
+              elem.css('visibility'), elem[0].parentNode);
+            if (file && file.type.indexOf('image') === 0) {
+              Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
+                $timeout(function () {
+                  if (file.dataUrl) elem.attr('style', elem.attr('style') +
+                    ';background-image:url(\'' + file.dataUrl + '\')');
+                });
+              });
+            }
+          });
         });
       }
     };
@@ -110,7 +137,7 @@
           file.dataUrl = null;
           UploadDataUrl.dataUrl(file, disallowObjectUrl).then(function (url) {
             file.dataUrl = url;
-          }, function() {
+          }, function () {
             file.dataUrl = '';
           });
         }

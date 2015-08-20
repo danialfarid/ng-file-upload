@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '7.0.6';
+var version = '7.0.7';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -12,7 +12,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     window.location.reload(true);
   };
   $scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ?
-    window.location.hash.substring(2) : window.location.hash.substring(1)) : '1.4.4';
+    window.location.hash.substring(2) : window.location.hash.substring(1)) : '1.2.24';
 
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
@@ -169,7 +169,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   }
 
   (function handleDynamicEditingOfScriptsAndHtml($scope) {
-    $scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '');
+    $scope.defaultHtml = document.getElementById('editArea').innerHTML.replace(/\t\t\t\t/g, '').replace(/&amp;/g, '&');
 
     var fromLocal = (localStorage && localStorage.getItem('editHtml' + version));
     $scope.editHtml = fromLocal || $scope.defaultHtml;

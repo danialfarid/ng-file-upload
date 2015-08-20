@@ -53,13 +53,11 @@
       return;
     }
 
-    upload.registerValidators(ngModel, attr, scope);
+    function isDisabled() {
+      return elem.attr('disabled') || attrGetter('ngfDropDisabled', scope);
+    }
 
-    var disabled = false;
-    attr.$observe('ngfDrop', function(value) {
-      if (value === false) elem.attr('disabled', 'disabled');
-      else if (value === true) elem.removeAttr('disabled');
-    });
+    upload.registerValidators(ngModel, attr, scope);
 
     var leaveTimeout = null;
     var stopPropagation = $parse(attrGetter('ngfStopPropagation'));
@@ -67,7 +65,7 @@
     var actualDragOverClass;
 
     elem[0].addEventListener('dragover', function (evt) {
-      if (elem.attr('disabled') || disabled) return;
+      if (isDisabled()) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       // handling dragover events from the Chrome download bar
@@ -85,19 +83,19 @@
       }
     }, false);
     elem[0].addEventListener('dragenter', function (evt) {
-      if (elem.attr('disabled') || disabled) return;
+      if (isDisabled()) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function () {
-      if (elem.attr('disabled') || disabled) return;
+      if (isDisabled()) return;
       leaveTimeout = $timeout(function () {
         elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
       }, dragOverDelay || 1);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
-      if (elem.attr('disabled') || disabled) return;
+      if (isDisabled()) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       elem.removeClass(actualDragOverClass);
@@ -108,7 +106,7 @@
         attrGetter('multiple') || attrGetter('ngfMultiple', scope));
     }, false);
     elem[0].addEventListener('paste', function (evt) {
-      if (elem.attr('disabled') || disabled) return;
+      if (isDisabled()) return;
       var files = [];
       var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
       if (clipboard && clipboard.items) {
