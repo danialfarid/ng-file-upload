@@ -249,7 +249,7 @@
 
   function dropAvailable() {
     var div = document.createElement('div');
-    return ('draggable' in div) && ('ondrop' in div);
+    return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
   }
 
 })();
