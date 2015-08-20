@@ -159,7 +159,7 @@
             if (file.type.search(type) !== 0) {
               return true;
             }
-            var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate') || {});
+            var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
             if (val) {
               pendings++;
               thisPendings++;
@@ -170,9 +170,11 @@
                   hasError = true;
                 }
               }, function () {
-                file.$error = name;
-                file.$errorParam = val;
-                hasError = true;
+                if (attrGetter('ngfValidateForce', {'$file': file})) {
+                  file.$error = name;
+                  file.$errorParam = val;
+                  hasError = true;
+                }
               })['finally'](function () {
                 pendings--;
                 thisPendings--;
@@ -249,20 +251,40 @@
           return;
         }
         upload.dataUrl(file).then(function (dataUrl) {
-          var img = angular.element('<img>').attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
-          img.on('load', function () {
+          var img = angular.element('<img>').attr('src', dataUrl).css('visibility', 'hidden').css('position', 'fixed');
+          function success() {
             var width = img[0].clientWidth;
             var height = img[0].clientHeight;
             img.remove();
             file.width = width;
             file.height = height;
             deferred.resolve({width: width, height: height});
-          });
-          img.on('error', function () {
+          }
+
+          function error() {
             img.remove();
             deferred.reject('load error');
-          });
-          angular.element(document.body).append(img);
+          }
+
+          img.on('load', success);
+          img.on('error', error);
+          var count = 0;
+          function checkLoadError() {
+            $timeout(function () {
+              if (img[0].parentNode) {
+                if (img[0].clientWidth) {
+                  success();
+                } else if (count > 10) {
+                  error();
+                } else {
+                  checkLoadError();
+                }
+              }
+            }, 1000);
+          }
+          checkLoadError();
+
+          angular.element(document.getElementsByTagName('body')[0]).append(img);
         }, function () {
           deferred.reject('load error');
         });
@@ -295,16 +317,36 @@
           var el = angular.element(file.type.indexOf('audio') === 0 ? '<audio>' : '<video>')
             .attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
 
-          el.on('loadedmetadata', function () {
+          function success() {
             var duration = el[0].duration;
             file.duration = duration;
             el.remove();
             deferred.resolve(duration);
-          });
-          el.on('error', function () {
+          }
+
+          function error() {
             el.remove();
             deferred.reject('load error');
-          });
+          }
+
+          el.on('loadedmetadata', success);
+          el.on('error', error);
+          var count = 0;
+          function checkLoadError() {
+            $timeout(function () {
+              if (el[0].parentNode) {
+                if (el[0].duration) {
+                  success();
+                } else if (count > 10) {
+                  error();
+                } else {
+                  checkLoadError();
+                }
+              }
+            }, 1000);
+          }
+          checkLoadError();
+
           angular.element(document.body).append(el);
         }, function () {
           deferred.reject('load error');

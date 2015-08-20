@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.7
+ * @version 7.0.8
  */
 
 (function () {
@@ -97,6 +97,10 @@
             jsonp: false, //removes the callback form param
             cache: true, //removes the ?fileapiXXX in the url
             complete: function (err, fileApiXHR) {
+              if (err.indexOf('#2174') !== -1) {
+                // this error seems to be fine the file is being uploaded properly.
+                err = null;
+              }
               xhr.__completed = true;
               if (!err && xhr.__listeners.load)
                 xhr.__listeners.load({
@@ -418,7 +422,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.7
+ * @version 7.0.8
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -439,7 +443,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.7';
+ngFileUpload.version = '7.0.8';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -976,9 +980,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     return /\./;
   }
 
-  var style = document.createElement('style');
-  style.innerHTML = '.ngf-hide{display:none !important}';
-  document.getElementsByTagName('head')[0].appendChild(style);
+  var style = angular.element('<style>.ngf-hide{display:none !important}</style>');
+  document.getElementsByTagName('head')[0].appendChild(style[0]);
 
   /** @namespace attr.ngfSrc */
   /** @namespace attr.ngfNoObjectUrl */
@@ -994,6 +997,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
                   if (file.dataUrl) {
                     elem.removeClass('ngf-hide');
                     elem.attr('src', file.dataUrl);
+                  } else {
+                    elem.addClass('ngf-hide');
                   }
                 });
               });
@@ -1014,15 +1019,18 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       link: function (scope, elem, attr) {
         $timeout(function () {
           scope.$watch(attr.ngfBackground, function (file) {
-            console.log(elem[0], elem.css('display'),
-              elem.css('visibility'), elem[0].parentNode);
             if (file && file.type.indexOf('image') === 0) {
               Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
                 $timeout(function () {
-                  if (file.dataUrl) elem.attr('style', elem.attr('style') +
-                    ';background-image:url(\'' + file.dataUrl + '\')');
+                  if (file.dataUrl) {
+                    elem.css('background-image', 'url(\'' + file.dataUrl + '\')');
+                  } else {
+                    elem.css('background-image', '');
+                  }
                 });
               });
+            } else {
+              elem.css('background-image', '');
             }
           });
         });
@@ -1218,7 +1226,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
             if (file.type.search(type) !== 0) {
               return true;
             }
-            var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate') || {});
+            var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
             if (val) {
               pendings++;
               thisPendings++;
@@ -1229,9 +1237,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
                   hasError = true;
                 }
               }, function () {
-                file.$error = name;
-                file.$errorParam = val;
-                hasError = true;
+                if (attrGetter('ngfValidateForce', {'$file': file})) {
+                  file.$error = name;
+                  file.$errorParam = val;
+                  hasError = true;
+                }
               })['finally'](function () {
                 pendings--;
                 thisPendings--;
@@ -1308,20 +1318,40 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           return;
         }
         upload.dataUrl(file).then(function (dataUrl) {
-          var img = angular.element('<img>').attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
-          img.on('load', function () {
+          var img = angular.element('<img>').attr('src', dataUrl).css('visibility', 'hidden').css('position', 'fixed');
+          function success() {
             var width = img[0].clientWidth;
             var height = img[0].clientHeight;
             img.remove();
             file.width = width;
             file.height = height;
             deferred.resolve({width: width, height: height});
-          });
-          img.on('error', function () {
+          }
+
+          function error() {
             img.remove();
             deferred.reject('load error');
-          });
-          angular.element(document.body).append(img);
+          }
+
+          img.on('load', success);
+          img.on('error', error);
+          var count = 0;
+          function checkLoadError() {
+            $timeout(function () {
+              if (img[0].parentNode) {
+                if (img[0].clientWidth) {
+                  success();
+                } else if (count > 10) {
+                  error();
+                } else {
+                  checkLoadError();
+                }
+              }
+            }, 1000);
+          }
+          checkLoadError();
+
+          angular.element(document.getElementsByTagName('body')[0]).append(img);
         }, function () {
           deferred.reject('load error');
         });
@@ -1354,16 +1384,36 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           var el = angular.element(file.type.indexOf('audio') === 0 ? '<audio>' : '<video>')
             .attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
 
-          el.on('loadedmetadata', function () {
+          function success() {
             var duration = el[0].duration;
             file.duration = duration;
             el.remove();
             deferred.resolve(duration);
-          });
-          el.on('error', function () {
+          }
+
+          function error() {
             el.remove();
             deferred.reject('load error');
-          });
+          }
+
+          el.on('loadedmetadata', success);
+          el.on('error', error);
+          var count = 0;
+          function checkLoadError() {
+            $timeout(function () {
+              if (el[0].parentNode) {
+                if (el[0].duration) {
+                  success();
+                } else if (count > 10) {
+                  error();
+                } else {
+                  checkLoadError();
+                }
+              }
+            }, 1000);
+          }
+          checkLoadError();
+
           angular.element(document.body).append(el);
         }, function () {
           deferred.reject('load error');

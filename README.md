@@ -154,7 +154,9 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // validate error name: validateFn
   ngf-validate-async-fn="validate($file)" // custom validation function, return a promise that resolve to
               // boolean or string containing the error. validate error name: validateAsyncFn
-  ngf-validate-later="boolean" (experimental) // default false, if true model will be set and change will be called before validation
+  ngf-validate-force="boolean" // default false, if true file will be rejected if the dimension or duration 
+              // values for validations cannot be calculated for example image cannot load or unsupported video by browser
+  ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
 >Upload</button>
 ```

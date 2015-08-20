@@ -68,9 +68,8 @@
     return /\./;
   }
 
-  var style = document.createElement('style');
-  style.innerHTML = '.ngf-hide{display:none !important}';
-  document.getElementsByTagName('head')[0].appendChild(style);
+  var style = angular.element('<style>.ngf-hide{display:none !important}</style>');
+  document.getElementsByTagName('head')[0].appendChild(style[0]);
 
   /** @namespace attr.ngfSrc */
   /** @namespace attr.ngfNoObjectUrl */
@@ -86,6 +85,8 @@
                   if (file.dataUrl) {
                     elem.removeClass('ngf-hide');
                     elem.attr('src', file.dataUrl);
+                  } else {
+                    elem.addClass('ngf-hide');
                   }
                 });
               });
@@ -106,15 +107,18 @@
       link: function (scope, elem, attr) {
         $timeout(function () {
           scope.$watch(attr.ngfBackground, function (file) {
-            console.log(elem[0], elem.css('display'),
-              elem.css('visibility'), elem[0].parentNode);
             if (file && file.type.indexOf('image') === 0) {
               Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
                 $timeout(function () {
-                  if (file.dataUrl) elem.attr('style', elem.attr('style') +
-                    ';background-image:url(\'' + file.dataUrl + '\')');
+                  if (file.dataUrl) {
+                    elem.css('background-image', 'url(\'' + file.dataUrl + '\')');
+                  } else {
+                    elem.css('background-image', '');
+                  }
                 });
               });
+            } else {
+              elem.css('background-image', '');
             }
           });
         });

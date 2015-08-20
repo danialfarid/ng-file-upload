@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.7
+ * @version 7.0.8
  */
 
 (function () {
@@ -97,6 +97,10 @@
             jsonp: false, //removes the callback form param
             cache: true, //removes the ?fileapiXXX in the url
             complete: function (err, fileApiXHR) {
+              if (err.indexOf('#2174') !== -1) {
+                // this error seems to be fine the file is being uploaded properly.
+                err = null;
+              }
               xhr.__completed = true;
               if (!err && xhr.__listeners.load)
                 xhr.__listeners.load({
