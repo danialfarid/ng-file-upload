@@ -132,7 +132,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
             formData.append(key, val);
           }
         } else {
-          val = angular.isString(val) ? val : JSON.stringify(val);
+          val = angular.isString(val) ? val : angular.toJson(val);
           if (config.sendFieldsAs === 'json-blob') {
             formData.append(key, new Blob([val], {type: 'application/json'}));
           } else {
