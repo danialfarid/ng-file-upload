@@ -97,7 +97,7 @@
             jsonp: false, //removes the callback form param
             cache: true, //removes the ?fileapiXXX in the url
             complete: function (err, fileApiXHR) {
-              if (err.indexOf('#2174') !== -1) {
+              if (err && angular.isString(err) && err.indexOf('#2174') !== -1) {
                 // this error seems to be fine the file is being uploaded properly.
                 err = null;
               }
