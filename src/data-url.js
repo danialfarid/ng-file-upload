@@ -3,14 +3,15 @@
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
     var upload = UploadBase;
     upload.dataUrl = function (file, disallowObjectUrl) {
-      if (file.dataUrl) {
+      if ((disallowObjectUrl && file.dataUrl != null) || (!disallowObjectUrl && file.blobUrl != null)) {
         var d = $q.defer();
         $timeout(function () {
-          d.resolve(file.dataUrl);
+          d.resolve(disallowObjectUrl ? file.dataUrl : file.blobUrl);
         });
         return d.promise;
       }
-      if (file.$ngfDataUrlPromise) return file.$ngfDataUrlPromise;
+      var p = disallowObjectUrl ? file.$ngfDataUrlPromise : file.$ngfBlobUrlPromise;
+      if (p) return p;
 
       var deferred = $q.defer();
       $timeout(function () {
@@ -25,11 +26,16 @@
             try {
               url = URL.createObjectURL(file);
             } catch (e) {
-              deferred.reject();
+              $timeout(function () {
+                file.blobUrl = '';
+                deferred.reject();
+              });
               return;
             }
-            file.dataUrl = url;
-            if (url) deferred.resolve(url);
+            $timeout(function () {
+              file.blobUrl = url;
+              if (url) deferred.resolve(url);
+            });
           } else {
             var fileReader = new FileReader();
             fileReader.onload = function (e) {
@@ -47,16 +53,22 @@
             fileReader.readAsDataURL(file);
           }
         } else {
-          file.dataUrl = '';
-          deferred.reject();
+          $timeout(function () {
+            file[disallowObjectUrl ? 'dataUrl' : 'blobUrl'] = '';
+            deferred.reject();
+          });
         }
       });
 
-      file.$ngfDataUrlPromise = deferred.promise;
-      file.$ngfDataUrlPromise['finally'](function () {
-        delete file.$ngfDataUrlPromise;
+      if (disallowObjectUrl) {
+        p = file.$ngfDataUrlPromise = deferred.promise;
+      } else {
+        p = file.$ngfBlobUrlPromise = deferred.promise;
+      }
+      p['finally'](function () {
+        delete file[disallowObjectUrl ? '$ngfDataUrlPromise' : '$ngfBlobUrlPromise'];
       });
-      return file.$ngfDataUrlPromise;
+      return p;
     };
     return upload;
   }]);
@@ -79,12 +91,17 @@
       link: function (scope, elem, attr) {
         $timeout(function () {
           scope.$watch(attr.ngfSrc, function (file) {
+            if (angular.isString(file)) {
+              elem.removeClass('ngf-hide');
+              return elem.attr('src', file);
+            }
             if (file && file.type.indexOf(getTagType(elem[0])) === 0) {
-              Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
+              var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
+              Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
-                  if (file.dataUrl) {
+                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
                     elem.removeClass('ngf-hide');
-                    elem.attr('src', file.dataUrl);
+                    elem.attr('src', disallowObjectUrl ? file.dataUrl : file.blobUrl);
                   } else {
                     elem.addClass('ngf-hide');
                   }
@@ -107,11 +124,13 @@
       link: function (scope, elem, attr) {
         $timeout(function () {
           scope.$watch(attr.ngfBackground, function (file) {
+            if (angular.isString(file)) return elem.css('background-image', 'url(\'' + file + '\')');
             if (file && file.type.indexOf('image') === 0) {
-              Upload.dataUrl(file, Upload.attrGetter('ngfNoObjectUrl', attr, scope))['finally'](function () {
+              var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
+              Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
-                  if (file.dataUrl) {
-                    elem.css('background-image', 'url(\'' + file.dataUrl + '\')');
+                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
+                    elem.css('background-image', 'url(\'' + (disallowObjectUrl ? file.dataUrl : file.blobUrl) + '\')');
                   } else {
                     elem.css('background-image', '');
                   }
@@ -139,11 +158,7 @@
       if (file && !file.dataUrl) {
         if (file.dataUrl === undefined && angular.isObject(file)) {
           file.dataUrl = null;
-          UploadDataUrl.dataUrl(file, disallowObjectUrl).then(function (url) {
-            file.dataUrl = url;
-          }, function () {
-            file.dataUrl = '';
-          });
+          UploadDataUrl.dataUrl(file, disallowObjectUrl);
         }
         return '';
       }
