@@ -97,7 +97,8 @@
             jsonp: false, //removes the callback form param
             cache: true, //removes the ?fileapiXXX in the url
             complete: function (err, fileApiXHR) {
-              if (err.indexOf('#2174') !== -1) {
+              // err can be boolean false
+              if (err && typeof err.indexOf === 'function' && err.indexOf('#2174') !== -1) {
                 // this error seems to be fine the file is being uploaded properly.
                 err = null;
               }
