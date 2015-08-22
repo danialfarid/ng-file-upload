@@ -62,7 +62,7 @@ Table of Content:
 * Upload multiple files on file select: 
 [http://jsfiddle.net/danialfarid/2vq88rfs/12/](http://jsfiddle.net/danialfarid/2vq88rfs/12/)
 * Upload single file on file select: 
-[http://jsfiddle.net/danialfarid/0mz6ff9o/3/](http://jsfiddle.net/danialfarid/0mz6ff9o/3/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
 * Drop and upload on watch: 
 [http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
 ```html
