@@ -60,7 +60,7 @@ Table of Content:
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
 * Upload multiple files on file select: 
-[http://jsfiddle.net/danialfarid/2vq88rfs/2/](http://jsfiddle.net/danialfarid/2vq88rfs/2/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/12/](http://jsfiddle.net/danialfarid/2vq88rfs/12/)
 * Upload single file on file select: 
 [http://jsfiddle.net/danialfarid/0mz6ff9o/3/](http://jsfiddle.net/danialfarid/0mz6ff9o/3/)
 * Drop and upload on watch: 
