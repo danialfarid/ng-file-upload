@@ -1,6 +1,6 @@
 (function () {
 
-  ngFileUpload.service('UploadModel', ['$parse', '$timeout', '$compile', 'UploadValidate',
+  ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadValidate',
     function ($parse, $timeout, $compile, UploadValidate) {
       var upload = UploadValidate;
       upload.getAttrWithDefaults = function (attr, name) {
