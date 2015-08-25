@@ -25,7 +25,7 @@ Table of Content:
 * [Install](#install) ([Manual](#manual), [Bower](#bower), [NuGet](#nuget), [NPM](#npm))
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
-* [Server Side](#server) 
+* [Server Side](#server)
   * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
   * [CORS](#cors)
   * [Amazon S3 Upload](#s3)
@@ -44,7 +44,7 @@ Table of Content:
 ##<a name="install"></a> Install
 
 * <a name="manual"></a>**Manual**: download latest from [here](https://github.com/danialfarid/ng-file-upload-bower/releases/latest)
-* <a name="bower"></a>**Bower**: 
+* <a name="bower"></a>**Bower**:
   * `bower install ng-file-upload-shim --save`(for non html5 suppport)
   * `bower install ng-file-upload --save`
 * <a name="nuget"></a>**NuGet**: `PM> Install-Package angular-file-upload` (thanks to [Georgios Diamantopoulos](https://github.com/georgiosd))
@@ -52,24 +52,24 @@ Table of Content:
 ```html
 <script src="angular(.min).js"></script>
 <script src="ng-file-upload-shim(.min).js"></script> <!-- for no html5 browsers support -->
-<script src="ng-file-upload(.min).js"></script> 
+<script src="ng-file-upload(.min).js"></script>
 ```
 
 ##<a name="usage"></a> Usage
 
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
-* Upload multiple files on file select: 
-[http://jsfiddle.net/danialfarid/2vq88rfs/2/](http://jsfiddle.net/danialfarid/2vq88rfs/2/)
-* Upload single file on file select: 
-[http://jsfiddle.net/danialfarid/0mz6ff9o/3/](http://jsfiddle.net/danialfarid/0mz6ff9o/3/)
-* Drop and upload on watch: 
+* Upload multiple files on file select:
+[http://jsfiddle.net/danialfarid/2vq88rfs/12/](http://jsfiddle.net/danialfarid/2vq88rfs/12/)
+* Upload single file on file select:
+[http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
+* Drop and upload on watch:
 [http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
-<script src="ng-file-upload-shim.min.js"></script> 
-<script src="ng-file-upload.min.js"></script> 
+<script src="ng-file-upload-shim.min.js"></script>
+<script src="ng-file-upload.min.js"></script>
 
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
     watching model:
@@ -78,7 +78,7 @@ Table of Content:
   <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
   <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
   Drop File:
-  <div ngf-drop ng-model="files" class="drop-box" 
+  <div ngf-drop ng-model="files" class="drop-box"
     ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
     ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
   <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
@@ -86,7 +86,7 @@ Table of Content:
   Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
   Audio preview: <audio controls ngf-src="file"></audio>
   Video preview: <video controls ngf-src="file"></video>
-</div>
+</form>
 ```
 Javascript code:
 ```js
@@ -99,10 +99,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         $scope.upload($scope.file);
       }
     });
-    
+
     /* optional: set default directive values */
     //Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
-    
+
     $scope.upload = function (file) {
         Upload.upload({
             url: 'upload/url',
@@ -127,7 +127,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```html
 <button|div|input type="file"|ngf-select|...
   *ngf-select= "upload($files, $file, $event)" // function same as ngf-change
-  ng-model="myFiles" // binds the selected file or files to the scope model 
+  ng-model="myFiles" // binds the selected file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default true, disables file select on this element
@@ -138,7 +138,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   ngf-keep="boolean" // default false, keep the previous ng-model files and append the new files
   ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate selected files
 
-  //validations: 
+  //validations:
   ngf-pattern="'.pdf,.jpg,video/*'" // comma separated wildcard to filter file names and types allowed
               // validate error name: pattern
   ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
@@ -147,14 +147,14 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // validate error name: maxHeight
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'"
               // validate error name: maxDuration
-  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, 
+  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000},
                 height: {min: 100, max: 300}, duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"
                 shorthand form for above validations in one place.
   ngf-validate-fn="validate($file)" // custom validation function, return boolean or string containing the error.
               // validate error name: validateFn
   ngf-validate-async-fn="validate($file)" // custom validation function, return a promise that resolve to
               // boolean or string containing the error. validate error name: validateAsyncFn
-  ngf-validate-force="boolean" // default false, if true file will be rejected if the dimension or duration 
+  ngf-validate-force="boolean" // default false, if true file will be rejected if the dimension or duration
               // values for validations cannot be calculated for example image cannot load or unsupported video by browser
   ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
@@ -165,7 +165,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
   *ngf-drop= "upload($files, $file, $event)" // function same as ngf-change
-  ng-model="myFiles" // binds the dropped file or files to the scope model 
+  ng-model="myFiles" // binds the dropped file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
   ngf-drop-disabled="boolean" // default true, disables file drop on this element
@@ -173,8 +173,8 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
   ngf-multiple="boolean" // default false, allows selecting multiple files.
   ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
-                    "calcDragOverClass($event)" 
-              // drag over css class behaviour. could be a string, a function returning class name 
+                    "calcDragOverClass($event)"
+              // drag over css class behaviour. could be a string, a function returning class name
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
               // accept/reject class only works in Chrome validating only the file mime type
               // against ngf-pattern
@@ -182,7 +182,7 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
                                      // drag&drop support for this browser
   ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
-  
+
   //validations:
   same as ngf-select see above
 supported
@@ -195,11 +195,11 @@ Drop files here
 
 #### File preview
 ```html
-<img|audio|video 
+<img|audio|video
   ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
   ngf-background="file" //sets background-image style to the file data url.
   ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
-> 
+>
 ```
 
 #### Upload service:
@@ -210,23 +210,23 @@ var upload = Upload.upload({
   method: 'POST' or 'PUT'(html5), default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
   fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
-  /* 
+  /*
   file formData name ('Content-Disposition'), server side request file parameter name could be
   an array  of names for multiple files (html5). Default is 'file' */
-  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
-  /* 
+  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...],
+  /*
   map of extra form data fields to send along with file. each field will be sent as a form field.
   The values are converted to json string or jsob blob or nested form depending on 'sendFieldsAs' option. */
   fields: {key: $scope.myValue, ...},
   /*
-  default is 'json', sends each field as json string plain text content type, 'json-blob' sends object fields 
+  default is 'json', sends each field as json string plain text content type, 'json-blob' sends object fields
   as a blob object with content type 'application/json', 'form' sends fields as nested form fields. see #784 */
   sendFieldsAs: json|json-blob|form,
   /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
   formDataAppender: function(formData, key, val){},
   /*
   data will be sent as a separate form data field called "data".*/
-  data: {}. 
+  data: {}.
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
@@ -238,9 +238,9 @@ var upload = Upload.upload({
   // handle error
 }).xhr(function(xhr){
   //access or attach event listeners to the underlying XMLHttpRequest
-  xhr.upload.addEventListener(...) 
+  xhr.upload.addEventListener(...)
 });
-/* return $http promise then,catch or finally. 
+/* return $http promise then,catch or finally.
 Note that this promise does NOT have progress, abort or xhr functions */
 var promise = upload.then(success, error, progress);
               upload.catch(errorCallback);
@@ -250,7 +250,7 @@ var promise = upload.then(success, error, progress);
 upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
-   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
+   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed.
    It could also be used to enable progress for regualr angular $http() post/put requests.
 */
 Upload.http({
@@ -276,33 +276,33 @@ Upload.mediaDuration(file).then(function(durationInSeconds){...});
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
   * `ngf-multiple` is not set or is resolved to false.
-  * `multiple` attribute is not set on the element 
+  * `multiple` attribute is not set on the element
   * `ngf-keep` is not set or is resolved to false.
 
 **validation**
-When any of the validation directives specified the form validation will take place and 
-you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>` 
-for example `form.file.$error.pattern`. 
-If multiple file selection is allowed you can find the error of each individual file 
-with `file.$error` and description of it `file.$errorParam`. 
+When any of the validation directives specified the form validation will take place and
+you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>`
+for example `form.file.$error.pattern`.
+If multiple file selection is allowed you can find the error of each individual file
+with `file.$error` and description of it `file.$errorParam`.
 So before uploading you can check if the file is valid by `!file.$error`.
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
 **Upload.http()**:
 This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
 
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome. 
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 **Upload.setDefaults()**:
-If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values. 
+If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values.
 
 ##<a name="old_browsers"></a> Old browsers
 
-For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
+For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used.
 **Note**: You need Flash installed on your browser since `FileAPI` uses Flash to upload files.
 
 These two files  **`FileAPI.min.js`, `FileAPI.flash.swf`** will be loaded by the module on demand (no need to be included in the html) if the browser does not supports HTML5 FormData to avoid extra load for HTML5 browsers.
@@ -312,9 +312,9 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
     //optional need to be loaded before angular-file-upload-shim(.min).js
     FileAPI = {
         //only one of jsPath or jsUrl.
-        jsPath: '/js/FileAPI.min.js/folder/', 
+        jsPath: '/js/FileAPI.min.js/folder/',
         jsUrl: 'yourcdn.com/js/FileAPI.min.js',
-        
+
         //only one of staticPath or flashUrl.
         staticPath: '/flash/FileAPI.flash.swf/folder/',
         flashUrl: 'yourcdn.com/js/FileAPI.flash.swf',
@@ -325,7 +325,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
-**Old browsers known issues**: 
+**Old browsers known issues**:
 * Because of a Flash limitation/bug if the server doesn't send any response body the status code of the response will be always `204 'No Content'`. So if you have access to your server upload code at least return a character in the response for the status code to work properly.
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/ng-file-upload/issues/111) [#224](https://github.com/danialfarid/ng-file-upload/issues/224) [#129](https://github.com/danialfarid/ng-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/ng-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
@@ -338,11 +338,11 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 * <a name="spring"></a>**Spring MVC**
 [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
-* <a name="node"></a>**Node.js** 
+* <a name="node"></a>**Node.js**
 [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
 [Another wiki](https://github.com/danialfarid/ng-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
 * <a name="rails"></a>**Rails**
-  * [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank). 
+  * [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank).
   * [Blog post](http://www.coshx.com/blog/2015/07/10/file-attachments-in-angular/)
 provided by [Coshx Labs](http://www.coshx.com/).
   * **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
@@ -378,8 +378,8 @@ Upload.upload({
         method: 'POST',
         fields : {
           key: file.name, // the key to store the file on S3, could be file name or customized
-          AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
-          acl: 'private', // sets the access to the uploaded file in the bucket: private or public 
+          AWSAccessKeyId: <YOUR AWS AccessKey Id>,
+          acl: 'private', // sets the access to the uploaded file in the bucket: private or public
           policy: $scope.policy, // base64-encoded json policy (see article below)
           signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
           "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
@@ -392,8 +392,8 @@ Upload.upload({
 These two values are generated from the json policy document which looks like this:
 ```
 {"expiration": "2020-01-01T00:00:00Z",
-"conditions": [ 
-  {"bucket": "angular-file-upload"}, 
+"conditions": [
+  {"bucket": "angular-file-upload"},
   ["starts-with", "$key", ""],
   {"acl": "private"},
   ["starts-with", "$Content-Type", ""],
