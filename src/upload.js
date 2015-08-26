@@ -192,7 +192,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
           return data;
         }
-        return $http.defaults.transformRequest[0](arguments);
+        return $http.defaults.transformRequest[0].apply(this, arguments);
       };
     return sendHttp(config);
   };
