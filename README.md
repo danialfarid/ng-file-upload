@@ -64,7 +64,7 @@ Table of Content:
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
 * Drop and upload on watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/23](http://jsfiddle.net/danialfarid/s8kc7wg0/23)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
