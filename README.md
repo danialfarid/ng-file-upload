@@ -60,11 +60,11 @@ Table of Content:
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
 * Upload multiple files on file select:
-[http://jsfiddle.net/danialfarid/2vq88rfs/12/](http://jsfiddle.net/danialfarid/2vq88rfs/12/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/17/](http://jsfiddle.net/danialfarid/2vq88rfs/17/)
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
 * Drop and upload on watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/1](http://jsfiddle.net/danialfarid/s8kc7wg0/1)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/23](http://jsfiddle.net/danialfarid/s8kc7wg0/23)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -143,7 +143,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // validate error name: pattern
   ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
-  ngf-min-heigh, ngf-max-heigh, ngf-min-width, ngf-max-width="1000" in pixels
+  ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels
               // validate error name: maxHeight
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'"
               // validate error name: maxDuration
