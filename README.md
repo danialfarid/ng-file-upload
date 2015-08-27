@@ -63,30 +63,37 @@ Table of Content:
 [http://jsfiddle.net/danialfarid/2vq88rfs/17/](http://jsfiddle.net/danialfarid/2vq88rfs/17/)
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
-* Drop and upload on watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/23](http://jsfiddle.net/danialfarid/s8kc7wg0/23)
+* Drop and upload with $watch:
+[http://jsfiddle.net/danialfarid/s8kc7wg0/31](http://jsfiddle.net/danialfarid/s8kc7wg0/31)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
 <script src="ng-file-upload-shim.min.js"></script>
 <script src="ng-file-upload.min.js"></script>
 
+Upload on form submit or button click
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
-    watching model:
-  <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
-  <div class="button" ngf-select ng-model="files" ngf-multiple="true" ngf-pattern="'image/*" accept="image/*">Upload multiple images using model $watch</div>
-  <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
-  Drop File:
-  <div ngf-drop ng-model="files" class="drop-box"
-    ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
-    ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
-  <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
-
-  Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
-  Audio preview: <audio controls ngf-src="file"></audio>
-  Video preview: <video controls ngf-src="file"></video>
+  Single Image with validations
+  <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*"
+  accept="image/*" ngf-max-size="20MB" ngf-min-height="100">Select</div>
+  Multiple files
+  <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
+  Drop files: <div ngf-drop ng-model="files" class="drop-box">Drop</div>
+  <button type="submit" ng-click="submit()">submit</button>
 </form>
+
+Upload right away after file selection:
+<div class="button" ngf-select="upload($file)">Upload on file select</div>
+<div class="button" ngf-select="uploadFiles($files)" multiple="multiple">Upload on file select</div>
+  Drop File:
+<div ngf-drop="uploadFiles($files)" class="drop-box"
+  ngf-drag-over-class="dragover" ngf-multiple="true" 
+  ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+<div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+
+Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
+Audio preview: <audio controls ngf-src="file"></audio>
+Video preview: <video controls ngf-src="file"></video>
 ```
 Javascript code:
 ```js
@@ -94,15 +101,14 @@ Javascript code:
 var app = angular.module('fileUpload', ['ngFileUpload']);
 
 app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
-    $scope.$watch('file', function (file) {
-      if (!file.$error) {
+    // upload later on form submit or something similar
+    $scope.submit = function() {
+      if (form.file.$valid && $scope.file && !$scope.file.$error) {
         $scope.upload($scope.file);
       }
     });
 
-    /* optional: set default directive values */
-    //Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
-
+    // upload on file select or drop
     $scope.upload = function (file) {
         Upload.upload({
             url: 'upload/url',
@@ -117,6 +123,16 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
             console.log('error status: ' + status);
         })
     };
+    // for multiple files:
+    $scope.upload = function (files) {
+      if (files && files.length) {
+        for (var i = 0; i < files.length; i++) {
+          Upload.upload({..., file: files[i], ...})...;
+        }
+        // or send them all together for HTML5 browsers:
+        Upload.upload({..., file: files, ...})...;
+      }
+    }
 }]);
 ```
 
@@ -126,12 +142,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ```html
 <button|div|input type="file"|ngf-select|...
-  *ngf-select= "upload($files, $file, $event)" // function same as ngf-change
+  *ngf-select= "upload($files, $file, $event)" // called when files are selected or cleared
   ng-model="myFiles" // binds the selected file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change= "upload($files, $file, $event)" // called when files are selected or cleared
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default true, disables file select on this element
-  ngf-change="upload($files, $file, $event)" // called when files are selected or cleared
   ngf-multiple="boolean" // default false, allows selecting multiple files
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -162,14 +178,13 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```
 #### File drop
 ```html
-All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-  *ngf-drop= "upload($files, $file, $event)" // function same as ngf-change
+  *ngf-drop= "upload($files, $file, $event)" //called when files being dropped
   ng-model="myFiles" // binds the dropped file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change= "upload($files, $file, $event)" // called when files being dropped
   ng-disabled="boolean" // disables this element
   ngf-drop-disabled="boolean" // default true, disables file drop on this element
-  ngf-change="fileDropped($files, $file, $event)" //called when files being dropped
   ngf-multiple="boolean" // default false, allows selecting multiple files.
   ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
@@ -294,7 +309,7 @@ Non-html5 browsers due to flash limitation will still upload array of files one 
 This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
 
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-pattern` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 **Upload.setDefaults()**:
