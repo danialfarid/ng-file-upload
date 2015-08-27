@@ -101,7 +101,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     });
 
     /* optional: set default directive values */
-    //Upload.setDefaults( {ngf-keep:false ngf-accept:'image/*', ...} );
+    //Upload.setDefaults( {ngf-keep:false ngf-pattern:'image/*', ...} );
 
     $scope.upload = function (file) {
         Upload.upload({
@@ -294,7 +294,7 @@ Non-html5 browsers due to flash limitation will still upload array of files one 
 This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
 
 **drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-accept` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-pattern` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 **Upload.setDefaults()**:
