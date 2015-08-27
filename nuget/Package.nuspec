@@ -3,7 +3,7 @@
   <metadata>
     <id>angular-file-upload</id>
     <title>Angular file upload</title>
-    <version>7.0.14</version>
+    <version>7.0.15</version>
     <authors>Danial Farid, Georgios Diamantopoulos (nuget package)</authors>
     <owners>Danial Farid</owners>
     <licenseUrl>https://github.com/danialfarid/ng-file-upload/blob/master/LICENSE</licenseUrl>

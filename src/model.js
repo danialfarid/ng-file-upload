@@ -76,6 +76,8 @@
               $event: evt
             });
           }
+          // scope apply changes
+          $timeout(function(){});
         }
 
         if (noDelay) {
