@@ -75,8 +75,8 @@ Table of Content:
     watching model:
   <div class="button" ngf-select ng-model="file">Upload using model $watch</div>
   <div class="button" ngf-select ng-model="files" ngf-multiple="true" ngf-pattern="'image/*" accept="image/*">Upload multiple images using model $watch</div>
-  <div class="button" ngf-select ngf-change="upload($file)">Upload on file change</div>
-  <div class="button" ngf-select ngf-change="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
+  <div class="button" ngf-select="upload($file)">Upload on file change</div>
+  <div class="button" ngf-select="upload($files)" ngf-multiple="true" ngf-max-size="'2MB'">Upload multiple with size limitation</div>
   Drop File:
   <div ngf-drop ng-model="files" class="drop-box"
     ngf-drag-over-class="dragover" ngf-multiple="true" ngf-allow-dir="true"
@@ -126,12 +126,11 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ```html
 <button|div|input type="file"|ngf-select|...
-  *ngf-select= "upload($files, $file, $event)" // function same as ngf-change
+  *ngf-select= "upload($files, $file, $event)" // called when files are selected or cleared
   ng-model="myFiles" // binds the selected file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default true, disables file select on this element
-  ngf-change="upload($files, $file, $event)" // called when files are selected or cleared
   ngf-multiple="boolean" // default false, allows selecting multiple files
   ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -162,14 +161,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ```
 #### File drop
 ```html
-All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-  *ngf-drop= "upload($files, $file, $event)" // function same as ngf-change
+  *ngf-drop= "upload($files, $file, $event)" //called when files being dropped
   ng-model="myFiles" // binds the dropped file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ng-disabled="boolean" // disables this element
   ngf-drop-disabled="boolean" // default true, disables file drop on this element
-  ngf-change="fileDropped($files, $file, $event)" //called when files being dropped
   ngf-multiple="boolean" // default false, allows selecting multiple files.
   ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
