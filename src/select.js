@@ -1,4 +1,5 @@
 (function () {
+  var generatedElems = [];
 
   ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     function ($parse, $timeout, $compile, Upload) {
@@ -25,8 +26,6 @@
       return upload.attrGetter(name, attr, scope);
     };
 
-    upload.registerValidators(ngModel, attr, scope);
-
     function isInputTypeFile() {
       return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
     }
@@ -43,14 +42,18 @@
       upload.updateModel(ngModel, attr, scope, fileChangeAttr(), files.length ? files : null, evt);
     }
 
-    scope.$watch(attrGetter('ngfMultiple'), function() {
+    var unwatches = [];
+    unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function() {
       fileElem.attr('multiple', attrGetter('ngfMultiple', scope));
-    });
-    scope.$watch(attrGetter('ngfCapture'), function() {
+    }));
+    unwatches.push(scope.$watch(attrGetter('ngfCapture'), function() {
       fileElem.attr('capture', attrGetter('ngfCapture', scope));
-    });
+    }));
     attr.$observe('accept', function() {
       fileElem.attr('accept', attrGetter('accept'));
+    });
+    unwatches.push(function () {
+      if (attr.$$observers) delete attr.$$observers.accept;
     });
     function bindAttrToFileInput(fileElem) {
       if (elem !== fileElem) {
@@ -79,6 +82,7 @@
       fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
+      generatedElems.push({el: elem, ref: fileElem});
       document.body.appendChild(fileElem[0]);
 
       return fileElem;
@@ -155,6 +159,8 @@
       elem.bind('click', resetModel);
     }
 
+    upload.registerValidators(ngModel, fileElem, attr, scope);
+
     function ie10SameFileSelectFix(evt) {
       if (fileElem && !fileElem.attr('__ngf_ie10_Fix_')) {
         if (!fileElem[0].parentNode) {
@@ -183,7 +189,22 @@
 
     scope.$on('$destroy', function () {
       if (!isInputTypeFile()) fileElem.remove();
+      angular.forEach(unwatches, function(unwatch) {
+        unwatch();
+      });
     });
+
+    function contains(parent, descendant) {
+      return parent === descendant || Boolean(parent.compareDocumentPosition(descendant) & 16);
+    }
+
+    for (var i = 0; i < generatedElems.length; i++) {
+      var g = generatedElems[i];
+      if (!contains(document, g.el[0])) {
+        generatedElems.splice(i, 1);
+        g.ref.remove();
+      }
+    }
 
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
       window.FileAPI.ngfFixIE(elem, fileElem, changeFn);

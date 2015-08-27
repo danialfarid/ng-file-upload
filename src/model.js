@@ -81,18 +81,6 @@
         if (noDelay) {
           update();
         } else if (upload.validate(files, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
-            if (upload.attrGetter('ngfResize', attr, scope)) {
-              var img = angular.element('<img>');
-              img.attr('src', files[0].dataUrl || files[0].blobUrl);
-              img.bind('load', function() {
-                upload.resize(img[0], 100, 100).then(function(rimg) {
-                  console.log(rimg);
-                  document.body.appendChild(rimg);
-                });
-              });
-              document.body.appendChild(img[0]);
-            }
-
             $timeout(function () {
               update();
             });

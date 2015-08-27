@@ -45,7 +45,7 @@
   ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', function (UploadDataUrl, $q, $timeout) {
     var upload = UploadDataUrl;
 
-    upload.registerValidators = function (ngModel, attr, scope, later) {
+    upload.registerValidators = function (ngModel, elem, attr, scope) {
       if (!ngModel) return;
 
       ngModel.$ngfValidations = [];
@@ -56,12 +56,22 @@
       }
 
       ngModel.$formatters.push(function (val) {
-        if (later) {
+        if (upload.attrGetter('ngfValidateLater', attr, scope) || !ngModel.$$ngfValidated) {
           upload.validate(val, ngModel, attr, scope, false, function () {
             setValidities(ngModel);
+            ngModel.$$ngfValidated = false;
           });
+          if (val && val.length === 0) {
+            val = null;
+          }
+          if (elem && (val == null || val.length === 0)) {
+            if (elem.val()) {
+              elem.val(null);
+            }
+          }
         } else {
           setValidities(ngModel);
+          ngModel.$$ngfValidated = false;
         }
         return val;
       });
@@ -78,13 +88,23 @@
 
     upload.validate = function (files, ngModel, attr, scope, later, callback) {
       ngModel = ngModel || {};
-      ngModel.$ngfValidations = [];
+      ngModel.$ngfValidations = ngModel.$ngfValidations || [];
+
+      angular.forEach(ngModel.$ngfValidations, function(v) {
+        v.valid = true;
+      });
 
       var attrGetter = function (name, params) {
         return upload.attrGetter(name, attr, scope, params);
       };
 
-      if (later) {
+      if (later ) {
+        callback.call(ngModel);
+        return;
+      }
+      ngModel.$$ngfValidated = true;
+
+      if (files == null || files.length === 0) {
         callback.call(ngModel);
         return;
       }
