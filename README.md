@@ -129,6 +129,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   *ngf-select= "upload($files, $file, $event)" // called when files are selected or cleared
   ng-model="myFiles" // binds the selected file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change= "upload($files, $file, $event)" // called when files are selected or cleared
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default true, disables file select on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
@@ -165,6 +166,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
   *ngf-drop= "upload($files, $file, $event)" //called when files being dropped
   ng-model="myFiles" // binds the dropped file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change= "upload($files, $file, $event)" // called when files being dropped
   ng-disabled="boolean" // disables this element
   ngf-drop-disabled="boolean" // default true, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files.
