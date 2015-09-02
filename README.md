@@ -352,7 +352,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 ##<a name="server"></a>Server Side
 
 * <a name="java"></a>**Java**
-You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/)
+You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/)
 * <a name="spring"></a>**Spring MVC**
 [Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
 * <a name="node"></a>**Node.js**
