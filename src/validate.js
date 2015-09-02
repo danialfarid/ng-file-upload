@@ -90,7 +90,7 @@
       ngModel = ngModel || {};
       ngModel.$ngfValidations = ngModel.$ngfValidations || [];
 
-      angular.forEach(ngModel.$ngfValidations, function(v) {
+      angular.forEach(ngModel.$ngfValidations, function (v) {
         v.valid = true;
       });
 
@@ -98,7 +98,7 @@
         return upload.attrGetter(name, attr, scope, params);
       };
 
-      if (later ) {
+      if (later) {
         callback.call(ngModel);
         return;
       }
@@ -215,22 +215,40 @@
         return d.height >= val;
       });
       validateAsync('maxWidth', function (cons) {
-        return cons.height && cons.width.max;
+        return cons.width && cons.width.max;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width <= val;
       });
       validateAsync('minWidth', function (cons) {
-        return cons.height && cons.width.min;
+        return cons.width && cons.width.min;
       }, /image/, this.imageDimensions, function (d, val) {
         return d.width >= val;
       });
+      validateAsync('ratio', function (cons) {
+        return cons.ratio;
+      }, /image/, this.imageDimensions, function (d, val) {
+        var split = val.toString().split(','), valid = false;
+
+        for (var i = 0; i < split.length; i++) {
+          var r = split[i], xIndex = r.search(/x/i);
+          if (xIndex > -1) {
+            r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
+          } else {
+            r = parseFloat(r);
+          }
+          if (Math.abs((d.width / d.height) - r) < 0.0001) {
+            valid = true;
+          }
+        }
+        return valid;
+      });
       validateAsync('maxDuration', function (cons) {
-        return cons.height && cons.duration.max;
+        return cons.duration && cons.duration.max;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d <= translateScalars(val);
       });
       validateAsync('minDuration', function (cons) {
-        return cons.height && cons.duration.min;
+        return cons.duration && cons.duration.min;
       }, /audio|video/, this.mediaDuration, function (d, val) {
         return d >= translateScalars(val);
       });

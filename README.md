@@ -159,9 +159,11 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // validate error name: pattern
   ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
-  ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels
+  ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
               // validate error name: maxHeight
-  ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'"
+  ngf-ratio="9x6,1.6" list of comma separated valid aspect ratio of images in float or 3x2 format
+              // validate error name: ratio
+  ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration
   ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000},
                 height: {min: 100, max: 300}, duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"

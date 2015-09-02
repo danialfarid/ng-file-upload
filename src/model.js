@@ -32,33 +32,6 @@
 
       upload.updateModel = function (ngModel, attr, scope, fileChange, files, evt, noDelay) {
         function update() {
-          var keep = upload.attrGetter('ngfKeep', attr, scope);
-          if (keep === true) {
-            if (!files || !files.length) {
-              return;
-            } else {
-              var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0),
-                hasNew = false;
-              if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
-                var len = prevFiles.length;
-                for (var i = 0; i < files.length; i++) {
-                  for (var j = 0; j < len; j++) {
-                    if (files[i].name === prevFiles[j].name) break;
-                  }
-                  if (j === len) {
-                    prevFiles.push(files[i]);
-                    hasNew = true;
-                  }
-                }
-                if (!hasNew) return;
-                files = prevFiles;
-              } else {
-                files = prevFiles.concat(files);
-              }
-            }
-          }
-
-          attr.$$ngfPrevFiles = files;
           var file = files && files.length ? files[0] : null;
           if (ngModel) {
             var singleModel = !upload.attrGetter('ngfMultiple', attr, scope) && !upload.attrGetter('multiple', attr) && !keep;
@@ -79,6 +52,34 @@
           // scope apply changes
           $timeout(function(){});
         }
+
+        var keep = upload.attrGetter('ngfKeep', attr, scope);
+        if (keep === true) {
+          if (!files || !files.length) {
+            return;
+          } else {
+            var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0),
+              hasNew = false;
+            if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
+              var len = prevFiles.length;
+              for (var i = 0; i < files.length; i++) {
+                for (var j = 0; j < len; j++) {
+                  if (files[i].name === prevFiles[j].name) break;
+                }
+                if (j === len) {
+                  prevFiles.push(files[i]);
+                  hasNew = true;
+                }
+              }
+              if (!hasNew) return;
+              files = prevFiles;
+            } else {
+              files = prevFiles.concat(files);
+            }
+          }
+        }
+
+        attr.$$ngfPrevFiles = files;
 
         if (noDelay) {
           update();

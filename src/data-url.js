@@ -90,12 +90,12 @@
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          scope.$watch(attr.ngfSrc, function (file) {
+          var unwatch = scope.$watch(attr.ngfSrc, function (file) {
             if (angular.isString(file)) {
               elem.removeClass('ngf-hide');
               return elem.attr('src', file);
             }
-            if (file && file.type.indexOf(getTagType(elem[0])) === 0) {
+            if (file && file.type && file.type.indexOf(getTagType(elem[0])) === 0) {
               var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
               Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
@@ -111,6 +111,10 @@
               elem.addClass('ngf-hide');
             }
           });
+
+          scope.$on('$destroy', function () {
+            unwatch();
+          });
         });
       }
     };
@@ -123,9 +127,9 @@
       restrict: 'AE',
       link: function (scope, elem, attr) {
         $timeout(function () {
-          scope.$watch(attr.ngfBackground, function (file) {
+          var unwatch = scope.$watch(attr.ngfBackground, function (file) {
             if (angular.isString(file)) return elem.css('background-image', 'url(\'' + file + '\')');
-            if (file && file.type.indexOf('image') === 0) {
+            if (file && file.type && file.type.indexOf('image') === 0) {
               var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
               Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
@@ -139,6 +143,9 @@
             } else {
               elem.css('background-image', '');
             }
+          });
+          scope.$on('$destroy', function () {
+            unwatch();
           });
         });
       }
