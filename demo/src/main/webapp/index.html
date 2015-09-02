@@ -75,7 +75,7 @@
               <br/>
 
               <button ng-disabled="!myForm.$valid" ng-click="uploadPic(picFile)">Submit</button>
-              <img ng-show="picFile.dataUrl" ngf-src="picFile" class="thumb">
+              <img ngf-src="picFile" class="thumb">
               <span class="progress" ng-show="picFile.progress >= 0">
                   <div style="width:{{picFile.progress}}%" ng-bind="picFile.progress + '%'"></div>
               </span>
