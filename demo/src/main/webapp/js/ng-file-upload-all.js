@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.16
+ * @version 7.0.17
  */
 
 (function () {
@@ -422,7 +422,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.16
+ * @version 7.0.17
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -443,7 +443,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.16';
+ngFileUpload.version = '7.0.17';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -920,17 +920,15 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       });
     });
 
-    function contains(parent, descendant) {
-      return parent === descendant || Boolean(parent.compareDocumentPosition(descendant) & 16);
-    }
-
-    for (var i = 0; i < generatedElems.length; i++) {
-      var g = generatedElems[i];
-      if (!contains(document, g.el[0])) {
-        generatedElems.splice(i, 1);
-        g.ref.remove();
+    $timeout(function() {
+      for (var i = 0; i < generatedElems.length; i++) {
+        var g = generatedElems[i];
+        if (!document.body.contains(g.el[0])) {
+          generatedElems.splice(i, 1);
+          g.ref.remove();
+        }
       }
-    }
+    });
 
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
       window.FileAPI.ngfFixIE(elem, fileElem, changeFn);

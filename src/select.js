@@ -194,17 +194,15 @@
       });
     });
 
-    function contains(parent, descendant) {
-      return parent === descendant || Boolean(parent.compareDocumentPosition(descendant) & 16);
-    }
-
-    for (var i = 0; i < generatedElems.length; i++) {
-      var g = generatedElems[i];
-      if (!contains(document, g.el[0])) {
-        generatedElems.splice(i, 1);
-        g.ref.remove();
+    $timeout(function() {
+      for (var i = 0; i < generatedElems.length; i++) {
+        var g = generatedElems[i];
+        if (!document.body.contains(g.el[0])) {
+          generatedElems.splice(i, 1);
+          g.ref.remove();
+        }
       }
-    }
+    });
 
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
       window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
