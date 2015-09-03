@@ -165,8 +165,8 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // validate error name: ratio
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration
-  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000},
-                height: {min: 100, max: 300}, duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"
+  ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, height: {min: 100, max: 300}
+                ratio: '2x1', duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"
                 shorthand form for above validations in one place.
   ngf-validate-fn="validate($file)" // custom validation function, return boolean or string containing the error.
               // validate error name: validateFn
