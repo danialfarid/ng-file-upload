@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.17
+ * @version 7.1.0
  */
 
 (function () {
@@ -288,7 +288,7 @@
       }
 
       if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-      script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+      script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
       document.getElementsByTagName('head')[0].appendChild(script);
 
       FileAPI.hasFlash = hasFlash();

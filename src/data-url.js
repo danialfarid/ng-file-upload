@@ -99,9 +99,9 @@
               var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
               Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
-                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
+                  if (file.blobUrl || file.dataUrl) {
                     elem.removeClass('ngf-hide');
-                    elem.attr('src', disallowObjectUrl ? file.dataUrl : file.blobUrl);
+                    elem.attr('src', (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl);
                   } else {
                     elem.addClass('ngf-hide');
                   }

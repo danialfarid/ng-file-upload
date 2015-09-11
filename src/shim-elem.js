@@ -62,7 +62,7 @@
       }
 
       if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-      script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+      script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
       document.getElementsByTagName('head')[0].appendChild(script);
 
       FileAPI.hasFlash = hasFlash();

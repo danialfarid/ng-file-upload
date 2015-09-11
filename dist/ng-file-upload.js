@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.17
+ * @version 7.1.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.17';
+ngFileUpload.version = '7.1.0';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -616,9 +616,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
               var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
               Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
-                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
+                  if (file.blobUrl || file.dataUrl) {
                     elem.removeClass('ngf-hide');
-                    elem.attr('src', disallowObjectUrl ? file.dataUrl : file.blobUrl);
+                    elem.attr('src', (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl);
                   } else {
                     elem.addClass('ngf-hide');
                   }

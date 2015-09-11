@@ -3375,6 +3375,31 @@
 
 
 				/**
+				 * Publish flash-object
+				 *
+				 * @param {HTMLElement} el
+				 * @param {String} id
+				 * @param {Object} [opts]
+				 */
+				publish: function (el, id, opts){
+					opts = opts || {};
+					el.innerHTML = _makeFlashHTML({
+						id: id
+						, src: _getUrl(api.flashUrl, 'r=' + api.version)
+//						, src: _getUrl('http://v.demidov.boom.corp.mail.ru/uploaderfileapi/FlashFileAPI.swf?1')
+						, wmode: opts.camera ? '' : 'transparent'
+						, flashvars: 'callback=' + (opts.onEvent || 'FileAPI.Flash.onEvent')
+						+ '&flashId='+ id
+						+ '&storeKey='+ navigator.userAgent.match(/\d/ig).join('') +'_'+ api.version
+						+ (flash.isReady || (api.pingUrl ? '&ping='+api.pingUrl : ''))
+						+ '&timeout='+api.flashAbortTimeout
+						+ (opts.camera ? '&useCamera=' + _getUrl(api.flashWebcamUrl) : '')
+						+ '&debug='+(api.debug?"1":"")
+					}, opts);
+				},
+
+
+				/**
 				 * Initialization & preload flash object
 				 */
 				init: function (){
@@ -3410,31 +3435,6 @@
 					if( _retry < 10 ){
 						setTimeout(flash.init, ++_retry*50);
 					}
-				},
-
-
-				/**
-				 * Publish flash-object
-				 *
-				 * @param {HTMLElement} el
-				 * @param {String} id
-				 * @param {Object} [opts]
-				 */
-				publish: function (el, id, opts){
-					opts = opts || {};
-					el.innerHTML = _makeFlashHTML({
-						  id: id
-						, src: _getUrl(api.flashUrl, 'r=' + api.version)
-//						, src: _getUrl('http://v.demidov.boom.corp.mail.ru/uploaderfileapi/FlashFileAPI.swf?1')
-						, wmode: opts.camera ? '' : 'transparent'
-						, flashvars: 'callback=' + (opts.onEvent || 'FileAPI.Flash.onEvent')
-							+ '&flashId='+ id
-							+ '&storeKey='+ navigator.userAgent.match(/\d/ig).join('') +'_'+ api.version
-							+ (flash.isReady || (api.pingUrl ? '&ping='+api.pingUrl : ''))
-							+ '&timeout='+api.flashAbortTimeout
-							+ (opts.camera ? '&useCamera=' + _getUrl(api.flashWebcamUrl) : '')
-							+ '&debug='+(api.debug?"1":"")
-					}, opts);
 				},
 
 

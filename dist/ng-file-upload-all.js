@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.17
+ * @version 7.1.0
  */
 
 (function () {
@@ -288,7 +288,7 @@
       }
 
       if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-      script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+      script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
       document.getElementsByTagName('head')[0].appendChild(script);
 
       FileAPI.hasFlash = hasFlash();
@@ -422,7 +422,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.0.17
+ * @version 7.1.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -443,7 +443,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.0.17';
+ngFileUpload.version = '7.1.0';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -1037,9 +1037,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
               var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
               Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
                 $timeout(function () {
-                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
+                  if (file.blobUrl || file.dataUrl) {
                     elem.removeClass('ngf-hide');
-                    elem.attr('src', disallowObjectUrl ? file.dataUrl : file.blobUrl);
+                    elem.attr('src', (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl);
                   } else {
                     elem.addClass('ngf-hide');
                   }
