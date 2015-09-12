@@ -2,7 +2,7 @@
  * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.1.0
+ * @version 7.2.0
  */
 
 (function () {
@@ -422,7 +422,7 @@ if (!window.FileReader) {
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.1.0
+ * @version 7.2.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -443,7 +443,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.1.0';
+ngFileUpload.version = '7.2.0';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -563,15 +563,35 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       }
     }
 
+    function isFile(file) {
+      return file instanceof Blob || (file.flashId && file.name && file.size);
+    }
+
+    function addFileToFormData(formData, file, key) {
+      if (isFile(file)) {
+        formData.append(key, file, file.fileName || file.name);
+      } else if (angular.isObject(file)) {
+        for (var k in file) {
+          if (file.hasOwnProperty(k)) {
+            var split = k.split(',');
+            if (split[1]) {
+              file[k].fileName = split[1].replace(/^\s+|\s+$/g, '');
+            }
+            addFileToFormData(formData, file[k], split[0]);
+          }
+        }
+      } else {
+        throw 'Expected file object in Upload.upload file option: ' + file.toString();
+      }
+    }
+
     config.headers = config.headers || {};
     config.headers['Content-Type'] = undefined;
     config.transformRequest = config.transformRequest ?
       (angular.isArray(config.transformRequest) ?
         config.transformRequest : [config.transformRequest]) : [];
     config.transformRequest.push(function (data) {
-      var formData = new FormData();
-      var allFields = {};
-      var key;
+      var formData = new FormData(), allFields = {}, key;
       for (key in config.fields) {
         if (config.fields.hasOwnProperty(key)) {
           allFields[key] = config.fields[key];
@@ -590,16 +610,12 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       }
 
       if (config.file != null) {
-        var fileFormName = config.fileFormDataName || 'file';
-
         if (angular.isArray(config.file)) {
-          var isFileFormNameString = angular.isString(fileFormName);
           for (var i = 0; i < config.file.length; i++) {
-            formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i],
-              (config.fileName && config.fileName[i]) || config.file[i].name);
+            addFileToFormData(formData, config.file[i], 'file');
           }
         } else {
-          formData.append(fileFormName, config.file, config.fileName || config.file.name);
+          addFileToFormData(formData, config.file, 'file');
         }
       }
       return formData;
@@ -618,7 +634,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     return sendHttp(config);
   };
 
-  this.setDefaults = function(defaults) {
+  this.setDefaults = function (defaults) {
     this.defaults = defaults || {};
   };
 

@@ -223,14 +223,14 @@ Drop files here
 ```js
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
-  *file: file,  // single file or an array of files (array is for html5 only)
+  *file: file or files or {pic: picFile, doc: docFile},  
+         // single file or an array of files (html5 only) or 
+         // a map of key[,name] -> file (map with more than one entry is for html5 only) 
+         // the key is server request file form key param ('Content-Disposition') and 
+         // the optional comma-separated name (html5 only) is to chnage the original file name.
+         // by default the key is 'file' and original file name is used.
   method: 'POST' or 'PUT'(html5), default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
-  fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
-  /*
-  file formData name ('Content-Disposition'), server side request file parameter name could be
-  an array  of names for multiple files (html5). Default is 'file' */
-  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...],
   /*
   map of extra form data fields to send along with file. each field will be sent as a form field.
   The values are converted to json string or jsob blob or nested form depending on 'sendFieldsAs' option. */

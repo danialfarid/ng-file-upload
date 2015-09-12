@@ -61,7 +61,6 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       },
       fields: {username: $scope.username},
       file: file,
-      fileFormDataName: 'myFile'
     });
 
     file.upload.then(function (response) {
