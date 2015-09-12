@@ -223,7 +223,7 @@ Drop files here
 ```js
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
-  *file: file or files or {pic: picFile, doc: docFile},  
+  *file: file or files or {pic: picFile, `doc,myDoc.pdf`: docFile},  
          // single file or an array of files (html5 only) or 
          // a map of key[,name] -> file (map with more than one entry is for html5 only) 
          // the key is server request file form key param ('Content-Disposition') and 
