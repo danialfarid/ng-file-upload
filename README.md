@@ -76,8 +76,8 @@ Upload on form submit or button click
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
   Single Image with validations
   <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*"
-  accept="image/*" ngf-max-size="20MB" ngf-min-height="100" 
-  ngf-resize="{width: 100, height: 100}">Select</div>
+    accept="image/*" ngf-max-size="20MB" ngf-min-height="100" 
+    ngf-resize="{width: 100, height: 100}">Select</div>
   Multiple files
   <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
   Drop files: <div ngf-drop ng-model="files" class="drop-box">Drop</div>
