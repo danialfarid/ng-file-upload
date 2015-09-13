@@ -34,6 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop and paste images
 * abort/cancel upload
+* image resize
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
@@ -147,9 +148,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 <div|button|input type="file"|ngf-select|ngf-drop...
   ngf-select= "" or "upload($files, $file, $event)" // called when files are selected or cleared
   ngf-drop= "" or "upload($files, $file, $event)" // called when files being dropped
-                                                   // function is optional if you are using ng-model or ngf-change
+           // function is optional if you are using ng-model or ngf-change
   ng-model="myFiles" // binds the selected/dropped file or files to the scope model
-                     // could be an array or single file depending on ngf-multiple and ngf-keep values.
+           // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ngf-change= "upload($files, $file, $event)" // called when files are selected, dropped, or cleared
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
