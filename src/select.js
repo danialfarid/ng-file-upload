@@ -1,16 +1,17 @@
-(function () {
+ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload', function ($parse, $timeout, $compile, Upload) {
   var generatedElems = [];
 
-  ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
-    function ($parse, $timeout, $compile, Upload) {
-      return {
-        restrict: 'AEC',
-        require: '?ngModel',
-        link: function (scope, elem, attr, ngModel) {
-          linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, Upload);
-        }
-      };
-    }]);
+  function isDelayedClickSupported(ua) {
+    // fix for android native browser < 4.4 and safari windows
+    var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
+    if (m && m.length > 2) {
+      var v = Upload.defaults.androidFixMinorVersion || 4;
+      return parseInt(m[1]) < 4 || (parseInt(m[1]) === v && parseInt(m[2]) < v);
+    }
+
+    // safari on windows
+    return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
+  }
 
   function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, upload) {
     /** @namespace attr.ngfSelect */
@@ -43,13 +44,13 @@
     }
 
     var unwatches = [];
-    unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function() {
+    unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function () {
       fileElem.attr('multiple', attrGetter('ngfMultiple', scope));
     }));
-    unwatches.push(scope.$watch(attrGetter('ngfCapture'), function() {
+    unwatches.push(scope.$watch(attrGetter('ngfCapture'), function () {
       fileElem.attr('capture', attrGetter('ngfCapture', scope));
     }));
-    attr.$observe('accept', function() {
+    attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
     });
     unwatches.push(function () {
@@ -98,8 +99,7 @@
 
       resetModel(evt);
 
-      // fix for android native browser < 4.4
-      if (shouldClickLater(navigator.userAgent)) {
+      if (isDelayedClickSupported(navigator.userAgent)) {
         setTimeout(function () {
           fileElem[0].click();
         }, 0);
@@ -125,18 +125,6 @@
           if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
         }
       }
-    }
-
-    function shouldClickLater(ua) {
-      // android below 4.4
-      var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
-      if (m && m.length > 2) {
-        var v = upload.defaults.androidFixMinorVersion || 4;
-        return parseInt(m[1]) < 4 || (parseInt(m[1]) === v && parseInt(m[2]) < v);
-      }
-
-      // safari on windows
-      return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
     }
 
     var fileElem = elem;
@@ -189,12 +177,12 @@
 
     scope.$on('$destroy', function () {
       if (!isInputTypeFile()) fileElem.remove();
-      angular.forEach(unwatches, function(unwatch) {
+      angular.forEach(unwatches, function (unwatch) {
         unwatch();
       });
     });
 
-    $timeout(function() {
+    $timeout(function () {
       for (var i = 0; i < generatedElems.length; i++) {
         var g = generatedElems[i];
         if (!document.body.contains(g.el[0])) {
@@ -208,4 +196,12 @@
       window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
     }
   }
-})();
+
+  return {
+    restrict: 'AEC',
+    require: '?ngModel',
+    link: function (scope, elem, attr, ngModel) {
+      linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, Upload);
+    }
+  };
+}]);

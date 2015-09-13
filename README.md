@@ -138,22 +138,44 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 
 ### Full reference
 
-#### File select
+#### File select and drop
+
+At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to link to the element.
+`ngf-select` only attributes are marked with * and `ngf-drop` only attributes are marked with +.
 
 ```html
-<button|div|input type="file"|ngf-select|...
-  *ngf-select= "upload($files, $file, $event)" // called when files are selected or cleared
-  ng-model="myFiles" // binds the selected file or files to the scope model
+<div|button|input type="file"|ngf-select|ngf-drop...
+  ngf-select= "" or "upload($files, $file, $event)" // called when files are selected or cleared
+  ngf-drop= "" or "upload($files, $file, $event)" // called when files being dropped
+                                                   // function is optional if you are using ng-model or ngf-change
+  ng-model="myFiles" // binds the selected/dropped file or files to the scope model
                      // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-change= "upload($files, $file, $event)" // called when files are selected or cleared
+  ngf-change= "upload($files, $file, $event)" // called when files are selected, dropped, or cleared
   ng-disabled="boolean" // disables this element
-  ngf-select-disabled="boolean" // default true, disables file select on this element
+  ngf-select-disabled="boolean" // default false, disables file select on this element
+  ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
-  ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
-  accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
   ngf-keep="boolean" // default false, keep the previous ng-model files and append the new files
   ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate selected files
-
+  
+  *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
+  *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
+  
+  +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
+  +ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
+                    "calcDragOverClass($event)"
+              // drag over css class behaviour. could be a string, a function returning class name
+              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
+              // accept/reject class only works in Chrome validating only the file mime type
+              // against ngf-pattern
+  +ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
+                                     // drag&drop support for this browser
+  +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
+  +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
+  
+  ngf-resize="{width: 100, height: 100, quality: .8}" // resizes the image to the given width, height and
+              // quality (optional between 0.1 and 1.0)
+              
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*'" // comma separated wildcard to filter file names and types allowed
               // validate error name: pattern
@@ -176,38 +198,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
               // values for validations cannot be calculated for example image cannot load or unsupported video by browser
   ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
->Upload</button>
-```
-#### File drop
-```html
-<div|button|ngf-drop|...
-  *ngf-drop= "upload($files, $file, $event)" //called when files being dropped
-  ng-model="myFiles" // binds the dropped file or files to the scope model
-                     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-change= "upload($files, $file, $event)" // called when files being dropped
-  ng-disabled="boolean" // disables this element
-  ngf-drop-disabled="boolean" // default true, disables file drop on this element
-  ngf-multiple="boolean" // default false, allows selecting multiple files.
-  ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
-  ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
-                    "calcDragOverClass($event)"
-              // drag over css class behaviour. could be a string, a function returning class name
-              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
-              // accept/reject class only works in Chrome validating only the file mime type
-              // against ngf-pattern
-  ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
-                                     // drag&drop support for this browser
-  ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
-  ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
-
-  //validations:
-  same as ngf-select see above
-supported
->
-Drop files here
-</div>
+>Upload/Drop</div>
 
 <div|... ngf-no-file-drop>File Drag/drop is not supported</div>
+
 ```
 
 #### File preview

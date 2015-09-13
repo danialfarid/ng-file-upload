@@ -35,6 +35,7 @@ body {
     padding-top: 10px;
     margin: 3px 0;
     clear: both;
+    list-style: none;
 }
 
 .response .sel-file li, .response .reqh {
