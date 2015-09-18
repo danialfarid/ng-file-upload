@@ -34,6 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop and paste images
 * abort/cancel upload
+* image resize
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
@@ -74,8 +75,9 @@ Table of Content:
 Upload on form submit or button click
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
   Single Image with validations
-  <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*"
-  accept="image/*" ngf-max-size="20MB" ngf-min-height="100">Select</div>
+  <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
+    accept="image/*" ngf-max-size="20MB" ngf-min-height="100" 
+    ngf-resize="{width: 100, height: 100}">Select</div>
   Multiple files
   <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
   Drop files: <div ngf-drop ng-model="files" class="drop-box">Drop</div>
@@ -145,12 +147,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
 ```html
 <div|button|input type="file"|ngf-select|ngf-drop...
-  ngf-select= "" or "upload($files, $file, $event)" // called when files are selected or cleared
-  ngf-drop= "" or "upload($files, $file, $event)" // called when files being dropped
-                                                   // function is optional if you are using ng-model or ngf-change
+  ngf-select="" or "upload($files, $file, $event)" // called when files are selected or cleared
+  ngf-drop="" or "upload($files, $file, $event)" // called when files being dropped
+           // function is optional if you are using ng-model or ngf-change
   ng-model="myFiles" // binds the selected/dropped file or files to the scope model
-                     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-change= "upload($files, $file, $event)" // called when files are selected, dropped, or cleared
+           // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change="upload($files, $file, $event)" // called when files are selected, dropped, or cleared
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
