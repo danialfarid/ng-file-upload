@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.2.1
+ * @version 7.2.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -22,7 +22,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.2.1';
+ngFileUpload.version = '7.2.2';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   function sendHttp(config) {
@@ -711,26 +711,26 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     };
   }]);
 
-  ngFileUpload.config(['$compileProvider', function ($compileProvider) {
-    if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
-    if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|local|file|data|blob):/);
-  }]);
-
-  ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
-    return function (file, disallowObjectUrl) {
-      if (angular.isString(file)) {
-        return $sce.trustAsResourceUrl(file);
-      }
-      if (file && !file.dataUrl) {
-        if (file.dataUrl === undefined && angular.isObject(file)) {
-          file.dataUrl = null;
-          UploadDataUrl.dataUrl(file, disallowObjectUrl);
-        }
-        return '';
-      }
-      return (file && file.dataUrl ? $sce.trustAsResourceUrl(file.dataUrl) : file) || '';
-    };
-  }]);
+  //ngFileUpload.config(['$compileProvider', function ($compileProvider) {
+  //  if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+  //  if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+  //}]);
+  //
+  //ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
+  //  return function (file, disallowObjectUrl) {
+  //    if (angular.isString(file)) {
+  //      return $sce.trustAsResourceUrl(file);
+  //    }
+  //    if (file && !file.dataUrl) {
+  //      if (file.dataUrl === undefined && angular.isObject(file)) {
+  //        file.dataUrl = null;
+  //        UploadDataUrl.dataUrl(file, disallowObjectUrl);
+  //      }
+  //      return '';
+  //    }
+  //    return (file && file.dataUrl ? $sce.trustAsResourceUrl(file.dataUrl) : file) || '';
+  //  };
+  //}]);
 
 })();
 
