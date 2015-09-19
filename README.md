@@ -256,11 +256,11 @@ var upload = Upload.upload({
   /*
   See resumable upload guide below the code for more details (html5 only) */
   resumeSizeUrl: '/uploaded/size/url?file=' + file.name // uploaded file size so far on the server.
-  resumeSizeResponseReader: function(data) {return data.size;} // reads the uploaded file size 
-                                                                // from resumeSizeUrl GET response
+  resumeSizeResponseReader: function(data) {return data.size;} // reads the uploaded file size from resumeSizeUrl GET response
   resumeSize: function() {return promise;} // function that returns a prommise which will be
                                             // resolved to the upload file size on the server.
   resumeChunkSize: 10000 or '10KB' or '10MB' // upload in chunks of specified size
+  
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
   console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
