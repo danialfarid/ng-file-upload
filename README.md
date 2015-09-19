@@ -336,7 +336,7 @@ If you have many file selects or drops you can set the default values for the di
 **Resumable Uploads**
 The plugin supports resumable uploads for large files. 
 On your server you need to keep track of what files are being uploaded and how much of the file is uploaded.
- * `url` upload endpoint need to append uploading content to the end of file if it already exists and part of it is uploaded.
+ * `url` upload endpoint need to reassemble the file chunks by appending uploading content to the end of the file or correct chunk position if it already exists.
  * `resumeSizeUrl` server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
  where it is ended. It should return zero if the file has not been uploaded yet. <br/>A GET request will be made to that 
  url for each upload to determine if part of the file is already uploaded or not. You need a unique way of identifying the file
