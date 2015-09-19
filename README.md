@@ -336,23 +336,22 @@ If you have many file selects or drops you can set the default values for the di
 **Resumable Uploads**
 The plugin supports resumable uploads for large files. 
 On your server you need to keep track of what files are being uploaded and how much of the file is uploaded.
- * `url` upload endpoint need to append uploading content to the end of already existing file if part of it is already uploaded.
- * `resumeSizeUrl` a server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
- where it is ended. It should return zero if the file has not been uploaded yet. A GET request will be made to that 
+ * `url` upload endpoint need to append uploading content to the end of file if it already exists and part of it is uploaded.
+ * `resumeSizeUrl` server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
+ where it is ended. It should return zero if the file has not been uploaded yet. <br/>A GET request will be made to that 
  url for each upload to determine if part of the file is already uploaded or not. You need a unique way of identifying the file
-  on the server so you can pass the file name or generated id for the file as a request parameter.
+  on the server so you can pass the file name or generated id for the file as a request parameter.<br/>
  By default it will assume that the response 
  content is an integer or a json object with `size` integer property. If you return other formats from the endpoint you can specify 
  `resumeSizeResponseReader` function to return the size value from the response. Alternatively instead of `resumeSizeUrl` you can use 
- `resumeSize` function which returns a promise that resolves to the size of the uploaded file so far. This function
-  would be responsible for contacting the server and finding out how much of the file is uploaded so far.
+ `resumeSize` function which returns a promise that resolves to the size of the uploaded file so far.
  Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size 
- if you want to let the user to upload the same file again. Or you Optionally you could have a restart endpoint to 
+ if you want to let the user to upload the same file again. Or optionally you could have a restart endpoint to 
  set that back to zero to allow re-uploading the same file.
  * Optionally you can specify `resumeChunkSize` to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
- file size limitation and trying to upload the whole request before passing it for internal processing.
- When you provide this value the requests will have these three extra fields:
- `chunckSize`, `chunkNumber` zero starting, and `totalSize` to help the server to write the uploaded chunk to 
+ file size limitation and trying to upload the whole request before passing it for internal processing.<br/>
+ If this option is set the requests will have three extra fields:<br/>
+ `chunckSize`, `chunkNumber` (zero starting), and `totalSize` to help the server to write the uploaded chunk to 
  the correct position.
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
  
