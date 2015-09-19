@@ -1,5 +1,6 @@
 /**!
- * AngularJS file upload/drop directive and service with progress and abort
+ * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
+ * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
  * @version <%= pkg.version %>
  */
@@ -63,13 +64,34 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       };
     };
 
-    $http(config).then(function (r) {
-      deferred.resolve(r);
-    }, function (e) {
-      deferred.reject(e);
-    }, function (n) {
-      deferred.notify(n);
-    });
+    function uploadWithAngular() {
+      $http(config).then(function (r) {
+        deferred.resolve(r);
+      }, function (e) {
+        deferred.reject(e);
+      }, function (n) {
+        deferred.notify(n);
+      });
+    }
+
+    if (config.resumeSizeUrl) {
+      $http.get(config.resumeSizeUrl).then(function (resp) {
+        if (config.resumeSizeResponseReader) {
+          config._start = config.resumeSizeResponseReader(resp.data);
+        } else {
+          config._start = parseInt((resp.data.size || resp.data).toString());
+        }
+        uploadWithAngular();
+      }, function (e) {throw e;});
+    } else if (config.resumeSize) {
+      config.resumeSize().then(function(size) {
+        config._start = size;
+        uploadWithAngular();
+      }, function(e) {throw e;});
+    } else {
+      uploadWithAngular();
+    }
+
 
     promise.success = function (fn) {
       promise.then(function (response) {
@@ -87,12 +109,19 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
     promise.progress = function (fn) {
       promise.progressFunc = fn;
-      promise.then(null, null, function (update) {
-        fn(update);
+      promise.then(null, null, function (n) {
+        if (config._start) {
+          fn({
+            loaded: n.loaded + config._start, total: n.total + config._start, type: n.type, config: config,
+            lengthComputable: true, target: n.target
+          });
+        } else {
+          fn(n);
+        }
       });
       return promise;
     };
-    promise.abort = function () {
+    promise.abort = promise.pause = function () {
       if (config.__XHR) {
         $timeout(function () {
           config.__XHR.abort();
@@ -148,7 +177,13 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
     function addFileToFormData(formData, file, key) {
       if (isFile(file)) {
+        if (config._start) {
+          var slice = file.slice(config._start);
+          slice.name = file.name;
+          file = slice;
+        }
         formData.append(key, file, file.fileName || file.name);
+        config._file = config._file || file;
       } else if (angular.isObject(file)) {
         for (var k in file) {
           if (file.hasOwnProperty(k)) {

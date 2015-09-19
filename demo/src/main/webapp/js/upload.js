@@ -27,7 +27,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
         $scope.errorMsg = null;
         (function (f) {
           if (!f.$error) {
-            upload(f);
+            $scope.upload(f);
           }
         })(files[i]);
       }
@@ -37,11 +37,11 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   $scope.uploadPic = function (file) {
     $scope.formUpload = true;
     if (file != null) {
-      upload(file)
+      $scope.upload(file)
     }
   };
 
-  function upload(file) {
+  $scope.upload = function(file) {
     $scope.errorMsg = null;
     if ($scope.howToSend === 1) {
       uploadUsingUpload(file);
@@ -50,11 +50,18 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     } else {
       uploadS3(file);
     }
-  }
+  };
+
+  $scope.restart = function(file) {
+    $http.get('/upload?restart=true&name=' + encodeURIComponent(file.name)).then(function() {
+      $scope.upload(file);
+    });
+  };
 
   function uploadUsingUpload(file) {
     file.upload = Upload.upload({
-      url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
+      url: '/upload' + $scope.getReqParams(),
+      resumeSizeUrl: '/upload?name=' + encodeURIComponent(file.name),
       method: 'POST',
       headers: {
         'my-header': 'my-header-value'

@@ -32,15 +32,15 @@ Table of Content:
 
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
-* file drag and drop and paste images
-* abort/cancel upload
-* image resize
+* file drag and drop and paste images (html5 only)
+* resumable uploads: pause/resume upload (html5 only) 
+* image resize (html5 only)
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
-* show preview of selected images/audio/videos
+* show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
 * on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
-* HTML5 FileReader shim
+* HTML5 FileReader shim for IE8-9
 
 ##<a name="install"></a> Install
 
@@ -93,7 +93,7 @@ Upload right away after file selection:
   ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
 <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
-Image thumbnail: <img ngf-src="file || '/thumb.jpg'">
+Image thumbnail: <img ngf-thumbnail="file || '/thumb.jpg'">
 Audio preview: <audio controls ngf-src="file"></audio>
 Video preview: <video controls ngf-src="file"></video>
 ```
@@ -149,16 +149,19 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 <div|button|input type="file"|ngf-select|ngf-drop...
   ngf-select="" or "upload($files, $file, $event)" // called when files are selected or cleared
   ngf-drop="" or "upload($files, $file, $event)" // called when files being dropped
-           // function is optional if you are using ng-model or ngf-change
+    // You can have ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select
   ng-model="myFiles" // binds the selected/dropped file or files to the scope model
-           // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-change="upload($files, $file, $event)" // called when files are selected, dropped, or cleared
+    // could be an array or single file depending on ngf-multiple and ngf-keep values.
+  ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $event)"
+    // called when files are selected, dropped, or cleared
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
   ngf-keep="boolean" // default false, keep the previous ng-model files and append the new files
+    // new files are set as $newFiles argument in ngf-select, ngf-drop, or ngf-change function
   ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate selected files
+    // duplicate files are set as $duplicateFiles argument in ngf-select, ngf-drop, or ngf-change function
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -208,12 +211,20 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
 #### File preview
 ```html
-<img|audio|video
-  ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
-  ngf-background="file" //sets background-image style to the file data url.
+<img|audio|video|div
+  *ngf-src="file" //To preview the selected file, sets src attribute to the file data url.
+  *ngf-background="file" //sets background-image style to the file data url.
+  ngf-resize="{width: 20, height: 20, quality: 0.9}" // only for image resizes the image before setting it
+             // as src or background image. quality is optional.
   ngf-no-object-url="true or false" // see #887 to force base64 url generation instead of object url. Default false
 >
-```
+
+<div|span|...
+ *ngf-thumbnail="file" //Generates a thumbnail version of the image file
+ ngf-size="{width: 20, height: 20, quality: 0.9}" the image will be resized to this size
+        // if not specified will be resized to this element's client width and height.
+ ngf-as-background="boolean" //if true it will set the background image style instead of src attribute.
+>```
 
 #### Upload service:
 ```js
@@ -241,6 +252,13 @@ var upload = Upload.upload({
   data will be sent as a separate form data field called "data".*/
   data: {}.
   withCredentials: true|false,
+  /*
+  See resumable upload guide below the code for more details (html5 only) */
+  resumeSizeUrl: '/uploaded/size/url?file=' + file.name // uploaded file size so far on the server.
+  resumeSizeResponseReader: function(data) {return data.size;} // reads the uploaded file size 
+                                                                // from resumeSizeUrl GET response
+  resumeSize: function() {return promise;} // function that returns a prommise which will be
+                                            // resolved to the upload file size on the server.
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
   console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
@@ -312,6 +330,24 @@ Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10
 
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values.
+
+**Resumable Uploads**
+The plugin supports resumable uploads for large files. 
+On your server you need to keep track of what files are being uploaded and how much of the file is uploaded. You need these two endpoints:
+ * `url` upload endpoint need to append uploading content to the end of already existing file if part of it is already uploaded.
+ * `resumeSizeUrl` a server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
+ where it is ended. It should return zero if the file has not been uploaded yet. A GET request will be made to that 
+ url for each upload to determine if part of the file is already uploaded or not. You need a unique way of identifying the file
+  on the server so you can pass the file name or generated id for the file as a request parameter.
+ By default it will assume that the response 
+ content is an integer or a json object with `size` integer property. If you return other formats from the endpoint you can specify 
+ `resumeSizeResponseReader` function to return the size value from the response. Alternatively instead of `resumeSizeUrl` you can use 
+ `resumeSize` function which returns a promise that resolves to the size of the uploaded file so far. This function
+  would be responsible for contacting the server and finding out how much of the file is uploaded so far.
+ Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size 
+ if you want to let the user to upload the same file again. Or you Optionally you could have a restart endpoint to 
+ set that back to zero to allow re-uploading the same file.
+
 
 ##<a name="old_browsers"></a> Old browsers
 

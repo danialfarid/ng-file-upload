@@ -28,6 +28,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
   };
 
   upload.updateModel = function (ngModel, attr, scope, fileChange, files, evt, noDelay) {
+    var newFiles = files, dupFiles = [];
+
     function update() {
       var file = files && files.length ? files[0] : null;
       if (ngModel) {
@@ -43,6 +45,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
         $parse(fileChange)(scope, {
           $files: files,
           $file: file,
+          $newFiles: newFiles,
+          $duplicateFiles: dupFiles,
           $event: evt
         });
       }
@@ -52,28 +56,29 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     }
 
     var keep = upload.attrGetter('ngfKeep', attr, scope);
-    if (keep === true) {
-      if (!files || !files.length) {
-        return;
-      } else {
-        var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0),
-          hasNew = false;
-        if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
-          var len = prevFiles.length;
-          for (var i = 0; i < files.length; i++) {
-            for (var j = 0; j < len; j++) {
-              if (files[i].name === prevFiles[j].name) break;
-            }
-            if (j === len) {
-              prevFiles.push(files[i]);
-              hasNew = true;
+    if (keep !== false) {
+      if (!files || !files.length) return;
+
+      var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0), hasNew = false;
+
+      if (upload.attrGetter('ngfKeepDistinct', attr, scope) !== false) {
+        var len = prevFiles.length;
+        for (var i = 0; i < files.length; i++) {
+          for (var j = 0; j < len; j++) {
+            if (files[i].name === prevFiles[j].name) {
+              dupFiles.push(files[i]);
+              break;
             }
           }
-          if (!hasNew) return;
-          files = prevFiles;
-        } else {
-          files = prevFiles.concat(files);
+          if (j === len) {
+            prevFiles.push(files[i]);
+            hasNew = true;
+          }
         }
+        if (!hasNew) return;
+        files = prevFiles;
+      } else {
+        files = prevFiles.concat(files);
       }
     }
 

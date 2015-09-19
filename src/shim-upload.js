@@ -1,5 +1,6 @@
 /**!
- * AngularJS file upload/drop directive and service with progress and abort
+ * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
+ * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
  * @version <%= pkg.version %>

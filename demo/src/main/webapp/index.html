@@ -134,12 +134,18 @@
         {{f.type}}
       </div>
       <div ng-hide="f.$error">
-        <img ngf-src="!f.$error && f" class="thumb">
+        <img ngf-thumbnail="!f.$error && f" class="thumb">
 				<span class="progress" ng-show="f.progress >= 0">
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>
         <button class="button" ng-click="f.upload.abort();f.upload.aborted=true"
-                ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort
+                ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort/Pause
+        </button>
+        <button class="button" ng-click="upload(f);f.upload.aborted=false"
+                ng-show="f.upload != null && f.upload.aborted">Resume
+        </button>
+        <button class="button" ng-click="restart(f);f.upload.aborted=false"
+                ng-show="f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart
         </button>
         {{f.name}} - size: {{f.size}}B - type: {{f.type}}
         <a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>

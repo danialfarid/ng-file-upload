@@ -77,77 +77,106 @@
     if (el.tagName.toLowerCase() === 'img') return 'image';
     if (el.tagName.toLowerCase() === 'audio') return 'audio';
     if (el.tagName.toLowerCase() === 'video') return 'video';
-    return /\./;
+    return /./;
   }
 
   var style = angular.element('<style>.ngf-hide{display:none !important}</style>');
   document.getElementsByTagName('head')[0].appendChild(style[0]);
 
+  function linkFileDirective(Upload, $timeout, scope, elem, attr, directiveName, resizeParams, isBackground) {
+    function constructDataUrl(file) {
+      var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
+      Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
+        $timeout(function () {
+          var src = (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl;
+          if (isBackground) {
+            elem.css('background-image', 'url(\'' + (src || '') + '\')');
+          } else {
+            elem.attr('src', src);
+          }
+          if (src) {
+            elem.removeClass('ngf-hide');
+          } else {
+            elem.addClass('ngf-hide');
+          }
+        });
+      });
+    }
+
+    $timeout(function () {
+      var unwatch = scope.$watch(attr[directiveName], function (file) {
+        var size = resizeParams;
+        if (directiveName === 'ngfThumbnail' && !size) {
+          size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
+        }
+        if (angular.isString(file)) {
+          elem.removeClass('ngf-hide');
+          if (isBackground) {
+            return elem.css('background-image', 'url(\'' + file + '\')');
+          } else {
+            return elem.attr('src', file);
+          }
+        }
+        if (file && file.type && file.type.search(getTagType(elem[0])) === 0 &&
+          (!isBackground || file.type.indexOf('image') === 0)) {
+          if (size) {
+            Upload.resize(file, size.width, size.height, size.quality).then(
+              function (f) {
+                constructDataUrl(f);
+              }, function (e) {
+                throw e;
+              }
+            );
+          } else {
+            constructDataUrl(file);
+          }
+        } else {
+          elem.addClass('ngf-hide');
+        }
+      });
+
+      scope.$on('$destroy', function () {
+        unwatch();
+      });
+    });
+  }
+
+
   /** @namespace attr.ngfSrc */
   /** @namespace attr.ngfNoObjectUrl */
-  ngFileUpload.directive('ngfSrc', ['$compile', '$timeout', 'Upload', function ($compile, $timeout, Upload) {
+  ngFileUpload.directive('ngfSrc', ['Upload', '$timeout', function (Upload, $timeout) {
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
-        $timeout(function () {
-          var unwatch = scope.$watch(attr.ngfSrc, function (file) {
-            if (angular.isString(file)) {
-              elem.removeClass('ngf-hide');
-              return elem.attr('src', file);
-            }
-            if (file && file.type && file.type.indexOf(getTagType(elem[0])) === 0) {
-              var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
-              Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
-                $timeout(function () {
-                  if (file.blobUrl || file.dataUrl) {
-                    elem.removeClass('ngf-hide');
-                    elem.attr('src', (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl);
-                  } else {
-                    elem.addClass('ngf-hide');
-                  }
-                });
-              });
-            } else {
-              elem.addClass('ngf-hide');
-            }
-          });
-
-          scope.$on('$destroy', function () {
-            unwatch();
-          });
-        });
+        linkFileDirective(Upload, $timeout, scope, elem, attr, 'ngfSrc',
+          Upload.attrGetter('ngfResize', attr, scope), false);
       }
     };
   }]);
 
   /** @namespace attr.ngfBackground */
   /** @namespace attr.ngfNoObjectUrl */
-  ngFileUpload.directive('ngfBackground', ['Upload', '$compile', '$timeout', function (Upload, $compile, $timeout) {
+  ngFileUpload.directive('ngfBackground', ['Upload', '$timeout', function (Upload, $timeout) {
     return {
       restrict: 'AE',
       link: function (scope, elem, attr) {
-        $timeout(function () {
-          var unwatch = scope.$watch(attr.ngfBackground, function (file) {
-            if (angular.isString(file)) return elem.css('background-image', 'url(\'' + file + '\')');
-            if (file && file.type && file.type.indexOf('image') === 0) {
-              var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
-              Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
-                $timeout(function () {
-                  if ((disallowObjectUrl && file.dataUrl) || (!disallowObjectUrl && file.blobUrl)) {
-                    elem.css('background-image', 'url(\'' + (disallowObjectUrl ? file.dataUrl : file.blobUrl) + '\')');
-                  } else {
-                    elem.css('background-image', '');
-                  }
-                });
-              });
-            } else {
-              elem.css('background-image', '');
-            }
-          });
-          scope.$on('$destroy', function () {
-            unwatch();
-          });
-        });
+        linkFileDirective(Upload, $timeout, scope, elem, attr, 'ngfBackground',
+          Upload.attrGetter('ngfResize', attr, scope), true);
+      }
+    };
+  }]);
+
+  /** @namespace attr.ngfThumbnail */
+  /** @namespace attr.ngfAsBackground */
+  /** @namespace attr.ngfSize */
+  /** @namespace attr.ngfNoObjectUrl */
+  ngFileUpload.directive('ngfThumbnail', ['Upload', '$timeout', function (Upload, $timeout) {
+    return {
+      restrict: 'AE',
+      link: function (scope, elem, attr) {
+        var size = Upload.attrGetter('ngfSize', attr, scope);
+        linkFileDirective(Upload, $timeout, scope, elem, attr, 'ngfThumbnail', size,
+          Upload.attrGetter('ngfAsBackground', attr, scope));
       }
     };
   }]);

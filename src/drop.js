@@ -90,7 +90,7 @@
     elem[0].addEventListener('dragleave', function () {
       if (isDisabled()) return;
       leaveTimeout = $timeout(function () {
-        elem.removeClass(actualDragOverClass);
+        if (actualDragOverClass) elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
       }, dragOverDelay || 1);
     }, false);
@@ -98,7 +98,7 @@
       if (isDisabled()) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
-      elem.removeClass(actualDragOverClass);
+      if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
       extractFiles(evt, function (files) {
           upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
