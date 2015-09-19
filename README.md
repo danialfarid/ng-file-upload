@@ -356,6 +356,8 @@ On your server you need to keep track of what files are being uploaded and how m
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
  
 
+
+
 ##<a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used.
