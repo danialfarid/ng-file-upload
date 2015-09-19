@@ -222,7 +222,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 <div|span|...
  *ngf-thumbnail="file" //Generates a thumbnail version of the image file
  ngf-size="{width: 20, height: 20, quality: 0.9}" the image will be resized to this size
-        // if not specified will be resized to this element's client width and height.
+        // if not specified will be resized to this element`s client width and height.
  ngf-as-background="boolean" //if true it will set the background image style instead of src attribute.
 >
 ```
