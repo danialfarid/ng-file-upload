@@ -53,16 +53,17 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   };
 
   $scope.restart = function(file) {
-    $http.get('/upload?restart=true&name=' + encodeURIComponent(file.name)).then(function() {
+    $http.get('https://angular-file-upload-cors-srv.appspot.com/upload?restart=true&name=' + encodeURIComponent(file.name)).then(function() {
       $scope.upload(file);
     });
   };
 
+  $scope.chunkSize = 100000;
   function uploadUsingUpload(file) {
     file.upload = Upload.upload({
-      url: '/upload' + $scope.getReqParams(),
-      resumeSizeUrl: '/upload?name=' + encodeURIComponent(file.name),
-      resumeChunkSize: 100000,
+      url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
+      resumeSizeUrl: 'https://angular-file-upload-cors-srv.appspot.com/upload?name=' + encodeURIComponent(file.name),
+      resumeChunkSize: $scope.chunkSize,
       headers: {
         'optional-header': 'header-value'
       },

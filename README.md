@@ -334,7 +334,7 @@ If you have many file selects or drops you can set the default values for the di
 
 **Resumable Uploads**
 The plugin supports resumable uploads for large files. 
-On your server you need to keep track of what files are being uploaded and how much of the file is uploaded. You need these two endpoints:
+On your server you need to keep track of what files are being uploaded and how much of the file is uploaded.
  * `url` upload endpoint need to append uploading content to the end of already existing file if part of it is already uploaded.
  * `resumeSizeUrl` a server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
  where it is ended. It should return zero if the file has not been uploaded yet. A GET request will be made to that 
@@ -348,9 +348,13 @@ On your server you need to keep track of what files are being uploaded and how m
  Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size 
  if you want to let the user to upload the same file again. Or you Optionally you could have a restart endpoint to 
  set that back to zero to allow re-uploading the same file.
- `resumeChunkSize` is to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
+ * Optionally you can specify `resumeChunkSize` to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
  file size limitation and trying to upload the whole request before passing it for internal processing.
+ When you provide this value the requests will have these three extra fields:
+ `chunckSize`, `chunkNumber` zero starting, and `totalSize` to help the server to write the uploaded chunk to 
+ the correct position.
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
+ 
 
 ##<a name="old_browsers"></a> Old browsers
 

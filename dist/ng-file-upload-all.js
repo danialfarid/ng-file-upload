@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.3.1
+ * @version 7.3.2
  */
 
 (function () {
@@ -424,7 +424,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.3.1
+ * @version 7.3.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -445,7 +445,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.3.1';
+ngFileUpload.version = '7.3.2';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -497,11 +497,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       };
     };
 
-    var chunkSize = upload.translateScalars(config.resumeChunkSize);
-
     function uploadWithAngular() {
       $http(config).then(function (r) {
-        if (chunkSize && !config._finished) {
+        if (config._chunkSize && !config._finished) {
           notifyProgress({loaded: config._end, total: config._file.size, config: config, type: 'progress'});
           upload.upload(config);
         } else {
@@ -515,9 +513,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       });
     }
 
-    if (chunkSize && config._end && !config._finished) {
+    if (config._chunkSize && config._end && !config._finished) {
       config._start = config._end;
-      config._end += chunkSize;
+      config._end += config._chunkSize;
       uploadWithAngular();
     } else if (config.resumeSizeUrl) {
       $http.get(config.resumeSizeUrl).then(function (resp) {
@@ -526,8 +524,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         } else {
           config._start = parseInt((resp.data.size == null ? resp.data : resp.data.size).toString());
         }
-        if (chunkSize) {
-          config._end = config._start + chunkSize;
+        if (config._chunkSize) {
+          config._end = config._start + config._chunkSize;
         }
         uploadWithAngular();
       }, function (e) {throw e;});
@@ -628,6 +626,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           var slice = file.slice(config._start, config._end || file.size);
           slice.name = file.name;
           file = slice;
+          if (config._chunkSize) {
+            formData.append('chunkSize', config._end - config._start);
+            formData.append('chunkNumber', Math.floor(config._start / config._chunkSize));
+            formData.append('totalSize', config._file.size);
+          }
         }
         formData.append(key, file, file.fileName || file.name);
       } else if (angular.isObject(file)) {
@@ -644,6 +647,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         throw 'Expected file object in Upload.upload file option: ' + file.toString();
       }
     }
+
+    config._chunkSize = parseInt(upload.translateScalars(config.resumeChunkSize).toString());
 
     config.headers = config.headers || {};
     config.headers['Content-Type'] = undefined;
@@ -691,6 +696,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         }
         return $http.defaults.transformRequest[0].apply(this, arguments);
       };
+    config._chunkSize = parseInt(upload.translateScalars(config.resumeChunkSize).toString());
+
     return sendHttp(config);
   };
 
