@@ -199,7 +199,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // validate error name: validateFn
   ngf-validate-async-fn="validate($file)" // custom validation function, return a promise that resolve to
               // boolean or string containing the error. validate error name: validateAsyncFn
-  ngf-validate-force="boolean" // default false, if true file will be rejected if the dimension or duration
+  ngf-validate-force="boolean" // default false, if true file.$erro will be set if the dimension or duration
               // values for validations cannot be calculated for example image cannot load or unsupported video by browser
   ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
