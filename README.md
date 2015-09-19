@@ -259,6 +259,7 @@ var upload = Upload.upload({
                                                                 // from resumeSizeUrl GET response
   resumeSize: function() {return promise;} // function that returns a prommise which will be
                                             // resolved to the upload file size on the server.
+  resumeChunkSize: 10000 or '10KB' or '10MB' // upload in chunks of specified size
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
   console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
@@ -347,7 +348,9 @@ On your server you need to keep track of what files are being uploaded and how m
  Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size 
  if you want to let the user to upload the same file again. Or you Optionally you could have a restart endpoint to 
  set that back to zero to allow re-uploading the same file.
-
+ `resumeChunkSize` is to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
+ file size limitation and trying to upload the whole request before passing it for internal processing.
+ Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
 
 ##<a name="old_browsers"></a> Old browsers
 

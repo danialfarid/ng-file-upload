@@ -23,27 +23,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return result;
   }
 
-  function translateScalars(str) {
-    if (angular.isString(str)) {
-      if (str.search(/kb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000);
-      } else if (str.search(/mb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000000);
-      } else if (str.search(/gb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000000000);
-      } else if (str.search(/b/i) === str.length - 1) {
-        return parseFloat(str.substring(0, str.length - 1));
-      } else if (str.search(/s/i) === str.length - 1) {
-        return parseFloat(str.substring(0, str.length - 1));
-      } else if (str.search(/m/i) === str.length - 1) {
-        return parseFloat(str.substring(0, str.length - 1) * 60);
-      } else if (str.search(/h/i) === str.length - 1) {
-        return parseFloat(str.substring(0, str.length - 1) * 3600);
-      }
-    }
-    return str;
-  }
-
   upload.registerValidators = function (ngModel, elem, attr, scope) {
     if (!ngModel) return;
 
@@ -143,12 +122,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     validateSync('minSize', function (cons) {
       return cons.size && cons.size.min;
     }, function (file, val) {
-      return file.size >= translateScalars(val);
+      return file.size >= upload.translateScalars(val);
     });
     validateSync('maxSize', function (cons) {
       return cons.size && cons.size.max;
     }, function (file, val) {
-      return file.size <= translateScalars(val);
+      return file.size <= upload.translateScalars(val);
     });
 
     validateSync('validateFn', function () {
@@ -244,12 +223,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     validateAsync('maxDuration', function (cons) {
       return cons.duration && cons.duration.max;
     }, /audio|video/, this.mediaDuration, function (d, val) {
-      return d <= translateScalars(val);
+      return d <= upload.translateScalars(val);
     });
     validateAsync('minDuration', function (cons) {
       return cons.duration && cons.duration.min;
     }, /audio|video/, this.mediaDuration, function (d, val) {
-      return d >= translateScalars(val);
+      return d >= upload.translateScalars(val);
     });
 
     validateAsync('validateAsyncFn', function () {

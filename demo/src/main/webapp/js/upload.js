@@ -62,9 +62,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     file.upload = Upload.upload({
       url: '/upload' + $scope.getReqParams(),
       resumeSizeUrl: '/upload?name=' + encodeURIComponent(file.name),
-      method: 'POST',
+      resumeChunkSize: 100000,
       headers: {
-        'my-header': 'my-header-value'
+        'optional-header': 'header-value'
       },
       fields: {username: $scope.username},
       file: file,

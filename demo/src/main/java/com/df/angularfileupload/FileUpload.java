@@ -16,9 +16,11 @@ import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class FileUpload extends HttpServlet {
 	private static final long serialVersionUID = -8244073279641189889L;
+	private final Logger log = Logger.getLogger(FileUpload.class.getName());
 
 	class SizeEntry {
 		public int size;
@@ -114,7 +116,7 @@ public class FileUpload extends HttpServlet {
 	protected int size(String key, InputStream stream) {
 		int length = sizeMap.get(key) == null ? 0 : sizeMap.get(key).size;
 		try {
-			byte[] buffer = new byte[2048];
+			byte[] buffer = new byte[200000];
 			int size;
 			while ((size = stream.read(buffer)) != -1) {
 				length += size;
@@ -129,6 +131,7 @@ public class FileUpload extends HttpServlet {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		System.out.println(length);
 		return length;
 
 	}

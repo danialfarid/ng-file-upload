@@ -56,12 +56,12 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     }
 
     var keep = upload.attrGetter('ngfKeep', attr, scope);
-    if (keep !== false) {
+    if (keep === true) {
       if (!files || !files.length) return;
 
       var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0), hasNew = false;
 
-      if (upload.attrGetter('ngfKeepDistinct', attr, scope) !== false) {
+      if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
         var len = prevFiles.length;
         for (var i = 0; i < files.length; i++) {
           for (var j = 0; j < len; j++) {
