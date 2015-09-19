@@ -86,7 +86,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     function resize(files, callback) {
       var param = upload.attrGetter('ngfResize', attr, scope);
-      if (!param) return callback();
+      if (!param || !upload.isResizeSupported()) return callback();
       var count = files.length;
       var checkCallback = function () {
         count--;

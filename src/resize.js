@@ -59,6 +59,11 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     return new Blob([u8arr], {type: mime});
   };
 
+  upload.isResizeSupported = function() {
+    var elem = document.createElement('canvas');
+    return window.atob && elem.getContext && elem.getContext('2d');
+  };
+
   upload.resize = function (file, width, height, quality) {
     var deferred = $q.defer();
     if (file.type.indexOf('image') !== 0) {
