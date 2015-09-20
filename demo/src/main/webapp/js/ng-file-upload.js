@@ -27,7 +27,12 @@ ngFileUpload.version = '7.3.4';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
-  var sliceSupported = window.Blob && new Blob().slice;
+
+  this.isResumeSupported = function () {
+    return window.Blob && new Blob().slice;
+  };
+
+  var resumeSupported = this.isResumeSupported();
 
   function sendHttp(config) {
     config.method = config.method || 'POST';
@@ -48,15 +53,16 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     }
 
     function getNotifyEvent(n) {
-      if (config._start != null && sliceSupported) {
+      if (config._start != null && resumeSupported) {
         return {
           loaded: n.loaded + config._start, total: config._file.size, type: n.type, config: config,
           lengthComputable: true, target: n.target
         };
-      }else {
+      } else {
         return n;
       }
     }
+
     config.headers.__setXHR_ = function () {
       return function (xhr) {
         if (!xhr) return;
@@ -92,7 +98,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       });
     }
 
-    if (!sliceSupported) {
+    if (!resumeSupported) {
       uploadWithAngular();
     } else if (config._chunkSize && config._end && !config._finished) {
       config._start = config._end;
@@ -109,12 +115,16 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           config._end = config._start + config._chunkSize;
         }
         uploadWithAngular();
-      }, function (e) {throw e;});
+      }, function (e) {
+        throw e;
+      });
     } else if (config.resumeSize) {
-      config.resumeSize().then(function(size) {
+      config.resumeSize().then(function (size) {
         config._start = size;
         uploadWithAngular();
-      }, function(e) {throw e;});
+      }, function (e) {
+        throw e;
+      });
     } else {
       uploadWithAngular();
     }
@@ -198,7 +208,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     function addFileToFormData(formData, file, key) {
       if (isFile(file)) {
         config._file = config._file || file;
-        if (config._start != null && sliceSupported) {
+        if (config._start != null && resumeSupported) {
           if (config._end && config._end >= file.size) {
             config._finished = true;
             config._end = file.size;

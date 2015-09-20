@@ -303,8 +303,13 @@ Upload.dataUrl(file, disallowObjectUrl).then(function(url){...});
 /* Get image file dimensions*/
 Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.widht, dimensions.height);});
 
-/* Geet audio/video duration*/
+/* Get audio/video duration*/
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
+
+/* returns boolean showing if image resize is supported by this browser*/
+Upload.isResizeSupported()
+/* returns boolean showing if resumable upload is supported by this browser*/
+Upload.isResumeSupported()
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
