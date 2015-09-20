@@ -31,6 +31,10 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imagenElement = document.createElement('img');
+    if (width === 0) {
+      width = imagenElement.width;
+      height = imagenElement.height;
+    }
     imagenElement.onload = function () {
       try {
         var dimensions = calculateAspectRatioFit(imagenElement.width, imagenElement.height, width, height);

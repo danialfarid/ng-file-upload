@@ -59,7 +59,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Samples:
-* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/1m6fn6re/](http://jsfiddle.net/danialfarid/1m6fn6re/)
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/](http://jsfiddle.net/danialfarid/maqbzv15/)
 * Upload multiple files on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/17/](http://jsfiddle.net/danialfarid/2vq88rfs/17/)
 * Upload single file on file select:

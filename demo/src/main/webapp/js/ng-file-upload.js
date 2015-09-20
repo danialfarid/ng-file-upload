@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.3.4
+ * @version 7.3.5
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.3.4';
+ngFileUpload.version = '7.3.5';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -774,6 +774,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
         if (directiveName === 'ngfThumbnail' && !size) {
           size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
         }
+        if (size.width === 0 && window.getComputedStyle) {
+          var style = getComputedStyle(elem[0]);
+          size = {width: parseInt(style.width.slice(0, -2)),
+            height: parseInt(style.height.slice(0, -2))};
+        }
+
         if (angular.isString(file)) {
           elem.removeClass('ngf-hide');
           if (isBackground) {
@@ -1282,6 +1288,10 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imagenElement = document.createElement('img');
+    if (width === 0) {
+      width = imagenElement.width;
+      height = imagenElement.height;
+    }
     imagenElement.onload = function () {
       try {
         var dimensions = calculateAspectRatioFit(imagenElement.width, imagenElement.height, width, height);
