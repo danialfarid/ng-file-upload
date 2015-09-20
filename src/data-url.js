@@ -106,13 +106,15 @@
     $timeout(function () {
       var unwatch = scope.$watch(attr[directiveName], function (file) {
         var size = resizeParams;
-        if (directiveName === 'ngfThumbnail' && !size) {
-          size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
-        }
-        if (size.width === 0 && window.getComputedStyle) {
-          var style = getComputedStyle(elem[0]);
-          size = {width: parseInt(style.width.slice(0, -2)),
-            height: parseInt(style.height.slice(0, -2))};
+        if (directiveName === 'ngfThumbnail') {
+          if (!size) {
+            size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
+          }
+          if (size.width === 0 && window.getComputedStyle) {
+            var style = getComputedStyle(elem[0]);
+            size = {width: parseInt(style.width.slice(0, -2)),
+              height: parseInt(style.height.slice(0, -2))};
+          }
         }
 
         if (angular.isString(file)) {

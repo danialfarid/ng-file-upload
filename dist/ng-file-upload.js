@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.3.5
+ * @version 7.3.6
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.3.5';
+ngFileUpload.version = '7.3.6';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -771,13 +771,15 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     $timeout(function () {
       var unwatch = scope.$watch(attr[directiveName], function (file) {
         var size = resizeParams;
-        if (directiveName === 'ngfThumbnail' && !size) {
-          size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
-        }
-        if (size.width === 0 && window.getComputedStyle) {
-          var style = getComputedStyle(elem[0]);
-          size = {width: parseInt(style.width.slice(0, -2)),
-            height: parseInt(style.height.slice(0, -2))};
+        if (directiveName === 'ngfThumbnail') {
+          if (!size) {
+            size = {width: elem[0].clientWidth, height: elem[0].clientHeight};
+          }
+          if (size.width === 0 && window.getComputedStyle) {
+            var style = getComputedStyle(elem[0]);
+            size = {width: parseInt(style.width.slice(0, -2)),
+              height: parseInt(style.height.slice(0, -2))};
+          }
         }
 
         if (angular.isString(file)) {
