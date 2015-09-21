@@ -55,11 +55,13 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
       });
     }
 
+    var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0);
+
     var keep = upload.attrGetter('ngfKeep', attr, scope);
     if (keep === true) {
       if (!files || !files.length) return;
 
-      var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0), hasNew = false;
+      var hasNew = false;
 
       if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
         var len = prevFiles.length;
@@ -124,6 +126,16 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
           });
         });
       }));
+
+    // cleaning object url memories
+    var l = prevFiles.length;
+    while (l--) {
+      var prevFile = prevFiles[l];
+      if (window.URL && prevFile.blobUrl) {
+        URL.revokeObjectURL(prevFile.blobUrl);
+        delete prevFile.blobUrl;
+      }
+    }
   };
 
   return upload;

@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 7.3.6
+ * @version 7.3.7
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '7.3.6';
+ngFileUpload.version = '7.3.7';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -381,11 +381,13 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
       });
     }
 
+    var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0);
+
     var keep = upload.attrGetter('ngfKeep', attr, scope);
     if (keep === true) {
       if (!files || !files.length) return;
 
-      var prevFiles = ((ngModel && ngModel.$modelValue) || attr.$$ngfPrevFiles || []).slice(0), hasNew = false;
+      var hasNew = false;
 
       if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
         var len = prevFiles.length;
@@ -450,6 +452,16 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
           });
         });
       }));
+
+    // cleaning object url memories
+    var l = prevFiles.length;
+    while (l--) {
+      var prevFile = prevFiles[l];
+      if (window.URL && prevFile.blobUrl) {
+        URL.revokeObjectURL(prevFile.blobUrl);
+        delete prevFile.blobUrl;
+      }
+    }
   };
 
   return upload;
