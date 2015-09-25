@@ -2,25 +2,36 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
   var upload = UploadDataUrl;
 
   function globStringToRegex(str) {
+    var regexp = '', excludes = [];
     if (str.length > 2 && str[0] === '/' && str[str.length - 1] === '/') {
-      return str.substring(1, str.length - 1);
-    }
-    var split = str.split(','), result = '';
-    if (split.length > 1) {
-      for (var i = 0; i < split.length; i++) {
-        result += '(' + globStringToRegex(split[i]) + ')';
-        if (i < split.length - 1) {
-          result += '|';
+      regexp = str.substring(1, str.length - 1);
+    } else {
+      var split = str.split(',');
+      if (split.length > 1) {
+        for (var i = 0; i < split.length; i++) {
+          var r = globStringToRegex(split[i]);
+          if (r.regexp) {
+            regexp += '(' + r.regexp + ')';
+            if (i < split.length - 1) {
+              regexp += '|';
+            }
+          } else {
+            excludes = excludes.concat(r.excludes);
+          }
+        }
+      } else {
+        if (str.indexOf('!') === 0) {
+          excludes.push('^((?!' + globStringToRegex(str.substring(1)).regexp + ').)*$');
+        } else {
+          if (str.indexOf('.') === 0) {
+            str = '*' + str;
+          }
+          regexp = '^' + str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]', 'g'), '\\$&') + '$';
+          regexp = regexp.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
         }
       }
-    } else {
-      if (str.indexOf('.') === 0) {
-        str = '*' + str;
-      }
-      result = '^' + str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + '-]', 'g'), '\\$&') + '$';
-      result = result.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
     }
-    return result;
+    return {regexp: regexp, excludes: excludes};
   }
 
   upload.registerValidators = function (ngModel, elem, attr, scope) {
@@ -59,9 +70,19 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     if (!val) {
       return true;
     }
-    var regexp = new RegExp(globStringToRegex(val), 'gi');
-    return (file.type != null && regexp.test(file.type.toLowerCase())) ||
-      (file.name != null && regexp.test(file.name.toLowerCase()));
+    var pattern = globStringToRegex(val), valid = true;
+    if (pattern.regexp && pattern.regexp.length) {
+      var regexp = new RegExp(pattern.regexp, 'i');
+      valid = (file.type != null && regexp.test(file.type)) ||
+        (file.name != null && regexp.test(file.name));
+    }
+    var len = pattern.excludes.length;
+    while (len--) {
+      var exclude = new RegExp(pattern.excludes[len], 'i');
+      valid = valid && (file.type == null || exclude.test(file.type)) &&
+        (file.name == null || exclude.test(file.name));
+    }
+    return valid;
   };
 
   upload.validate = function (files, ngModel, attr, scope, later, callback) {
