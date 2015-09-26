@@ -187,7 +187,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               
   //validations:
   ngf-valid-only="boolean" // default false, if true only valid files will be assigned to model or change functions.
-  ngf-pattern="'.pdf,.jpg,video/*'" // comma separated wildcard to filter file names and types allowed
+  ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
+              // you can exclude specific files by ! at the beginning.
               // validate error name: pattern
   ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
