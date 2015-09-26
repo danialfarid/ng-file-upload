@@ -114,8 +114,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.upload = function (file) {
         Upload.upload({
             url: 'upload/url',
-            fields: {'username': $scope.username},
-            file: file
+            data: {file: file, 'username': $scope.username}
         }).progress(function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
@@ -129,10 +128,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.upload = function (files) {
       if (files && files.length) {
         for (var i = 0; i < files.length; i++) {
-          Upload.upload({..., file: files[i], ...})...;
+          Upload.upload({..., data: {file: files[i]}, ...})...;
         }
         // or send them all together for HTML5 browsers:
-        Upload.upload({..., file: files, ...})...;
+        Upload.upload({..., data: {file: files}, ...})...;
       }
     }
 }]);
@@ -171,12 +170,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
             // default but not the other browsers, so test cross browser is using this.
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
-  +ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
-                    "calcDragOverClass($event)"
-              // drag over css class behaviour. could be a string, a function returning class name
-              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
-              // accept/reject class only works in Chrome validating only the file mime type
-              // against ngf-pattern
+  +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
+                    or "myDragOverClass" or "calcDragOverClass($event)"
+              // default "dragover". drag over css class behaviour. could be a string, a function 
+              returning class name or a json object.
+              // accept/reject class only works in Chrome validating only the file mime type.
+              // if pattern is not specified ngf-pattern will be used.
   +ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
@@ -265,7 +264,6 @@ var upload = Upload.upload({
   ''(multiple entries with same key) format.
   Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
     data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  
-  /*
   arrayKey: '[i]' or '[]' or '.i' or '' //default is '[i]'
   withCredentials: boolean,
   /*
