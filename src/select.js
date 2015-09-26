@@ -130,7 +130,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     var fileElem = elem;
 
     function resetModel(evt) {
-      if (fileElem.val()) {
+      if (attrGetter('ngfResetOnClick', scope) !== false && fileElem.val()) {
         fileElem.val(null);
         upload.updateModel(ngModel, attr, scope, fileChangeAttr(), null, evt, true);
       }

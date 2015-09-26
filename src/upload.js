@@ -29,7 +29,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   var upload = this;
 
   this.isResumeSupported = function () {
-    return window.Blob && new Blob().slice;
+    return window.Blob && (Blob instanceof Function) && new Blob().slice;
   };
 
   var resumeSupported = this.isResumeSupported();
@@ -172,7 +172,47 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     return promise;
   }
 
+  this.rename = function (file, name) {
+    file.ngfName = name;
+    return file;
+  };
+
+  this.jsonBlob = function (val) {
+    var blob = new Blob([val], {type: 'application/json'});
+    blob._ngfBlob = true;
+    return blob;
+  };
+
+  this.json = function (val) {
+    return angular.toJson(val);
+  };
+
   this.upload = function (config) {
+    function isFile(file) {
+      return file instanceof Blob || (file.flashId && file.name && file.size);
+    }
+
+    function toResumeFile(file, formData) {
+      if (file._ngfBlob) return file;
+      config._file = config._file || file;
+      if (config._start != null && resumeSupported) {
+        if (config._end && config._end >= file.size) {
+          config._finished = true;
+          config._end = file.size;
+        }
+        var slice = file.slice(config._start, config._end || file.size);
+        slice.name = file.name;
+        slice.ngfName = file.ngfName;
+        if (config._chunkSize) {
+          formData.append('_chunkSize', config._end - config._start);
+          formData.append('_chunkNumber', Math.floor(config._start / config._chunkSize));
+          formData.append('_totalSize', config._file.size);
+        }
+        return slice;
+      }
+      return file;
+    }
+
     function addFieldToFormData(formData, val, key) {
       if (val !== undefined) {
         if (angular.isDate(val)) {
@@ -180,102 +220,67 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         }
         if (angular.isString(val)) {
           formData.append(key, val);
-        } else if (config.sendFieldsAs === 'form') {
+        } else if (isFile(val)) {
+          var file = toResumeFile(val, formData);
+          var split = key.split(',');
+          if (split[1]) {
+            file.ngfName = split[1].replace(/^\s+|\s+$/g, '');
+            key = split[0];
+          }
+          config._fileKey = config._fileKey || key;
+          formData.append(key, file, file.ngfName || file.name);
+        } else {
           if (angular.isObject(val)) {
             for (var k in val) {
               if (val.hasOwnProperty(k)) {
-                addFieldToFormData(formData, val[k], key + '[' + k + ']');
+                var objectKey = config.objectKey == null ? '[i]' : config.objectKey;
+                if (val.length && parseInt(k) > -1) {
+                  objectKey = config.arrayKey == null ? objectKey : config.arrayKey;
+                }
+                addFieldToFormData(formData, val[k], key + objectKey.replace(/[ik]/g, k));
               }
             }
           } else {
             formData.append(key, val);
           }
-        } else {
-          val = angular.isString(val) ? val : angular.toJson(val);
-          if (config.sendFieldsAs === 'json-blob') {
-            formData.append(key, new Blob([val], {type: 'application/json'}));
-          } else {
-            formData.append(key, val);
-          }
         }
       }
     }
 
-    function isFile(file) {
-      return file instanceof Blob || (file.flashId && file.name && file.size);
-    }
+    function digestConfig() {
+      config._chunkSize = upload.translateScalars(config.resumeChunkSize);
+      config._chunkSize = config._chunkSize ? parseInt(config._chunkSize.toString()) : null;
 
-    function addFileToFormData(formData, file, key) {
-      if (isFile(file)) {
-        config._file = config._file || file;
-        if (config._start != null && resumeSupported) {
-          if (config._end && config._end >= file.size) {
-            config._finished = true;
-            config._end = file.size;
-          }
-          var slice = file.slice(config._start, config._end || file.size);
-          slice.name = file.name;
-          file = slice;
-          if (config._chunkSize) {
-            formData.append('chunkSize', config._end - config._start);
-            formData.append('chunkNumber', Math.floor(config._start / config._chunkSize));
-            formData.append('totalSize', config._file.size);
-          }
+      config.headers = config.headers || {};
+      config.headers['Content-Type'] = undefined;
+      config.transformRequest = config.transformRequest ?
+        (angular.isArray(config.transformRequest) ?
+          config.transformRequest : [config.transformRequest]) : [];
+      config.transformRequest.push(function (data) {
+        var formData = new FormData(), key;
+        data = data || config.fields || {};
+        if (config.file) {
+          data.file = config.file;
         }
-        formData.append(key, file, file.fileName || file.name);
-      } else if (angular.isObject(file)) {
-        for (var k in file) {
-          if (file.hasOwnProperty(k)) {
-            var split = k.split(',');
-            if (split[1]) {
-              file[k].fileName = split[1].replace(/^\s+|\s+$/g, '');
+        for (key in data) {
+          if (data.hasOwnProperty(key)) {
+            var val = data[key];
+            if (config.formDataAppender) {
+              config.formDataAppender(formData, key, val);
+            } else {
+              addFieldToFormData(formData, val, key);
             }
-            addFileToFormData(formData, file[k], split[0]);
           }
         }
-      } else {
-        throw 'Expected file object in Upload.upload file option: ' + file.toString();
-      }
+
+        return formData;
+      });
     }
 
-    config._chunkSize = upload.translateScalars(config.resumeChunkSize);
-    config._chunkSize = config._chunkSize ? parseInt(config._chunkSize.toString()) : null;
-
-    config.headers = config.headers || {};
-    config.headers['Content-Type'] = undefined;
-    config.transformRequest = config.transformRequest ?
-      (angular.isArray(config.transformRequest) ?
-        config.transformRequest : [config.transformRequest]) : [];
-    config.transformRequest.push(function (data) {
-      var formData = new FormData(), allFields = {}, key;
-      for (key in config.fields) {
-        if (config.fields.hasOwnProperty(key)) {
-          allFields[key] = config.fields[key];
-        }
-      }
-      if (data) allFields.data = data;
-      for (key in allFields) {
-        if (allFields.hasOwnProperty(key)) {
-          var val = allFields[key];
-          if (config.formDataAppender) {
-            config.formDataAppender(formData, key, val);
-          } else {
-            addFieldToFormData(formData, val, key);
-          }
-        }
-      }
-
-      if (config.file != null) {
-        if (angular.isArray(config.file)) {
-          for (var i = 0; i < config.file.length; i++) {
-            addFileToFormData(formData, config.file[i], 'file');
-          }
-        } else {
-          addFileToFormData(formData, config.file, 'file');
-        }
-      }
-      return formData;
-    });
+    if (!config._isDigested) {
+      config._isDigested = true;
+      digestConfig();
+    }
 
     return sendHttp(config);
   };

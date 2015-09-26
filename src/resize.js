@@ -43,7 +43,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
         var context = canvasElement.getContext('2d');
         context.drawImage(imagenElement, 0, 0, dimensions.width, dimensions.height);
         deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 1.0));
-      } catch(e) {
+      } catch (e) {
         deferred.reject(e);
       }
     };
@@ -63,7 +63,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     return new Blob([u8arr], {type: mime});
   };
 
-  upload.isResizeSupported = function() {
+  upload.isResizeSupported = function () {
     var elem = document.createElement('canvas');
     return window.atob && elem.getContext && elem.getContext('2d');
   };
@@ -71,13 +71,15 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
   upload.resize = function (file, width, height, quality) {
     var deferred = $q.defer();
     if (file.type.indexOf('image') !== 0) {
-      $timeout(function() {deferred.resolve('Only images are allowed for resizing!');});
+      $timeout(function () {
+        deferred.resolve('Only images are allowed for resizing!');
+      });
       return deferred.promise;
     }
 
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
-        var blob= dataURLtoBlob(dataUrl);
+        var blob = dataURLtoBlob(dataUrl);
         blob.name = file.name;
         deferred.resolve(blob);
       }, function () {

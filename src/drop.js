@@ -131,7 +131,7 @@
         if (clazz.accept || clazz.reject) {
           var items = evt.dataTransfer.items;
           if (items != null) {
-            var pattern = attrGetter('ngfPattern', scope, {$event: evt});
+            var pattern = clazz.pattern || attrGetter('ngfPattern', scope, {$event: evt});
             for (var i = 0; i < items.length; i++) {
               if (items[i].kind === 'file' || items[i].kind === '') {
                 if (!upload.validatePattern(items[i], pattern)) {

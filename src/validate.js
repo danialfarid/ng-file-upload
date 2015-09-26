@@ -266,10 +266,10 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
   };
 
   upload.imageDimensions = function (file) {
-    if (file.width && file.height) {
+    if (file.$ngfWidth && file.$ngfHeight) {
       var d = $q.defer();
       $timeout(function () {
-        d.resolve({width: file.width, height: file.height});
+        d.resolve({width: file.$ngfWidth, height: file.$ngfHeight});
       });
       return d.promise;
     }
@@ -288,8 +288,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           var width = img[0].clientWidth;
           var height = img[0].clientHeight;
           img.remove();
-          file.width = width;
-          file.height = height;
+          file.$ngfWidth = width;
+          file.$ngfHeight = height;
           deferred.resolve({width: width, height: height});
         }
 
@@ -332,10 +332,10 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
   };
 
   upload.mediaDuration = function (file) {
-    if (file.duration) {
+    if (file.$ngfDuration) {
       var d = $q.defer();
       $timeout(function () {
-        d.resolve(file.duration);
+        d.resolve(file.$ngfDuration);
       });
       return d.promise;
     }
@@ -353,7 +353,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         function success() {
           var duration = el[0].duration;
-          file.duration = duration;
+          file.$ngfDuration = duration;
           el.remove();
           deferred.resolve(duration);
         }

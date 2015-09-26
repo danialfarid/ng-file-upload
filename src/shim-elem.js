@@ -38,6 +38,7 @@
   }
 
   if (FileAPI.shouldLoad) {
+    FileAPI.hasFlash = hasFlash();
 
     //load FileAPI
     if (FileAPI.forceLoad) {
@@ -64,8 +65,6 @@
       if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
       script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
       document.getElementsByTagName('head')[0].appendChild(script);
-
-      FileAPI.hasFlash = hasFlash();
     }
 
     FileAPI.ngfFixIE = function (elem, fileElem, changeFn) {

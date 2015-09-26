@@ -24,7 +24,11 @@
     window.FileAPI = {};
   }
 
-  FileAPI.shouldLoad = (window.XMLHttpRequest && !window.FormData) || FileAPI.forceLoad;
+  if (!window.XMLHttpRequest) {
+    throw 'AJAX is not supported. XMLHttpRequest is not defined.';
+  }
+
+  FileAPI.shouldLoad = !window.FormData || FileAPI.forceLoad;
   if (FileAPI.shouldLoad) {
     var initializeUploadListener = function (xhr) {
       if (!xhr.__listeners) {

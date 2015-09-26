@@ -120,6 +120,15 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     if (noDelay) {
       update();
     } else if (upload.validate(files, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
+        if (upload.attrGetter('ngfValidOnly', attr, scope) === true) {
+          var valids = [];
+          angular.forEach(files, function(file) {
+            if (!file.$error) {
+              valids.push(file);
+            }
+          });
+          files = valids;
+        }
         resize(files, function () {
           $timeout(function () {
             update();

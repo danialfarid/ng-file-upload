@@ -91,8 +91,8 @@
                  ngf-multiple="multiple" ngf-pattern="pattern" accept="{{acceptSelect}}"
                  ng-disabled="disabled" ngf-capture="capture"
                  ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-                 ngf-validate="validateObj"
-                 ngf-keep="keep" ngf-keep-distinct="keepDistinct"
+                 ngf-validate="validateObj" ngf-valid-only="validOnly"
+                 ngf-keep="keep" ngf-keep-distinct="keepDistinct" ngf-reset-on-click="resetOnClick"
                  ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File,
               <span ng-show="dropAvailable">Drop File or Paste Image</span>
             </div>
@@ -111,6 +111,9 @@
               ng-model)</label><br/>
             <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow
               duplicates)</label><br/>
+            <label><input type="checkbox" ng-model="validOnly">ngf-valid-only (only valid files assigned to
+              model)</label><br/>
+            <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click</label><br/>
             <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
           </div>
 
@@ -136,13 +139,14 @@
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
 				</span>
         <button class="button" ng-click="f.upload.abort();f.upload.aborted=true"
-                ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort/Pause
+                ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">
+          Abort<span ng-show="isResumeSupported">/Pause</span>
         </button>
-        <button class="button" ng-click="upload(f);f.upload.aborted=false"
-                ng-show="f.upload != null && f.upload.aborted">Resume
+        <button class="button" ng-click="upload(f, true);f.upload.aborted=false"
+                ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume
         </button>
         <button class="button" ng-click="restart(f);f.upload.aborted=false"
-                ng-show="f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart
+                ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart
         </button>
         {{f.name}} - size: {{f.size}}B - type: {{f.type}}
         <a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>

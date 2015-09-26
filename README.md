@@ -165,6 +165,10 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
+  *ngf-reset-on-click="boolean" default true, will reset the model value to empty when you click on the 
+            // upload button. This allows removing files when you cancel the popup and 
+            // selecting the same file again. Chrome will empty the files if you cancel the popup by 
+            // default but not the other browsers, so test cross browser is using this.
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   +ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
@@ -182,6 +186,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // quality (optional between 0.1 and 1.0)
               
   //validations:
+  ngf-valid-only="boolean" // default false, if true only valid files will be assigned to model or change functions.
   ngf-pattern="'.pdf,.jpg,video/*'" // comma separated wildcard to filter file names and types allowed
               // validate error name: pattern
   ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
@@ -240,19 +245,28 @@ var upload = Upload.upload({
   method: 'POST' or 'PUT'(html5), default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
   /*
-  map of extra form data fields to send along with file. each field will be sent as a form field.
-  The values are converted to json string or jsob blob or nested form depending on 'sendFieldsAs' option. */
-  fields: {key: $scope.myValue, ...},
+  Specify the file and optional data to be sent to the server.
+  Each field including nested objects will be sent as a form data multipart.
+  Samples: {pic: file, username: username}
+    {files: files, otherInfo: {id: id, person: person,...}} multiple files (html5)
+    {profiles: {[{pic: file1, username: username1}, {pic: file2, username: username2}]} nested array multiple files (html5)
+    {file: file, info: Upload.json({id: id, name: name, ...})} send fields as json string
+    {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob
+    {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
+  data: {key: file, otherInfo: uploadInfo},
   /*
-  default is 'json', sends each field as json string plain text content type, 'json-blob' sends object fields
-  as a blob object with content type 'application/json', 'form' sends fields as nested form fields. see #784 */
-  sendFieldsAs: json|json-blob|form,
-  /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
-  formDataAppender: function(formData, key, val){},
+  This is to accomudate server implementations expecting nested data object keys in .key or [key] format.
+  Example: data: {rec: {name: 'N', pic: file}} sent as: rec[name] -> N, rec[pic] -> file  
+     data: {rec: {name: 'N', pic: file}, objectKey: '.k'} sent as: rec.name -> N, rec.pic -> file */  
+  objectKey: '[k]' or '.k' // default is '[k]'
   /*
-  data will be sent as a separate form data field called "data".*/
-  data: {}.
-  withCredentials: true|false,
+  This is to accomudate server implementations expecting array data object keys in '[i]' or '[]' or 
+  ''(multiple entries with same key) format.
+  Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
+    data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  
+  /*
+  arrayKey: '[i]' or '[]' or '.i' or '' //default is '[i]'
+  withCredentials: boolean,
   /*
   See resumable upload guide below the code for more details (html5 only) */
   resumeSizeUrl: '/uploaded/size/url?file=' + file.name // uploaded file size so far on the server.
@@ -310,6 +324,15 @@ Upload.mediaDuration(file).then(function(durationInSeconds){...});
 Upload.isResizeSupported()
 /* returns boolean showing if resumable upload is supported by this browser*/
 Upload.isResumeSupported()
+
+/* returns a file which will be uploaded with the newName instead of original file name */
+Upload.rename(file, newName)
+/* converts the object to a Blob object with application/json content type 
+for jsob byte streaming support #359 */
+Upload.json(obj)
+/* converts the value to json to send data as json string. Same as angular.toJson(obj) */
+Upload.json(obj)
+
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
@@ -356,7 +379,7 @@ On your server you need to keep track of what files are being uploaded and how m
  * Optionally you can specify `resumeChunkSize` to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
  file size limitation and trying to upload the whole request before passing it for internal processing.<br/>
  If this option is set the requests will have three extra fields: 
- `chunckSize`, `chunkNumber` (zero starting), and `totalSize` to help the server to write the uploaded chunk to 
+ `_chunckSize`, `_chunkNumber` (zero starting), and `_totalSize` to help the server to write the uploaded chunk to 
  the correct position.
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
  

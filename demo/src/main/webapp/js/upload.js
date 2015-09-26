@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '7.3.7';
+var version = '8.0.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -17,7 +17,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
     if (files != null) {
-      if (!files.length) {
+      if (!angular.isArray(files)) {
         $timeout(function () {
           $scope.files = files = [files];
         });
@@ -27,7 +27,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
         $scope.errorMsg = null;
         (function (f) {
           if (!f.$error) {
-            $scope.upload(f);
+            $scope.upload(f, true);
           }
         })(files[i]);
       }
@@ -41,10 +41,10 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     }
   };
 
-  $scope.upload = function(file) {
+  $scope.upload = function(file, resumable) {
     $scope.errorMsg = null;
     if ($scope.howToSend === 1) {
-      uploadUsingUpload(file);
+      uploadUsingUpload(file, resumable);
     } else if ($scope.howToSend == 2) {
       uploadUsing$http(file);
     } else {
@@ -52,10 +52,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     }
   };
 
+  $scope.isResumeSupported = Upload.isResumeSupported();
+
   $scope.restart = function(file) {
     if (Upload.isResumeSupported()) {
       $http.get('https://angular-file-upload-cors-srv.appspot.com/upload?restart=true&name=' + encodeURIComponent(file.name)).then(function () {
-        $scope.upload(file);
+        $scope.upload(file, true);
       });
     } else {
       $scope.upload(file);
@@ -63,16 +65,15 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   };
 
   $scope.chunkSize = 100000;
-  function uploadUsingUpload(file) {
+  function uploadUsingUpload(file, resumable) {
     file.upload = Upload.upload({
       url: 'https://angular-file-upload-cors-srv.appspot.com/upload' + $scope.getReqParams(),
-      resumeSizeUrl: 'https://angular-file-upload-cors-srv.appspot.com/upload?name=' + encodeURIComponent(file.name),
-      resumeChunkSize: $scope.chunkSize,
+      resumeSizeUrl: resumable ? 'https://angular-file-upload-cors-srv.appspot.com/upload?name=' + encodeURIComponent(file.name) : null,
+      resumeChunkSize: resumable ? $scope.chunkSize : null,
       headers: {
         'optional-header': 'header-value'
       },
-      fields: {username: $scope.username},
-      file: file,
+      data: {username: $scope.username, file: file}
     });
 
     file.upload.then(function (response) {
@@ -120,16 +121,16 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     file.upload = Upload.upload({
       url: $scope.s3url,
       method: 'POST',
-      fields: {
+      data: {
         key: file.name,
         AWSAccessKeyId: $scope.AWSAccessKeyId,
         acl: $scope.acl,
         policy: $scope.policy,
         signature: $scope.signature,
         'Content-Type': file.type === null || file.type === '' ? 'application/octet-stream' : file.type,
-        filename: file.name
-      },
-      file: file
+        filename: file.name,
+        file: file
+      }
     });
 
     file.upload.then(function (response) {
@@ -235,7 +236,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.validate = localStorage.getItem('validate' + version) || '{size: {max: \'20MB\', min: \'10B\'}, height: {max: 5000}, width: {max: 5000}, duration: {max: \'5m\'}}';
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
-    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+keepDistinct', function () {
+    $scope.validOnly = localStorage.getItem('validOnly' + version) == 'true' || false;
+    $scope.resetOnClick = localStorage.getItem('resetOnClick' + version) == 'true' || true;
+    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+keepDistinct+resetOnClick+validOnly', function () {
       localStorage.setItem('capture' + version, $scope.capture);
       localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
@@ -245,6 +248,8 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       localStorage.setItem('validate' + version, $scope.validate);
       localStorage.setItem('keep' + version, $scope.keep);
       localStorage.setItem('keepDistinct' + version, $scope.keepDistinct);
+      localStorage.setItem('resetOnClick' + version, $scope.resetOnClick);
+      localStorage.setItem('validOnly' + version, $scope.validOnly);
     });
   });
 }]);

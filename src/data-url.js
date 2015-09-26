@@ -3,14 +3,14 @@
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
     var upload = UploadBase;
     upload.dataUrl = function (file, disallowObjectUrl) {
-      if ((disallowObjectUrl && file.dataUrl != null) || (!disallowObjectUrl && file.blobUrl != null)) {
+      if ((disallowObjectUrl && file.$ngfDataUrl != null) || (!disallowObjectUrl && file.$ngfBlobUrl != null)) {
         var d = $q.defer();
         $timeout(function () {
-          d.resolve(disallowObjectUrl ? file.dataUrl : file.blobUrl);
+          d.resolve(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl);
         });
         return d.promise;
       }
-      var p = disallowObjectUrl ? file.$ngfDataUrlPromise : file.$ngfBlobUrlPromise;
+      var p = disallowObjectUrl ? file.$$ngfDataUrlPromise : file.$$ngfBlobUrlPromise;
       if (p) return p;
 
       var deferred = $q.defer();
@@ -27,26 +27,26 @@
               url = URL.createObjectURL(file);
             } catch (e) {
               $timeout(function () {
-                file.blobUrl = '';
+                file.$ngfBlobUrl = '';
                 deferred.reject();
               });
               return;
             }
             $timeout(function () {
-              file.blobUrl = url;
+              file.$ngfBlobUrl = url;
               if (url) deferred.resolve(url);
             });
           } else {
             var fileReader = new FileReader();
             fileReader.onload = function (e) {
               $timeout(function () {
-                file.dataUrl = e.target.result;
+                file.$ngfDataUrl = e.target.result;
                 deferred.resolve(e.target.result);
               });
             };
             fileReader.onerror = function () {
               $timeout(function () {
-                file.dataUrl = '';
+                file.$ngfDataUrl = '';
                 deferred.reject();
               });
             };
@@ -61,12 +61,12 @@
       });
 
       if (disallowObjectUrl) {
-        p = file.$ngfDataUrlPromise = deferred.promise;
+        p = file.$$ngfDataUrlPromise = deferred.promise;
       } else {
-        p = file.$ngfBlobUrlPromise = deferred.promise;
+        p = file.$$ngfBlobUrlPromise = deferred.promise;
       }
       p['finally'](function () {
-        delete file[disallowObjectUrl ? '$ngfDataUrlPromise' : '$ngfBlobUrlPromise'];
+        delete file[disallowObjectUrl ? '$$ngfDataUrlPromise' : '$$ngfBlobUrlPromise'];
       });
       return p;
     };
@@ -88,7 +88,7 @@
       var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
       Upload.dataUrl(file, disallowObjectUrl)['finally'](function () {
         $timeout(function () {
-          var src = (disallowObjectUrl ? file.dataUrl : file.blobUrl) || file.dataUrl;
+          var src = (disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl) || file.$ngfDataUrl;
           if (isBackground) {
             elem.css('background-image', 'url(\'' + (src || '') + '\')');
           } else {
@@ -194,19 +194,19 @@
   //  if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
   //}]);
   //
-  //ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
+  //ngFileUpload.filter('$ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
   //  return function (file, disallowObjectUrl) {
   //    if (angular.isString(file)) {
   //      return $sce.trustAsResourceUrl(file);
   //    }
-  //    if (file && !file.dataUrl) {
-  //      if (file.dataUrl === undefined && angular.isObject(file)) {
-  //        file.dataUrl = null;
-  //        UploadDataUrl.dataUrl(file, disallowObjectUrl);
+  //    if (file && !file.$ngfDataUrl) {
+  //      if (file.$ngfDataUrl === undefined && angular.isObject(file)) {
+  //        file.$ngfDataUrl = null;
+  //        UploadDataUrl.$ngfDataUrl(file, disallowObjectUrl);
   //      }
   //      return '';
   //    }
-  //    return (file && file.dataUrl ? $sce.trustAsResourceUrl(file.dataUrl) : file) || '';
+  //    return (file && file.$ngfDataUrl ? $sce.trustAsResourceUrl(file.$ngfDataUrl) : file) || '';
   //  };
   //}]);
 
