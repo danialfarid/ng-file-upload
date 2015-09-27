@@ -59,13 +59,13 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Samples:
-* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/](http://jsfiddle.net/danialfarid/maqbzv15/)
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/14/](http://jsfiddle.net/danialfarid/maqbzv15/14/)
 * Upload multiple files on file select:
-[http://jsfiddle.net/danialfarid/2vq88rfs/17/](http://jsfiddle.net/danialfarid/2vq88rfs/17/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/117/](http://jsfiddle.net/danialfarid/2vq88rfs/117/)
 * Upload single file on file select:
-[http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/115/](http://jsfiddle.net/danialfarid/0mz6ff9o/115/)
 * Drop and upload with $watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/31](http://jsfiddle.net/danialfarid/s8kc7wg0/31)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/95](http://jsfiddle.net/danialfarid/s8kc7wg0/95)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
