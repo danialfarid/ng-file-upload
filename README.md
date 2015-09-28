@@ -464,7 +464,7 @@ Upload.upload({
         data : {
           key: file.name, // the key to store the file on S3, could be file name or customized
           AWSAccessKeyId: <YOUR AWS AccessKey Id>,
-          acl: 'private', // sets the access to the uploaded file in the bucket: private or public
+          acl: 'private', // sets the access to the uploaded file in the bucket: private, public-read, ...
           policy: $scope.policy, // base64-encoded json policy (see article below)
           signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
           "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
