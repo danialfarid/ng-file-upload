@@ -120,26 +120,24 @@
     }, false);
 
     function calculateDragOverClass(scope, attr, evt, callback) {
-      var clazz = attrGetter('ngfDragOverClass', scope, {$event: evt}),
-        dClass = attrGetter('ngfDragOverClass') || 'dragover';
-      if (angular.isString(clazz)) {
-        callback(clazz);
-        return;
-      }
-      if (clazz) {
-        if (clazz.delay) dragOverDelay = clazz.delay;
-        if (clazz.accept || clazz.reject) {
+      var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}), dClass = 'dragover';
+      if (angular.isString(obj)) {
+        dClass = obj;
+      } else if (obj) {
+        if (obj.delay) dragOverDelay = obj.delay;
+        if (obj.accept || obj.reject) {
           var items = evt.dataTransfer.items;
-          if (items != null) {
-            var pattern = clazz.pattern || attrGetter('ngfPattern', scope, {$event: evt});
-            for (var i = 0; i < items.length; i++) {
-              if (items[i].kind === 'file' || items[i].kind === '') {
-                if (!upload.validatePattern(items[i], pattern)) {
-                  dClass = clazz.reject;
-                  break;
-                } else {
-                  dClass = clazz.accept;
-                }
+          if (items == null || !items.length) {
+            dClass = obj.accept;
+          } else {
+            var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
+            var len = items.length;
+            while (len--) {
+              if (items[len].kind !== 'file' || !upload.validatePattern(items[len], pattern)) {
+                dClass = obj.reject;
+                break;
+              } else {
+                dClass = obj.accept;
               }
             }
           }
