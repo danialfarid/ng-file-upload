@@ -65,7 +65,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
     config.headers.__setXHR_ = function () {
       return function (xhr) {
-        if (!xhr) return;
+        if (!xhr || !(xhr instanceof XMLHttpRequest)) return;
         config.__XHR = xhr;
         if (config.xhrFn) config.xhrFn(xhr);
         xhr.upload.addEventListener('progress', function (e) {
