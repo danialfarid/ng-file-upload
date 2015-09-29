@@ -60,8 +60,10 @@ Table of Content:
 
 ###Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/14/](http://jsfiddle.net/danialfarid/maqbzv15/14/)
-* Upload multiple files on file select:
+* Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/117/](http://jsfiddle.net/danialfarid/2vq88rfs/117/)
+* Upload multiple files in one request on file select (html5 only):
+[http://jsfiddle.net/danialfarid/huhjo9jm/](http://jsfiddle.net/danialfarid/huhjo9jm/)
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/115/](http://jsfiddle.net/danialfarid/0mz6ff9o/115/)
 * Drop and upload with $watch:
