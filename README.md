@@ -457,40 +457,41 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 #### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
-```
+```js
 Upload.upload({
-        url: 'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
-        method: 'POST',
-        data : {
-          key: file.name, // the key to store the file on S3, could be file name or customized
-          AWSAccessKeyId: <YOUR AWS AccessKey Id>,
-          acl: 'private', // sets the access to the uploaded file in the bucket: private, public-read, ...
-          policy: $scope.policy, // base64-encoded json policy (see article below)
-          signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
-          "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
-          filename: file.name, // this is needed for Flash polyfill IE8-9
-          file: file
-        },
-      });
+    url: 'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
+    method: 'POST',
+    data: {
+        key: file.name, // the key to store the file on S3, could be file name or customized
+        AWSAccessKeyId: <YOUR AWS AccessKey Id>,
+        acl: 'private', // sets the access to the uploaded file in the bucket: private, public-read, ...
+        policy: $scope.policy, // base64-encoded json policy (see article below)
+        signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
+        "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
+        filename: file.name, // this is needed for Flash polyfill IE8-9
+        file: file
+    }
+});
 ```
 [This article](http://aws.amazon.com/articles/1434/) explains more about these fields and provides instructions on how to generate the policy and signature using a server side tool.
 These two values are generated from the json policy document which looks like this:
-```
-{"expiration": "2020-01-01T00:00:00Z",
-"conditions": [
-  {"bucket": "angular-file-upload"},
-  ["starts-with", "$key", ""],
-  {"acl": "private"},
-  ["starts-with", "$Content-Type", ""],
-  ["starts-with", "$filename", ""],
-  ["content-length-range", 0, 524288000]
-]
+```js
+{
+    "expiration": "2020-01-01T00:00:00Z",
+    "conditions": [
+        {"bucket": "angular-file-upload"},
+        ["starts-with", "$key", ""],
+        {"acl": "private"},
+        ["starts-with", "$Content-Type", ""],
+        ["starts-with", "$filename", ""],
+        ["content-length-range", 0, 524288000]
+    ]
 }
 ```
 The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to generate signature and policy to protect your aws secret key which should never be shared.
 
 Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit CORS Configuration. Samples of these two files:
-```
+```js
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -516,7 +517,7 @@ Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> b
   ]
 }
 ```
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
     <CORSRule>
