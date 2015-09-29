@@ -12,7 +12,7 @@ Lightweight Angular directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/>
 
-**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0)
+**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1)
 
 
 Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.<br/>
@@ -59,13 +59,13 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Samples:
-* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/](http://jsfiddle.net/danialfarid/maqbzv15/)
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/14/](http://jsfiddle.net/danialfarid/maqbzv15/14/)
 * Upload multiple files on file select:
-[http://jsfiddle.net/danialfarid/2vq88rfs/17/](http://jsfiddle.net/danialfarid/2vq88rfs/17/)
+[http://jsfiddle.net/danialfarid/2vq88rfs/117/](http://jsfiddle.net/danialfarid/2vq88rfs/117/)
 * Upload single file on file select:
-[http://jsfiddle.net/danialfarid/0mz6ff9o/13/](http://jsfiddle.net/danialfarid/0mz6ff9o/13/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/115/](http://jsfiddle.net/danialfarid/0mz6ff9o/115/)
 * Drop and upload with $watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/31](http://jsfiddle.net/danialfarid/s8kc7wg0/31)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/95](http://jsfiddle.net/danialfarid/s8kc7wg0/95)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -114,8 +114,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.upload = function (file) {
         Upload.upload({
             url: 'upload/url',
-            fields: {'username': $scope.username},
-            file: file
+            data: {file: file, 'username': $scope.username}
         }).progress(function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
@@ -129,10 +128,10 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     $scope.upload = function (files) {
       if (files && files.length) {
         for (var i = 0; i < files.length; i++) {
-          Upload.upload({..., file: files[i], ...})...;
+          Upload.upload({..., data: {file: files[i]}, ...})...;
         }
         // or send them all together for HTML5 browsers:
-        Upload.upload({..., file: files, ...})...;
+        Upload.upload({..., data: {file: files}, ...})...;
       }
     }
 }]);
@@ -171,12 +170,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
             // default but not the other browsers, so test cross browser is using this.
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
-  +ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
-                    "calcDragOverClass($event)"
-              // drag over css class behaviour. could be a string, a function returning class name
-              // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover".
-              // accept/reject class only works in Chrome validating only the file mime type
-              // against ngf-pattern
+  +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
+                    or "myDragOverClass" or "calcDragOverClass($event)"
+              // default "dragover". drag over css class behaviour. could be a string, a function 
+              returning class name or a json object.
+              // accept/reject class only works in Chrome validating only the file mime type.
+              // if pattern is not specified ngf-pattern will be used.
   +ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
@@ -265,7 +264,6 @@ var upload = Upload.upload({
   ''(multiple entries with same key) format.
   Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
     data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  
-  /*
   arrayKey: '[i]' or '[]' or '.i' or '' //default is '[i]'
   withCredentials: boolean,
   /*
@@ -459,40 +457,41 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 #### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
-```
+```js
 Upload.upload({
-        url: 'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
-        method: 'POST',
-        fields : {
-          key: file.name, // the key to store the file on S3, could be file name or customized
-          AWSAccessKeyId: <YOUR AWS AccessKey Id>,
-          acl: 'private', // sets the access to the uploaded file in the bucket: private or public
-          policy: $scope.policy, // base64-encoded json policy (see article below)
-          signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
-          "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
-          filename: file.name // this is needed for Flash polyfill IE8-9
-        },
-        file: file,
-      });
+    url: 'https://angular-file-upload.s3.amazonaws.com/', //S3 upload url including bucket name
+    method: 'POST',
+    data: {
+        key: file.name, // the key to store the file on S3, could be file name or customized
+        AWSAccessKeyId: <YOUR AWS AccessKey Id>,
+        acl: 'private', // sets the access to the uploaded file in the bucket: private, public-read, ...
+        policy: $scope.policy, // base64-encoded json policy (see article below)
+        signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
+        "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
+        filename: file.name, // this is needed for Flash polyfill IE8-9
+        file: file
+    }
+});
 ```
 [This article](http://aws.amazon.com/articles/1434/) explains more about these fields and provides instructions on how to generate the policy and signature using a server side tool.
 These two values are generated from the json policy document which looks like this:
-```
-{"expiration": "2020-01-01T00:00:00Z",
-"conditions": [
-  {"bucket": "angular-file-upload"},
-  ["starts-with", "$key", ""],
-  {"acl": "private"},
-  ["starts-with", "$Content-Type", ""],
-  ["starts-with", "$filename", ""],
-  ["content-length-range", 0, 524288000]
-]
+```js
+{
+    "expiration": "2020-01-01T00:00:00Z",
+    "conditions": [
+        {"bucket": "angular-file-upload"},
+        ["starts-with", "$key", ""],
+        {"acl": "private"},
+        ["starts-with", "$Content-Type", ""],
+        ["starts-with", "$filename", ""],
+        ["content-length-range", 0, 524288000]
+    ]
 }
 ```
 The [demo](https://angular-file-upload.appspot.com/) page provide a helper tool to generate the policy and signature from you from the json policy document. **Note**: Please use https protocol to access demo page if you are using this tool to generate signature and policy to protect your aws secret key which should never be shared.
 
 Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> bucket name -> Properties -> Edit bucket policy and Edit CORS Configuration. Samples of these two files:
-```
+```js
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -518,7 +517,7 @@ Make sure that you provide upload and CORS post to your bucket at AWS -> S3 -> b
   ]
 }
 ```
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
     <CORSRule>
