@@ -48,7 +48,7 @@ public class FileUpload extends HttpServlet {
 				return;
 			}
 			req.setCharacterEncoding("utf-8");
-			if (req.getParameter("errorCode") != null) {
+			if (!"OPTIONS".equalsIgnoreCase(req.getMethod()) && req.getParameter("errorCode") != null) {
 //				res.getWriter().write(req.getParameter("errorMessage"));
 //				res.getWriter().flush();
 				res.sendError(Integer.parseInt(req.getParameter("errorCode")), req.getParameter("errorMessage"));
