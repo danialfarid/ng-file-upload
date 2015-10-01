@@ -2,11 +2,31 @@
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
     var upload = UploadBase;
+    upload.base64DataUrl = function(file) {
+      if (angular.isArray(file)) {
+        var d = $q.defer(), count = 0;
+        angular.forEach(file, function (f) {
+          upload.dataUrl(f, true)['finally'](function () {
+            count++;
+            if (count === file.length) {
+              var urls = [];
+              angular.forEach(file, function (ff) {
+                urls.push(ff.$ngfDataUrl);
+              });
+              d.resolve(urls, file);
+            }
+          });
+        });
+        return d.promise;
+      } else {
+        return upload.dataUrl(file, true);
+      }
+    };
     upload.dataUrl = function (file, disallowObjectUrl) {
       if ((disallowObjectUrl && file.$ngfDataUrl != null) || (!disallowObjectUrl && file.$ngfBlobUrl != null)) {
         var d = $q.defer();
         $timeout(function () {
-          d.resolve(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl);
+          d.resolve(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
         });
         return d.promise;
       }
@@ -34,14 +54,14 @@
             }
             $timeout(function () {
               file.$ngfBlobUrl = url;
-              if (url) deferred.resolve(url);
+              if (url) deferred.resolve(url, file);
             });
           } else {
             var fileReader = new FileReader();
             fileReader.onload = function (e) {
               $timeout(function () {
                 file.$ngfDataUrl = e.target.result;
-                deferred.resolve(e.target.result);
+                deferred.resolve(e.target.result, file);
               });
             };
             fileReader.onerror = function () {

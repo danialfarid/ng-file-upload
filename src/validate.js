@@ -45,7 +45,13 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }
 
     ngModel.$formatters.push(function (val) {
-      if (val != null && !ngModel.$dirty) ngModel.$setDirty();
+      if (val != null && !ngModel.$dirty) {
+        if (ngModel.$setDirty) {
+          ngModel.$setDirty();
+        } else {
+          ngModel.$dirty = true;
+        }
+      }
       if (upload.attrGetter('ngfValidateLater', attr, scope) || !ngModel.$$ngfValidated) {
         upload.validate(val, ngModel, attr, scope, false, function () {
           setValidities(ngModel);

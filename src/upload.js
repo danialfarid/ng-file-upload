@@ -63,24 +63,26 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       }
     }
 
-    config.headers.__setXHR_ = function () {
-      return function (xhr) {
-        if (!xhr || !(xhr instanceof XMLHttpRequest)) return;
-        config.__XHR = xhr;
-        if (config.xhrFn) config.xhrFn(xhr);
-        xhr.upload.addEventListener('progress', function (e) {
-          e.config = config;
-          notifyProgress(getNotifyEvent(e));
-        }, false);
-        //fix for firefox not firing upload progress end, also IE8-9
-        xhr.upload.addEventListener('load', function (e) {
-          if (e.lengthComputable) {
+    if (!config.disableProgress) {
+      config.headers.__setXHR_ = function () {
+        return function (xhr) {
+          if (!xhr || !(xhr instanceof XMLHttpRequest)) return;
+          config.__XHR = xhr;
+          if (config.xhrFn) config.xhrFn(xhr);
+          xhr.upload.addEventListener('progress', function (e) {
             e.config = config;
             notifyProgress(getNotifyEvent(e));
-          }
-        }, false);
+          }, false);
+          //fix for firefox not firing upload progress end, also IE8-9
+          xhr.upload.addEventListener('load', function (e) {
+            if (e.lengthComputable) {
+              e.config = config;
+              notifyProgress(getNotifyEvent(e));
+            }
+          }, false);
+        };
       };
-    };
+    }
 
     function uploadWithAngular() {
       $http(config).then(function (r) {
