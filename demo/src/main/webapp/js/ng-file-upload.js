@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 8.0.4
+ * @version 8.0.5
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '8.0.4';
+ngFileUpload.version = '8.0.5';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -189,7 +189,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
   this.upload = function (config) {
     function isFile(file) {
-      return file instanceof Blob || (file.flashId && file.name && file.size);
+      return file != null && file instanceof Blob || (file.flashId && file.name && file.size);
     }
 
     function toResumeFile(file, formData) {
@@ -950,6 +950,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }
 
     ngModel.$formatters.push(function (val) {
+      if (val != null && !ngModel.$dirty) ngModel.$setDirty();
       if (upload.attrGetter('ngfValidateLater', attr, scope) || !ngModel.$$ngfValidated) {
         upload.validate(val, ngModel, attr, scope, false, function () {
           setValidities(ngModel);
