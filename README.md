@@ -64,11 +64,11 @@ Table of Content:
 * Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/136/](http://jsfiddle.net/danialfarid/2vq88rfs/136/)
 * Upload multiple files in one request on file select (html5 only):
-[http://jsfiddle.net/danialfarid/huhjo9jm/](http://jsfiddle.net/danialfarid/huhjo9jm/)
+[http://jsfiddle.net/danialfarid/huhjo9jm/5/](http://jsfiddle.net/danialfarid/huhjo9jm/5/)
 * Upload single file on file select:
-[http://jsfiddle.net/danialfarid/0mz6ff9o/115/](http://jsfiddle.net/danialfarid/0mz6ff9o/115/)
+[http://jsfiddle.net/danialfarid/0mz6ff9o/135/](http://jsfiddle.net/danialfarid/0mz6ff9o/135/)
 * Drop and upload with $watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/95](http://jsfiddle.net/danialfarid/s8kc7wg0/95)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/112](http://jsfiddle.net/danialfarid/s8kc7wg0/112)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -119,12 +119,12 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
             url: 'upload/url',
             data: {file: file, 'username': $scope.username}
         }).then(function (resp) {
-            console.log('Success ' + resp.config.file.name + 'uploaded. Response: ' + resp.data);
+            console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
         }, function (resp) {
             console.log('Error status: ' + resp.status);
         }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
         });
     };
     // for multiple files:
@@ -275,12 +275,12 @@ var upload = Upload.upload({
   ... and all other angular $http() options could be used here.
 }).then(function(resp) {
   // file is uploaded successfully
-  console.log('file ' + resp.config.file.name + 'is uploaded successfully. Response: ' + resp.data);
+  console.log('file ' + resp.config.data.file.name + 'is uploaded successfully. Response: ' + resp.data);
 }, function(resp) {
   // handle error
 }, function(evt) {
   // progress notify
-  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.data.file.name);
 }).xhr(function(xhr){
   //access or attach event listeners to the underlying XMLHttpRequest
   xhr.upload.addEventListener(...)
