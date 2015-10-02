@@ -32,9 +32,10 @@ Table of Content:
 
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
-* file drag and drop and paste images (html5 only)
-* resumable uploads: pause/resume upload (html5 only) 
+* file drag and drop (html5 only) 
+* image paste form clipboard and drag and drop from browser pages (html5 only).
 * image resize (html5 only)
+* resumable uploads: pause/resume upload (html5 only) 
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
@@ -155,11 +156,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $event)"
     // called when files are selected, dropped, or cleared
-  ng-disabled="boolean" // disables this element
   ng-model-options="{updateOn: {'change', 'click', 'drop', 'paste'}, allowInvalid: false, debounce: 0}" // angular
     // model options. You can disable resetting on 'click' (old ngf-reset-on-click option), 
     // updating on some other events like 'paste', allowing invalid files in the model and 
     // debouncing the model update to the later time in miliseconds. See angular ng-model-options for more info.
+  ngf-model-invalid="invalidFilesArray" // binds the invalid selected/dropped files to this model.
+  ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
@@ -292,10 +294,10 @@ var promise = upload.then(success, error, progress);
 /* cancel/abort the upload in progress. */
 upload.abort();
 
-/* alternative way of uploading, send the file binary with the file's content-type.
-   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed.
-   It could also be used to enable progress for regualr angular $http() post/put requests.
-*/
+/* 
+alternative way of uploading, send the file binary with the file's content-type.
+Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed.
+This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.*/
 Upload.http({
   url: '/server/upload/url',
   headers : {
@@ -345,18 +347,20 @@ The model value will be a single file instead of an array if all of the followin
 When any of the validation directives specified the form validation will take place and
 you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>`
 for example `form.file.$error.pattern`.
-If multiple file selection is allowed you can find the error of each individual file
-with `file.$error` and description of it `file.$errorParam`.
-So before uploading you can check if the file is valid by `!file.$error`.
+If multiple file selection is allowed you can specify `ngf-model-invalid="invalidFiles"` to assing the invalid files to 
+a model and find the error of each individual file with `file.$error` and description of it with `file.$errorParam`.
+You can use angular ng-model-options to allow invalid files to be set to the ng-model  `ng-model-options="{allowInvalid: true}"`.  
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
-Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) you have an array of files or more than one file in your `data` to 
+send them all in one request . Non-html5 browsers due to flash limitation will upload each file one by one in a separate request. 
+You should iterate over the files and send them one by one for a cross browser solution.
 
-**Upload.http()**:
-This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.
-
-**drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. The validation `ngf-pattern` could only check the file type since that is the only property of the file that is reported by the browser on drag. So you cannot validate the file size or name on drag. There is also some limitation on some file types which are not reported by Chrome.
+**drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. 
+It can be a function that returns a class name based on the $event. Default is "dragover" string.
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', pattern: 'image/*', delay: 10}` that specify the 
+class name for the accepted or rejected drag overs. The `pattern` specified or `ngf-pattern` will be used to validate the file's `mime-type` 
+since that is the only property of the file that is reported by the browser on drag. So you cannot validate 
+the file name/extension, size or other validations on drag. There is also some limitation on some file types which are not reported by Chrome.
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 **Upload.setDefaults()**:

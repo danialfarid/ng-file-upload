@@ -238,7 +238,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
             val.$$ngfCircularDetection = true;
             try {
               for (var k in val) {
-                if (val.hasOwnProperty(k)) {
+                if (val.hasOwnProperty(k) && k !== '$$ngfCircularDetection') {
                   var objectKey = config.objectKey == null ? '[i]' : config.objectKey;
                   if (val.length && parseInt(k) > -1) {
                     objectKey = config.arrayKey == null ? objectKey : config.arrayKey;
