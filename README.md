@@ -1,9 +1,9 @@
 [![npm version](https://badge.fury.io/js/ng-file-upload.svg)](http://badge.fury.io/js/ng-file-upload)
 [![Downloads](http://img.shields.io/npm/dm/ng-file-upload.svg)](https://npmjs.org/package/ng-file-upload)
 [![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/pr)](http://issuestats.com/github/danialfarid/ng-file-upload)
-[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/issue)](http://issuestats.com/github/danialfarid/ng-file-upload)
+[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/issue)](http://issuestats.com/github/danialfarid/ng-file-upload)<br/>
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
-[![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?style=social&label=Donate)](https://gratipay.com/ng-file-upload/)
+[![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?label=donate)](https://gratipay.com/ng-file-upload/)
 
 ng-file-upload
 ===================
@@ -117,14 +117,14 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         Upload.upload({
             url: 'upload/url',
             data: {file: file, 'username': $scope.username}
-        }).progress(function (evt) {
+        }).then(function (resp) {
+            console.log('Success ' + resp.config.file.name + 'uploaded. Response: ' + resp.data);
+        }, function (resp) {
+            console.log('Error status: ' + resp.status);
+        }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-        }).success(function (data, status, headers, config) {
-            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-        }).error(function (data, status, headers, config) {
-            console.log('error status: ' + status);
-        })
+        });
     };
     // for multiple files:
     $scope.upload = function (files) {
@@ -238,14 +238,6 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 ```js
 var upload = Upload.upload({
   *url: 'server/upload/url', // upload.php script, node.js route, or servlet url
-  *file: file or files or {pic: picFile, 'doc,myDoc.pdf': docFile},  
-         // single file or an array of files (html5 only) or 
-         // a map of key[,name] -> file (map with more than one entry is for html5 only) 
-         // the key is server request file form key param ('Content-Disposition') and 
-         // the optional comma-separated name (html5 only) is to chnage the original file name.
-         // by default the key is 'file' and original file name is used.
-  method: 'POST' or 'PUT'(html5), default POST,
-  headers: {'Authorization': 'xxx'}, // only for html5
   /*
   Specify the file and optional data to be sent to the server.
   Each field including nested objects will be sent as a form data multipart.
@@ -255,7 +247,7 @@ var upload = Upload.upload({
     {file: file, info: Upload.json({id: id, name: name, ...})} send fields as json string
     {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob
     {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
-  data: {key: file, otherInfo: uploadInfo},
+  *data: {key: file, otherInfo: uploadInfo},
   /*
   This is to accommodate server implementations expecting nested data object keys in .key or [key] format.
   Example: data: {rec: {name: 'N', pic: file}} sent as: rec[name] -> N, rec[pic] -> file  
@@ -267,6 +259,8 @@ var upload = Upload.upload({
   Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
     data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  
   arrayKey: '[i]' or '[]' or '.i' or '' //default is '[i]'
+  method: 'POST' or 'PUT'(html5), default POST,
+  headers: {'Authorization': 'xxx'}, // only for html5
   withCredentials: boolean,
   /*
   See resumable upload guide below the code for more details (html5 only) */
@@ -275,15 +269,16 @@ var upload = Upload.upload({
   resumeSize: function() {return promise;} // function that returns a prommise which will be
                                             // resolved to the upload file size on the server.
   resumeChunkSize: 10000 or '10KB' or '10MB' // upload in chunks of specified size
-  
+  disableProgress: boolean // default false, experimental as hotfix for potential library conflicts with other plugins
   ... and all other angular $http() options could be used here.
-}).progress(function(evt) {
-  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
-}).success(function(data, status, headers, config) {
+}).then(function(resp) {
   // file is uploaded successfully
-  console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
-}).error(function(data, status, headers, config) {
+  console.log('file ' + resp.config.file.name + 'is uploaded successfully. Response: ' + resp.data);
+}, function(resp) {
   // handle error
+}, function(evt) {
+  // progress notify
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
 }).xhr(function(xhr){
   //access or attach event listeners to the underlying XMLHttpRequest
   xhr.upload.addEventListener(...)
@@ -312,8 +307,13 @@ Upload.http({
 /* Set the default values for ngf-select and ngf-drop directives*/
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
 
-/* Convert the file to base64 data url*/
-Upload.dataUrl(file, disallowObjectUrl).then(function(url){...});
+/* Convert a single file or array of files to a single or array of 
+base64 data url representation of the file(s).
+Could be used to send file in base64 format inside json to the databases */
+Upload.base64DataUrl(files).then(function(urls){...});
+
+/* Convert the file to blob url object or base64 data url based on boolean disallowObjectUrl value */
+Upload.dataUrl(file, boolean).then(function(url){...});
 
 /* Get image file dimensions*/
 Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.widht, dimensions.height);});
