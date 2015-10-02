@@ -176,7 +176,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       fileElem.bind('click', ie10SameFileSelectFix);
     }
 
-    ngModel.$formatters.push(function(val) {
+    if (ngModel) ngModel.$formatters.push(function (val) {
       if (val == null || val.length === 0) {
         if (fileElem.val()) {
           fileElem.val(null);
