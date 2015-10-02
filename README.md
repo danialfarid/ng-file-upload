@@ -117,14 +117,14 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         Upload.upload({
             url: 'upload/url',
             data: {file: file, 'username': $scope.username}
-        }).progress(function (evt) {
+        }).then(function (resp) {
+            console.log('Success ' + resp.config.file.name + 'uploaded. Response: ' + resp.data);
+        }, function (resp) {
+            console.log('Error status: ' + resp.status);
+        }, function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-        }).success(function (data, status, headers, config) {
-            console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-        }).error(function (data, status, headers, config) {
-            console.log('error status: ' + status);
-        })
+        });
     };
     // for multiple files:
     $scope.upload = function (files) {
@@ -271,13 +271,14 @@ var upload = Upload.upload({
   resumeChunkSize: 10000 or '10KB' or '10MB' // upload in chunks of specified size
   disableProgress: boolean // default false, experimental as hotfix for potential library conflicts with other plugins
   ... and all other angular $http() options could be used here.
-}).progress(function(evt) {
-  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
-}).success(function(data, status, headers, config) {
+}).then(function(resp) {
   // file is uploaded successfully
-  console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
-}).error(function(data, status, headers, config) {
+  console.log('file ' + resp.config.file.name + 'is uploaded successfully. Response: ' + resp.data);
+}, function(resp) {
   // handle error
+}, function(evt) {
+  // progress notify
+  console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.file.name);
 }).xhr(function(xhr){
   //access or attach event listeners to the underlying XMLHttpRequest
   xhr.upload.addEventListener(...)
