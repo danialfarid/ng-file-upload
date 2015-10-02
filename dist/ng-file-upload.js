@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.2
+ * @version 9.0.3
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.2';
+ngFileUpload.version = '9.0.3';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -449,15 +449,18 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
   upload.updateModel = function (ngModel, attr, scope, fileChange, files, evt, noDelay) {
     function update(files, invalidFiles, newFiles, dupFiles, isSingleModel) {
-      markModelAsDirty(ngModel, files);
-
-      angular.forEach(ngModel.$ngfValidations, function (validation) {
-        ngModel.$setValidity(validation.name, validation.valid);
-      });
-
       var file = files && files.length ? files[0] : null;
+
       if (ngModel) {
-        ngModel.$setViewValue(isSingleModel ? file : files);
+        markModelAsDirty(ngModel, files);
+
+        angular.forEach(ngModel.$ngfValidations, function (validation) {
+          ngModel.$setValidity(validation.name, validation.valid);
+        });
+
+        if (ngModel) {
+          ngModel.$setViewValue(isSingleModel ? file : files);
+        }
       }
 
       if (fileChange) {

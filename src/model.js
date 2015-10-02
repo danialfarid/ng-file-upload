@@ -109,15 +109,18 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
   upload.updateModel = function (ngModel, attr, scope, fileChange, files, evt, noDelay) {
     function update(files, invalidFiles, newFiles, dupFiles, isSingleModel) {
-      markModelAsDirty(ngModel, files);
-
-      angular.forEach(ngModel.$ngfValidations, function (validation) {
-        ngModel.$setValidity(validation.name, validation.valid);
-      });
-
       var file = files && files.length ? files[0] : null;
+
       if (ngModel) {
-        ngModel.$setViewValue(isSingleModel ? file : files);
+        markModelAsDirty(ngModel, files);
+
+        angular.forEach(ngModel.$ngfValidations, function (validation) {
+          ngModel.$setValidity(validation.name, validation.valid);
+        });
+
+        if (ngModel) {
+          ngModel.$setViewValue(isSingleModel ? file : files);
+        }
       }
 
       if (fileChange) {
