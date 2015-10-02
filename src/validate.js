@@ -34,45 +34,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return {regexp: regexp, excludes: excludes};
   }
 
-  upload.registerValidators = function (ngModel, elem, attr, scope) {
-    if (!ngModel) return;
-
-    ngModel.$ngfValidations = [];
-    function setValidities(ngModel) {
-      angular.forEach(ngModel.$ngfValidations, function (validation) {
-        ngModel.$setValidity(validation.name, validation.valid);
-      });
-    }
-
-    ngModel.$formatters.push(function (val) {
-      if (val != null && !ngModel.$dirty) {
-        if (ngModel.$setDirty) {
-          ngModel.$setDirty();
-        } else {
-          ngModel.$dirty = true;
-        }
-      }
-      if (upload.attrGetter('ngfValidateLater', attr, scope) || !ngModel.$$ngfValidated) {
-        upload.validate(val, ngModel, attr, scope, false, function () {
-          setValidities(ngModel);
-          ngModel.$$ngfValidated = false;
-        });
-        if (val && val.length === 0) {
-          val = null;
-        }
-        if (elem && (val == null || val.length === 0)) {
-          if (elem.val()) {
-            elem.val(null);
-          }
-        }
-      } else {
-        setValidities(ngModel);
-        ngModel.$$ngfValidated = false;
-      }
-      return val;
-    });
-  };
-
   upload.validatePattern = function (file, val) {
     if (!val) {
       return true;

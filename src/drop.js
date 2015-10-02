@@ -57,8 +57,6 @@
       return elem.attr('disabled') || attrGetter('ngfDropDisabled', scope);
     }
 
-    upload.registerValidators(ngModel, null, attr, scope);
-
     var leaveTimeout = null;
     var stopPropagation = $parse(attrGetter('ngfStopPropagation'));
     var dragOverDelay = 1;

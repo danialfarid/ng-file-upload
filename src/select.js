@@ -150,8 +150,6 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       elem.bind('click', resetModel);
     }
 
-    upload.registerValidators(ngModel, fileElem, attr, scope);
-
     function ie10SameFileSelectFix(evt) {
       if (fileElem && !fileElem.attr('__ngf_ie10_Fix_')) {
         if (!fileElem[0].parentNode) {
@@ -177,6 +175,15 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
       fileElem.bind('click', ie10SameFileSelectFix);
     }
+
+    ngModel.$formatters.push(function(val) {
+      if (val == null || val.length === 0) {
+        if (fileElem.val()) {
+          fileElem.val(null);
+        }
+      }
+      return val;
+    });
 
     scope.$on('$destroy', function () {
       if (!isInputTypeFile()) fileElem.remove();
