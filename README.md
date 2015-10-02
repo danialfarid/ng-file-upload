@@ -156,7 +156,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $event)"
     // called when files are selected, dropped, or cleared
-  ng-model-options="{updateOn: {'change', 'click', 'drop', 'paste'}, allowInvalid: false, debounce: 0}" // angular
+  ng-model-options="{updateOn: 'change click drop paste', allowInvalid: false, debounce: 0}" // angular
     // model options. You can disable resetting on 'click' (old ngf-reset-on-click option), 
     // updating on some other events like 'paste', allowing invalid files in the model and 
     // debouncing the model update to the later time in miliseconds. See angular ng-model-options for more info.
