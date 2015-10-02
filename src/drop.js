@@ -1,11 +1,11 @@
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload',
-    function ($parse, $timeout, $location, Upload) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http',
+    function ($parse, $timeout, $location, Upload, $http) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http);
         }
       };
     }]);
@@ -30,7 +30,7 @@
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -95,18 +95,36 @@
       }, dragOverDelay || 1);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
-      if (isDisabled()) return;
+      if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      extractFiles(evt, function (files) {
-          upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
-        }, attrGetter('ngfAllowDir', scope) !== false,
-        attrGetter('multiple') || attrGetter('ngfMultiple', scope));
+      var html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
+      if (html) {
+        var url;
+        html.replace(/<img .*src *=\"([^\"]*)\"/, function (m, src) {
+          url = src;
+        });
+        if (url) {
+          $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
+            var arrayBufferView = new Uint8Array(resp.data);
+            var type = resp.headers('content-type') || 'image/jpg';
+            var blob = new Blob([arrayBufferView], {type: type});
+            //var split = type.split('[/;]');
+            //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
+            upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), [blob], evt);
+          });
+        }
+      } else {
+        extractFiles(evt, function (files) {
+            upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+          }, attrGetter('ngfAllowDir', scope) !== false,
+          attrGetter('multiple') || attrGetter('ngfMultiple', scope));
+      }
     }, false);
     elem[0].addEventListener('paste', function (evt) {
-      if (isDisabled()) return;
+      if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
       var files = [];
       var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
       if (clipboard && clipboard.items) {
@@ -133,7 +151,7 @@
             var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
             var len = items.length;
             while (len--) {
-              if (items[len].kind !== 'file' || !upload.validatePattern(items[len], pattern)) {
+              if (!upload.validatePattern(items[len], pattern)) {
                 dClass = obj.reject;
                 break;
               } else {

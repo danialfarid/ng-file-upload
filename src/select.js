@@ -17,7 +17,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
-    /** @namespace attr.ngfModel */
+    /** @namespace attr.ngModelOptions */
     /** @namespace attr.ngfMultiple */
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfValidate */
@@ -36,11 +36,14 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     }
 
     function changeFn(evt) {
-      var fileList = evt.__files_ || (evt.target && evt.target.files), files = [];
-      for (var i = 0; i < fileList.length; i++) {
-        files.push(fileList[i]);
+      if (upload.shouldUpdateOn('change', attr, scope)) {
+        var fileList = evt.__files_ || (evt.target && evt.target.files), files = [];
+        for (var i = 0; i < fileList.length; i++) {
+          files.push(fileList[i]);
+        }
+        upload.updateModel(ngModel, attr, scope, fileChangeAttr(),
+          files.length ? files : null, evt);
       }
-      upload.updateModel(ngModel, attr, scope, fileChangeAttr(), files.length ? files : null, evt);
     }
 
     var unwatches = [];
@@ -130,7 +133,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     var fileElem = elem;
 
     function resetModel(evt) {
-      if (attrGetter('ngfResetOnClick', scope) !== false && fileElem.val()) {
+      if (upload.shouldUpdateOn('click', attr, scope) && fileElem.val()) {
         fileElem.val(null);
         upload.updateModel(ngModel, attr, scope, fileChangeAttr(), null, evt, true);
       }

@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '8.0.0';
+var version = '9.0.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -13,6 +13,8 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   };
   $scope.angularVersion = window.location.hash.length > 1 ? (window.location.hash.indexOf('/') === 1 ?
     window.location.hash.substring(2) : window.location.hash.substring(1)) : '1.2.24';
+
+  $scope.invalidFiles = [];
 
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
@@ -26,9 +28,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       for (var i = 0; i < files.length; i++) {
         $scope.errorMsg = null;
         (function (f) {
-          if (!f.$error) {
-            $scope.upload(f, true);
-          }
+          $scope.upload(f, true);
         })(files[i]);
       }
     }
@@ -83,9 +83,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     }, function (response) {
       if (response.status > 0)
         $scope.errorMsg = response.status + ': ' + response.data;
-    });
-
-    file.upload.progress(function (evt) {
+    }, function (evt) {
       // Math.min is to fix IE which reports 200% sometimes
       file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
     });
@@ -222,23 +220,26 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     e.preventDefault();
   });
 
-  $scope.$watch('validate', function (v) {
-    $scope.validateObj = eval('(function(){return ' + v + ';})()');
+  $scope.$watch('validate+dragOverClass+modelOptions', function (v) {
+    $scope.validateObj = eval('(function(){return ' + $scope.validate + ';})()');
+    $scope.dragOverClassObj = eval('(function(){return ' + $scope.dragOverClass + ';})()');
+    $scope.modelOptionsObj = eval('(function(){return ' + $scope.modelOptions + ';})()');
   });
 
   $timeout(function () {
     $scope.capture = localStorage.getItem('capture' + version) || 'camera';
     $scope.pattern = localStorage.getItem('pattern' + version) || 'image/*,audio/*,video/*';
     $scope.acceptSelect = localStorage.getItem('acceptSelect' + version) || 'image/*,audio/*,video/*';
+    $scope.modelOptions = localStorage.getItem('modelOptions' + version) || '{debounce:100}';
+    $scope.dragOverClass = localStorage.getItem('dragOverClass' + version) || '{accept:\'dragover\', reject:\'dragover-err\', pattern:\'image/*,audio/*,video/*,text/*\'}';
     $scope.disabled = localStorage.getItem('disabled' + version) == 'true' || false;
     $scope.multiple = localStorage.getItem('multiple' + version) == 'true' || false;
     $scope.allowDir = localStorage.getItem('allowDir' + version) == 'true' || true;
     $scope.validate = localStorage.getItem('validate' + version) || '{size: {max: \'20MB\', min: \'10B\'}, height: {max: 5000}, width: {max: 5000}, duration: {max: \'5m\'}}';
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
-    $scope.validOnly = localStorage.getItem('validOnly' + version) == 'true' || false;
-    $scope.resetOnClick = localStorage.getItem('resetOnClick' + version) == 'true' || true;
-    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+keepDistinct+resetOnClick+validOnly', function () {
+    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+' +
+      'keepDistinct+modelOptions+dragOverClass', function () {
       localStorage.setItem('capture' + version, $scope.capture);
       localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
@@ -248,8 +249,8 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       localStorage.setItem('validate' + version, $scope.validate);
       localStorage.setItem('keep' + version, $scope.keep);
       localStorage.setItem('keepDistinct' + version, $scope.keepDistinct);
-      localStorage.setItem('resetOnClick' + version, $scope.resetOnClick);
-      localStorage.setItem('validOnly' + version, $scope.validOnly);
+      localStorage.setItem('dragOverClass' + version, $scope.dragOverClass);
+      localStorage.setItem('modelOptions' + version, $scope.modelOptions);
     });
   });
 }]);

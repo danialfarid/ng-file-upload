@@ -150,12 +150,16 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 <div|button|input type="file"|ngf-select|ngf-drop...
   ngf-select="" or "upload($files, $file, $event)" // called when files are selected or cleared
   ngf-drop="" or "upload($files, $file, $event)" // called when files being dropped
-    // You can have ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select
-  ng-model="myFiles" // binds the selected/dropped file or files to the scope model
+    // You can use ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select
+  ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $event)"
     // called when files are selected, dropped, or cleared
   ng-disabled="boolean" // disables this element
+  ng-model-options="{updateOn: {'change', 'click', 'drop', 'paste'}, allowInvalid: false, debounce: 0}" // angular
+    // model options. You can disable resetting on 'click' (old ngf-reset-on-click option), 
+    // updating on some other events like 'paste', allowing invalid files in the model and 
+    // debouncing the model update to the later time in miliseconds. See angular ng-model-options for more info.
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
@@ -166,10 +170,6 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
-  *ngf-reset-on-click="boolean" default true, will reset the model value to empty when you click on the 
-            // upload button. This allows removing files when you cancel the popup and 
-            // selecting the same file again. Chrome will empty the files if you cancel the popup by 
-            // default but not the other browsers, so test cross browser is using this.
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
@@ -187,7 +187,6 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // quality (optional between 0.1 and 1.0)
               
   //validations:
-  ngf-valid-only="boolean" // default false, if true only valid files will be assigned to model or change functions.
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
               // you can exclude specific files by ! at the beginning.
               // validate error name: pattern
@@ -206,8 +205,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // validate error name: validateFn
   ngf-validate-async-fn="validate($file)" // custom validation function, return a promise that resolve to
               // boolean or string containing the error. validate error name: validateAsyncFn
-  ngf-validate-force="boolean" // default false, if true file.$erro will be set if the dimension or duration
-              // values for validations cannot be calculated for example image load error or unsupported video by browser
+  ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
+              // values for validations cannot be calculated for example image load error or unsupported video by the browser.
+              // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
   ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
 >Upload/Drop</div>
@@ -257,12 +257,12 @@ var upload = Upload.upload({
     {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
   data: {key: file, otherInfo: uploadInfo},
   /*
-  This is to accomudate server implementations expecting nested data object keys in .key or [key] format.
+  This is to accommodate server implementations expecting nested data object keys in .key or [key] format.
   Example: data: {rec: {name: 'N', pic: file}} sent as: rec[name] -> N, rec[pic] -> file  
      data: {rec: {name: 'N', pic: file}, objectKey: '.k'} sent as: rec.name -> N, rec.pic -> file */  
   objectKey: '[k]' or '.k' // default is '[k]'
   /*
-  This is to accomudate server implementations expecting array data object keys in '[i]' or '[]' or 
+  This is to accommodate server implementations expecting array data object keys in '[i]' or '[]' or 
   ''(multiple entries with same key) format.
   Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
     data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  

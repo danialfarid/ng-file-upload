@@ -87,12 +87,13 @@
         <fieldset>
           <legend>Play with options</legend>
           <div class="up-buttons">
-            <div ngf-select ngf-drop ng-model="files"
+            <div ngf-select ngf-drop ng-model="files" ngf-model-invalid="invalidFiles"
+                 ng-model-options="modelOptionsObj"
                  ngf-multiple="multiple" ngf-pattern="pattern" accept="{{acceptSelect}}"
                  ng-disabled="disabled" ngf-capture="capture"
-                 ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-                 ngf-validate="validateObj" ngf-valid-only="validOnly"
-                 ngf-keep="keep" ngf-keep-distinct="keepDistinct" ngf-reset-on-click="resetOnClick"
+                 ngf-drag-over-class="dragOverClassObj"
+                 ngf-validate="validateObj"
+                 ngf-keep="keep" ngf-keep-distinct="keepDistinct"
                  ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File,
               <span ng-show="dropAvailable">Drop File or Paste Image</span>
             </div>
@@ -103,6 +104,8 @@
             <label>ngf-capture (for mobile): <input type="text" ng-model="capture"></label><br/>
             <label>ngf-pattern (validate file model): <input type="text" ng-model="pattern"></label><br/>
             <label>ngf-validate: <input type="text" ng-model="validate" size="49"></label><br/>
+            <label>ngf-drag-over-class (chrome): <input size="31" type="text" ng-model="dragOverClass"></label><br/>
+            <label>ng-model-options: <input type="text" size="43" ng-model="modelOptions"></label><br/>
             <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
             <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
             <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome
@@ -111,9 +114,6 @@
               ng-model)</label><br/>
             <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow
               duplicates)</label><br/>
-            <label><input type="checkbox" ng-model="validOnly">ngf-valid-only (only valid files assigned to
-              model)</label><br/>
-            <label><input type="checkbox" ng-model="resetOnClick">ngf-reset-on-click</label><br/>
             <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
           </div>
 
@@ -128,12 +128,9 @@
       </div>
     </div>
   </div>
-  <ul style="clear:both" ng-show="files.length > 0" class="response">
+  <ul style="clear:both" class="response">
     <li class="sel-file" ng-repeat="f in files">
-      <div ng-show="f.$error">Invalid File: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:
-        {{f.type}}
-      </div>
-      <div ng-hide="f.$error">
+      <div>
         <img ngf-thumbnail="!f.$error && f" class="thumb">
 				<span class="progress" ng-show="f.progress >= 0">
 					<div style="width:{{f.progress}}%">{{f.progress}}%</div>
@@ -165,6 +162,11 @@
           </ul>
           <div data-ng-show="f.result.requestHeaders" class="reqh">request headers: {{f.result.requestHeaders}}</div>
         </div>
+      </div>
+    </li>
+    <li class="sel-file" ng-repeat="f in invalidFiles">
+      <div>Invalid File: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:
+        {{f.type}}
       </div>
     </li>
   </ul>
