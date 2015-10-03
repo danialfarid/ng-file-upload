@@ -149,13 +149,14 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
 ```html
 <div|button|input type="file"|ngf-select|ngf-drop...
-  ngf-select="" or "upload($files, $file, $event)" // called when files are selected or cleared
-  ngf-drop="" or "upload($files, $file, $event)" // called when files being dropped
+  ngf-select="" or "upload($files, ...)" // called when files are selected or cleared
+  ngf-drop="" or "upload($files, ...)" // called when files being dropped
     // You can use ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select
+    // function parameters are the same as ngf-change
+  ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+    // called when files are selected, dropped, or cleared
   ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $event)"
-    // called when files are selected, dropped, or cleared
   ng-model-options="{updateOn: 'change click drop paste', allowInvalid: false, debounce: 0}" // angular
     // model options. updateOn could be used to disable resetting on click, or updating on paste, etc. 
     // allowInvalid default is false could allow invalid files in the model
