@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.3
+ * @version 9.0.4
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.3
+ * @version 9.0.4
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.3';
+ngFileUpload.version = '9.0.4';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -766,29 +766,30 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize', function ($parse, $timeout, $compile, UploadResize) {
   var upload = UploadResize;
   upload.getAttrWithDefaults = function (attr, name) {
-    return attr[name] != null ? attr[name] :
-      (upload.defaults[name] == null ?
-        upload.defaults[name] : upload.defaults[name].toString());
+    if (attr[name] != null) return attr[name];
+    var def = upload.defaults[name];
+    return (def == null ? def : (angular.isString(def) ? def : JSON.stringify(def)));
   };
 
   upload.attrGetter = function (name, attr, scope, params) {
+    var attrVal = this.getAttrWithDefaults(attr, name);
     if (scope) {
       try {
         if (params) {
-          return $parse(this.getAttrWithDefaults(attr, name))(scope, params);
+          return $parse(attrVal)(scope, params);
         } else {
-          return $parse(this.getAttrWithDefaults(attr, name))(scope);
+          return $parse(attrVal)(scope);
         }
       } catch (e) {
         // hangle string value without single qoute
         if (name.search(/min|max|pattern/i)) {
-          return this.getAttrWithDefaults(attr, name);
+          return attrVal;
         } else {
           throw e;
         }
       }
     } else {
-      return this.getAttrWithDefaults(attr, name);
+      return attrVal;
     }
   };
 
@@ -1811,12 +1812,13 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imagenElement = document.createElement('img');
-    if (width === 0) {
-      width = imagenElement.width;
-      height = imagenElement.height;
-    }
+
     imagenElement.onload = function () {
       try {
+        if (width === 0) {
+          width = imagenElement.width;
+          height = imagenElement.height;
+        }
         var dimensions = calculateAspectRatioFit(imagenElement.width, imagenElement.height, width, height);
         canvasElement.width = dimensions.width;
         canvasElement.height = dimensions.height;
