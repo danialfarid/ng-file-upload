@@ -22,7 +22,6 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfValidate */
     /** @namespace attr.ngfKeep */
-    /** @namespace attr.ngfKeepDistinct */
     var attrGetter = function (name, scope) {
       return upload.attrGetter(name, attr, scope);
     };

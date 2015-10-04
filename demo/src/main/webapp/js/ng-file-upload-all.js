@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.5
+ * @version 9.0.6
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.5
+ * @version 9.0.6
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.5';
+ngFileUpload.version = '9.0.6';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -845,29 +845,28 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
   function handleKeep(files, prevFiles, attr, scope) {
     var dupFiles = [];
     var keep = upload.attrGetter('ngfKeep', attr, scope);
-    if (keep === true) {
-      if (!files || !files.length) return;
-
+    if (keep) {
       var hasNew = false;
 
-      if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
+      if (keep === 'distinct' || upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
         var len = prevFiles.length;
-        for (var i = 0; i < files.length; i++) {
-          for (var j = 0; j < len; j++) {
-            if (files[i].name === prevFiles[j].name) {
-              dupFiles.push(files[i]);
-              break;
+        if (files) {
+          for (var i = 0; i < files.length; i++) {
+            for (var j = 0; j < len; j++) {
+              if (files[i].name === prevFiles[j].name) {
+                dupFiles.push(files[i]);
+                break;
+              }
+            }
+            if (j === len) {
+              prevFiles.push(files[i]);
+              hasNew = true;
             }
           }
-          if (j === len) {
-            prevFiles.push(files[i]);
-            hasNew = true;
-          }
         }
-        if (!hasNew) return;
         files = prevFiles;
       } else {
-        files = prevFiles.concat(files);
+        files = prevFiles.concat(files || []);
       }
     }
     return {files: files, dupFiles: dupFiles, keep: keep};
@@ -920,7 +919,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     attr.$$ngfPrevFiles = files;
 
-    if (upload.validate(files, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
+    if (upload.validate(newFiles, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
         if (noDelay) {
           update(files, [], newFiles, dupFiles, isSingleModel);
         } else {
@@ -982,7 +981,6 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     /** @namespace attr.ngfCapture */
     /** @namespace attr.ngfValidate */
     /** @namespace attr.ngfKeep */
-    /** @namespace attr.ngfKeepDistinct */
     var attrGetter = function (name, scope) {
       return upload.attrGetter(name, attr, scope);
     };

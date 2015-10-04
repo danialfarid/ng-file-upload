@@ -93,7 +93,7 @@
                  ng-disabled="disabled" ngf-capture="capture"
                  ngf-drag-over-class="dragOverClassObj"
                  ngf-validate="validateObj"
-                 ngf-keep="keep" ngf-keep-distinct="keepDistinct"
+                 ngf-keep="keepDistinct ? 'distinct' : keep"
                  ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File,
               <span ng-show="dropAvailable">Drop File or Paste/Drop Image</span>
             </div>
@@ -112,7 +112,7 @@
               only)</label><br/>
             <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in
               ng-model)</label><br/>
-            <label><input type="checkbox" ng-model="keepDistinct">ngf-keep-distinct (do not allow
+            <label><input type="checkbox" ng-model="keepDistinct">ngf-keep="distinct" (do not allow
               duplicates)</label><br/>
             <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
           </div>

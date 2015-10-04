@@ -80,29 +80,28 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
   function handleKeep(files, prevFiles, attr, scope) {
     var dupFiles = [];
     var keep = upload.attrGetter('ngfKeep', attr, scope);
-    if (keep === true) {
-      if (!files || !files.length) return;
-
+    if (keep) {
       var hasNew = false;
 
-      if (upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
+      if (keep === 'distinct' || upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
         var len = prevFiles.length;
-        for (var i = 0; i < files.length; i++) {
-          for (var j = 0; j < len; j++) {
-            if (files[i].name === prevFiles[j].name) {
-              dupFiles.push(files[i]);
-              break;
+        if (files) {
+          for (var i = 0; i < files.length; i++) {
+            for (var j = 0; j < len; j++) {
+              if (files[i].name === prevFiles[j].name) {
+                dupFiles.push(files[i]);
+                break;
+              }
+            }
+            if (j === len) {
+              prevFiles.push(files[i]);
+              hasNew = true;
             }
           }
-          if (j === len) {
-            prevFiles.push(files[i]);
-            hasNew = true;
-          }
         }
-        if (!hasNew) return;
         files = prevFiles;
       } else {
-        files = prevFiles.concat(files);
+        files = prevFiles.concat(files || []);
       }
     }
     return {files: files, dupFiles: dupFiles, keep: keep};
@@ -155,7 +154,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     attr.$$ngfPrevFiles = files;
 
-    if (upload.validate(files, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
+    if (upload.validate(newFiles, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
         if (noDelay) {
           update(files, [], newFiles, dupFiles, isSingleModel);
         } else {

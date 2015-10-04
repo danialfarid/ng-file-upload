@@ -166,10 +166,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
-  ngf-keep="boolean" // default false, keep the previous ng-model files and append the new files
-    // new files are set as $newFiles argument in ngf-select, ngf-drop, or ngf-change function
-  ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate files
-    // duplicate files are set as $duplicateFiles in ngf-change/select/drop functions.
+  ngf-keep="true|false|distinct" // default false, keep the previous ng-model files and 
+    // append the new files. "distinct" removes duplicate files
+    // $newFiles and $duplicateFiles are set in ngf-change/select/drop functions.
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
