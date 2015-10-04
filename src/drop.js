@@ -77,6 +77,7 @@
         calculateDragOverClass(scope, attr, evt, function (clazz) {
           actualDragOverClass = clazz;
           elem.addClass(actualDragOverClass);
+          attrGetter('ngfDrag', scope, {$isDragging: true, $class: actualDragOverClass, $event: evt});
         });
       }
     }, false);
@@ -85,12 +86,15 @@
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
-    elem[0].addEventListener('dragleave', function () {
+    elem[0].addEventListener('dragleave', function (evt) {
       if (isDisabled()) return;
+      evt.preventDefault();
+      if (stopPropagation(scope)) evt.stopPropagation();
       leaveTimeout = $timeout(function () {
         if (actualDragOverClass) elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
-      }, dragOverDelay || 1);
+        attrGetter('ngfDrag', scope, {$isDragging: false, $event: evt});
+      }, dragOverDelay || 100);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;

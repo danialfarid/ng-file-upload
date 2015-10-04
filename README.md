@@ -178,9 +178,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
                     or "myDragOverClass" or "calcDragOverClass($event)"
               // default "dragover". drag over css class behaviour. could be a string, a function 
-              returning class name or a json object.
-              // accept/reject class only works in Chrome validating only the file mime type.
-              // if pattern is not specified ngf-pattern will be used.
+              // returning class name or a json object.
+              // accept/reject class only works in Chrome, validating only the file mime type.
+              // if pattern is not specified ngf-pattern will be used. See following docs for more info.
+  +ngf-drag="drag($isDragging, $class, $event)" // function called on drag over/leave events.
+              // $isDragging: boolean true if is dragging over(dragover), false if drag has left (dragleave)
+              // $class is the class that is being set for the element calculated by ngf-drag-over-class
   +ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
@@ -362,7 +365,7 @@ Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', pattern: 
 class name for the accepted or rejected drag overs. The `pattern` specified or `ngf-pattern` will be used to validate the file's `mime-type` 
 since that is the only property of the file that is reported by the browser on drag. So you cannot validate 
 the file name/extension, size or other validations on drag. There is also some limitation on some file types which are not reported by Chrome.
-`delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
+`delay` default is 100, and is used to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values.

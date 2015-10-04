@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.4
+ * @version 9.0.5
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.4
+ * @version 9.0.5
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.4';
+ngFileUpload.version = '9.0.5';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1955,6 +1955,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
         calculateDragOverClass(scope, attr, evt, function (clazz) {
           actualDragOverClass = clazz;
           elem.addClass(actualDragOverClass);
+          attrGetter('ngfDrag', scope, {$isDragging: true, $class: actualDragOverClass, $event: evt});
         });
       }
     }, false);
@@ -1963,12 +1964,15 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
-    elem[0].addEventListener('dragleave', function () {
+    elem[0].addEventListener('dragleave', function (evt) {
       if (isDisabled()) return;
+      evt.preventDefault();
+      if (stopPropagation(scope)) evt.stopPropagation();
       leaveTimeout = $timeout(function () {
         if (actualDragOverClass) elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
-      }, dragOverDelay || 1);
+        attrGetter('ngfDrag', scope, {$isDragging: false, $event: evt});
+      }, dragOverDelay || 100);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
