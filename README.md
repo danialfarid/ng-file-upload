@@ -168,8 +168,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-multiple="boolean" // default false, allows selecting multiple files
   ngf-keep="boolean" // default false, keep the previous ng-model files and append the new files
     // new files are set as $newFiles argument in ngf-select, ngf-drop, or ngf-change function
-  ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate selected files
-    // duplicate files are set as $duplicateFiles argument in ngf-select, ngf-drop, or ngf-change function
+  ngf-keep-distinct="boolean" // default false, if ngf-keep is set, removes duplicate files
+    // duplicate files are set as $duplicateFiles in ngf-change/select/drop functions.
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -177,20 +177,20 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
                     or "myDragOverClass" or "calcDragOverClass($event)"
-              // default "dragover". drag over css class behaviour. could be a string, a function 
-              // returning class name or a json object.
-              // accept/reject class only works in Chrome, validating only the file mime type.
-              // if pattern is not specified ngf-pattern will be used. See following docs for more info.
+    // default "dragover". drag over css class behaviour. could be a string, a function 
+    // returning class name or a json object.
+    // accept/reject class only works in Chrome, validating only the file mime type.
+    // if pattern is not specified ngf-pattern will be used. See following docs for more info.
   +ngf-drag="drag($isDragging, $class, $event)" // function called on drag over/leave events.
-              // $isDragging: boolean true if is dragging over(dragover), false if drag has left (dragleave)
-              // $class is the class that is being set for the element calculated by ngf-drag-over-class
+    // $isDragging: boolean true if is dragging over(dragover), false if drag has left (dragleave)
+    // $class is the class that is being set for the element calculated by ngf-drag-over-class
   +ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   
-  ngf-resize="{width: 100, height: 100, quality: .8}" // resizes the image to the given width, height and
-              // quality (optional between 0.1 and 1.0)
+  ngf-resize="{width: 100, height: 100, quality: .8}" // resizes the image to the given 
+    //width, height and quality (optional between 0.1 and 1.0)
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
