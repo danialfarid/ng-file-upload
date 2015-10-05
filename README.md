@@ -111,7 +111,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
       if (form.file.$valid && $scope.file && !$scope.file.$error) {
         $scope.upload($scope.file);
       }
-    });
+    };
 
     // upload on file select or drop
     $scope.upload = function (file) {
