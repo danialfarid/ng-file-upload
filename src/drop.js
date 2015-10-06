@@ -102,7 +102,10 @@
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      var html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
+      var html;
+      try {
+        html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
+      } catch (e) {/* Fix IE11 that throw error calling getData */}
       if (html) {
         var url;
         html.replace(/<img .*src *=\"([^\"]*)\"/, function (m, src) {
