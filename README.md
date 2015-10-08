@@ -128,7 +128,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         });
     };
     // for multiple files:
-    $scope.upload = function (files) {
+    $scope.uploadFiles = function (files) {
       if (files && files.length) {
         for (var i = 0; i < files.length; i++) {
           Upload.upload({..., data: {file: files[i]}, ...})...;
@@ -276,7 +276,10 @@ var upload = Upload.upload({
   resumeChunkSize: 10000 or '10KB' or '10MB' // upload in chunks of specified size
   disableProgress: boolean // default false, experimental as hotfix for potential library conflicts with other plugins
   ... and all other angular $http() options could be used here.
-}).then(function(resp) {
+})
+
+// returns a promise
+upload.then(function(resp) {
   // file is uploaded successfully
   console.log('file ' + resp.config.data.file.name + 'is uploaded successfully. Response: ' + resp.data);
 }, function(resp) {
@@ -284,15 +287,14 @@ var upload = Upload.upload({
 }, function(evt) {
   // progress notify
   console.log('progress: ' + parseInt(100.0 * evt.loaded / evt.total) + '% file :'+ evt.config.data.file.name);
-}).xhr(function(xhr){
-  //access or attach event listeners to the underlying XMLHttpRequest
+});
+upload.catch(errorCallback);
+upload.finally(callback, notifyCallback);
+
+/* access or attach event listeners to the underlying XMLHttpRequest */
+upload.xhr(function(xhr){
   xhr.upload.addEventListener(...)
 });
-/* return $http promise then,catch or finally.
-Note that this promise does NOT have progress, abort or xhr functions */
-var promise = upload.then(success, error, progress);
-              upload.catch(errorCallback);
-              upload.finally(callback, notifyCallback);
 
 /* cancel/abort the upload in progress. */
 upload.abort();
