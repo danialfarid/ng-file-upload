@@ -191,7 +191,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
   this.upload = function (config) {
     function isFile(file) {
-      return file != null && file instanceof Blob || (file.flashId && file.name && file.size);
+      return file != null && (file instanceof Blob || (file.flashId && file.name && file.size));
     }
 
     function toResumeFile(file, formData) {
@@ -1054,7 +1054,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       callback.call(ngModel);
       return;
     }
-    ngModel.$$ngfValidated = true;
 
     if (files == null || files.length === 0) {
       callback.call(ngModel);

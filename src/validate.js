@@ -69,7 +69,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       callback.call(ngModel);
       return;
     }
-    ngModel.$$ngfValidated = true;
 
     if (files == null || files.length === 0) {
       callback.call(ngModel);
