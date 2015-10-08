@@ -128,7 +128,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         });
     };
     // for multiple files:
-    $scope.upload = function (files) {
+    $scope.uploadFiles = function (files) {
       if (files && files.length) {
         for (var i = 0; i < files.length; i++) {
           Upload.upload({..., data: {file: files[i]}, ...})...;
