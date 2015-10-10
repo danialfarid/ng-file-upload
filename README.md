@@ -34,7 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
 * image paste form clipboard and drag and drop from browser pages (html5 only).
-* image resize (html5 only)
+* image resize native and image crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only) 
 * resumable uploads: pause/resume upload (html5 only) 
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show thumbnail or preview of selected images/audio/videos
@@ -69,6 +69,8 @@ Table of Content:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/135/](http://jsfiddle.net/danialfarid/0mz6ff9o/135/)
 * Drop and upload with $watch:
 [http://jsfiddle.net/danialfarid/s8kc7wg0/112](http://jsfiddle.net/danialfarid/s8kc7wg0/112)
+* Image Crop and Upload
+[http://jsfiddle.net/xxo3sk41/1/](http://jsfiddle.net/xxo3sk41/1/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
