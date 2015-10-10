@@ -45,6 +45,8 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       }
     }
 
+    upload.registerModelChangeValidator(ngModel, attr, scope);
+
     var unwatches = [];
     unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function () {
       fileElem.attr('multiple', attrGetter('ngfMultiple', scope));

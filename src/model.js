@@ -36,16 +36,6 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     return true;
   };
 
-  function markModelAsDirty(ngModel, files) {
-    if (files != null && !ngModel.$dirty) {
-      if (ngModel.$setDirty) {
-        ngModel.$setDirty();
-      } else {
-        ngModel.$dirty = true;
-      }
-    }
-  }
-
   function resize(files, attr, scope, callback) {
     var param = upload.attrGetter('ngfResize', attr, scope);
     if (!param || !upload.isResizeSupported()) return callback();
@@ -112,15 +102,9 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
       var file = files && files.length ? files[0] : null;
 
       if (ngModel) {
-        markModelAsDirty(ngModel, files);
-
-        angular.forEach(ngModel.$ngfValidations, function (validation) {
-          ngModel.$setValidity(validation.name, validation.valid);
-        });
-
-        if (ngModel) {
-          ngModel.$setViewValue(isSingleModel ? file : files);
-        }
+        upload.applyModelValidation(ngModel, files);
+        ngModel.$ngfModelChange = true;
+        ngModel.$setViewValue(isSingleModel ? file : files);
       }
 
       if (fileChange) {
@@ -154,7 +138,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     attr.$$ngfPrevFiles = files;
 
-    if (upload.validate(newFiles, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
+    if (upload.validate(newFiles, ngModel, attr, scope, function () {
         if (noDelay) {
           update(files, [], newFiles, dupFiles, isSingleModel);
         } else {

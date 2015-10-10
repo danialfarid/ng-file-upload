@@ -209,25 +209,27 @@
     };
   }]);
 
-  //ngFileUpload.config(['$compileProvider', function ($compileProvider) {
-  //  if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //  if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //}]);
-  //
-  //ngFileUpload.filter('$ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
-  //  return function (file, disallowObjectUrl) {
-  //    if (angular.isString(file)) {
-  //      return $sce.trustAsResourceUrl(file);
-  //    }
-  //    if (file && !file.$ngfDataUrl) {
-  //      if (file.$ngfDataUrl === undefined && angular.isObject(file)) {
-  //        file.$ngfDataUrl = null;
-  //        UploadDataUrl.$ngfDataUrl(file, disallowObjectUrl);
-  //      }
-  //      return '';
-  //    }
-  //    return (file && file.$ngfDataUrl ? $sce.trustAsResourceUrl(file.$ngfDataUrl) : file) || '';
-  //  };
-  //}]);
+  ngFileUpload.config(['$compileProvider', function ($compileProvider) {
+    if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+    if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+  }]);
+
+  ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
+    return function (file, disallowObjectUrl, trustedUrl) {
+      if (angular.isString(file)) {
+        return $sce.trustAsResourceUrl(file);
+      }
+      var src = file && ((disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl) || file.$ngfDataUrl);
+      if (file && !src) {
+        if (!file.$ngfDataUrlFilterInProgress && angular.isObject(file)) {
+          file.$ngfDataUrlFilterInProgress = true;
+          UploadDataUrl.dataUrl(file, disallowObjectUrl);
+        }
+        return '';
+      }
+      if (file) delete file.$ngfDataUrlFilterInProgress;
+      return (file && src ? (trustedUrl ? $sce.trustAsResourceUrl(src) : src) : file) || '';
+    };
+  }]);
 
 })();

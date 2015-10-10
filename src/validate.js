@@ -53,7 +53,38 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return valid;
   };
 
-  upload.validate = function (files, ngModel, attr, scope, later, callback) {
+  upload.registerModelChangeValidator = function (ngModel, attr, scope) {
+    if (ngModel) {
+      ngModel.$formatters.push(function (files) {
+        if (!ngModel.$ngfModelChange) {
+          upload.validate(files, ngModel, attr, scope, function () {
+            upload.applyModelValidation(ngModel, files);
+          });
+        } else {
+          ngModel.$ngfModelChange = false;
+        }
+      });
+    }
+  };
+
+  function markModelAsDirty(ngModel, files) {
+    if (files != null && !ngModel.$dirty) {
+      if (ngModel.$setDirty) {
+        ngModel.$setDirty();
+      } else {
+        ngModel.$dirty = true;
+      }
+    }
+  }
+
+  upload.applyModelValidation = function (ngModel, files) {
+    markModelAsDirty(ngModel, files);
+    angular.forEach(ngModel.$ngfValidations, function (validation) {
+      ngModel.$setValidity(validation.name, validation.valid);
+    });
+  };
+
+  upload.validate = function (files, ngModel, attr, scope, callback) {
     ngModel = ngModel || {};
     ngModel.$ngfValidations = ngModel.$ngfValidations || [];
 
@@ -64,11 +95,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var attrGetter = function (name, params) {
       return upload.attrGetter(name, attr, scope, params);
     };
-
-    if (later) {
-      callback.call(ngModel);
-      return;
-    }
 
     if (files == null || files.length === 0) {
       callback.call(ngModel);

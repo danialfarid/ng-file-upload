@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.8
+ * @version 9.0.9
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.8
+ * @version 9.0.9
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.8';
+ngFileUpload.version = '9.0.9';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -801,16 +801,6 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     return true;
   };
 
-  function markModelAsDirty(ngModel, files) {
-    if (files != null && !ngModel.$dirty) {
-      if (ngModel.$setDirty) {
-        ngModel.$setDirty();
-      } else {
-        ngModel.$dirty = true;
-      }
-    }
-  }
-
   function resize(files, attr, scope, callback) {
     var param = upload.attrGetter('ngfResize', attr, scope);
     if (!param || !upload.isResizeSupported()) return callback();
@@ -877,15 +867,9 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
       var file = files && files.length ? files[0] : null;
 
       if (ngModel) {
-        markModelAsDirty(ngModel, files);
-
-        angular.forEach(ngModel.$ngfValidations, function (validation) {
-          ngModel.$setValidity(validation.name, validation.valid);
-        });
-
-        if (ngModel) {
-          ngModel.$setViewValue(isSingleModel ? file : files);
-        }
+        upload.applyModelValidation(ngModel, files);
+        ngModel.$ngfModelChange = true;
+        ngModel.$setViewValue(isSingleModel ? file : files);
       }
 
       if (fileChange) {
@@ -919,7 +903,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     attr.$$ngfPrevFiles = files;
 
-    if (upload.validate(newFiles, ngModel, attr, scope, upload.attrGetter('ngfValidateLater', attr), function () {
+    if (upload.validate(newFiles, ngModel, attr, scope, function () {
         if (noDelay) {
           update(files, [], newFiles, dupFiles, isSingleModel);
         } else {
@@ -1003,6 +987,8 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
           files.length ? files : null, evt);
       }
     }
+
+    upload.registerModelChangeValidator(ngModel, attr, scope);
 
     var unwatches = [];
     unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function () {
@@ -1385,26 +1371,28 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     };
   }]);
 
-  //ngFileUpload.config(['$compileProvider', function ($compileProvider) {
-  //  if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //  if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //}]);
-  //
-  //ngFileUpload.filter('$ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
-  //  return function (file, disallowObjectUrl) {
-  //    if (angular.isString(file)) {
-  //      return $sce.trustAsResourceUrl(file);
-  //    }
-  //    if (file && !file.$ngfDataUrl) {
-  //      if (file.$ngfDataUrl === undefined && angular.isObject(file)) {
-  //        file.$ngfDataUrl = null;
-  //        UploadDataUrl.$ngfDataUrl(file, disallowObjectUrl);
-  //      }
-  //      return '';
-  //    }
-  //    return (file && file.$ngfDataUrl ? $sce.trustAsResourceUrl(file.$ngfDataUrl) : file) || '';
-  //  };
-  //}]);
+  ngFileUpload.config(['$compileProvider', function ($compileProvider) {
+    if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+    if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+  }]);
+
+  ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
+    return function (file, disallowObjectUrl, trustedUrl) {
+      if (angular.isString(file)) {
+        return $sce.trustAsResourceUrl(file);
+      }
+      var src = file && ((disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl) || file.$ngfDataUrl);
+      if (file && !src) {
+        if (!file.$ngfDataUrlFilterInProgress && angular.isObject(file)) {
+          file.$ngfDataUrlFilterInProgress = true;
+          UploadDataUrl.dataUrl(file, disallowObjectUrl);
+        }
+        return '';
+      }
+      if (file) delete file.$ngfDataUrlFilterInProgress;
+      return (file && src ? (trustedUrl ? $sce.trustAsResourceUrl(src) : src) : file) || '';
+    };
+  }]);
 
 })();
 
@@ -1463,7 +1451,38 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return valid;
   };
 
-  upload.validate = function (files, ngModel, attr, scope, later, callback) {
+  upload.registerModelChangeValidator = function (ngModel, attr, scope) {
+    if (ngModel) {
+      ngModel.$formatters.push(function (files) {
+        if (!ngModel.$ngfModelChange) {
+          upload.validate(files, ngModel, attr, scope, function () {
+            upload.applyModelValidation(ngModel, files);
+          });
+        } else {
+          ngModel.$ngfModelChange = false;
+        }
+      });
+    }
+  };
+
+  function markModelAsDirty(ngModel, files) {
+    if (files != null && !ngModel.$dirty) {
+      if (ngModel.$setDirty) {
+        ngModel.$setDirty();
+      } else {
+        ngModel.$dirty = true;
+      }
+    }
+  }
+
+  upload.applyModelValidation = function (ngModel, files) {
+    markModelAsDirty(ngModel, files);
+    angular.forEach(ngModel.$ngfValidations, function (validation) {
+      ngModel.$setValidity(validation.name, validation.valid);
+    });
+  };
+
+  upload.validate = function (files, ngModel, attr, scope, callback) {
     ngModel = ngModel || {};
     ngModel.$ngfValidations = ngModel.$ngfValidations || [];
 
@@ -1474,11 +1493,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var attrGetter = function (name, params) {
       return upload.attrGetter(name, attr, scope, params);
     };
-
-    if (later) {
-      callback.call(ngModel);
-      return;
-    }
 
     if (files == null || files.length === 0) {
       callback.call(ngModel);
@@ -1833,7 +1847,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     return deferred.promise;
   };
 
-  var dataURLtoBlob = function (dataurl) {
+  upload.dataUrltoBlob = function (dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
     while (n--) {
@@ -1858,7 +1872,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
 
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
-        var blob = dataURLtoBlob(dataUrl);
+        var blob = upload.dataUrltoBlob(dataUrl);
         blob.name = file.name;
         deferred.resolve(blob);
       }, function () {
@@ -1930,6 +1944,10 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
 
     function isDisabled() {
       return elem.attr('disabled') || attrGetter('ngfDropDisabled', scope);
+    }
+
+    if (attrGetter('ngfSelect') == null) {
+      upload.registerModelChangeValidator(ngModel, attr, scope);
     }
 
     var leaveTimeout = null;

@@ -1,7 +1,7 @@
 'use strict';
 
 
-var app = angular.module('fileUpload', ['ngFileUpload']);
+var app = angular.module('fileUpload', ['ngFileUpload', 'ngImgCrop']);
 var version = '9.0.3';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {

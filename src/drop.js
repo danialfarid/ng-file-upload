@@ -57,6 +57,10 @@
       return elem.attr('disabled') || attrGetter('ngfDropDisabled', scope);
     }
 
+    if (attrGetter('ngfSelect') == null) {
+      upload.registerModelChangeValidator(ngModel, attr, scope);
+    }
+
     var leaveTimeout = null;
     var stopPropagation = $parse(attrGetter('ngfStopPropagation'));
     var dragOverDelay = 1;

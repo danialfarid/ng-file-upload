@@ -213,7 +213,6 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
               // values for validations cannot be calculated for example image load error or unsupported video by the browser.
               // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
-  ngf-validate-later="boolean" // default false, if true model will be set and change will be called before validation
 
 >Upload/Drop</div>
 
