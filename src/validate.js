@@ -247,7 +247,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
     validateAsync('validateAsyncFn', function () {
       return null;
-    }, /./, function (file, val) {
+    }, /.?/, function (file, val) {
       return val;
     }, function (r) {
       return r === true || r === null || r === '';
