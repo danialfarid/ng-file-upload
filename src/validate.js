@@ -162,7 +162,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         var thisPendings = 0, hasError = false, dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
-          if (file.type.search(type) !== 0) {
+          if (type && (file.type == null || file.type.indexOf(type) !== 0)) {
             return true;
           }
           var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
@@ -247,7 +247,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
     validateAsync('validateAsyncFn', function () {
       return null;
-    }, /.?/, function (file, val) {
+    }, null, function (file, val) {
       return val;
     }, function (r) {
       return r === true || r === null || r === '';

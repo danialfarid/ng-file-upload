@@ -180,6 +180,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   };
 
   this.jsonBlob = function (val) {
+    if (val != null && !angular.isString(val)) {
+      val = JSON.stringify(val);
+    }
     var blob = new Blob([val], {type: 'application/json'});
     blob._ngfBlob = true;
     return blob;
