@@ -81,7 +81,19 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
         var blob = upload.dataUrltoBlob(dataUrl);
-        blob.name = file.name;
+        var name = file.name;
+        if (window.Object && Object.defineProperty) {
+          Object.defineProperty(blob, 'name', {
+            get: function () {
+              return name;
+            },
+            set: function (val) {
+              name = val;
+            }
+          });
+        } else {
+          blob.name = file.name;
+        }
         deferred.resolve(blob);
       }, function () {
         deferred.reject();

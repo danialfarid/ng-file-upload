@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.10
+ * @version 9.0.11
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.10';
+ngFileUpload.version = '9.0.11';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -381,7 +381,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
   function resize(files, attr, scope, callback) {
     var param = upload.attrGetter('ngfResize', attr, scope);
-    if (!param || !upload.isResizeSupported()) return callback();
+    if (!param.width || !param.height) throw 'width and height are mandatory for ngf-resize';
+    if (!param || !upload.isResizeSupported() || !files.length) return callback();
     var count = files.length;
     var checkCallback = function () {
       count--;
@@ -1451,7 +1452,19 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
         var blob = upload.dataUrltoBlob(dataUrl);
-        blob.name = file.name;
+        var name = file.name;
+        if (window.Object && Object.defineProperty) {
+          Object.defineProperty(blob, 'name', {
+            get: function () {
+              return name;
+            },
+            set: function (val) {
+              name = val;
+            }
+          });
+        } else {
+          blob.name = file.name;
+        }
         deferred.resolve(blob);
       }, function () {
         deferred.reject();
