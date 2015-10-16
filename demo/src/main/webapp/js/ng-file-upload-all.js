@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.12
+ * @version 9.0.13
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.12
+ * @version 9.0.13
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.12';
+ngFileUpload.version = '9.0.13';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1564,7 +1564,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         var thisPendings = 0, hasError = false, dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
-          if (type && (file.type == null || file.type.indexOf(type) !== 0)) {
+          if (type && (file.type == null || file.type.search(type) !== 0)) {
             return true;
           }
           var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
@@ -1799,6 +1799,19 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', function (UploadValidate, $q, $timeout) {
   var upload = UploadValidate;
 
+  // add name getter to the blob constructor prototype
+  if (window.Object && Object.defineProperty) {
+    Object.defineProperty(Blob.prototype, 'name', {
+      get: function () {
+        return this.$ngfName;
+      },
+      set: function (v) {
+        this.$ngfName = v;
+      },
+      configurable: true
+    });
+  }
+
   /**
    * Conserve aspect ratio of the original region. Useful when shrinking/enlarging
    * images to fit into a certain area.
@@ -1877,19 +1890,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
         var blob = upload.dataUrltoBlob(dataUrl);
-        var name = file.name;
-        if (window.Object && Object.defineProperty) {
-          Object.defineProperty(blob, 'name', {
-            get: function () {
-              return name;
-            },
-            set: function (val) {
-              name = val;
-            }
-          });
-        } else {
-          blob.name = file.name;
-        }
+        blob.name = file.name;
         deferred.resolve(blob);
       }, function () {
         deferred.reject();
