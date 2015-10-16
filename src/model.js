@@ -38,8 +38,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
   function resize(files, attr, scope, callback) {
     var param = upload.attrGetter('ngfResize', attr, scope);
-    if (!param.width || !param.height) throw 'width and height are mandatory for ngf-resize';
     if (!param || !upload.isResizeSupported() || !files.length) return callback();
+    if (!param.width || !param.height) throw 'width and height are mandatory for ngf-resize';
     var count = files.length;
     var checkCallback = function () {
       count--;
