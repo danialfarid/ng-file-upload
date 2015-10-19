@@ -47,7 +47,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
 
     imagenElement.onload = function () {
       try {
-        if (width === 0) {
+        if (!width) {
           width = imagenElement.width;
           height = imagenElement.height;
         }
