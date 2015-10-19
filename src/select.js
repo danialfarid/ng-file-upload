@@ -103,6 +103,15 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
 
       resetModel(evt);
 
+      // fix for md when the element is removed from the DOM and added back #460
+      try {
+        if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
+          generatedElems.push({el: elem, ref: fileElem});
+          document.body.appendChild(fileElem[0]);
+          fileElem.bind('change', changeFn);
+        }
+      } catch(e){/*ignore*/}
+
       if (isDelayedClickSupported(navigator.userAgent)) {
         setTimeout(function () {
           fileElem[0].click();
