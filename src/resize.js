@@ -3,19 +3,6 @@
 ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', function (UploadValidate, $q, $timeout) {
   var upload = UploadValidate;
 
-  // add name getter to the blob constructor prototype
-  if (window.Object && Object.defineProperty) {
-    Object.defineProperty(Blob.prototype, 'name', {
-      get: function () {
-        return this.$ngfName;
-      },
-      set: function (v) {
-        this.$ngfName = v;
-      },
-      configurable: true
-    });
-  }
-
   /**
    * Conserve aspect ratio of the original region. Useful when shrinking/enlarging
    * images to fit into a certain area.
@@ -81,6 +68,19 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var elem = document.createElement('canvas');
     return window.atob && elem.getContext && elem.getContext('2d');
   };
+
+  if (upload.isResizeSupported()) {
+    // add name getter to the blob constructor prototype
+    Object.defineProperty(Blob.prototype, 'name', {
+      get: function () {
+        return this.$ngfName;
+      },
+      set: function (v) {
+        this.$ngfName = v;
+      },
+      configurable: true
+    });
+  }
 
   upload.resize = function (file, width, height, quality) {
     var deferred = $q.defer();

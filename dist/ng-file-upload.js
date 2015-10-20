@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.16
+ * @version 9.0.17
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.16';
+ngFileUpload.version = '9.0.17';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -481,6 +481,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     var isSingleModel = !upload.attrGetter('ngfMultiple', attr, scope) && !upload.attrGetter('multiple', attr) && !keepResult.keep;
 
     attr.$$ngfPrevFiles = files;
+
+    if (keepResult.keep && !newFiles.length) return;
 
     if (upload.validate(newFiles, ngModel, attr, scope, function () {
         if (noDelay) {
@@ -1383,19 +1385,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', function (UploadValidate, $q, $timeout) {
   var upload = UploadValidate;
 
-  // add name getter to the blob constructor prototype
-  if (window.Object && Object.defineProperty) {
-    Object.defineProperty(Blob.prototype, 'name', {
-      get: function () {
-        return this.$ngfName;
-      },
-      set: function (v) {
-        this.$ngfName = v;
-      },
-      configurable: true
-    });
-  }
-
   /**
    * Conserve aspect ratio of the original region. Useful when shrinking/enlarging
    * images to fit into a certain area.
@@ -1461,6 +1450,19 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var elem = document.createElement('canvas');
     return window.atob && elem.getContext && elem.getContext('2d');
   };
+
+  if (upload.isResizeSupported()) {
+    // add name getter to the blob constructor prototype
+    Object.defineProperty(Blob.prototype, 'name', {
+      get: function () {
+        return this.$ngfName;
+      },
+      set: function (v) {
+        this.$ngfName = v;
+      },
+      configurable: true
+    });
+  }
 
   upload.resize = function (file, width, height, quality) {
     var deferred = $q.defer();
