@@ -139,7 +139,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
 
     attr.$$ngfPrevFiles = files;
 
-    if (keepResult.keep && !newFiles.length) return;
+    if (keepResult.keep && (!newFiles || !newFiles.length)) return;
 
     if (upload.validate(newFiles, ngModel, attr, scope, function () {
         if (noDelay) {

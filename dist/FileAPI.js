@@ -342,8 +342,8 @@
 
 			log: function (){
 				// ngf fix for IE8 #1071
-				if( api.debug && _supportConsoleLog ){
-					if( _supportConsoleLogApply ){
+				if( api.debug && api._supportConsoleLog ){
+					if( api._supportConsoleLogApply ){
 						console.log.apply(console, arguments);
 					}
 					else {
@@ -1795,8 +1795,8 @@
 
 	// configuration
 	try {
-		_supportConsoleLog = !!console.log;
-		_supportConsoleLogApply = !!console.log.apply;
+		api._supportConsoleLog = !!console.log;
+		api._supportConsoleLogApply = !!console.log.apply;
 	} catch (err) {}
 
 	if( !api.flashUrl ){ api.flashUrl = api.staticPath + 'FileAPI.flash.swf'; }
