@@ -275,6 +275,7 @@
 			return attr in input;
 		},
 
+		_support
 
 		/**
 		 * FileAPI (core object)
@@ -340,9 +341,9 @@
 			},
 
 			log: function (){
-				if( api.debug && window.console && console.log ){
-					// ngf fix for IE8 #1071
-					if( typeof console.log.apply === 'function' ){
+				// ngf fix for IE8 #1071
+				if( api.debug && _supportConsoleLog ){
+					if( _supportConsoleLogApply ){
 						console.log.apply(console, arguments);
 					}
 					else {
@@ -1792,7 +1793,12 @@
 	});
 
 
-	// @configuration
+	// configuration
+	try {
+		_supportConsoleLog = !!console.log;
+		_supportConsoleLogApply = !!console.log.apply;
+	} catch (err) {}
+
 	if( !api.flashUrl ){ api.flashUrl = api.staticPath + 'FileAPI.flash.swf'; }
 	if( !api.flashImageUrl ){ api.flashImageUrl = api.staticPath + 'FileAPI.flash.image.swf'; }
 	if( !api.flashWebcamUrl ){ api.flashWebcamUrl = api.staticPath + 'FileAPI.flash.camera.swf'; }
