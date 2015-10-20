@@ -341,7 +341,8 @@
 
 			log: function (){
 				if( api.debug && window.console && console.log ){
-					if( console.log.apply ){
+					// ngf fix for IE8 #1071
+					if( typeof console.log.apply === 'function' ){
 						console.log.apply(console, arguments);
 					}
 					else {
