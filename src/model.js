@@ -180,7 +180,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
           files = valids;
         }
         var fixOrientation = upload.emptyPromise(files);
-        if (upload.attrGetter('ngfFixOrientation', attr, scope) !== false) {
+        if (upload.attrGetter('ngfFixOrientation', attr, scope) !== false && upload.isExifSupported()) {
           fixOrientation = applyExifRotations(files);
         }
         fixOrientation.then(function () {

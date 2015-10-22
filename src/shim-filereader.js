@@ -45,12 +45,6 @@ if (!window.FileReader) {
         _this.dispatchEvent(e);
       }
     };
-    this.readAsArrayBuffer = function (file) {
-      FileAPI.readAsBinaryString(file, listener);
-    };
-    this.readAsBinaryString = function (file) {
-      FileAPI.readAsBinaryString(file, listener);
-    };
     this.readAsDataURL = function (file) {
       FileAPI.readAsDataURL(file, listener);
     };

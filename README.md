@@ -42,7 +42,7 @@ Table of Content:
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
 * on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
-* HTML5 FileReader shim for IE8-9
+* HTML5 FileReader.readAsDataURL shim for IE8-9
 
 ##<a name="install"></a> Install
 

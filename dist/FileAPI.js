@@ -1532,7 +1532,7 @@
 			}
 		}
 		else {
-			_emit(file, fn, 'error', undef, { error: 'filreader_not_support_'+as });
+			_emit(file, fn, 'error', undef, { error: 'FileReader_not_support_'+as });
 		}
 	}
 

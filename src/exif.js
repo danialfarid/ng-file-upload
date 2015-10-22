@@ -96,6 +96,10 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
   }
 
+  upload.isExifSupported = function() {
+    return window.FileReader && new FileReader().readAsArrayBuffer && upload.isResizeSupported();
+  };
+
   upload.orientation = function (file) {
     if (file.$ngfOrientation != null) {
       return upload.emptyPromise(file.$ngfOrientation);
