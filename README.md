@@ -173,7 +173,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // append the new files. "'distinct'" removes duplicate files
     // $newFiles and $duplicateFiles are set in ngf-change/select/drop functions.
   ngf-fix-orientation="boolean" //default true, would rotate the jpeg image files that have
-    // exif orientation data. See #745 and #927
+    // exif orientation data. See #745
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
