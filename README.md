@@ -327,7 +327,7 @@ Upload.base64DataUrl(files).then(function(urls){...});
 Upload.dataUrl(file, boolean).then(function(url){...});
 
 /* Get image file dimensions*/
-Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.widht, dimensions.height);});
+Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.width, dimensions.height);});
 
 /* Get audio/video duration*/
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
