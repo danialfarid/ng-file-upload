@@ -34,7 +34,8 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
 * image paste form clipboard and drag and drop from browser pages (html5 only).
-* image resize native and image crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only) 
+* image resize native and image crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
+* orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
 * show thumbnail or preview of selected images/audio/videos
@@ -171,6 +172,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-keep="true|false|'distinct'" // default false, keep the previous ng-model files and 
     // append the new files. "'distinct'" removes duplicate files
     // $newFiles and $duplicateFiles are set in ngf-change/select/drop functions.
+  ngf-fix-orientation="boolean" //default true, would rotate the jpeg image files that have
+    // exif orientation data. See #745 and #927
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering

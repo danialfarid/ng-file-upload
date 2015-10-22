@@ -1,6 +1,4 @@
-// source: Source: https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
-
-ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', function (UploadValidate, $q, $timeout) {
+ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadValidate, $q) {
   var upload = UploadValidate;
 
   /**
@@ -19,49 +17,44 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     return {width: srcWidth * ratio, height: srcHeight * ratio};
   };
 
-  /**
-   Reduce imagen size and quality.
-   @param {String} imagen is a base64 string
-   @param {Number} width
-   @param {Number} height
-   @param {Number} quality from 0.1 to 1.0
-   @return Promise.<String>
-   **/
+  // Extracted from https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
   var resize = function (imagen, width, height, quality, type) {
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
-    var imagenElement = document.createElement('img');
+    var imageElement = document.createElement('img');
 
-    imagenElement.onload = function () {
+    imageElement.onload = function () {
       try {
         if (!width) {
-          width = imagenElement.width;
-          height = imagenElement.height;
+          width = imageElement.width;
+          height = imageElement.height;
         }
-        var dimensions = calculateAspectRatioFit(imagenElement.width, imagenElement.height, width, height);
+        var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height);
         canvasElement.width = dimensions.width;
         canvasElement.height = dimensions.height;
         var context = canvasElement.getContext('2d');
-        context.drawImage(imagenElement, 0, 0, dimensions.width, dimensions.height);
+        context.drawImage(imageElement, 0, 0, dimensions.width, dimensions.height);
         deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 1.0));
       } catch (e) {
         deferred.reject(e);
       }
     };
-    imagenElement.onerror = function () {
+    imageElement.onerror = function () {
       deferred.reject();
     };
-    imagenElement.src = imagen;
+    imageElement.src = imagen;
     return deferred.promise;
   };
 
-  upload.dataUrltoBlob = function (dataurl) {
+  upload.dataUrltoBlob = function (dataurl, name) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    return new Blob([u8arr], {type: mime});
+    var blob = new Blob([u8arr], {type: mime});
+    blob.name = name;
+    return blob;
   };
 
   upload.isResizeSupported = function () {
@@ -83,19 +76,12 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
   }
 
   upload.resize = function (file, width, height, quality) {
-    var deferred = $q.defer();
-    if (file.type.indexOf('image') !== 0) {
-      $timeout(function () {
-        deferred.resolve('Only images are allowed for resizing!');
-      });
-      return deferred.promise;
-    }
+    if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
+    var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
       resize(url, width, height, quality, file.type).then(function (dataUrl) {
-        var blob = upload.dataUrltoBlob(dataUrl);
-        blob.name = file.name;
-        deferred.resolve(blob);
+        deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
       }, function () {
         deferred.reject();
       });

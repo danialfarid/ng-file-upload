@@ -2,7 +2,7 @@
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
     var upload = UploadBase;
-    upload.base64DataUrl = function(file) {
+    upload.base64DataUrl = function (file) {
       if (angular.isArray(file)) {
         var d = $q.defer(), count = 0;
         angular.forEach(file, function (f) {
@@ -24,11 +24,7 @@
     };
     upload.dataUrl = function (file, disallowObjectUrl) {
       if ((disallowObjectUrl && file.$ngfDataUrl != null) || (!disallowObjectUrl && file.$ngfBlobUrl != null)) {
-        var d = $q.defer();
-        $timeout(function () {
-          d.resolve(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
-        });
-        return d.promise;
+        return upload.emptyPromise(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
       }
       var p = disallowObjectUrl ? file.$$ngfDataUrlPromise : file.$$ngfBlobUrlPromise;
       if (p) return p;
@@ -132,8 +128,10 @@
           }
           if (size.width === 0 && window.getComputedStyle) {
             var style = getComputedStyle(elem[0]);
-            size = {width: parseInt(style.width.slice(0, -2)),
-              height: parseInt(style.height.slice(0, -2))};
+            size = {
+              width: parseInt(style.width.slice(0, -2)),
+              height: parseInt(style.height.slice(0, -2))
+            };
           }
         }
 
