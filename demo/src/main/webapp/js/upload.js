@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '9.0.3';
+var version = '9.1.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -220,6 +220,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     e.preventDefault();
   });
 
+  $scope.modelOptionsObj = {};
   $scope.$watch('validate+dragOverClass+modelOptions', function (v) {
     $scope.validateObj = eval('(function(){return ' + $scope.validate + ';})()');
     $scope.dragOverClassObj = eval('(function(){return ' + $scope.dragOverClass + ';})()');
