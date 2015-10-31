@@ -104,13 +104,13 @@ public class FileUpload extends HttpServlet {
 
 	private void clearOldValuesInSizeMap() {
 		if (counter++ == 100) {
-            for (Map.Entry<String, SizeEntry> entry : sizeMap.entrySet()) {
-                if (entry.getValue().time.isBefore(LocalDateTime.now().minusHours(1))) {
-                    sizeMap.remove(entry.getKey());
-                }
-            }
-            counter = 0;
-        }
+			for (Map.Entry<String, SizeEntry> entry : sizeMap.entrySet()) {
+                		if (entry.getValue().time.isBefore(LocalDateTime.now().minusHours(1))) {
+                			sizeMap.remove(entry.getKey());
+                		}
+            		}
+        	 	counter = 0;
+		}
 	}
 
 	protected int size(String key, InputStream stream) {
