@@ -69,7 +69,7 @@ Table of Content:
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/135/](http://jsfiddle.net/danialfarid/0mz6ff9o/135/)
 * Drop and upload with $watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/112](http://jsfiddle.net/danialfarid/s8kc7wg0/112)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/219/](http://jsfiddle.net/danialfarid/s8kc7wg0/219/)
 * Image Crop and Upload
 [http://jsfiddle.net/xxo3sk41/1/](http://jsfiddle.net/xxo3sk41/1/)
 ```html
@@ -95,7 +95,7 @@ Upload right away after file selection:
 <div class="button" ngf-select="uploadFiles($files)" multiple="multiple">Upload on file select</div>
   Drop File:
 <div ngf-drop="uploadFiles($files)" class="drop-box"
-  ngf-drag-over-class="dragover" ngf-multiple="true" 
+  ngf-drag-over-class="'dragover'" ngf-multiple="true" 
   ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
 <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
@@ -180,7 +180,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
-                    or "myDragOverClass" or "calcDragOverClass($event)"
+                    or "'myDragOverClass'" or "calcDragOverClass($event)"
     // default "dragover". drag over css class behaviour. could be a string, a function 
     // returning class name or a json object.
     // accept/reject class only works in Chrome, validating only the file mime type.
