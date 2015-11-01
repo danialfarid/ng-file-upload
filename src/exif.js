@@ -126,8 +126,6 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
   function applyTransform(ctx, orientation, width, height) {
     switch (orientation) {
-      case 1:
-        return ctx.transform(1, 0, 0, 1, 0, 0);
       case 2:
         return ctx.transform(-1, 0, 0, 1, width, 0);
       case 3:
@@ -152,7 +150,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
     var deferred = $q.defer();
     upload.orientation(file).then(function (orientation) {
-      if (!orientation || orientation > 8) {
+      if (!orientation || orientation < 2 || orientation > 8) {
         deferred.resolve(file);
       }
       upload.dataUrl(file, true).then(function (url) {

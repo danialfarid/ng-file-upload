@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.1.1
+ * @version 9.1.2
  */
 
 (function () {
@@ -421,7 +421,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.1.1
+ * @version 9.1.2
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -442,7 +442,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.1.1';
+ngFileUpload.version = '9.1.2';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -2327,8 +2327,6 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
   function applyTransform(ctx, orientation, width, height) {
     switch (orientation) {
-      case 1:
-        return ctx.transform(1, 0, 0, 1, 0, 0);
       case 2:
         return ctx.transform(-1, 0, 0, 1, width, 0);
       case 3:
@@ -2353,7 +2351,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
 
     var deferred = $q.defer();
     upload.orientation(file).then(function (orientation) {
-      if (!orientation || orientation > 8) {
+      if (!orientation || orientation < 2 || orientation > 8) {
         deferred.resolve(file);
       }
       upload.dataUrl(file, true).then(function (url) {
