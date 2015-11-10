@@ -58,10 +58,10 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     return d.promise;
   };
 
-  function applyExifRotations(files) {
+  function applyExifRotations(files, attr, scope) {
     var promises = [upload.emptyPromise()];
     angular.forEach(files, function (f, i) {
-      if (f.type.indexOf('image/jpeg') === 0) {
+      if (f.type.indexOf('image/jpeg') === 0 && upload.attrGetter('ngfFixOrientation', attr, scope, {$file: f})) {
         promises.push(upload.happyPromise(upload.applyExifRotation(f), f).then(function (fixedFile) {
           files.splice(i, 1, fixedFile);
         }));
@@ -73,11 +73,10 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
   function resize(files, attr, scope) {
     var param = upload.attrGetter('ngfResize', attr, scope);
     if (!param || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
-    if (!param.width || !param.height) throw 'width and height are mandatory for ngf-resize';
     var promises = [upload.emptyPromise()];
     angular.forEach(files, function (f, i) {
       if (f.type.indexOf('image') === 0) {
-        var promise = upload.resize(f, param.width, param.height, param.quality);
+        var promise = upload.resize(f, param.width, param.height, param.quality, param.type);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);
@@ -180,8 +179,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
           files = valids;
         }
         var fixOrientation = upload.emptyPromise(files);
-        if (upload.attrGetter('ngfFixOrientation', attr, scope) !== false && upload.isExifSupported()) {
-          fixOrientation = applyExifRotations(files);
+        if (upload.attrGetter('ngfFixOrientation', attr, scope) && upload.isExifSupported()) {
+          fixOrientation = applyExifRotations(files, attr, scope);
         }
         fixOrientation.then(function () {
           resize(files, attr, scope).then(function () {

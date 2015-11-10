@@ -107,7 +107,13 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
     var defer = $q.defer();
     var fileReader = new FileReader();
     fileReader.onload = function (e) {
-      var orientation = findEXIFinJPEG(e.target.result);
+      var orientation;
+      try {
+        orientation = findEXIFinJPEG(e.target.result);
+      } catch (e) {
+        defer.reject(e);
+        return;
+      }
       if (angular.isString(orientation)) {
         defer.reject(orientation);
       } else {

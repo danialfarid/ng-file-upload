@@ -106,20 +106,21 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       if (files) {
         var dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
         var i = files.length, valid = null;
-
         while (i--) {
           var file = files[i];
-          var val = attrGetter(dName, {'$file': file});
-          if (val == null) {
-            val = validatorVal(attrGetter('ngfValidate') || {});
-            valid = valid == null ? true : valid;
-          }
-          if (val != null) {
-            if (!fn(file, val)) {
-              file.$error = name;
-              file.$errorParam = val;
-              files.splice(i, 1);
-              valid = false;
+          if (file) {
+            var val = attrGetter(dName, {'$file': file});
+            if (val == null) {
+              val = validatorVal(attrGetter('ngfValidate') || {});
+              valid = valid == null ? true : valid;
+            }
+            if (val != null) {
+              if (!fn(file, val)) {
+                file.$error = name;
+                file.$errorParam = val;
+                files.splice(i, 1);
+                valid = false;
+              }
             }
           }
         }
@@ -141,6 +142,17 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return cons.size && cons.size.max;
     }, function (file, val) {
       return file.size <= upload.translateScalars(val);
+    });
+    var totalSize = 0;
+    validateSync('maxTotalSize', function (cons) {
+      return cons.maxTotalSize && cons.maxTotalSize;
+    }, function (file, val) {
+      totalSize += file.size;
+      if (totalSize > upload.translateScalars(val)) {
+        files.splice(0, files.length);
+        return false;
+      }
+      return true;
     });
 
     validateSync('validateFn', function () {

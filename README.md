@@ -172,8 +172,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-keep="true|false|'distinct'" // default false, keep the previous ng-model files and 
     // append the new files. "'distinct'" removes duplicate files
     // $newFiles and $duplicateFiles are set in ngf-change/select/drop functions.
-  ngf-fix-orientation="boolean" //default true, would rotate the jpeg image files that have
-    // exif orientation data. See #745
+  ngf-fix-orientation="boolean" //default false, would rotate the jpeg image files that have
+    // exif orientation data. See #745. Could be a boolean function like shouldFixOrientation($file) 
+    // to decide wethere to fix that file or not.
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
@@ -200,8 +201,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
               // you can exclude specific files by ! at the beginning.
               // validate error name: pattern
-  ngf-min-size, ngf-max-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
+  ngf-min-size, ngf-max-size, ngf-max-total-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
+              // ngf-max-total-size is for multiple file select and validating the total size of all files.
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
               // validate error name: maxHeight
   ngf-ratio="9x6,1.6" list of comma separated valid aspect ratio of images in float or 3x2 format

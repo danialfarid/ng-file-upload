@@ -97,9 +97,6 @@
     return /./;
   }
 
-  var style = angular.element('<style>.ngf-hide{display:none !important}</style>');
-  document.getElementsByTagName('head')[0].appendChild(style[0]);
-
   function linkFileDirective(Upload, $timeout, scope, elem, attr, directiveName, resizeParams, isBackground) {
     function constructDataUrl(file) {
       var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
@@ -112,9 +109,9 @@
             elem.attr('src', src);
           }
           if (src) {
-            elem.removeClass('ngf-hide');
+            elem.removeClass('ng-hide');
           } else {
-            elem.addClass('ngf-hide');
+            elem.addClass('ng-hide');
           }
         });
       });
@@ -137,7 +134,7 @@
         }
 
         if (angular.isString(file)) {
-          elem.removeClass('ngf-hide');
+          elem.removeClass('ng-hide');
           if (isBackground) {
             return elem.css('background-image', 'url(\'' + file + '\')');
           } else {
@@ -158,7 +155,7 @@
             constructDataUrl(file);
           }
         } else {
-          elem.addClass('ngf-hide');
+          elem.addClass('ng-hide');
         }
       });
 
