@@ -201,10 +201,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           }
         });
         return $q.all(promises).then(function () {
-          console.log(name, 'resolved');
           ngModel.$ngfValidations.push({name: name, valid: true});
         }, function () {
-          console.log(name, 'rejected');
           ngModel.$ngfValidations.push({name: name, valid: false});
         });
       }
