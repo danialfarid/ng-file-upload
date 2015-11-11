@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.0.0
+ * @version 10.0.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.0.0';
+ngFileUpload.version = '10.0.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1184,36 +1184,47 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         var dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
+          var defer = $q.defer();
+          promises.push(defer.promise);
           if (type && (file.type == null || file.type.search(type) !== 0)) {
-            return true;
+            defer.resolve();
+            return;
           }
           var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
           if (val) {
-            var promise = asyncFn(file, val);
-            promises.push(promise);
-            promise.then(function (d) {
+            asyncFn(file, val).then(function (d) {
               if (!fn(d, val)) {
                 file.$error = name;
                 file.$errorParam = val;
+                defer.reject();
+              } else {
+                defer.resolve();
               }
             }, function () {
               if (attrGetter('ngfValidateForce', {'$file': file})) {
                 file.$error = name;
                 file.$errorParam = val;
+                defer.reject();
+              } else {
+                defer.resolve();
               }
             });
+          } else {
+            defer.resolve();
           }
         });
         return $q.all(promises).then(function () {
+          console.log(name, 'resolved');
           ngModel.$ngfValidations.push({name: name, valid: true});
         }, function () {
+          console.log(name, 'rejected');
           ngModel.$ngfValidations.push({name: name, valid: false});
         });
       }
     }
 
     var deffer = $q.defer();
-    var promises = [upload.emptyPromise()];
+    var promises = [];
 
     promises.push(upload.happyPromise(validateAsync('maxHeight', function (cons) {
       return cons.height && cons.height.max;
