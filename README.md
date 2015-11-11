@@ -12,7 +12,7 @@ Lightweight Angular directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md)
 
-**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0)
+**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0) [version 10.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/10.0.0)
 
 
 Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.<br/>
@@ -194,8 +194,10 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   
-  ngf-resize="{width: 100, height: 100, quality: .8}" // resizes the image to the given 
-    //width, height and quality (optional between 0.1 and 1.0)
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg'}" // resizes the image to the given 
+    // width, height and quality (optional between 0.1 and 1.0), optionally convert it to the given 'type' format.
+    // Resize will keep the aspect ratio and if any of width or height is not specified the 
+    // original image width or height will be used.
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
