@@ -275,8 +275,6 @@
 			return attr in input;
 		},
 
-		_support
-
 		/**
 		 * FileAPI (core object)
 		 */

@@ -115,7 +115,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
         return;
       }
       if (angular.isString(orientation)) {
-        defer.reject(orientation);
+        defer.resolve(1);
       } else {
         file.$ngfOrientation = orientation;
         defer.resolve(orientation);

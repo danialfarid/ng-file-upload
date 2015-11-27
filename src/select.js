@@ -64,13 +64,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       if (elem !== fileElem) {
         for (var i = 0; i < elem[0].attributes.length; i++) {
           var attribute = elem[0].attributes[i];
-          if (attribute.name !== 'type' && attribute.name !== 'class' &&
-            attribute.name !== 'id' && attribute.name !== 'style') {
+          if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'style') {
             if (attribute.value == null || attribute.value === '') {
               if (attribute.name === 'required') attribute.value = 'required';
               if (attribute.name === 'multiple') attribute.value = 'multiple';
             }
-            fileElem.attr(attribute.name, attribute.value);
+            fileElem.attr(attribute.name, attribute.name === 'id' ? 'ngf-' + attribute.value : attribute.value);
           }
         }
       }
