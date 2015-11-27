@@ -160,8 +160,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // called when files are selected, dropped, or cleared
   ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ng-model-options="{updateOn: 'change click drop paste', allowInvalid: false, debounce: 0}" // angular
-    // model options. updateOn could be used to disable resetting on click, or updating on paste, etc. 
+  ng-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
+    // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. 
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
   ngf-model-invalid="invalidFilesArray" // binds the invalid selected/dropped files to this model.
