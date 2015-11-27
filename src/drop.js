@@ -110,7 +110,7 @@
       try {
         html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
       } catch (e) {/* Fix IE11 that throw error calling getData */}
-      if (html) {
+      if (upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
         var url;
         html.replace(/<img .*src *=\"([^\"]*)\"/, function (m, src) {
           url = src;
