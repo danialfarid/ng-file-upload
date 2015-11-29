@@ -194,10 +194,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg'}" // resizes the image to the given 
-    // width, height and quality (optional between 0.1 and 1.0), optionally convert it to the given 'type' format.
-    // Resize will keep the aspect ratio and if any of width or height is not specified the 
-    // original image width or height will be used.
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', ratio: '1:2', centerCrop: true}" 
+    // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
+    // type is optional convert it to the given image type format.
+    // centerCrop true will center crop the image if it doesn't fit within the given width/height or ratio. 
+    // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
+    // so the resulting image width (or height) could be less than given width (or height). 
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
@@ -208,8 +210,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // ngf-max-total-size is for multiple file select and validating the total size of all files.
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
               // validate error name: maxHeight
-  ngf-ratio="9x6,1.6" list of comma separated valid aspect ratio of images in float or 3x2 format
+  ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
+  ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration
   ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, height: {min: 100, max: 300}
