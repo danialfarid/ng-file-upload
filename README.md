@@ -34,7 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
 * image paste form clipboard and drag and drop from browser pages (html5 only).
-* image resize native and image crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
+* image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
 * validation on file type/size, image width/height, video/audio duration and `ng-required` support.
