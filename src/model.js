@@ -77,7 +77,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     angular.forEach(files, function (f, i) {
       if (f.type.indexOf('image') === 0) {
         if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
-        var promise = upload.resize(f, param.width, param.height, param.quality, param.type);
+        var promise = upload.resize(f, param.width, param.height, param.quality,
+          param.type, param.ratio, param.centerCrop);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);
@@ -164,6 +165,11 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     attr.$$ngfPrevFiles = files;
 
     if (keepResult.keep && (!newFiles || !newFiles.length)) return;
+
+    upload.attrGetter('ngfBeforeModelChange', attr, scope, {$files: files,
+      $file: files && files.length ? files[0] : null,
+      $duplicateFiles: dupFiles,
+      $event: evt});
 
     upload.validate(newFiles, ngModel, attr, scope).then(function () {
       if (noDelay) {

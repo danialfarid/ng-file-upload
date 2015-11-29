@@ -53,6 +53,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return valid;
   };
 
+  upload.ratioToFloat = function(val) {
+    var r = val, xIndex = r.search(/[x:]/i);
+    if (xIndex > -1) {
+      r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
+    } else {
+      r = parseFloat(r);
+    }
+    return r;
+  };
+
   upload.registerModelChangeValidator = function (ngModel, attr, scope) {
     if (ngModel) {
       ngModel.$formatters.push(function (files) {
@@ -231,21 +241,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }, /image/, this.imageDimensions, function (d, val) {
       return d.width >= val;
     })));
-    function ratioToFloat(val) {
-      var r = val, xIndex = r.search(/x/i);
-      if (xIndex > -1) {
-        r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
-      } else {
-        r = parseFloat(r);
-      }
-      return r;
-    }
     promises.push(upload.happyPromise(validateAsync('ratio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
       var split = val.toString().split(','), valid = false;
       for (var i = 0; i < split.length; i++) {
-        if (Math.abs((d.width / d.height) - ratioToFloat(split[i])) < 0.0001) {
+        if (Math.abs((d.width / d.height) - upload.ratioToFloat(split[i])) < 0.0001) {
           valid = true;
         }
       }
@@ -254,12 +255,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     promises.push(upload.happyPromise(validateAsync('maxRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - ratioToFloat(val)) < 0.0001;
+      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) < 0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - ratioToFloat(val)) > -0.0001;
+      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) > -0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('maxDuration', function (cons) {
       return cons.duration && cons.duration.max;

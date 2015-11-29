@@ -88,7 +88,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       $http(config).then(function (r) {
         if (resumeSupported && config._chunkSize && !config._finished) {
           notifyProgress({loaded: config._end, total: config._file.size, config: config, type: 'progress'});
-          upload.upload(config);
+          upload.upload(config, true);
         } else {
           if (config._finished) delete config._finished;
           deferred.resolve(r);
@@ -192,7 +192,17 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     return angular.toJson(val);
   };
 
-  this.upload = function (config) {
+  function copy(obj) {
+    var clone = {};
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        clone[key] = obj[key];
+      }
+    }
+    return clone;
+  }
+
+  this.upload = function (config, internal) {
     function isFile(file) {
       return file != null && (file instanceof Blob || (file.flashId && file.name && file.size));
     }
@@ -289,6 +299,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       });
     }
 
+    if (!internal) config = copy(config);
     if (!config._isDigested) {
       config._isDigested = true;
       digestConfig();
@@ -298,6 +309,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   };
 
   this.http = function (config) {
+    config = copy(config);
     config.transformRequest = config.transformRequest || function (data) {
         if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
           return data;

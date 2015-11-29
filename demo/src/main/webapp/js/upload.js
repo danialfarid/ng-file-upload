@@ -16,7 +16,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
 
   $scope.invalidFiles = [];
 
+  $scope.aaa = function(files) {
+    console.log('before', files.length);
+  };
+
   $scope.$watch('files', function (files) {
+    console.log('after', files && files.length);
     $scope.formUpload = false;
     if (files != null) {
       if (!angular.isArray(files)) {

@@ -54,6 +54,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     unwatches.push(scope.$watch(attrGetter('ngfCapture'), function () {
       fileElem.attr('capture', attrGetter('ngfCapture', scope));
     }));
+    unwatches.push(scope.$watch(attrGetter('ngfAccept'), function () {
+      fileElem.attr('accept', attrGetter('ngfAccept', scope));
+    }));
     attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
     });

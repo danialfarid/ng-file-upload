@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.0.4
+ * @version 10.1.0
  */
 
 (function () {
@@ -421,7 +421,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.0.4
+ * @version 10.1.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -442,7 +442,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.0.4';
+ngFileUpload.version = '10.1.0';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -507,7 +507,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       $http(config).then(function (r) {
         if (resumeSupported && config._chunkSize && !config._finished) {
           notifyProgress({loaded: config._end, total: config._file.size, config: config, type: 'progress'});
-          upload.upload(config);
+          upload.upload(config, true);
         } else {
           if (config._finished) delete config._finished;
           deferred.resolve(r);
@@ -611,7 +611,17 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     return angular.toJson(val);
   };
 
-  this.upload = function (config) {
+  function copy(obj) {
+    var clone = {};
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        clone[key] = obj[key];
+      }
+    }
+    return clone;
+  }
+
+  this.upload = function (config, internal) {
     function isFile(file) {
       return file != null && (file instanceof Blob || (file.flashId && file.name && file.size));
     }
@@ -708,6 +718,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       });
     }
 
+    if (!internal) config = copy(config);
     if (!config._isDigested) {
       config._isDigested = true;
       digestConfig();
@@ -717,6 +728,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   };
 
   this.http = function (config) {
+    config = copy(config);
     config.transformRequest = config.transformRequest || function (data) {
         if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
           return data;
@@ -839,7 +851,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     angular.forEach(files, function (f, i) {
       if (f.type.indexOf('image') === 0) {
         if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
-        var promise = upload.resize(f, param.width, param.height, param.quality, param.type);
+        var promise = upload.resize(f, param.width, param.height, param.quality,
+          param.type, param.ratio, param.centerCrop);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);
@@ -926,6 +939,11 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     attr.$$ngfPrevFiles = files;
 
     if (keepResult.keep && (!newFiles || !newFiles.length)) return;
+
+    upload.attrGetter('ngfBeforeModelChange', attr, scope, {$files: files,
+      $file: files && files.length ? files[0] : null,
+      $duplicateFiles: dupFiles,
+      $event: evt});
 
     upload.validate(newFiles, ngModel, attr, scope).then(function () {
       if (noDelay) {
@@ -1028,6 +1046,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     }));
     unwatches.push(scope.$watch(attrGetter('ngfCapture'), function () {
       fileElem.attr('capture', attrGetter('ngfCapture', scope));
+    }));
+    unwatches.push(scope.$watch(attrGetter('ngfAccept'), function () {
+      fileElem.attr('accept', attrGetter('ngfAccept', scope));
     }));
     attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
@@ -1487,6 +1508,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return valid;
   };
 
+  upload.ratioToFloat = function(val) {
+    var r = val, xIndex = r.search(/[x:]/i);
+    if (xIndex > -1) {
+      r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
+    } else {
+      r = parseFloat(r);
+    }
+    return r;
+  };
+
   upload.registerModelChangeValidator = function (ngModel, attr, scope) {
     if (ngModel) {
       ngModel.$formatters.push(function (files) {
@@ -1665,21 +1696,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }, /image/, this.imageDimensions, function (d, val) {
       return d.width >= val;
     })));
-    function ratioToFloat(val) {
-      var r = val, xIndex = r.search(/x/i);
-      if (xIndex > -1) {
-        r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
-      } else {
-        r = parseFloat(r);
-      }
-      return r;
-    }
     promises.push(upload.happyPromise(validateAsync('ratio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
       var split = val.toString().split(','), valid = false;
       for (var i = 0; i < split.length; i++) {
-        if (Math.abs((d.width / d.height) - ratioToFloat(split[i])) < 0.0001) {
+        if (Math.abs((d.width / d.height) - upload.ratioToFloat(split[i])) < 0.0001) {
           valid = true;
         }
       }
@@ -1688,12 +1710,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     promises.push(upload.happyPromise(validateAsync('maxRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - ratioToFloat(val)) < 0.0001;
+      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) < 0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - ratioToFloat(val)) > -0.0001;
+      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) > -0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('maxDuration', function (cons) {
       return cons.duration && cons.duration.max;
@@ -1867,30 +1889,45 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
    * @param {Number} maxHeight Nestable area maximum available height
    * @return {Object} { width, height }
    */
-  var calculateAspectRatioFit = function (srcWidth, srcHeight, maxWidth, maxHeight) {
-    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-    return {width: srcWidth * ratio, height: srcHeight * ratio};
+  var calculateAspectRatioFit = function (srcWidth, srcHeight, maxWidth, maxHeight, centerCrop) {
+    var ratio = centerCrop ? Math.max(maxWidth / srcWidth, maxHeight / srcHeight) :
+      Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return {width: srcWidth * ratio, height: srcHeight * ratio,
+      marginX: srcWidth * ratio - maxWidth, marginY: srcHeight * ratio - maxHeight};
   };
 
   // Extracted from https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
-  var resize = function (imagen, width, height, quality, type) {
+  var resize = function (imagen, width, height, quality, type, ratio, centerCrop) {
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
 
     imageElement.onload = function () {
       try {
+        if (ratio) {
+          var ratioFloat = upload.ratioToFloat(ratio);
+          var imgRatio = imageElement.width /  imageElement.height;
+          if (imgRatio < ratioFloat) {
+            width = imageElement.width;
+            height = width / ratioFloat;
+          } else {
+            height = imageElement.height;
+            width = height * ratioFloat;
+          }
+        }
         if (!width) {
           width = imageElement.width;
         }
         if (!height) {
           height = imageElement.height;
         }
-        var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height);
-        canvasElement.width = dimensions.width;
-        canvasElement.height = dimensions.height;
+        var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height, centerCrop);
+        canvasElement.width = Math.min(dimensions.width, width);
+        canvasElement.height = Math.min(dimensions.height, height);
         var context = canvasElement.getContext('2d');
-        context.drawImage(imageElement, 0, 0, dimensions.width, dimensions.height);
+        context.drawImage(imageElement,
+          Math.min(0, -dimensions.marginX / 2), Math.min(0, -dimensions.marginY / 2),
+          dimensions.width, dimensions.height);
         deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 1.0));
       } catch (e) {
         deferred.reject(e);
@@ -1932,12 +1969,12 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, width, height, quality, type) {
+  upload.resize = function (file, width, height, quality, type, ratio, centerCrop) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, type || file.type).then(function (dataUrl) {
+      resize(url, width, height, quality, type || file.type, ratio, centerCrop).then(function (dataUrl) {
         deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
       }, function () {
         deferred.reject();
