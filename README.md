@@ -37,7 +37,7 @@ Table of Content:
 * image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
-* validation on file type/size, image width/height, video/audio duration and `ng-required` support.
+* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable cusome sync or async validations.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
