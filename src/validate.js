@@ -54,7 +54,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
   };
 
   upload.ratioToFloat = function(val) {
-    var r = val, xIndex = r.search(/[x:]/i);
+    var r = val.toString(), xIndex = r.search(/[x:]/i);
     if (xIndex > -1) {
       r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
     } else {
@@ -255,12 +255,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     promises.push(upload.happyPromise(validateAsync('maxRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) < 0.0001;
+      return (d.width / d.height) - upload.ratioToFloat(val) < 0.0001;
     })));
-    promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
+      promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) > -0.0001;
+      return (d.width / d.height) - upload.ratioToFloat(val) > -0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('maxDuration', function (cons) {
       return cons.duration && cons.duration.max;

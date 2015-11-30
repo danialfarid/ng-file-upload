@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.0
+ * @version 10.1.1
  */
 
 (function () {
@@ -421,7 +421,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.0
+ * @version 10.1.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -442,7 +442,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.1.0';
+ngFileUpload.version = '10.1.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1509,7 +1509,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
   };
 
   upload.ratioToFloat = function(val) {
-    var r = val, xIndex = r.search(/[x:]/i);
+    var r = val.toString(), xIndex = r.search(/[x:]/i);
     if (xIndex > -1) {
       r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
     } else {
@@ -1710,12 +1710,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     promises.push(upload.happyPromise(validateAsync('maxRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) < 0.0001;
+      return (d.width / d.height) - upload.ratioToFloat(val) < 0.0001;
     })));
-    promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
+      promises.push(upload.happyPromise(validateAsync('minRatio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
-      return Math.abs((d.width / d.height) - upload.ratioToFloat(val)) > -0.0001;
+      return (d.width / d.height) - upload.ratioToFloat(val) > -0.0001;
     })));
     promises.push(upload.happyPromise(validateAsync('maxDuration', function (cons) {
       return cons.duration && cons.duration.max;
