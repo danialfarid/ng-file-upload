@@ -16,8 +16,8 @@ Lightweight Angular directive to upload files.
 
 
 Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.<br/>
-For bug report or feature request please search through existing [issues](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response provide steps to reprodce/versions with a jsfiddle from [here](http://jsfiddle.net/ew4jakn5/). Need paid support contact [me](mailto:danial.farid@gmail.com).<br/>
-Contributions are always welcome. If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload).
+For bug report or feature request please search through existing [issues](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response provide steps to reproduce/versions with a jsfiddle link. If you need support for you company contact [me](mailto:danial.farid@gmail.com).<br/>
+If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload) or get me a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>. Contributions are always welcomed.
 
 
 Table of Content:
@@ -34,10 +34,10 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
 * image paste form clipboard and drag and drop from browser pages (html5 only).
-* image resize native and image crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
+* image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
-* validation on file type/size, image width/height, video/audio duration and `ng-required` support.
+* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable cusome sync or async validations.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
@@ -194,10 +194,12 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg'}" // resizes the image to the given 
-    // width, height and quality (optional between 0.1 and 1.0), optionally convert it to the given 'type' format.
-    // Resize will keep the aspect ratio and if any of width or height is not specified the 
-    // original image width or height will be used.
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', ratio: '1:2', centerCrop: true}" 
+    // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
+    // type is optional convert it to the given image type format.
+    // centerCrop true will center crop the image if it doesn't fit within the given width/height or ratio. 
+    // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
+    // so the resulting image width (or height) could be less than given width (or height). 
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
@@ -208,8 +210,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // ngf-max-total-size is for multiple file select and validating the total size of all files.
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
               // validate error name: maxHeight
-  ngf-ratio="9x6,1.6" list of comma separated valid aspect ratio of images in float or 3x2 format
+  ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
+  ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration
   ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, height: {min: 100, max: 300}
