@@ -34,3 +34,7 @@ curl --data "$API_JSON" https://api.github.com/repos/danialfarid/ng-file-upload-
 cd ../ng-file-upload
 npm publish
 
+cd ../angular-file-upload-bower
+meteor publish
+
+cd ../ng-file-upload

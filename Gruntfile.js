@@ -97,7 +97,7 @@ module.exports = function (grunt) {
     },
     replace: {
       version: {
-        src: ['nuget/Package.nuspec'],
+        src: ['nuget/Package.nuspec', '../angular-file-upload-bower/package.js'],
         overwrite: true,
         replacements: [{
           from: /"version" *: *".*"/g,
