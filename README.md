@@ -43,7 +43,7 @@ Table of Content:
 * plenty of sample server side code, available on nuget
 * on demand flash [FileAPI](https://github.com/mailru/FileAPI) shim loading no extra load for html5 browsers.
 * HTML5 FileReader.readAsDataURL shim for IE8-9
-* * available on [npm](https://www.npmjs.com/package/ng-file-upload) [bower](https://libraries.io/bower/ng-file-upload) [meteor](https://atmospherejs.com/danialf/ng-file-upload) [nuget](https://www.nuget.org/packages/angular-file-upload)
+* available on [npm](https://www.npmjs.com/package/ng-file-upload), [bower](https://libraries.io/bower/ng-file-upload), [meteor](https://atmospherejs.com/danialf/ng-file-upload), [nuget](https://www.nuget.org/packages/angular-file-upload)
 
 ##<a name="install"></a> Install
 
