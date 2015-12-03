@@ -69,7 +69,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    var blob = new Blob([u8arr], {type: mime});
+    var blob = new window.Blob([u8arr], {type: mime});
     blob.name = name;
     return blob;
   };
@@ -81,7 +81,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
   if (upload.isResizeSupported()) {
     // add name getter to the blob constructor prototype
-    Object.defineProperty(Blob.prototype, 'name', {
+    Object.defineProperty(window.Blob.prototype, 'name', {
       get: function () {
         return this.$ngfName;
       },

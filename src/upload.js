@@ -29,7 +29,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   var upload = this;
 
   this.isResumeSupported = function () {
-    return window.Blob && (Blob instanceof Function) && new Blob().slice;
+    return window.Blob && (window.Blob instanceof Function) && new window.Blob().slice;
   };
 
   var resumeSupported = this.isResumeSupported();
@@ -183,7 +183,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     if (val != null && !angular.isString(val)) {
       val = JSON.stringify(val);
     }
-    var blob = new Blob([val], {type: 'application/json'});
+    var blob = new window.Blob([val], {type: 'application/json'});
     blob._ngfBlob = true;
     return blob;
   };
@@ -204,7 +204,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
   this.upload = function (config, internal) {
     function isFile(file) {
-      return file != null && (file instanceof Blob || (file.flashId && file.name && file.size));
+      return file != null && (file instanceof window.Blob || (file.flashId && file.name && file.size));
     }
 
     function toResumeFile(file, formData) {
@@ -279,7 +279,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         (angular.isArray(config.transformRequest) ?
           config.transformRequest : [config.transformRequest]) : [];
       config.transformRequest.push(function (data) {
-        var formData = new FormData(), key;
+        var formData = new window.FormData(), key;
         data = data || config.fields || {};
         if (config.file) {
           data.file = config.file;
@@ -311,7 +311,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   this.http = function (config) {
     config = copy(config);
     config.transformRequest = config.transformRequest || function (data) {
-        if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
+        if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof window.Blob) {
           return data;
         }
         return $http.defaults.transformRequest[0].apply(this, arguments);

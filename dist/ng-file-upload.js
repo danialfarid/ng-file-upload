@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.5
+ * @version 10.1.6
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,13 +23,13 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.1.5';
+ngFileUpload.version = '10.1.6';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
 
   this.isResumeSupported = function () {
-    return window.Blob && (Blob instanceof Function) && new Blob().slice;
+    return window.Blob && (window.Blob instanceof Function) && new window.Blob().slice;
   };
 
   var resumeSupported = this.isResumeSupported();
@@ -183,7 +183,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     if (val != null && !angular.isString(val)) {
       val = JSON.stringify(val);
     }
-    var blob = new Blob([val], {type: 'application/json'});
+    var blob = new window.Blob([val], {type: 'application/json'});
     blob._ngfBlob = true;
     return blob;
   };
@@ -204,7 +204,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
   this.upload = function (config, internal) {
     function isFile(file) {
-      return file != null && (file instanceof Blob || (file.flashId && file.name && file.size));
+      return file != null && (file instanceof window.Blob || (file.flashId && file.name && file.size));
     }
 
     function toResumeFile(file, formData) {
@@ -279,7 +279,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         (angular.isArray(config.transformRequest) ?
           config.transformRequest : [config.transformRequest]) : [];
       config.transformRequest.push(function (data) {
-        var formData = new FormData(), key;
+        var formData = new window.FormData(), key;
         data = data || config.fields || {};
         if (config.file) {
           data.file = config.file;
@@ -311,7 +311,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   this.http = function (config) {
     config = copy(config);
     config.transformRequest = config.transformRequest || function (data) {
-        if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
+        if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof window.Blob) {
           return data;
         }
         return $http.defaults.transformRequest[0].apply(this, arguments);
@@ -1527,7 +1527,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    var blob = new Blob([u8arr], {type: mime});
+    var blob = new window.Blob([u8arr], {type: mime});
     blob.name = name;
     return blob;
   };
@@ -1539,7 +1539,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
   if (upload.isResizeSupported()) {
     // add name getter to the blob constructor prototype
-    Object.defineProperty(Blob.prototype, 'name', {
+    Object.defineProperty(window.Blob.prototype, 'name', {
       get: function () {
         return this.$ngfName;
       },
@@ -1690,7 +1690,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
           $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/WebP';
-            var blob = new Blob([arrayBufferView], {type: type});
+            var blob = new window.Blob([arrayBufferView], {type: type});
             //var split = type.split('[/;]');
             //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
             upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), [blob], evt);

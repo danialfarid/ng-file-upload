@@ -119,7 +119,7 @@
           $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/WebP';
-            var blob = new Blob([arrayBufferView], {type: type});
+            var blob = new window.Blob([arrayBufferView], {type: type});
             //var split = type.split('[/;]');
             //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
             upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), [blob], evt);
