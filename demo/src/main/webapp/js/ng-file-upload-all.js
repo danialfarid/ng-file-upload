@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.7
+ * @version 10.1.8
  */
 
 (function () {
@@ -421,7 +421,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.7
+ * @version 10.1.8
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -442,7 +442,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.1.7';
+ngFileUpload.version = '10.1.8';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1077,13 +1077,16 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       }
 
       var fileElem = angular.element('<input type="file">');
+
       bindAttrToFileInput(fileElem);
 
-      fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
+      var label = angular.element('<label>upload</label>');
+      label.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      generatedElems.push({el: elem, ref: fileElem});
-      document.body.appendChild(fileElem[0]);
+      generatedElems.push({el: elem, ref: label});
+
+      document.body.appendChild(label.append(fileElem)[0]);
 
       return fileElem;
     }
@@ -1101,8 +1104,8 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       // fix for md when the element is removed from the DOM and added back #460
       try {
         if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
-          generatedElems.push({el: elem, ref: fileElem});
-          document.body.appendChild(fileElem[0]);
+          generatedElems.push({el: elem, ref: fileElem.parent()});
+          document.body.appendChild(fileElem[0].parent());
           fileElem.bind('change', changeFn);
         }
       } catch(e){/*ignore*/}
@@ -1191,7 +1194,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     });
 
     scope.$on('$destroy', function () {
-      if (!isInputTypeFile()) fileElem.remove();
+      if (!isInputTypeFile()) fileElem.parent().remove();
       angular.forEach(unwatches, function (unwatch) {
         unwatch();
       });
@@ -2235,7 +2238,10 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         var fileList = evt.dataTransfer.files;
         if (fileList != null) {
           for (var j = 0; j < fileList.length; j++) {
-            files.push(fileList.item(j));
+            var file = fileList.item(j);
+            if (file.type || file.size > 0) {
+              files.push(file);
+            }
             if (!multiple && files.length > 0) {
               break;
             }

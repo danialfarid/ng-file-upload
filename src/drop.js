@@ -245,7 +245,10 @@
         var fileList = evt.dataTransfer.files;
         if (fileList != null) {
           for (var j = 0; j < fileList.length; j++) {
-            files.push(fileList.item(j));
+            var file = fileList.item(j);
+            if (file.type || file.size > 0) {
+              files.push(file);
+            }
             if (!multiple && files.length > 0) {
               break;
             }
