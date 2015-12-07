@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 10.1.8
+ * @version 10.1.9
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '10.1.8';
+ngFileUpload.version = '10.1.9';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1573,13 +1573,13 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 }]);
 
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http',
-    function ($parse, $timeout, $location, Upload, $http) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', '$q',
+    function ($parse, $timeout, $location, Upload, $http, $q) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, $q);
         }
       };
     }]);
@@ -1604,7 +1604,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, $q) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -1683,22 +1683,10 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       var html;
       try {
         html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
-      } catch (e) {/* Fix IE11 that throw error calling getData */}
+      } catch (e) {/* Fix IE11 that throw error calling getData */
+      }
       if (upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
-        var url;
-        html.replace(/<img .*src *=\"([^\"]*)\"/, function (m, src) {
-          url = src;
-        });
-        if (url) {
-          $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
-            var arrayBufferView = new Uint8Array(resp.data);
-            var type = resp.headers('content-type') || 'image/WebP';
-            var blob = new window.Blob([arrayBufferView], {type: type});
-            //var split = type.split('[/;]');
-            //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
-            upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), [blob], evt);
-          });
-        }
+        extractUrlAndUpdateModel(html, evt);
       } else {
         extractFiles(evt, function (files) {
             upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
@@ -1707,6 +1695,9 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       }
     }, false);
     elem[0].addEventListener('paste', function (evt) {
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        evt.preventDefault();
+      }
       if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
       var files = [];
       var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
@@ -1716,9 +1707,53 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             files.push(clipboard.items[k].getAsFile());
           }
         }
+      }
+      if (files.length) {
         upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+      } else {
+        var html;
+        try {
+          html = (clipboard && clipboard.getData && clipboard.getData('text/html'));
+        } catch (e) {/* Fix IE11 that throw error calling getData */
+        }
+        if (upload.shouldUpdateOn('pasteUrl', attr, scope) && html) {
+          extractUrlAndUpdateModel(html, evt);
+        }
       }
     }, false);
+
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
+      attrGetter('ngfEnableFirefoxPaste', scope)) {
+      elem.attr('contenteditable', true);
+      elem.on('keypress', function (e) {
+        if (!e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+        }
+      });
+    }
+
+    function extractUrlAndUpdateModel(html, evt) {
+      var urls = [];
+      html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
+        urls.push(src);
+      });
+      var promises = [], files = [];
+      if (urls.length) {
+        angular.forEach(urls, function (url) {
+          promises.push($http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
+            var arrayBufferView = new Uint8Array(resp.data);
+            var type = resp.headers('content-type') || 'image/WebP';
+            var blob = new window.Blob([arrayBufferView], {type: type});
+            files.push(blob);
+            //var split = type.split('[/;]');
+            //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
+          }));
+        });
+        $q.all(promises).then(function () {
+          upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        });
+      }
+    }
 
     function calculateDragOverClass(scope, attr, evt, callback) {
       var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}), dClass = 'dragover';

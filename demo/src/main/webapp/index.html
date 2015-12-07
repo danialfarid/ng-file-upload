@@ -70,7 +70,7 @@
               <legend>Upload on form submit</legend>
               Username: <input type="text" name="userName" ng-model="username" size="39" required>
               <i ng-show="myForm.userName.$error.required">*required</i><br>
-              Profile Picture: <input type="file" ngf-select ng-model="picFile" name="file" accept="image/*" required>
+              Profile Picture: <input type="file" ngf-select ng-model="picFile" name="file" ngf-accept="'image/*'" required>
               <i ng-show="myForm.file.$error.required">*required</i>
               <br/>
 
@@ -89,15 +89,25 @@
           <div class="up-buttons">
             <div ngf-select ngf-drop ng-model="files" ngf-model-invalid="invalidFiles"
                  ng-model-options="modelOptionsObj"
-                 ngf-multiple="multiple" ngf-pattern="pattern" accept="{{acceptSelect}}"
+                 ngf-multiple="multiple" ngf-pattern="pattern" ngf-accept="acceptSelect"
                  ng-disabled="disabled" ngf-capture="capture"
                  ngf-drag-over-class="dragOverClassObj"
                  ngf-validate="validateObj"
                  ngf-keep="keepDistinct ? 'distinct' : keep"
-                 ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File,
-              <span ng-show="dropAvailable">Drop File or Paste/Drop Image</span>
+                 ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File
+              <span ng-show="dropAvailable"> or Drop File</span>
             </div>
             <br/>
+            <div ngf-drop ng-model="files" ngf-model-invalid="invalidFiles"
+                 ng-model-options="modelOptionsObj"
+                 ngf-multiple="multiple" ngf-pattern="'image/*'"
+                 ng-disabled="disabled"
+                 ngf-drag-over-class="dragOverClassObj"
+                 ngf-validate="validateObj"
+                 ngf-keep="keepDistinct ? 'distinct' : keep"
+                 ngf-enable-firefox-paste="true"
+                 ngf-allow-dir="allowDir" class="drop-box" ng-show="dropAvailable">
+              <span>Paste or Drop Image from browser</span></div>
           </div>
           <div class="custom">
             <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
@@ -233,7 +243,5 @@
    href="https://angular-file-upload.appspot.com/donate.html">donate</a>
 <a style="position:fixed;bottom:45px;right:10px;font-size:smaller;"
    href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>
-
-<div style="position:fixed;bottom:10px;right:10px;font-size:smaller;color:#777">Last update: 2015-09-19</div>
 </body>
 </html>

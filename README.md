@@ -83,7 +83,7 @@ Upload on form submit or button click
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
   Single Image with validations
   <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
-    accept="image/*" ngf-max-size="20MB" ngf-min-height="100" 
+    ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100" 
     ngf-resize="{width: 100, height: 100}">Select</div>
   Multiple files
   <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
@@ -178,7 +178,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // to decide wethere to fix that file or not.
   
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
-  *accept="image/*" // standard HTML accept attribute for the browser specific popup window filtering
+  *ngf-accept="'image/*'" // standard HTML accept attr, browser specific select popup window
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
