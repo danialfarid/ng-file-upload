@@ -196,12 +196,14 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   +ngf-enable-firefox-paste="boolean" // default false, enable firefox image paste by making element contenteditable
 
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', ratio: '1:2', centerCrop: true}" 
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', 
+               ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
     // centerCrop true will center crop the image if it doesn't fit within the given width/height or ratio. 
     // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
-    // so the resulting image width (or height) could be less than given width (or height). 
+    // so the resulting image width (or height) could be less than given width (or height).
+    // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
