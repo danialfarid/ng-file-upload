@@ -343,6 +343,9 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 /* Get audio/video duration*/
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
+/* Resizes an image. Returns a promise */
+upload.resize(file, width, height, quality, type, ratio, centerCrop).then(function(resizedFile){...});
+
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
 /* returns boolean showing if resumable upload is supported by this browser*/
