@@ -463,7 +463,8 @@ provided by [Coshx Labs](http://www.coshx.com/).
 * <a name="php"></a>**PHP**
 [Wiki Sample] (https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/ng-file-upload/issues/475)
 * <a name="net"></a>**.Net**
-Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
+  * [Demo](https://github.com/stewartm83/angular-fileupload-sample) showing how to use ng-file-upload with Asp.Net Web Api.
+  * Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 ##<a name="cors"></a>CORS
 To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
