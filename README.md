@@ -265,7 +265,7 @@ var upload = Upload.upload({
     {files: files, otherInfo: {id: id, person: person,...}} multiple files (html5)
     {profiles: {[{pic: file1, username: username1}, {pic: file2, username: username2}]} nested array multiple files (html5)
     {file: file, info: Upload.json({id: id, name: name, ...})} send fields as json string
-    {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob
+    {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob, 'application/json' content_type
     {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
   *data: {key: file, otherInfo: uploadInfo},
   /*
