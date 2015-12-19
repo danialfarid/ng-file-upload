@@ -194,7 +194,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
-  +ngf-enable-firefox-paste="boolean" // default false, enable firefox image paste by making element contenteditable
+  +ngf-enable-firefox-paste="boolean" // *experimental* default false, enable firefox image paste by making element contenteditable
 
   ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', 
                ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
