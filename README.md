@@ -194,13 +194,16 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
                                      // drag&drop support for this browser
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
-  
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', ratio: '1:2', centerCrop: true}" 
+  +ngf-enable-firefox-paste="boolean" // default false, enable firefox image paste by making element contenteditable
+
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', 
+               ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
     // centerCrop true will center crop the image if it doesn't fit within the given width/height or ratio. 
     // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
-    // so the resulting image width (or height) could be less than given width (or height). 
+    // so the resulting image width (or height) could be less than given width (or height).
+    // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
@@ -262,7 +265,7 @@ var upload = Upload.upload({
     {files: files, otherInfo: {id: id, person: person,...}} multiple files (html5)
     {profiles: {[{pic: file1, username: username1}, {pic: file2, username: username2}]} nested array multiple files (html5)
     {file: file, info: Upload.json({id: id, name: name, ...})} send fields as json string
-    {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob
+    {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob, 'application/json' content_type
     {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
   *data: {key: file, otherInfo: uploadInfo},
   /*
@@ -340,6 +343,9 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 /* Get audio/video duration*/
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
+/* Resizes an image. Returns a promise */
+upload.resize(file, width, height, quality, type, ratio, centerCrop).then(function(resizedFile){...});
+
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
 /* returns boolean showing if resumable upload is supported by this browser*/
@@ -349,9 +355,11 @@ Upload.isResumeSupported()
 Upload.rename(file, newName)
 /* converts the object to a Blob object with application/json content type 
 for jsob byte streaming support #359 */
-Upload.json(obj)
+Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
+/* Converts a dataUrl to Blob object.
+var blob = upload.dataUrltoBlob(dataurl, name);
 
 ```
 **ng-model**
@@ -457,7 +465,8 @@ provided by [Coshx Labs](http://www.coshx.com/).
 * <a name="php"></a>**PHP**
 [Wiki Sample] (https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/ng-file-upload/issues/475)
 * <a name="net"></a>**.Net**
-Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
+  * [Demo](https://github.com/stewartm83/angular-fileupload-sample) showing how to use ng-file-upload with Asp.Net Web Api.
+  * Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 ##<a name="cors"></a>CORS
 To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
