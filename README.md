@@ -355,9 +355,11 @@ Upload.isResumeSupported()
 Upload.rename(file, newName)
 /* converts the object to a Blob object with application/json content type 
 for jsob byte streaming support #359 */
-Upload.json(obj)
+Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
+/* Converts a dataUrl to Blob object.
+var blob = upload.dataUrltoBlob(dataurl, name);
 
 ```
 **ng-model**
