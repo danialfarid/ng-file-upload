@@ -121,7 +121,8 @@
       }
     }, false);
     elem[0].addEventListener('paste', function (evt) {
-      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
+        attrGetter('ngfEnableFirefoxPaste', scope)) {
         evt.preventDefault();
       }
       if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
