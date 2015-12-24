@@ -415,8 +415,8 @@ On your server you need to keep track of what files are being uploaded and how m
  set that back to zero to allow re-uploading the same file.
  * Optionally you can specify `resumeChunkSize` to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
  file size limitation and trying to upload the whole request before passing it for internal processing.<br/>
- If this option is set the requests will have three extra fields: 
- `_chunckSize`, `_chunkNumber` (zero starting), and `_totalSize` to help the server to write the uploaded chunk to 
+ If this option is set the requests will have the following extra fields: 
+ `_chunkSize`, `_currentChunkSize`, `_chunkNumber` (zero starting), and `_totalSize` to help the server to write the uploaded chunk to 
  the correct position.
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
  
