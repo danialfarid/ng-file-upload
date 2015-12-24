@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '10.1.9';
+var version = '11.0.0';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -221,10 +221,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   });
 
   $scope.modelOptionsObj = {};
-  $scope.$watch('validate+dragOverClass+modelOptions', function (v) {
+  $scope.$watch('validate+dragOverClass+modelOptions+resize+resizeIf', function (v) {
     $scope.validateObj = eval('(function(){return ' + $scope.validate + ';})()');
     $scope.dragOverClassObj = eval('(function(){return ' + $scope.dragOverClass + ';})()');
     $scope.modelOptionsObj = eval('(function(){return ' + $scope.modelOptions + ';})()');
+    $scope.resizeObj = eval('(function($file){return ' + $scope.resize + ';})()');
+    $scope.resizeIfFn = eval('(function(){var fn = function($file, $width, $height){return ' + $scope.resizeIf + ';};return fn;})()');
   });
 
   $timeout(function () {
@@ -236,11 +238,16 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.disabled = localStorage.getItem('disabled' + version) == 'true' || false;
     $scope.multiple = localStorage.getItem('multiple' + version) == 'true' || false;
     $scope.allowDir = localStorage.getItem('allowDir' + version) == 'true' || true;
-    $scope.validate = localStorage.getItem('validate' + version) || '{size: {max: \'20MB\', min: \'10B\'}, height: {max: 5000}, width: {max: 5000}, duration: {max: \'5m\'}}';
+    $scope.validate = localStorage.getItem('validate' + version) || '{size: {max: \'20MB\', min: \'10B\'}, height: {max: 12000}, width: {max: 12000}, duration: {max: \'5m\'}}';
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
-    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+' +
-      'keepDistinct+modelOptions+dragOverClass', function () {
+    $scope.orientation = localStorage.getItem('orientation' + version) == 'true' || false;
+    $scope.resize = localStorage.getItem('resize' + version) || "{width: 1000, height: 1000, centerCrop: true}";
+    $scope.resizeIf = localStorage.getItem('resizeIf' + version) || "$width > 5000 || $height > 5000";
+    $scope.dimensions = localStorage.getItem('dimensions' + version) || "$width < 12000 || $height < 12000";
+    $scope.duration = localStorage.getItem('duration' + version) || "$duration < 10000";
+    $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+orientation+' +
+      'keepDistinct+modelOptions+dragOverClass+resize+resizeIf', function () {
       localStorage.setItem('capture' + version, $scope.capture);
       localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
@@ -249,9 +256,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       localStorage.setItem('allowDir' + version, $scope.allowDir);
       localStorage.setItem('validate' + version, $scope.validate);
       localStorage.setItem('keep' + version, $scope.keep);
+      localStorage.setItem('orientation' + version, $scope.orientation);
       localStorage.setItem('keepDistinct' + version, $scope.keepDistinct);
       localStorage.setItem('dragOverClass' + version, $scope.dragOverClass);
       localStorage.setItem('modelOptions' + version, $scope.modelOptions);
+      localStorage.setItem('resize' + version, $scope.resize);
+      localStorage.setItem('resizeIf' + version, $scope.resizeIf);
     });
   });
 }]);

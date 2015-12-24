@@ -117,7 +117,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         while (i--) {
           var file = files[i];
           if (file) {
-            var val = attrGetter(dName, {'$file': file});
+            var val = attrGetter(dName, {$file: file});
             if (val == null) {
               val = validatorVal(attrGetter('ngfValidate') || {});
               valid = valid == null ? true : valid;
@@ -173,7 +173,31 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return upload.emptyPromise(ngModel, ngModel.$ngfValidations);
     }
 
-    function validateAsync(name, validatorVal, type, asyncFn, fn) {
+    function validateAsync(name, validatorVal, type, asyncFn, fn, addDimensions, addDuration) {
+      function resolveResult(defer, file, val) {
+        if (val != null) {
+          asyncFn(file, val).then(function (d) {
+            if (!fn(d, val)) {
+              file.$error = name;
+              file.$errorParam = val;
+              defer.reject();
+            } else {
+              defer.resolve();
+            }
+          }, function () {
+            if (attrGetter('ngfValidateForce', {$file: file})) {
+              file.$error = name;
+              file.$errorParam = val;
+              defer.reject();
+            } else {
+              defer.resolve();
+            }
+          });
+        } else {
+          defer.resolve();
+        }
+      }
+
       var promises = [upload.emptyPromise()];
       if (files) {
         var dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
@@ -185,27 +209,23 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             defer.resolve();
             return;
           }
-          var val = attrGetter(dName, {'$file': file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
-          if (val) {
-            asyncFn(file, val).then(function (d) {
-              if (!fn(d, val)) {
-                file.$error = name;
-                file.$errorParam = val;
-                defer.reject();
-              } else {
-                defer.resolve();
-              }
+          if (addDimensions) {
+            upload.imageDimensions(file).then(function (d) {
+              resolveResult(defer, file,
+                attrGetter(dName, {$file: file, $width: d.width, $height: d.height}));
             }, function () {
-              if (attrGetter('ngfValidateForce', {'$file': file})) {
-                file.$error = name;
-                file.$errorParam = val;
-                defer.reject();
-              } else {
-                defer.resolve();
-              }
+              defer.reject();
+            });
+          } else if (addDuration) {
+            upload.mediaDuration(file).then(function (d) {
+              resolveResult(defer, file,
+                attrGetter(dName, {$file: file, $duration: d}));
+            }, function () {
+              defer.reject();
             });
           } else {
-            defer.resolve();
+            var val = attrGetter(dName, {$file: file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
+            resolveResult(defer, file, val);
           }
         });
         return $q.all(promises).then(function () {
@@ -239,6 +259,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }, /image/, this.imageDimensions, function (d, val) {
       return d.width >= val;
     })));
+    promises.push(upload.happyPromise(validateAsync('dimensions', null, /image/,
+      function (file, val) {
+        return upload.emptyPromise(val);
+      }, function (r) {
+        return r;
+      }, true)));
     promises.push(upload.happyPromise(validateAsync('ratio', function (cons) {
       return cons.ratio;
     }, /image/, this.imageDimensions, function (d, val) {
@@ -270,6 +296,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     }, /audio|video/, this.mediaDuration, function (d, val) {
       return d >= upload.translateScalars(val);
     })));
+    promises.push(upload.happyPromise(validateAsync('duration', null, /audio|video/,
+      function (file, val) {
+        return upload.emptyPromise(val);
+      }, function (r) {
+        return r;
+      }, false, true)));
 
     promises.push(upload.happyPromise(validateAsync('validateAsyncFn', function () {
       return null;

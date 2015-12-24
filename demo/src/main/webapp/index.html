@@ -93,7 +93,12 @@
                  ng-disabled="disabled" ngf-capture="capture"
                  ngf-drag-over-class="dragOverClassObj"
                  ngf-validate="validateObj"
+                 ngf-resize="resizeObj"
+                 ngf-resize-if="resizeIfFn($file, $width, $height)"
+                 ngf-dimensions="dimensionsFn($file, $width, $height)"
+                 ngf-duration="durationFn($file, $duration)"
                  ngf-keep="keepDistinct ? 'distinct' : keep"
+                 ngf-fix-orientation="orientation"
                  ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File
               <span ng-show="dropAvailable"> or Drop File</span>
             </div>
@@ -104,8 +109,13 @@
                  ng-disabled="disabled"
                  ngf-drag-over-class="dragOverClassObj"
                  ngf-validate="validateObj"
+                 ngf-resize="resizeObj"
+                 ngf-resize-if="resizeIfFn($file, $width, $height)"
+                 ngf-dimensions="dimensionsFn($file, $width, $height)"
+                 ngf-duration="durationFn($file, $duration)"
                  ngf-keep="keepDistinct ? 'distinct' : keep"
                  ngf-enable-firefox-paste="true"
+                 ngf-fix-orientation="orientation"
                  ngf-allow-dir="allowDir" class="drop-box" ng-show="dropAvailable">
               <span>Paste or Drop Image from browser</span></div>
           </div>
@@ -116,7 +126,11 @@
             <label>ngf-validate: <input type="text" ng-model="validate" size="49"></label><br/>
             <label>ngf-drag-over-class (chrome): <input size="31" type="text" ng-model="dragOverClass"></label><br/>
             <label>ng-model-options: <input type="text" size="43" ng-model="modelOptions"></label><br/>
-            <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label><br/>
+            <label>ngf-resize: <input type="text" size="43" ng-model="resize"></label><br/>
+            <label>ngf-resize-if: <input type="text" size="43" ng-model="resizeIf"></label><br/>
+            <label>ngf-dimensions: <input type="text" size="43" ng-model="dimensions"></label><br/>
+            <label>ngf-duration: <input type="text" size="43" ng-model="duration"></label><br/>
+            <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label>
             <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
             <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome
               only)</label><br/>
@@ -124,6 +138,7 @@
               ng-model)</label><br/>
             <label><input type="checkbox" ng-model="keepDistinct">ngf-keep="distinct" (do not allow
               duplicates)</label><br/>
+            <label><input type="checkbox" ng-model="orientation">ngf-fix-orientation (for exif jpeg files)</label><br/>
             <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
           </div>
 

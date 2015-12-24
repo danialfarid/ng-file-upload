@@ -204,7 +204,9 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
     // so the resulting image width (or height) could be less than given width (or height).
     // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
-              
+  ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
+    // apply ngf-resize only if this function returns true. To filter specific images to be resized.
+            
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
               // you can exclude specific files by ! at the beginning.
@@ -217,8 +219,13 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
   ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
+  ngf-dimensions="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
+              // validate the image dimensions, validate error name: dimensions
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration
+  ngf-duration="$duration > 1000" or "validateDuration($file, $duration)"
+              // validate the media duration, validate error name: duration
+
   ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, height: {min: 100, max: 300}
                 ratio: '2x1', duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"
                 shorthand form for above validations in one place.
