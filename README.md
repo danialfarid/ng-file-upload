@@ -196,7 +196,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   +ngf-enable-firefox-paste="boolean" // *experimental* default false, enable firefox image paste by making element contenteditable
 
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpg', 
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg', 
                ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
