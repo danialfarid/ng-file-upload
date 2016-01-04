@@ -209,14 +209,14 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             defer.resolve();
             return;
           }
-          if (addDimensions) {
+          if (addDimensions && attrGetter(dName) != null) {
             upload.imageDimensions(file).then(function (d) {
               resolveResult(defer, file,
                 attrGetter(dName, {$file: file, $width: d.width, $height: d.height}));
             }, function () {
               defer.reject();
             });
-          } else if (addDuration) {
+          } else if (addDuration && attrGetter(dName) != null) {
             upload.mediaDuration(file).then(function (d) {
               resolveResult(defer, file,
                 attrGetter(dName, {$file: file, $duration: d}));
@@ -224,7 +224,10 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
               defer.reject();
             });
           } else {
-            var val = attrGetter(dName, {$file: file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
+            var val = attrGetter(dName, {$file: file});
+            if (val == null && validatorVal != null) {
+              val = validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
+            }
             resolveResult(defer, file, val);
           }
         });

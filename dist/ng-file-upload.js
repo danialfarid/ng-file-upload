@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 11.0.0
+ * @version 11.0.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '11.0.0';
+ngFileUpload.version = '11.0.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1251,14 +1251,14 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             defer.resolve();
             return;
           }
-          if (addDimensions) {
+          if (addDimensions && attrGetter(dName) != null) {
             upload.imageDimensions(file).then(function (d) {
               resolveResult(defer, file,
                 attrGetter(dName, {$file: file, $width: d.width, $height: d.height}));
             }, function () {
               defer.reject();
             });
-          } else if (addDuration) {
+          } else if (addDuration && attrGetter(dName) != null) {
             upload.mediaDuration(file).then(function (d) {
               resolveResult(defer, file,
                 attrGetter(dName, {$file: file, $duration: d}));
@@ -1266,7 +1266,10 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
               defer.reject();
             });
           } else {
-            var val = attrGetter(dName, {$file: file}) || validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
+            var val = attrGetter(dName, {$file: file});
+            if (val == null && validatorVal != null) {
+              val = validatorVal(attrGetter('ngfValidate', {'$file': file}) || {});
+            }
             resolveResult(defer, file, val);
           }
         });
