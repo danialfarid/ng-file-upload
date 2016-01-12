@@ -1100,7 +1100,8 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     var initialTouchStartY = 0;
 
     function clickHandler(evt) {
-      if (elem.attr('disabled') || attrGetter('ngfSelectDisabled', scope)) return false;
+      if (elem.attr('disabled')) return false;
+      if (attrGetter('ngfSelectDisabled', scope)) return;
 
       var r = handleTouch(evt);
       if (r != null) return r;
@@ -2153,7 +2154,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
       } catch (e) {/* Fix IE11 that throw error calling getData */
       }
-      if (upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
+      if (evt.dataTransfer.files.length===0 && upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
         extractUrlAndUpdateModel(html, evt);
       } else {
         extractFiles(evt, function (files) {
