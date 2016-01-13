@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 11.1.0
+ * @version 11.1.1
  */
 
 (function () {
@@ -424,7 +424,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 11.1.0
+ * @version 11.1.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -445,7 +445,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '11.1.0';
+ngFileUpload.version = '11.1.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -831,6 +831,15 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     var args = arguments;
     $timeout(function () {
       d.resolve.apply(d, args);
+    });
+    return d.promise;
+  };
+
+  upload.rejectPromise = function () {
+    var d = $q.defer();
+    var args = arguments;
+    $timeout(function () {
+      d.reject.apply(d, args);
     });
     return d.promise;
   };
@@ -2113,7 +2122,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var actualDragOverClass;
 
     elem[0].addEventListener('dragover', function (evt) {
-      if (isDisabled()) return;
+      if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       // handling dragover events from the Chrome download bar
@@ -2132,12 +2141,12 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       }
     }, false);
     elem[0].addEventListener('dragenter', function (evt) {
-      if (isDisabled()) return;
+      if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function (evt) {
-      if (isDisabled()) return;
+      if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       leaveTimeout = $timeout(function () {
@@ -2181,7 +2190,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       if (files.length) {
         updateModel(files, evt);
       } else {
-        extractFilesFromHtml('pasteUrl', evt.dataTransfer).then(function (files) {
+        extractFilesFromHtml('pasteUrl', clipboard).then(function (files) {
           updateModel(files, evt);
         });
       }
@@ -2207,7 +2216,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         html = (obj && obj.getData && obj.getData('text/html'));
       } catch (e) {/* Fix IE11 that throw error calling getData */
       }
-      if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.emptyPromise([]);
+      if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.rejectPromise([]);
       var urls = [];
       html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
         urls.push(src);

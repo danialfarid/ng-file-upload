@@ -45,6 +45,15 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     return d.promise;
   };
 
+  upload.rejectPromise = function () {
+    var d = $q.defer();
+    var args = arguments;
+    $timeout(function () {
+      d.reject.apply(d, args);
+    });
+    return d.promise;
+  };
+
   upload.happyPromise = function (promise, data) {
     var d = $q.defer();
     promise.then(function (result) {
