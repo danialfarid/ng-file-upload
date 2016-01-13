@@ -200,7 +200,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
                ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
-    // centerCrop true will center crop the image if it doesn't fit within the given width/height or ratio. 
+    // centerCrop true will center crop the image if it does not fit within the given width/height or ratio. 
     // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
     // so the resulting image width (or height) could be less than given width (or height).
     // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
