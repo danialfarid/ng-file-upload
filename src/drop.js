@@ -111,7 +111,7 @@
         html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
       } catch (e) {/* Fix IE11 that throw error calling getData */
       }
-      if (upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
+      if (evt.dataTransfer.files.length===0 && upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
         extractUrlAndUpdateModel(html, evt);
       } else {
         extractFiles(evt, function (files) {
