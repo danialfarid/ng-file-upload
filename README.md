@@ -70,7 +70,7 @@ Table of Content:
 * Upload single file on file select:
 [http://jsfiddle.net/danialfarid/0mz6ff9o/135/](http://jsfiddle.net/danialfarid/0mz6ff9o/135/)
 * Drop and upload with $watch:
-[http://jsfiddle.net/danialfarid/s8kc7wg0/219/](http://jsfiddle.net/danialfarid/s8kc7wg0/219/)
+[http://jsfiddle.net/danialfarid/s8kc7wg0/400/](http://jsfiddle.net/danialfarid/s8kc7wg0/400/)
 * Image Crop and Upload
 [http://jsfiddle.net/xxo3sk41/1/](http://jsfiddle.net/xxo3sk41/1/)
 ```html
