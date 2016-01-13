@@ -208,6 +208,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // apply ngf-resize only if this function returns true. To filter specific images to be resized.
             
   //validations:
+  ngf-max-files="10" // maximum number of files allowed to be selected or dropped, validate error name: maxFiles
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
               // you can exclude specific files by ! at the beginning.
               // validate error name: pattern
@@ -365,9 +366,10 @@ for jsob byte streaming support #359 */
 Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
-/* Converts a dataUrl to Blob object.
+/* converts a dataUrl to Blob object.
 var blob = upload.dataUrltoBlob(dataurl, name);
-
+/* returns true if there is an upload in progress. Can be used to prompt user before closing browser tab */
+Upload.isUploadInProgress() boolean
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
