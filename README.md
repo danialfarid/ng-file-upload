@@ -219,7 +219,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
   ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
-  ngf-dimensions="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
+  ngf-dimensions="$width > 1000 || $height > 1000" or "validateDimension($file, $width, $height)"
               // validate the image dimensions, validate error name: dimensions
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
               // validate error name: maxDuration

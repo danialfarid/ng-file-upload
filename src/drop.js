@@ -106,19 +106,16 @@
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      var html;
-      try {
-        html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
-      } catch (e) {/* Fix IE11 that throw error calling getData */
-      }
-      if (evt.dataTransfer.files.length===0 && upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
-        extractUrlAndUpdateModel(html, evt);
-      } else {
-        extractFiles(evt, function (files) {
-            upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
-          }, attrGetter('ngfAllowDir', scope) !== false,
-          attrGetter('multiple') || attrGetter('ngfMultiple', scope));
-      }
+      extractFiles(evt, attrGetter('ngfAllowDir', scope) !== false,
+        attrGetter('multiple') || attrGetter('ngfMultiple', scope)).then(function (files) {
+        if (files.length) {
+          updateModel(files, evt);
+        } else {
+          extractFilesFromHtml('dropUrl', evt.dataTransfer).then(function (files) {
+            updateModel(files, evt);
+          });
+        }
+      });
     }, false);
     elem[0].addEventListener('paste', function (evt) {
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -136,16 +133,11 @@
         }
       }
       if (files.length) {
-        upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        updateModel(files, evt);
       } else {
-        var html;
-        try {
-          html = (clipboard && clipboard.getData && clipboard.getData('text/html'));
-        } catch (e) {/* Fix IE11 that throw error calling getData */
-        }
-        if (upload.shouldUpdateOn('pasteUrl', attr, scope) && html) {
-          extractUrlAndUpdateModel(html, evt);
-        }
+        extractFilesFromHtml('pasteUrl', evt.dataTransfer).then(function (files) {
+          updateModel(files, evt);
+        });
       }
     }, false);
 
@@ -159,7 +151,17 @@
       });
     }
 
-    function extractUrlAndUpdateModel(html, evt) {
+    function updateModel(files, evt) {
+      upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+    }
+
+    function extractFilesFromHtml(updateOn, obj) {
+      var html;
+      try {
+        html = (obj && obj.getData && obj.getData('text/html'));
+      } catch (e) {/* Fix IE11 that throw error calling getData */
+      }
+      if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.emptyPromise([]);
       var urls = [];
       html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
         urls.push(src);
@@ -176,9 +178,13 @@
             //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
           }));
         });
+        var defer = $q.defer();
         $q.all(promises).then(function () {
-          upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+          defer.resolve(files);
+        }, function (e) {
+          defer.reject(e);
         });
+        return defer.promise;
       }
     }
 
@@ -209,58 +215,65 @@
       callback(dClass);
     }
 
-    function extractFiles(evt, callback, allowDir, multiple) {
-      var files = [], processing = 0;
-
-      function traverseFileTree(files, entry, path) {
+    function extractFiles(evt, allowDir, multiple) {
+      var maxFiles = upload.getValidationAttr(attr, scope, 'maxFiles') || Number.MAX_VALUE;
+      var maxTotalSize = upload.getValidationAttr(attr, scope, 'maxTotalSize') || Number.MAX_VALUE;
+      var files = [], totalSize = 0;
+      function traverseFileTree(entry, path) {
+        var defer = $q.defer();
         if (entry != null) {
           if (entry.isDirectory) {
             var filePath = (path || '') + entry.name;
-            files.push({name: entry.name, type: 'directory', path: filePath});
+            var promises = [upload.emptyPromise({name: entry.name, type: 'directory', path: filePath})];
             var dirReader = entry.createReader();
             var entries = [];
-            processing++;
             var readEntries = function () {
               dirReader.readEntries(function (results) {
                 try {
                   if (!results.length) {
-                    for (var i = 0; i < entries.length; i++) {
-                      traverseFileTree(files, entries[i], (path ? path : '') + entry.name + '/');
-                    }
-                    processing--;
+                    angular.forEach(entries.slice(0), function(e) {
+                      if (files.length <= maxFiles && totalSize <= maxTotalSize) {
+                        promises.push(traverseFileTree(e, (path ? path : '') + entry.name + '/'));
+                      }
+                    });
+                    $q.all(promises).then(function () {
+                      defer.resolve();
+                    }, function (e) {
+                      defer.reject(e);
+                    });
                   } else {
                     entries = entries.concat(Array.prototype.slice.call(results || [], 0));
                     readEntries();
                   }
                 } catch (e) {
-                  processing--;
-                  console.error(e);
+                  defer.reject(e);
                 }
-              }, function () {
-                processing--;
+              }, function (e) {
+                defer.reject(e);
               });
             };
             readEntries();
           } else {
-            processing++;
             entry.file(function (file) {
               try {
-                processing--;
                 file.path = (path ? path : '') + file.name;
                 files.push(file);
+                totalSize += file.size;
+                defer.resolve();
               } catch (e) {
-                processing--;
-                console.error(e);
+                defer.reject(e);
               }
-            }, function () {
-              processing--;
+            }, function (e) {
+              defer.reject(e);
             });
           }
         }
+        return defer.promise;
       }
 
-      var items = evt.dataTransfer.items;
+      var promises = [upload.emptyPromise()];
 
+      var items = evt.dataTransfer.items;
       if (items && items.length > 0 && $location.protocol() !== 'file') {
         for (var i = 0; i < items.length; i++) {
           if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
@@ -269,13 +282,17 @@
               continue;
             }
             if (entry != null) {
-              traverseFileTree(files, entry);
+              promises.push(traverseFileTree(entry));
             }
           } else {
             var f = items[i].getAsFile();
-            if (f != null) files.push(f);
+            if (f != null) {
+              files.push(f);
+              totalSize += f.size;
+            }
           }
-          if (!multiple && files.length > 0) break;
+          if (files.length > maxFiles || totalSize > maxTotalSize ||
+            (!multiple && files.length > 0)) break;
         }
       } else {
         var fileList = evt.dataTransfer.files;
@@ -284,30 +301,28 @@
             var file = fileList.item(j);
             if (file.type || file.size > 0) {
               files.push(file);
+              totalSize += file.size;
             }
-            if (!multiple && files.length > 0) {
-              break;
-            }
+            if (files.length > maxFiles || totalSize > maxTotalSize ||
+              (!multiple && files.length > 0)) break;
           }
         }
       }
-      var delays = 0;
-      (function waitForProcess(delay) {
-        $timeout(function () {
-          if (!processing) {
-            if (!multiple && files.length > 1) {
-              i = 0;
-              while (files[i].type === 'directory') i++;
-              files = [files[i]];
-            }
-            callback(files);
-          } else {
-            if (delays++ * 10 < 20 * 1000) {
-              waitForProcess(10);
-            }
-          }
-        }, delay || 0);
-      })();
+
+      var defer = $q.defer();
+      $q.all(promises).then(function () {
+        if (!multiple) {
+          var i = 0;
+          while (files[i].type === 'directory') i++;
+          defer.resolve([files[i]]);
+        } else {
+            defer.resolve(files);
+        }
+      }, function (e) {
+        defer.reject(e);
+      });
+
+      return defer.promise;
     }
   }
 
