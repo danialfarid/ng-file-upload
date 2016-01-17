@@ -27,7 +27,7 @@ ngFileUpload.version = '<%= pkg.version %>';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
-  upload.promises = [];
+  upload.promisesCount = 0;
 
   this.isResumeSupported = function () {
     return window.Blob && (window.Blob instanceof Function) && new window.Blob().slice;
@@ -172,18 +172,15 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       return promise;
     };
 
-    upload.promises.push(promise);
+    upload.promisesCount++;
     promise['finally'](function () {
-      var i = upload.promises.indexOf(promise);
-      if (i > -1) {
-        upload.promises.splice(i, 1);
-      }
+      upload.promisesCount--;
     });
     return promise;
   }
 
   this.isUploadInProgress = function() {
-    return upload.promises.length > 0;
+    return upload.promisesCount > 0;
   };
 
   this.rename = function (file, name) {

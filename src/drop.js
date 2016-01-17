@@ -313,7 +313,7 @@
       $q.all(promises).then(function () {
         if (!multiple) {
           var i = 0;
-          while (files[i].type === 'directory') i++;
+          while (files.length && files[i].type === 'directory') i++;
           defer.resolve([files[i]]);
         } else {
             defer.resolve(files);
