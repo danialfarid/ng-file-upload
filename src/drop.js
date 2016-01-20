@@ -218,13 +218,18 @@
     function extractFiles(evt, allowDir, multiple) {
       var maxFiles = upload.getValidationAttr(attr, scope, 'maxFiles') || Number.MAX_VALUE;
       var maxTotalSize = upload.getValidationAttr(attr, scope, 'maxTotalSize') || Number.MAX_VALUE;
+      var includeDir = attrGetter('ngfIncludeDir', scope);
       var files = [], totalSize = 0;
       function traverseFileTree(entry, path) {
         var defer = $q.defer();
         if (entry != null) {
           if (entry.isDirectory) {
-            var filePath = (path || '') + entry.name;
-            var promises = [upload.emptyPromise({name: entry.name, type: 'directory', path: filePath})];
+            var promises = [upload.emptyPromise()];
+            if (includeDir) {
+              var file = {type : 'directory'};
+              file.name = file.path = (path || '') + entry.name + entry.name;
+              files.push(file);
+            }
             var dirReader = entry.createReader();
             var entries = [];
             var readEntries = function () {
@@ -257,6 +262,9 @@
             entry.file(function (file) {
               try {
                 file.path = (path ? path : '') + file.name;
+                if (includeDir) {
+                  file = upload.rename(file, file.path);
+                }
                 files.push(file);
                 totalSize += file.size;
                 defer.resolve();

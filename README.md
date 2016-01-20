@@ -181,6 +181,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   *ngf-accept="'image/*'" // standard HTML accept attr, browser specific select popup window
   
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
+  +ngf-include-dir="boolean" //default false, include directories in the dropped file array. 
+    //You can detect if they are directory or not by checking the type === 'directory'.
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
                     or "'myDragOverClass'" or "calcDragOverClass($event)"
     // default "dragover". drag over css class behaviour. could be a string, a function 
@@ -197,16 +199,19 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-enable-firefox-paste="boolean" // *experimental* default false, enable firefox image paste by making element contenteditable
 
   ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg', 
-               ratio: '1:2', centerCrop: true, pattern='.jpg'}" 
+               ratio: '1:2', centerCrop: true, pattern='.jpg', restoreExif: false}" 
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
     // centerCrop true will center crop the image if it does not fit within the given width/height or ratio. 
     // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
     // so the resulting image width (or height) could be less than given width (or height).
     // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
+    // restoreExif boolean default true, will restore exif info on the resized image.
   ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
     // apply ngf-resize only if this function returns true. To filter specific images to be resized.
-            
+  ngf-validate-after-resize="false" // (defulat) boolean if true all validation will be run after 
+    // the images are being resized, so any validation error before resize will be ignored.
+          
   //validations:
   ngf-max-files="10" // maximum number of files allowed to be selected or dropped, validate error name: maxFiles
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
