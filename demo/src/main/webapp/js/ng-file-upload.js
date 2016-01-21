@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 11.2.0
+ * @version 11.2.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '11.2.0';
+ngFileUpload.version = '11.2.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -137,6 +137,10 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         throw e;
       });
     } else {
+      if (config._chunkSize) {
+        config._start = 0;
+        config._end = config._start + config._chunkSize;
+      }
       uploadWithAngular();
     }
 
@@ -2031,7 +2035,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
     }
   }
 
-  upload.readOrientation = function(file) {
+  upload.readOrientation = function (file) {
     var defer = $q.defer();
     var reader = new FileReader();
     var slicedFile = file.slice(0, 64 * 1024);
@@ -2040,15 +2044,18 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
       return defer.reject(e);
     };
     reader.onload = function (e) {
+      var result = {orientation: 1};
       var view = new DataView(this.result);
-      if (view.getUint16(0, false) !== 0xFFD8) return defer.reject();
+      if (view.getUint16(0, false) !== 0xFFD8) return defer.resolve(result);
+
       var length = view.byteLength,
         offset = 2;
       while (offset < length) {
         var marker = view.getUint16(offset, false);
         offset += 2;
         if (marker === 0xFFE1) {
-          if (view.getUint32(offset += 2, false) !== 0x45786966) return defer.reject();
+          if (view.getUint32(offset += 2, false) !== 0x45786966) return defer.resolve(result);
+
           var little = view.getUint16(offset += 6, false) === 0x4949;
           offset += view.getUint32(offset + 4, little);
           var tags = view.getUint16(offset, little);
@@ -2056,29 +2063,29 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
           for (var i = 0; i < tags; i++)
             if (view.getUint16(offset + (i * 12), little) === 0x0112) {
               var orientation = view.getUint16(offset + (i * 12) + 8, little);
-              var result = {orientation: orientation};
               if (orientation >= 2 && orientation <= 8) {
                 view.setUint16(offset + (i * 12) + 8, 1, little);
                 result.fixedArrayBuffer = e.target.result;
               }
+              result.orientation = orientation;
               return defer.resolve(result);
             }
         } else if ((marker & 0xFF00) !== 0xFF00) break;
         else offset += view.getUint16(offset, false);
       }
-      defer.reject();
+      return defer.resolve(result);
     };
     return defer.promise;
   };
 
-  function arrayBufferToBase64( buffer ) {
+  function arrayBufferToBase64(buffer) {
     var binary = '';
-    var bytes = new Uint8Array( buffer );
+    var bytes = new Uint8Array(buffer);
     var len = bytes.byteLength;
     for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode( bytes[ i ] );
+      binary += String.fromCharCode(bytes[i]);
     }
-    return window.btoa( binary );
+    return window.btoa(binary);
   }
 
   upload.applyExifRotation = function (file) {
@@ -2123,7 +2130,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
     return deferred.promise;
   };
 
-  upload.restoreExif = function(orig, resized) {
+  upload.restoreExif = function (orig, resized) {
     var ExifRestorer = {};
 
     ExifRestorer.KEY_STR = 'ABCDEFGHIJKLMNOP' +
