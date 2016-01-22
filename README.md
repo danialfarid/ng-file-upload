@@ -375,6 +375,10 @@ Upload.json(obj)
 var blob = upload.dataUrltoBlob(dataurl, name);
 /* returns true if there is an upload in progress. Can be used to prompt user before closing browser tab */
 Upload.isUploadInProgress() boolean
+/* downloads and converts a given url to Blob object which could be added to files model */
+Upload.urlToBlob(url).then(function(blob) {...});
+/* returns boolean to check if the object is file and could be used as file in Upload.upload()/http() */
+Upload.isFile(obj);
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
