@@ -405,7 +405,7 @@ the file name/extension, size or other validations on drag. There is also some l
 **Upload.setDefaults()**:
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values.
 
-**Resumable Uploads**
+**Resumable Uploads:**
 The plugin supports resumable uploads for large files. 
 On your server you need to keep track of what files are being uploaded and how much of the file is uploaded.
  * `url` upload endpoint need to reassemble the file chunks by appending uploading content to the end of the file or correct chunk position if it already exists.
