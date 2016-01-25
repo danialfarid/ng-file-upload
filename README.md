@@ -371,7 +371,7 @@ for jsob byte streaming support #359 */
 Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
-/* converts a dataUrl to Blob object.
+/* converts a dataUrl to Blob object.*/
 var blob = upload.dataUrltoBlob(dataurl, name);
 /* returns true if there is an upload in progress. Can be used to prompt user before closing browser tab */
 Upload.isUploadInProgress() boolean
