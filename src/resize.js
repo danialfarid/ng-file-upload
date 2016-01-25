@@ -82,7 +82,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
   upload.isResizeSupported = function () {
     var elem = document.createElement('canvas');
-    return window.atob && elem.getContext && elem.getContext('2d');
+    return window.atob && elem.getContext && elem.getContext('2d') && window.Blob;
   };
 
   if (upload.isResizeSupported()) {
