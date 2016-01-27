@@ -379,6 +379,8 @@ Upload.isUploadInProgress() boolean
 Upload.urlToBlob(url).then(function(blob) {...});
 /* returns boolean to check if the object is file and could be used as file in Upload.upload()/http() */
 Upload.isFile(obj);
+/* fixes the exif orientation of the jpeg image file*/
+Upload.applyExifRotation(file).then(...)
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
