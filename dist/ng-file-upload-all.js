@@ -1175,7 +1175,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       try {
         if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
           generatedElems.push({el: elem, ref: fileElem.parent()});
-          document.body.appendChild(fileElem[0].parent());
+          document.body.appendChild(fileElem.parent()[0]);
           fileElem.bind('change', changeFn);
         }
       } catch(e){/*ignore*/}
