@@ -166,6 +166,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
   ngf-model-invalid="invalidFilesArray" // binds the invalid selected/dropped files to this model.
+  ngf-before-model-change="beforeChange($files, ...)" // called after file select/drop and before 
+    // model change, validation and resize is processed
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
