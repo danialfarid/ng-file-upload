@@ -211,7 +211,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // restoreExif boolean default true, will restore exif info on the resized image.
   ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
     // apply ngf-resize only if this function returns true. To filter specific images to be resized.
-  ngf-validate-after-resize="false" // (defulat) boolean if true all validation will be run after 
+  ngf-validate-after-resize="boolean" // default false, if true all validation will be run after 
     // the images are being resized, so any validation error before resize will be ignored.
           
   //validations:
@@ -359,7 +359,7 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
 /* Resizes an image. Returns a promise */
-upload.resize(file, width, height, quality, type, ratio, centerCrop).then(function(resizedFile){...});
+Upload.resize(file, width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif).then(function(resizedFile){...});
 
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
