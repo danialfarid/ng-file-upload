@@ -37,7 +37,7 @@ Table of Content:
 * image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
-* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable cusome sync or async validations.
+* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable custom sync or async validations.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
@@ -492,7 +492,7 @@ provided by [Coshx Labs](http://www.coshx.com/).
   * Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 ##<a name="cors"></a>CORS
-To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
+To support CORS upload your server needs to allow cross domain requests. You can achieve that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
 ([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/CORSFilter.java))
 ```java
 httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
