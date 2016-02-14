@@ -69,7 +69,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     return deferred.promise;
   };
 
-  upload.dataUrltoBlob = function (dataurl, name) {
+  upload.dataUrltoBlob = function (dataurl, name, origSize) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
     while (n--) {
@@ -77,6 +77,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     }
     var blob = new window.Blob([u8arr], {type: mime});
     blob.name = name;
+    blob.$ngfOrigSize = origSize;
     return blob;
   };
 
@@ -112,7 +113,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
               setTimeout(function () {throw e;}, 1);
             }
           }
-          deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
+          deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name, file.size));
         }, function (r) {
           if (r === 'resizeIf') {
             deferred.resolve(file);

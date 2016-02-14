@@ -106,12 +106,19 @@
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      extractFiles(evt, attrGetter('ngfAllowDir', scope) !== false,
+      var items = evt.dataTransfer.items;
+      var html;
+      try {
+        html = evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html');
+      } catch (e) {/* Fix IE11 that throw error calling getData */
+      }
+
+      extractFiles(items, evt.dataTransfer.files, attrGetter('ngfAllowDir', scope) !== false,
         attrGetter('multiple') || attrGetter('ngfMultiple', scope)).then(function (files) {
         if (files.length) {
           updateModel(files, evt);
         } else {
-          extractFilesFromHtml('dropUrl', evt.dataTransfer).then(function (files) {
+          extractFilesFromHtml('dropUrl', html).then(function (files) {
             updateModel(files, evt);
           });
         }
@@ -155,12 +162,7 @@
       upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
     }
 
-    function extractFilesFromHtml(updateOn, obj) {
-      var html;
-      try {
-        html = (obj && obj.getData && obj.getData('text/html'));
-      } catch (e) {/* Fix IE11 that throw error calling getData */
-      }
+    function extractFilesFromHtml(updateOn, html) {
       if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.rejectPromise([]);
       var urls = [];
       html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
@@ -210,18 +212,19 @@
       callback(dClass);
     }
 
-    function extractFiles(evt, allowDir, multiple) {
+    function extractFiles(items, fileList, allowDir, multiple) {
       var maxFiles = upload.getValidationAttr(attr, scope, 'maxFiles') || Number.MAX_VALUE;
       var maxTotalSize = upload.getValidationAttr(attr, scope, 'maxTotalSize') || Number.MAX_VALUE;
       var includeDir = attrGetter('ngfIncludeDir', scope);
       var files = [], totalSize = 0;
+
       function traverseFileTree(entry, path) {
         var defer = $q.defer();
         if (entry != null) {
           if (entry.isDirectory) {
             var promises = [upload.emptyPromise()];
             if (includeDir) {
-              var file = {type : 'directory'};
+              var file = {type: 'directory'};
               file.name = file.path = (path || '') + entry.name + entry.name;
               files.push(file);
             }
@@ -231,7 +234,7 @@
               dirReader.readEntries(function (results) {
                 try {
                   if (!results.length) {
-                    angular.forEach(entries.slice(0), function(e) {
+                    angular.forEach(entries.slice(0), function (e) {
                       if (files.length <= maxFiles && totalSize <= maxTotalSize) {
                         promises.push(traverseFileTree(e, (path ? path : '') + entry.name + '/'));
                       }
@@ -276,7 +279,6 @@
 
       var promises = [upload.emptyPromise()];
 
-      var items = evt.dataTransfer.items;
       if (items && items.length > 0 && $location.protocol() !== 'file') {
         for (var i = 0; i < items.length; i++) {
           if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
@@ -298,7 +300,6 @@
             (!multiple && files.length > 0)) break;
         }
       } else {
-        var fileList = evt.dataTransfer.files;
         if (fileList != null) {
           for (var j = 0; j < fileList.length; j++) {
             var file = fileList.item(j);
@@ -314,12 +315,12 @@
 
       var defer = $q.defer();
       $q.all(promises).then(function () {
-        if (!multiple) {
+        if (!multiple && !includeDir) {
           var i = 0;
-          while (files.length && files[i].type === 'directory') i++;
+          while (files[i] && files[i].type === 'directory') i++;
           defer.resolve([files[i]]);
         } else {
-            defer.resolve(files);
+          defer.resolve(files);
         }
       }, function (e) {
         defer.reject(e);

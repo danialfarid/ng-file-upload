@@ -70,7 +70,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           if (files && !angular.isArray(files)) {
             files = [files];
           }
-          upload.validate(files, ngModel, attr, scope).then(function () {
+          upload.validate(files, files ? files.length : 0, ngModel, attr, scope).then(function () {
             upload.applyModelValidation(ngModel, files);
           });
         }
@@ -111,7 +111,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return val;
   };
 
-  upload.validate = function (files, ngModel, attr, scope) {
+  upload.validate = function (files, allLength, ngModel, attr, scope) {
     ngModel = ngModel || {};
     ngModel.$ngfValidations = ngModel.$ngfValidations || [];
 
@@ -139,6 +139,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             if (val != null) {
               if (!fn(file, val)) {
                 file.$error = name;
+                (file.$errorMessages = (file.$errorMessages || {})).name = true;
                 file.$errorParam = val;
                 files.splice(i, 1);
                 valid = false;
@@ -152,16 +153,15 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
     }
 
-    var filesLength = files.length;
     validateSync('maxFiles', null, function (file, val) {
-      return filesLength <= val;
+      return allLength <= val;
     });
     validateSync('pattern', null, upload.validatePattern);
     validateSync('minSize', 'size.min', function (file, val) {
-      return file.size >= upload.translateScalars(val);
+      return file.size + 0.1 >= upload.translateScalars(val);
     });
     validateSync('maxSize', 'size.max', function (file, val) {
-      return file.size <= upload.translateScalars(val);
+      return file.size - 0.1 <= upload.translateScalars(val);
     });
     var totalSize = 0;
     validateSync('maxTotalSize', null, function (file, val) {
@@ -187,6 +187,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           asyncFn(file, val).then(function (d) {
             if (!fn(d, val)) {
               file.$error = name;
+              (file.$errorMessages = (file.$errorMessages || {})).name = true;
               file.$errorParam = val;
               defer.reject();
             } else {
@@ -195,6 +196,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           }, function () {
             if (attrGetter('ngfValidateForce', {$file: file})) {
               file.$error = name;
+              (file.$errorMessages = (file.$errorMessages || {})).name = true;
               file.$errorParam = val;
               defer.reject();
             } else {

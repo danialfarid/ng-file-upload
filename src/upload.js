@@ -69,7 +69,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     if (!config.disableProgress) {
       config.headers.__setXHR_ = function () {
         return function (xhr) {
-          if (!xhr) return;
+          if (!xhr || !xhr.upload || !xhr.upload.addEventListener) return;
           config.__XHR = xhr;
           if (config.xhrFn) config.xhrFn(xhr);
           xhr.upload.addEventListener('progress', function (e) {
@@ -347,11 +347,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
   this.translateScalars = function (str) {
     if (angular.isString(str)) {
       if (str.search(/kb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000);
+        return parseFloat(str.substring(0, str.length - 2) * 1024);
       } else if (str.search(/mb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000000);
+        return parseFloat(str.substring(0, str.length - 2) * 1048576);
       } else if (str.search(/gb/i) === str.length - 2) {
-        return parseFloat(str.substring(0, str.length - 2) * 1000000000);
+        return parseFloat(str.substring(0, str.length - 2) * 1073741824);
       } else if (str.search(/b/i) === str.length - 1) {
         return parseFloat(str.substring(0, str.length - 1));
       } else if (str.search(/s/i) === str.length - 1) {

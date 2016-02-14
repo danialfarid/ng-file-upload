@@ -83,7 +83,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     var param = upload.attrGetter('ngfResize', attr, scope);
     if (!param || !angular.isObject(param) || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
     var promises = [upload.emptyPromise()];
-    angular.forEach(files, function (f, i) {
+
+    function handleFile(f, i) {
       if (f.type.indexOf('image') === 0) {
         if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
         var promise = upload.resize(f, param.width, param.height, param.quality,
@@ -99,43 +100,20 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
           f.$errorParam = (e ? (e.message ? e.message : e) + ': ' : '') + (f && f.name);
         });
       }
-    });
-    return $q.all(promises);
-  }
-
-  function handleKeep(files, prevFiles, attr, scope) {
-    var dupFiles = [];
-    var keep = upload.attrGetter('ngfKeep', attr, scope);
-    if (keep) {
-      var hasNew = false;
-
-      if (keep === 'distinct' || upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
-        var len = prevFiles.length;
-        if (files) {
-          for (var i = 0; i < files.length; i++) {
-            for (var j = 0; j < len; j++) {
-              if (files[i].name === prevFiles[j].name) {
-                dupFiles.push(files[i]);
-                break;
-              }
-            }
-            if (j === len) {
-              prevFiles.push(files[i]);
-              hasNew = true;
-            }
-          }
-        }
-        files = prevFiles;
-      } else {
-        files = prevFiles.concat(files || []);
-      }
     }
-    return {files: files, dupFiles: dupFiles, keep: keep};
+
+    for (var i = 0; i < files.length; i++) {
+      handleFile(files[i], i);
+    }
+    return $q.all(promises);
   }
 
   upload.updateModel = function (ngModel, attr, scope, fileChange, files, evt, noDelay) {
     function update(files, invalidFiles, newFiles, dupFiles, isSingleModel) {
+      attr.$$ngfPrevValidFiles = files;
+      attr.$$ngfPrevInvalidFiles = invalidFiles;
       var file = files && files.length ? files[0] : null;
+      var invalidFile = invalidFiles && invalidFiles.length ? invalidFiles[0] : null;
 
       if (ngModel) {
         upload.applyModelValidation(ngModel, files);
@@ -149,6 +127,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
           $newFiles: newFiles,
           $duplicateFiles: dupFiles,
           $invalidFiles: invalidFiles,
+          $invalidFile: invalidFile,
           $event: evt
         });
       }
@@ -156,7 +135,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
       var invalidModel = upload.attrGetter('ngfModelInvalid', attr);
       if (invalidModel) {
         $timeout(function () {
-          $parse(invalidModel).assign(scope, invalidFiles);
+          $parse(invalidModel).assign(scope, isSingleModel ? invalidFile : invalidFiles);
         });
       }
       $timeout(function () {
@@ -164,83 +143,128 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
       });
     }
 
-    var newFiles = files;
-    var prevFiles = ngModel && ngModel.$modelValue && (angular.isArray(ngModel.$modelValue) ?
-        ngModel.$modelValue : [ngModel.$modelValue]);
-    prevFiles = (prevFiles || attr.$$ngfPrevFiles || []).slice(0);
-    var keepResult = handleKeep(files, prevFiles, attr, scope);
-    files = keepResult.files;
-    var dupFiles = keepResult.dupFiles;
-    var isSingleModel = !upload.attrGetter('ngfMultiple', attr, scope) && !upload.attrGetter('multiple', attr) && !keepResult.keep;
+    var allNewFiles, dupFiles = [], prevValidFiles, prevInvalidFiles,
+      invalids = [], valids = [];
 
-    attr.$$ngfPrevFiles = files;
+    function removeDuplicates() {
+      function equals(f1, f2) {
+        return f1.name === f2.name && (f1.$ngfOrigSize || f1.size) === (f2.$ngfOrigSize || f2.size) &&
+          f1.type === f2.type;
+      }
 
-    if (keepResult.keep && (!newFiles || !newFiles.length)) return;
+      function isInPrevFiles(f) {
+        var j;
+        for (j = 0; j < prevValidFiles.length; j++) {
+          if (equals(f, prevValidFiles[j])) {
+            return true;
+          }
+        }
+        for (j = 0; j < prevInvalidFiles.length; j++) {
+          if (equals(f, prevInvalidFiles[j])) {
+            return true;
+          }
+        }
+        return false;
+      }
 
-    upload.attrGetter('ngfBeforeModelChange', attr, scope, {
-      $files: files,
-      $file: files && files.length ? files[0] : null,
-      $duplicateFiles: dupFiles,
-      $event: evt
-    });
+      if (files) {
+        allNewFiles = [];
+        dupFiles = [];
+        for (var i = 0; i < files.length; i++) {
+          if (isInPrevFiles(files[i])) {
+            dupFiles.push(files[i]);
+          } else {
+            allNewFiles.push(files[i]);
+          }
+        }
+      }
+    }
 
-    var validateAfterResize = upload.attrGetter('ngfValidateAfterResize', attr, scope);
-    var invalids = [];
+    function toArray(v) {
+      return angular.isArray(v) ? v : [v];
+    }
+
     function separateInvalids() {
-      var valids = [];
-      angular.forEach(files, function (file) {
+      valids = [];
+      invalids = [];
+      angular.forEach(allNewFiles, function (file) {
         if (file.$error) {
           invalids.push(file);
         } else {
           valids.push(file);
         }
       });
-      files = valids;
     }
 
-    upload.validate(newFiles, ngModel, attr, scope).then(function () {
-      if (noDelay) {
-        update(files, [], newFiles, dupFiles, isSingleModel);
-      } else {
-        var options = upload.attrGetter('ngModelOptions', attr, scope);
-        if ((!options || !options.allowInvalid) && !validateAfterResize) {
-          separateInvalids();
-        }
-        var fixOrientation = upload.emptyPromise(files);
-        if (upload.attrGetter('ngfFixOrientation', attr, scope) && upload.isExifSupported()) {
-          fixOrientation = applyExifRotations(files, attr, scope);
-        }
-        fixOrientation.then(function () {
-          function updateModel() {
-            $timeout(function () {
-              update(files, invalids, newFiles, dupFiles, isSingleModel);
-            }, options && options.debounce ? options.debounce.change || options.debounce : 0);
-          }
-          resize(files, attr, scope).then(function () {
-            if (validateAfterResize) {
-              upload.validate(files, ngModel, attr, scope).then(function () {
-                separateInvalids();
-                updateModel();
-              });
-            } else {
-              updateModel();
-            }
-          }, function (e) {
-            throw 'Could not resize files ' + e;
-          });
-        });
+    function resizeAndUpdate() {
+      function updateModel() {
+        $timeout(function () {
+          update(keep ? prevValidFiles.concat(valids) : valids,
+            keep ? prevInvalidFiles.concat(invalids) : invalids,
+            files, dupFiles, isSingleModel);
+        }, options && options.debounce ? options.debounce.change || options.debounce : 0);
       }
+
+      resize(validateAfterResize ? allNewFiles : valids, attr, scope).then(function () {
+        if (validateAfterResize) {
+          upload.validate(allNewFiles, allLength, ngModel, attr, scope).then(function () {
+            separateInvalids();
+            updateModel();
+          });
+        } else {
+          updateModel();
+        }
+      }, function (e) {
+        throw 'Could not resize files ' + e;
+      });
+    }
+
+    prevValidFiles = attr.$$ngfPrevValidFiles || [];
+    prevInvalidFiles = attr.$$ngfPrevInvalidFiles || [];
+    if (ngModel && ngModel.$modelValue) {
+      prevValidFiles = toArray(ngModel.$modelValue);
+    }
+
+    var keep = upload.attrGetter('ngfKeep', attr, scope);
+    allNewFiles = (files || []).slice(0);
+    if (keep === 'distinct' || upload.attrGetter('ngfKeepDistinct', attr, scope) === true) {
+      removeDuplicates(attr, scope);
+    }
+
+    var isSingleModel = !keep && !upload.attrGetter('ngfMultiple', attr, scope) && !upload.attrGetter('multiple', attr);
+
+    if (keep && !allNewFiles.length) return;
+
+    upload.attrGetter('ngfBeforeModelChange', attr, scope, {
+      $files: files,
+      $file: files && files.length ? files[0] : null,
+      $newFiles: allNewFiles,
+      $duplicateFiles: dupFiles,
+      $event: evt
     });
 
-    // cleaning object url memories
-    var l = prevFiles.length;
-    while (l--) {
-      var prevFile = prevFiles[l];
-      if (window.URL && prevFile.blobUrl) {
-        URL.revokeObjectURL(prevFile.blobUrl);
-        delete prevFile.blobUrl;
+    var validateAfterResize = upload.attrGetter('ngfValidateAfterResize', attr, scope);
+
+    var allLength = allNewFiles.length + prevValidFiles.length + prevInvalidFiles.length;
+    var options = upload.attrGetter('ngModelOptions', attr, scope);
+    upload.validate(allNewFiles, allLength, ngModel, attr, scope).then(function () {
+      if (noDelay) {
+        update(allNewFiles, [], files, dupFiles, isSingleModel);
+      } else {
+        if ((!options || !options.allowInvalid) && !validateAfterResize) {
+          separateInvalids();
+        } else {
+          valids = allNewFiles;
+        }
+        if (upload.attrGetter('ngfFixOrientation', attr, scope) && upload.isExifSupported()) {
+          applyExifRotations(valids, attr, scope).then(function () {
+            resizeAndUpdate();
+          });
+        } else {
+          resizeAndUpdate();
+        }
       }
-    }
+    });
   };
 
   return upload;

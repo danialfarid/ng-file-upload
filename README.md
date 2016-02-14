@@ -165,7 +165,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. 
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
-  ngf-model-invalid="invalidFilesArray" // binds the invalid selected/dropped files to this model.
+  ngf-model-invalid="invalidFile(s)" // binds the invalid selected/dropped file or files to this model.
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
@@ -341,6 +341,13 @@ Upload.http({
 
 /* Set the default values for ngf-select and ngf-drop directives*/
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
+
+// These two defaults could be decreased if you experience out of memory issues 
+// or could be increased if your app needs to show many images on the page.
+// Each image in ngf-src, ngf-background or ngf-thumbnail is stored and referenced as a blob url
+// and will only be released if the max value of the followings is reached.
+Upload.defaults.blobUrlsMaxMemory = 268435456 // default max total size of files stored in blob urls.
+Upload.defaults.blobUrlsMaxQueueSize = 200 // default max number of blob urls stored by this application.
 
 /* Convert a single file or array of files to a single or array of 
 base64 data url representation of the file(s).

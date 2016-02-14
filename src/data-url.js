@@ -51,7 +51,20 @@
             }
             $timeout(function () {
               file.$ngfBlobUrl = url;
-              if (url) deferred.resolve(url, file);
+              if (url) {
+                deferred.resolve(url, file);
+                upload.blobUrls = upload.blobUrls || [];
+                upload.blobUrlsTotalSize = upload.blobUrlsTotalSize || 0;
+                upload.blobUrls.push({url: url, size: file.size});
+                upload.blobUrlsTotalSize += file.size || 0;
+                var maxMemory = upload.defaults.blobUrlsMaxMemory || 268435456;
+                var maxLength = upload.defaults.blobUrlsMaxQueueSize || 200;
+                while ((upload.blobUrlsTotalSize > maxMemory || upload.blobUrls.length > maxLength) && upload.blobUrls.length > 1) {
+                  var obj = upload.blobUrls.splice(0, 1)[0];
+                  URL.revokeObjectURL(obj.url);
+                  upload.blobUrlsTotalSize -= obj.size;
+                }
+              }
             });
           } else {
             var fileReader = new FileReader();
@@ -59,6 +72,9 @@
               $timeout(function () {
                 file.$ngfDataUrl = e.target.result;
                 deferred.resolve(e.target.result, file);
+                $timeout(function () {
+                  delete file.$ngfDataUrl;
+                }, 1000);
               });
             };
             fileReader.onerror = function () {
@@ -71,7 +87,7 @@
           }
         } else {
           $timeout(function () {
-            file[disallowObjectUrl ? 'dataUrl' : 'blobUrl'] = '';
+            file[disallowObjectUrl ? '$ngfDataUrl' : '$ngfBlobUrl'] = '';
             deferred.reject();
           });
         }
