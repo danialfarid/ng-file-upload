@@ -366,7 +366,7 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
 /* Resizes an image. Returns a promise */
-Upload.resize(file, width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif).then(function(resizedFile){...});
+Upload.resize(file, width, height, quality, type, ratio, centerCrop, resizeIf).then(function(resizedFile){...});
 
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
