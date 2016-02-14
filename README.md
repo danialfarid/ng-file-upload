@@ -37,7 +37,7 @@ Table of Content:
 * image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
-* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable cusome sync or async validations.
+* native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable custom sync or async validations.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
 * plenty of sample server side code, available on nuget
@@ -112,7 +112,7 @@ var app = angular.module('fileUpload', ['ngFileUpload']);
 app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
     // upload later on form submit or something similar
     $scope.submit = function() {
-      if (form.file.$valid && $scope.file) {
+      if ($scope.form.file.$valid && $scope.file) {
         $scope.upload($scope.file);
       }
     };
@@ -166,6 +166,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
   ngf-model-invalid="invalidFile(s)" // binds the invalid selected/dropped file or files to this model.
+  ngf-before-model-change="beforeChange($files, ...)" // called after file select/drop and before 
+    // model change, validation and resize is processed
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
@@ -378,7 +380,7 @@ for jsob byte streaming support #359 */
 Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
-/* converts a dataUrl to Blob object.
+/* converts a dataUrl to Blob object.*/
 var blob = upload.dataUrltoBlob(dataurl, name);
 /* returns true if there is an upload in progress. Can be used to prompt user before closing browser tab */
 Upload.isUploadInProgress() boolean
@@ -386,6 +388,8 @@ Upload.isUploadInProgress() boolean
 Upload.urlToBlob(url).then(function(blob) {...});
 /* returns boolean to check if the object is file and could be used as file in Upload.upload()/http() */
 Upload.isFile(obj);
+/* fixes the exif orientation of the jpeg image file*/
+Upload.applyExifRotation(file).then(...)
 ```
 **ng-model**
 The model value will be a single file instead of an array if all of the followings are true:
@@ -495,7 +499,7 @@ provided by [Coshx Labs](http://www.coshx.com/).
   * Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 ##<a name="cors"></a>CORS
-To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
+To support CORS upload your server needs to allow cross domain requests. You can achieve that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
 ([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/CORSFilter.java))
 ```java
 httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");

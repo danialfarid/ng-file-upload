@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.0
+ * @version 12.0.1
  */
 
 (function () {
@@ -424,7 +424,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.0
+ * @version 12.0.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -445,14 +445,14 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.0.0';
+ngFileUpload.version = '12.0.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
   upload.promisesCount = 0;
 
   this.isResumeSupported = function () {
-    return window.Blob && (window.Blob instanceof Function) && new window.Blob().slice;
+    return window.Blob && (window.Blob instanceof Function) && window.Blob.prototype.slice;
   };
 
   var resumeSupported = this.isResumeSupported();
@@ -1199,7 +1199,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       try {
         if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
           generatedElems.push({el: elem, ref: fileElem.parent()});
-          document.body.appendChild(fileElem[0].parent());
+          document.body.appendChild(fileElem.parent()[0]);
           fileElem.bind('change', changeFn);
         }
       } catch(e){/*ignore*/}
