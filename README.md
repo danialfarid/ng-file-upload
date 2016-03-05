@@ -73,7 +73,7 @@ Table of Content:
 * Drop and upload with $watch:
 [http://jsfiddle.net/danialfarid/s8kc7wg0/400/](http://jsfiddle.net/danialfarid/s8kc7wg0/400/)
 * Image Crop and Upload
-[http://jsfiddle.net/xxo3sk41/1/](http://jsfiddle.net/xxo3sk41/1/)
+[http://jsfiddle.net/xxo3sk41/580/](http://jsfiddle.net/xxo3sk41/580/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
