@@ -26,6 +26,9 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
         return;
       }
       for (var i = 0; i < files.length; i++) {
+        Upload.imageDimensions(files[i]).then(function (d) {
+          $scope.d = d;
+        });
         $scope.errorMsg = null;
         (function (f) {
           $scope.upload(f, true);
@@ -37,7 +40,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   $scope.uploadPic = function (file) {
     $scope.formUpload = true;
     if (file != null) {
-      $scope.upload(file)
+      $scope.upload(file);
     }
   };
 

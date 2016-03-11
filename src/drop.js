@@ -183,6 +183,7 @@
         });
         return defer.promise;
       }
+      return upload.emptyPromise();
     }
 
     function calculateDragOverClass(scope, attr, evt, callback) {
@@ -315,7 +316,7 @@
 
       var defer = $q.defer();
       $q.all(promises).then(function () {
-        if (!multiple && !includeDir) {
+        if (!multiple && !includeDir && files.length) {
           var i = 0;
           while (files[i] && files[i].type === 'directory') i++;
           defer.resolve([files[i]]);

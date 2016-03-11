@@ -28,7 +28,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
   upload.readOrientation = function (file) {
     var defer = $q.defer();
     var reader = new FileReader();
-    var slicedFile = file.slice(0, 64 * 1024);
+    var slicedFile = file.slice ? file.slice(0, 64 * 1024) : file;
     reader.readAsArrayBuffer(slicedFile);
     reader.onerror = function (e) {
       return defer.reject(e);

@@ -34,7 +34,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
 * image paste form clipboard and drag and drop from browser pages (html5 only).
-* image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/xxo3sk41/1/) (html5 only)
+* image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/danialfarid/xxo3sk41/590/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
 * native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable custom sync or async validations.
@@ -72,7 +72,7 @@ Table of Content:
 * Drop and upload with $watch:
 [http://jsfiddle.net/danialfarid/s8kc7wg0/400/](http://jsfiddle.net/danialfarid/s8kc7wg0/400/)
 * Image Crop and Upload
-[http://jsfiddle.net/xxo3sk41/1/](http://jsfiddle.net/xxo3sk41/1/)
+[http://jsfiddle.net/danialfarid/xxo3sk41/590/](http://jsfiddle.net/danialfarid/xxo3sk41/590/)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
@@ -249,6 +249,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
 <div|... ngf-no-file-drop>File Drag/drop is not supported</div>
 
+// filter to convert the file to base64 data url.
+<a href="file | ngfDataUrl">image</a>
 ```
 
 #### File preview
@@ -376,7 +378,7 @@ Upload.isResumeSupported()
 /* returns a file which will be uploaded with the newName instead of original file name */
 Upload.rename(file, newName)
 /* converts the object to a Blob object with application/json content type 
-for jsob byte streaming support #359 */
+for jsob byte streaming support #359 (html5 only)*/
 Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
 Upload.json(obj)
