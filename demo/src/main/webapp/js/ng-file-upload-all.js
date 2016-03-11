@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.3
+ * @version 12.0.4
  */
 
 (function () {
@@ -424,7 +424,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.3
+ * @version 12.0.4
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -445,7 +445,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.0.3';
+ngFileUpload.version = '12.0.4';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1723,7 +1723,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             if (val != null) {
               if (!fn(file, val, i)) {
                 file.$error = name;
-                (file.$errorMessages = (file.$errorMessages || {})).name = true;
+                (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
                 file.$errorParam = val;
                 files.splice(i, 1);
                 valid = false;
@@ -1771,7 +1771,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           asyncFn(file, val).then(function (d) {
             if (!fn(d, val)) {
               file.$error = name;
-              (file.$errorMessages = (file.$errorMessages || {})).name = true;
+              (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
               file.$errorParam = val;
               defer.reject();
             } else {
@@ -1780,7 +1780,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           }, function () {
             if (attrGetter('ngfValidateForce', {$file: file})) {
               file.$error = name;
-              (file.$errorMessages = (file.$errorMessages || {})).name = true;
+              (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
               file.$errorParam = val;
               defer.reject();
             } else {

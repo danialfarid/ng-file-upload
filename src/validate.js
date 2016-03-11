@@ -139,7 +139,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             if (val != null) {
               if (!fn(file, val, i)) {
                 file.$error = name;
-                (file.$errorMessages = (file.$errorMessages || {})).name = true;
+                (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
                 file.$errorParam = val;
                 files.splice(i, 1);
                 valid = false;
@@ -187,7 +187,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           asyncFn(file, val).then(function (d) {
             if (!fn(d, val)) {
               file.$error = name;
-              (file.$errorMessages = (file.$errorMessages || {})).name = true;
+              (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
               file.$errorParam = val;
               defer.reject();
             } else {
@@ -196,7 +196,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           }, function () {
             if (attrGetter('ngfValidateForce', {$file: file})) {
               file.$error = name;
-              (file.$errorMessages = (file.$errorMessages || {})).name = true;
+              (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
               file.$errorParam = val;
               defer.reject();
             } else {
