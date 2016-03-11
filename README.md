@@ -12,12 +12,13 @@ Lightweight Angular directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md)
 
-**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0) [version 10.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/10.0.0) [version 11.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/11.0.0)
+**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0) [version 10.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/10.0.0) [version 11.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/11.0.0) [version 12.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/12.0.0)
+
 
 
 Ask questions on [StackOverflow](http://stackoverflow.com/) under the [ng-file-upload](http://stackoverflow.com/tags/ng-file-upload/) tag.<br/>
 For bug report or feature request please search through existing [issues](https://github.com/danialfarid/ng-file-upload/issues) first then open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). For faster response provide steps to reproduce/versions with a jsfiddle link. If you need support for your company contact [me](mailto:danial.farid@gmail.com).<br/>
-If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload) or get me a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>. Contributions welcomed.
+If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/modules/ng-file-upload) or get me a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>. Contributions are welcomed.
 
 
 Table of Content:
@@ -62,7 +63,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Samples:
-* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/544/](http://jsfiddle.net/danialfarid/maqbzv15/544/)
+* Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/1118/](http://jsfiddle.net/danialfarid/maqbzv15/1118/)
 * Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/136/](http://jsfiddle.net/danialfarid/2vq88rfs/136/)
 * Upload multiple files in one request on file select (html5 only):
@@ -211,7 +212,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // restoreExif boolean default true, will restore exif info on the resized image.
   ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
     // apply ngf-resize only if this function returns true. To filter specific images to be resized.
-  ngf-validate-after-resize="false" // (defulat) boolean if true all validation will be run after 
+  ngf-validate-after-resize="boolean" // default false, if true all validation will be run after 
     // the images are being resized, so any validation error before resize will be ignored.
           
   //validations:
@@ -368,7 +369,7 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
 /* Resizes an image. Returns a promise */
-upload.resize(file, width, height, quality, type, ratio, centerCrop).then(function(resizedFile){...});
+Upload.resize(file, width, height, quality, type, ratio, centerCrop, resizeIf).then(function(resizedFile){...});
 
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
