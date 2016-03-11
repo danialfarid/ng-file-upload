@@ -203,6 +203,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
   ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg', 
                ratio: '1:2', centerCrop: true, pattern='.jpg', restoreExif: false}" 
+               or resizeOptions() // a function returning a promise which resolves into the options.
     // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
     // type is optional convert it to the given image type format.
     // centerCrop true will center crop the image if it does not fit within the given width/height or ratio. 
