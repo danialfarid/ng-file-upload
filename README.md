@@ -521,6 +521,8 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 ```
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
+For Amazon authentication version 4 [see this comment](https://github.com/danialfarid/ng-file-upload/issues/1128#issuecomment-196203268) 
+
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
 ```js
