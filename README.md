@@ -162,7 +162,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // called when files are selected, dropped, or cleared
   ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ng-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
+  ngf-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
     // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. 
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
@@ -225,7 +225,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
               // ngf-max-total-size is for multiple file select and validating the total size of all files.
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
-              // validate error name: maxHeight
+              // validate error names: minHeight, maxHeight, minWidth, maxWidth
   ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
   ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
@@ -246,6 +246,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
               // values for validations cannot be calculated for example image load error or unsupported video by the browser.
               // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
+  ngf-ignore-invalid="'pattern, maxSize'" // ignore the files that fail the specified validations.
+              // They will just be ignored and won't show up in ngf-model-invalid or make the form invalid.
 
 >Upload/Drop</div>
 
@@ -408,7 +410,7 @@ you can access the value of the validation using `myForm.myFileInputName.$error.
 for example `form.file.$error.pattern`.
 If multiple file selection is allowed you can specify `ngf-model-invalid="invalidFiles"` to assing the invalid files to 
 a model and find the error of each individual file with `file.$error` and description of it with `file.$errorParam`.
-You can use angular ng-model-options to allow invalid files to be set to the ng-model  `ng-model-options="{allowInvalid: true}"`.  
+You can use angular ngf-model-options to allow invalid files to be set to the ng-model  `ngf-model-options="{allowInvalid: true}"`.
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) you have an array of files or more than one file in your `data` to 
 send them all in one request . Non-html5 browsers due to flash limitation will upload each file one by one in a separate request. 

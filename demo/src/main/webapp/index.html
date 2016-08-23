@@ -67,7 +67,6 @@
         <div>
           <form name="myForm">
             <fieldset>
-              aaaa{{d}}
               <legend>Upload on form submit</legend>
               Username: <input type="text" name="userName" ng-model="username" size="39" required>
               <i ng-show="myForm.userName.$error.required">*required</i><br>
@@ -100,6 +99,9 @@
                  ngf-duration="durationFn($file, $duration)"
                  ngf-keep="keepDistinct ? 'distinct' : keep"
                  ngf-fix-orientation="orientation"
+                 ngf-max-files="maxFiles"
+                 ngf-ignore-invalid="ignoreInvalid"
+                 ngf-run-all-validations="runAllValidations"
                  ngf-allow-dir="allowDir" class="drop-box" ngf-drop-available="dropAvailable">Select File
               <span ng-show="dropAvailable"> or Drop File</span>
             </div>
@@ -117,6 +119,9 @@
                  ngf-keep="keepDistinct ? 'distinct' : keep"
                  ngf-enable-firefox-paste="true"
                  ngf-fix-orientation="orientation"
+                 ngf-max-files="maxFiles"
+                 ngf-ignore-invalid="ignoreInvalid"
+                 ngf-run-all-validations="runAllValidations"
                  ngf-allow-dir="allowDir" class="drop-box" ng-show="dropAvailable">
               <span>Paste or Drop Image from browser</span></div>
           </div>
@@ -131,6 +136,8 @@
             <label>ngf-resize-if: <input type="text" size="43" ng-model="resizeIf"></label><br/>
             <label>ngf-dimensions: <input type="text" size="43" ng-model="dimensions"></label><br/>
             <label>ngf-duration: <input type="text" size="43" ng-model="duration"></label><br/>
+            <label>ngf-max-files: <input type="text" size="43" ng-model="maxFiles"></label><br/>
+            <label>ngf-ignore-invalid: <input type="text" size="43" ng-model="ignoreInvalid"></label><br/>
             <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label>
             <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
             <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome
@@ -140,6 +147,7 @@
             <label><input type="checkbox" ng-model="keepDistinct">ngf-keep="distinct" (do not allow
               duplicates)</label><br/>
             <label><input type="checkbox" ng-model="orientation">ngf-fix-orientation (for exif jpeg files)</label><br/>
+            <label><input type="checkbox" ng-model="runAllValidations">ngf-run-all-validations</label><br/>
             <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
           </div>
 
@@ -191,7 +199,7 @@
       </div>
     </li>
     <li class="sel-file" ng-repeat="f in invalidFiles">
-      <div>Invalid File: {{f.$error}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:
+      <div>Invalid File: {{f.$errorMessages}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:
         {{f.type}}
       </div>
     </li>

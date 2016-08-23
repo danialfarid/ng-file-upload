@@ -2,7 +2,7 @@
 
 
 var app = angular.module('fileUpload', ['ngFileUpload']);
-var version = '12.1.0';
+var version = '11.1.3';
 
 app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', function ($scope, $http, $timeout, $compile, Upload) {
   $scope.usingFlash = FileAPI && FileAPI.upload != null;
@@ -245,12 +245,15 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
     $scope.orientation = localStorage.getItem('orientation' + version) == 'true' || false;
+    $scope.runAllValidations = localStorage.getItem('runAllValidations' + version)  == 'true' || false;
     $scope.resize = localStorage.getItem('resize' + version) || "{width: 1000, height: 1000, centerCrop: true}";
     $scope.resizeIf = localStorage.getItem('resizeIf' + version) || "$width > 5000 || $height > 5000";
     $scope.dimensions = localStorage.getItem('dimensions' + version) || "$width < 12000 || $height < 12000";
     $scope.duration = localStorage.getItem('duration' + version) || "$duration < 10000";
+    $scope.maxFiles = localStorage.getItem('maxFiles' + version) || "500";
+    $scope.ignoreInvalid = localStorage.getItem('ignoreInvalid' + version) || "";
     $scope.$watch('validate+capture+pattern+acceptSelect+disabled+capture+multiple+allowDir+keep+orientation+' +
-      'keepDistinct+modelOptions+dragOverClass+resize+resizeIf', function () {
+      'keepDistinct+modelOptions+dragOverClass+resize+resizeIf+maxFiles+duration+dimensions+ignoreInvalid+runAllValidations', function () {
       localStorage.setItem('capture' + version, $scope.capture);
       localStorage.setItem('pattern' + version, $scope.pattern);
       localStorage.setItem('acceptSelect' + version, $scope.acceptSelect);
@@ -265,6 +268,11 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
       localStorage.setItem('modelOptions' + version, $scope.modelOptions);
       localStorage.setItem('resize' + version, $scope.resize);
       localStorage.setItem('resizeIf' + version, $scope.resizeIf);
+      localStorage.setItem('dimensions' + version, $scope.dimensions);
+      localStorage.setItem('duration' + version, $scope.duration);
+      localStorage.setItem('maxFiles' + version, $scope.maxFiles);
+      localStorage.setItem('ignoreInvalid' + version, $scope.ignoreInvalid);
+      localStorage.setItem('runAllValidations' + version, $scope.runAllValidations);
     });
   });
 }]);
