@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.4
+ * @version 12.1.0
  */
 
 (function () {
