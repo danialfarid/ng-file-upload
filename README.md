@@ -246,8 +246,8 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
               // values for validations cannot be calculated for example image load error or unsupported video by the browser.
               // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
-  ngf-ignore-invalid="'pattern, maxSize'" // ignore the files that fail the specified validations.
-              // They will just be ignored and won't show up in ngf-model-invalid or make the form invalid.
+  ngf-ignore-invalid="'pattern, maxSize'" // ignore the files that fail the specified validations. They will 
+              // just be ignored and will not show up in ngf-model-invalid or make the form invalid.
   ngf-run-all-validations="boolean" // default false. Runs all the specified validate directives. By default
               // once a validation fails for a file it would stop running other validations for that file.
 
