@@ -132,6 +132,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     } else if (config.resumeSize) {
       config.resumeSize().then(function (size) {
         config._start = size;
+        if (config._chunkSize) {
+          config._end = config._start + config._chunkSize;
+        }
         uploadWithAngular();
       }, function (e) {
         throw e;
