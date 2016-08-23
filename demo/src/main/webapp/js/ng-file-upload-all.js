@@ -1193,6 +1193,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       label.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
+      if (elem.attr('id')) {
+        label.attr('id', 'ngf-label-' + elem.attr('id'));
+      }
       generatedElems.push({el: elem, ref: label});
 
       document.body.appendChild(label.append(fileElem)[0]);
@@ -2399,7 +2402,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
