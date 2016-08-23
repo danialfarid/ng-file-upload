@@ -29,7 +29,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
   };
 
   upload.shouldUpdateOn = function (type, attr, scope) {
-    var modelOptions = upload.attrGetter('ngModelOptions', attr, scope);
+    var modelOptions = upload.attrGetter('ngfModelOptions', attr, scope);
     if (modelOptions && modelOptions.updateOn) {
       return modelOptions.updateOn.split(' ').indexOf(type) > -1;
     }
@@ -262,7 +262,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
 
     var validateAfterResize = upload.attrGetter('ngfValidateAfterResize', attr, scope);
 
-    var options = upload.attrGetter('ngModelOptions', attr, scope);
+    var options = upload.attrGetter('ngfModelOptions', attr, scope);
     upload.validate(allNewFiles, prevValidFiles.length, ngModel, attr, scope).then(function () {
       if (noDelay) {
         update(allNewFiles, [], files, dupFiles, isSingleModel);
