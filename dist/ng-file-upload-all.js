@@ -915,17 +915,17 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     }
   }
 
-  function resizeWithParams(param, files, attr, scope) {
+  function resizeWithParams(params, files, attr, scope) {
     var promises = [upload.emptyPromise()];
 
     function handleFile(f, i) {
       if (f.type.indexOf('image') === 0) {
-        if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
-        var promise = upload.resize(f, param.width, param.height, param.quality,
-          param.type, param.ratio, param.centerCrop, function (width, height) {
-            return upload.attrGetter('ngfResizeIf', attr, scope,
-              {$width: width, $height: height, $file: f});
-          }, param.restoreExif !== false);
+        if (params.pattern && !upload.validatePattern(f, params.pattern)) return;
+        params.resizeIf = function (width, height) {
+          return upload.attrGetter('ngfResizeIf', attr, scope,
+            {$width: width, $height: height, $file: f});
+        };
+        var promise = upload.resize(f, params);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);
@@ -1715,7 +1715,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var runAllValidation = upload.attrGetter('ngfRunAllValidations', attr, scope);
 
     if (files == null || files.length === 0) {
-      return upload.emptyPromise(ngModel);
+      return upload.emptyPromise({'validFiles': files, 'invalidFiles': []});
     }
 
     files = files.length === undefined ? [files] : files.slice(0);
@@ -1801,11 +1801,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             defer.resolve(true);
           }
         }
+
         if (val != null) {
           asyncFn(file, val).then(function (d) {
-            resolveInternal(function () {return !fn(d, val);});
+            resolveInternal(function () {
+              return !fn(d, val);
+            });
           }, function () {
-            resolveInternal(function () {return attrGetter('ngfValidateForce', {$file: file});});
+            resolveInternal(function () {
+              return attrGetter('ngfValidateForce', {$file: file});
+            });
           });
         } else {
           defer.resolve(true);
@@ -2105,7 +2110,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
-    imageElement.setAttribute('style', 'visibility: hidden; position: fixed');
+    imageElement.setAttribute('style', 'visibility:hidden;position:fixed;z-index:-100000');
     document.body.appendChild(imageElement);
 
     imageElement.onload = function () {
@@ -2183,14 +2188,15 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif) {
+  upload.resize = function (file, options) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, type || file.type, ratio, centerCrop, resizeIf)
+      resize(url, options.width, options.height, options.quality, options.type || file.type,
+        options.ratio, options.centerCrop, options.resizeIf)
         .then(function (dataUrl) {
-          if (file.type === 'image/jpeg' && restoreExif) {
+          if (file.type === 'image/jpeg' && options.restoreExif !== false) {
             try {
               dataUrl = upload.restoreExif(url, dataUrl);
             } catch (e) {

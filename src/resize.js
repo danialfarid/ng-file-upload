@@ -26,7 +26,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
-    imageElement.setAttribute('style', 'visibility: hidden; position: fixed');
+    imageElement.setAttribute('style', 'visibility:hidden;position:fixed;z-index:-100000');
     document.body.appendChild(imageElement);
 
     imageElement.onload = function () {
@@ -104,14 +104,15 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif) {
+  upload.resize = function (file, options) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, type || file.type, ratio, centerCrop, resizeIf)
+      resize(url, options.width, options.height, options.quality, options.type || file.type,
+        options.ratio, options.centerCrop, options.resizeIf)
         .then(function (dataUrl) {
-          if (file.type === 'image/jpeg' && restoreExif) {
+          if (file.type === 'image/jpeg' && options.restoreExif !== false) {
             try {
               dataUrl = upload.restoreExif(url, dataUrl);
             } catch (e) {

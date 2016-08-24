@@ -127,7 +127,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var runAllValidation = upload.attrGetter('ngfRunAllValidations', attr, scope);
 
     if (files == null || files.length === 0) {
-      return upload.emptyPromise(ngModel);
+      return upload.emptyPromise({'validFiles': files, 'invalidFiles': []});
     }
 
     files = files.length === undefined ? [files] : files.slice(0);
@@ -213,11 +213,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             defer.resolve(true);
           }
         }
+
         if (val != null) {
           asyncFn(file, val).then(function (d) {
-            resolveInternal(function () {return !fn(d, val);});
+            resolveInternal(function () {
+              return !fn(d, val);
+            });
           }, function () {
-            resolveInternal(function () {return attrGetter('ngfValidateForce', {$file: file});});
+            resolveInternal(function () {
+              return attrGetter('ngfValidateForce', {$file: file});
+            });
           });
         } else {
           defer.resolve(true);

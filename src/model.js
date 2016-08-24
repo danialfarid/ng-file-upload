@@ -98,17 +98,17 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     }
   }
 
-  function resizeWithParams(param, files, attr, scope) {
+  function resizeWithParams(params, files, attr, scope) {
     var promises = [upload.emptyPromise()];
 
     function handleFile(f, i) {
       if (f.type.indexOf('image') === 0) {
-        if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
-        var promise = upload.resize(f, param.width, param.height, param.quality,
-          param.type, param.ratio, param.centerCrop, function (width, height) {
-            return upload.attrGetter('ngfResizeIf', attr, scope,
-              {$width: width, $height: height, $file: f});
-          }, param.restoreExif !== false);
+        if (params.pattern && !upload.validatePattern(f, params.pattern)) return;
+        params.resizeIf = function (width, height) {
+          return upload.attrGetter('ngfResizeIf', attr, scope,
+            {$width: width, $height: height, $file: f});
+        };
+        var promise = upload.resize(f, params);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);

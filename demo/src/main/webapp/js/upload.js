@@ -16,6 +16,12 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
 
   $scope.invalidFiles = [];
 
+  $scope.init = function(){
+    var file = new File(["some"],"sample-name");
+    $timeout(function() {$scope.picFile = file;});
+
+  }
+
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
     if (files != null) {
