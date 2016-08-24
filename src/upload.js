@@ -374,9 +374,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       var arrayBufferView = new Uint8Array(resp.data);
       var type = resp.headers('content-type') || 'image/WebP';
       var blob = new window.Blob([arrayBufferView], {type: type});
+      var matches = url.match(/.*\/(.+?)(\?.*)?$/);
+      if (matches.length > 1) {
+        blob.name = matches[1];
+      }
       defer.resolve(blob);
-      //var split = type.split('[/;]');
-      //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
     }, function (e) {
       defer.reject(e);
     });
