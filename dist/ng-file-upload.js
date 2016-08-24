@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.1.0
+ * @version 12.2.0
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.1.0';
+ngFileUpload.version = '12.2.0';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -90,10 +90,12 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     function uploadWithAngular() {
       $http(config).then(function (r) {
           if (resumeSupported && config._chunkSize && !config._finished && config._file) {
+            var fileSize = config._file && config._file.size || 0;
             notifyProgress({
-                loaded: config._end,
-                total: config._file && config._file.size,
-                config: config, type: 'progress'
+                loaded: Math.min(config._end, fileSize),
+                total: fileSize,
+                config: config,
+                type: 'progress'
               }
             );
             upload.upload(config, true);
@@ -376,9 +378,11 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       var arrayBufferView = new Uint8Array(resp.data);
       var type = resp.headers('content-type') || 'image/WebP';
       var blob = new window.Blob([arrayBufferView], {type: type});
+      var matches = url.match(/.*\/(.+?)(\?.*)?$/);
+      if (matches.length > 1) {
+        blob.name = matches[1];
+      }
       defer.resolve(blob);
-      //var split = type.split('[/;]');
-      //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
     }, function (e) {
       defer.reject(e);
     });
@@ -1080,7 +1084,11 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
         if (file && file.type && file.type.search(getTagType(elem[0])) === 0 &&
           (!isBackground || file.type.indexOf('image') === 0)) {
           if (size && Upload.isResizeSupported()) {
-            Upload.resize(file, size.width, size.height, size.quality, size.type, size.ratio, size.centerCrop, size.resizeIf).then(
+            size.resizeIf = function (width, height) {
+              return Upload.attrGetter('ngfResizeIf', attr, scope,
+                {$width: width, $height: height, $file: file});
+            };
+            Upload.resize(file, size).then(
               function (f) {
                 constructDataUrl(f);
               }, function (e) {
@@ -1805,13 +1813,13 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 }]);
 
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', '$q',
-    function ($parse, $timeout, $location, Upload, $http, $q) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$window', 'Upload', '$http', '$q',
+    function ($parse, $timeout, $window, Upload, $http, $q) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, $q);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $window, Upload, $http, $q);
         }
       };
     }]);
@@ -1836,7 +1844,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, $q) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $window, upload, $http, $q) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -1969,7 +1977,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     }
 
     function extractFilesFromHtml(updateOn, html) {
-      if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.rejectPromise([]);
+      if (!upload.shouldUpdateOn(updateOn, attr, scope) || typeof html !== 'string') return upload.rejectPromise([]);
       var urls = [];
       html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
         urls.push(src);
@@ -2092,7 +2100,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
       var promises = [upload.emptyPromise()];
 
-      if (items && items.length > 0 && $location.protocol() !== 'file') {
+      if (items && items.length > 0 && $window.location.protocol !== 'file:') {
         for (var i = 0; i < items.length; i++) {
           if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
             var entry = items[i].webkitGetAsEntry();

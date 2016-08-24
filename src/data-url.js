@@ -161,7 +161,7 @@
           (!isBackground || file.type.indexOf('image') === 0)) {
           if (size && Upload.isResizeSupported()) {
             size.resizeIf = function (width, height) {
-              return upload.attrGetter('ngfResizeIf', attr, scope,
+              return Upload.attrGetter('ngfResizeIf', attr, scope,
                 {$width: width, $height: height, $file: file});
             };
             Upload.resize(file, size).then(
