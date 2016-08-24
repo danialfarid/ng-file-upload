@@ -160,7 +160,11 @@
         if (file && file.type && file.type.search(getTagType(elem[0])) === 0 &&
           (!isBackground || file.type.indexOf('image') === 0)) {
           if (size && Upload.isResizeSupported()) {
-            Upload.resize(file, size.width, size.height, size.quality, size.type, size.ratio, size.centerCrop, size.resizeIf).then(
+            size.resizeIf = function (width, height) {
+              return upload.attrGetter('ngfResizeIf', attr, scope,
+                {$width: width, $height: height, $file: file});
+            };
+            Upload.resize(file, size).then(
               function (f) {
                 constructDataUrl(f);
               }, function (e) {
