@@ -90,10 +90,12 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     function uploadWithAngular() {
       $http(config).then(function (r) {
           if (resumeSupported && config._chunkSize && !config._finished && config._file) {
+            var fileSize = config._file && config._file.size || 0;
             notifyProgress({
-                loaded: config._end,
-                total: config._file && config._file.size,
-                config: config, type: 'progress'
+                loaded: Math.min(config._end, fileSize),
+                total: fileSize,
+                config: config,
+                type: 'progress'
               }
             );
             upload.upload(config, true);
