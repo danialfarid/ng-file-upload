@@ -107,13 +107,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       return fileElem;
     }
 
-    var initialTouchStartY = 0;
-
     function clickHandler(evt) {
       if (elem.attr('disabled')) return false;
       if (attrGetter('ngfSelectDisabled', scope)) return;
 
-      var r = handleTouch(evt);
+      var r = detectSwipe(evt);
+      // prevent the click if it is a swipe
       if (r != null) return r;
 
       resetModel(evt);
@@ -138,19 +137,30 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       return false;
     }
 
-    function handleTouch(evt) {
-      var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
-      if (evt.type === 'touchstart') {
-        initialTouchStartY = touches ? touches[0].clientY : 0;
-        return true; // don't block event default
-      } else {
-        evt.stopPropagation();
-        evt.preventDefault();
 
-        // prevent scroll from triggering event
-        if (evt.type === 'touchend') {
-          var currentLocation = touches ? touches[0].clientY : 0;
-          if (Math.abs(currentLocation - initialTouchStartY) > 20) return false;
+    var initialTouchStartY = 0;
+    var initialTouchStartX = 0;
+
+    function detectSwipe(evt) {
+      var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
+      if (touches) {
+        if (evt.type === 'touchstart') {
+          initialTouchStartX = touches[0].clientX;
+          initialTouchStartY = touches[0].clientY;
+          return true; // don't block event default
+        } else {
+          // prevent scroll from triggering event
+          if (evt.type === 'touchend') {
+            var currentX = touches[0].clientX;
+            var currentY = touches[0].clientY;
+            if ((Math.abs(currentX - initialTouchStartX) > 20) ||
+            (Math.abs(currentY - initialTouchStartY) > 20)) {
+              evt.stopPropagation();
+              evt.preventDefault();
+              return false;
+            }
+          }
+          return true;
         }
       }
     }
