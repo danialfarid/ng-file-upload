@@ -1338,10 +1338,10 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
                   if (!runAllValidation) {
                     files.splice(i, 1);
                   }
+                  valid = false;
                 } else {
                   files.splice(i, 1);
                 }
-                valid = false;
               }
             }
           }
