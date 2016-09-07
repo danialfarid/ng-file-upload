@@ -382,8 +382,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           .css('max-width', 'none !important').css('max-height', 'none !important');
 
         function success() {
-          var width = img[0].clientWidth;
-          var height = img[0].clientHeight;
+          var width = img[0].naturalWidth || img[0].clientWidth;
+          var height = img[0].naturalHeight || img[0].clientHeight;
           img.remove();
           file.$ngfWidth = width;
           file.$ngfHeight = height;
@@ -397,23 +397,23 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         img.on('load', success);
         img.on('error', error);
-        var count = 0;
 
-        function checkLoadError() {
+        var secondsCounter = 0;
+        function checkLoadErrorInCaseOfNoCallback() {
           $timeout(function () {
             if (img[0].parentNode) {
               if (img[0].clientWidth) {
                 success();
-              } else if (count > 10) {
+              } else if (secondsCounter++ > 10) {
                 error();
               } else {
-                checkLoadError();
+                checkLoadErrorInCaseOfNoCallback();
               }
             }
           }, 1000);
         }
 
-        checkLoadError();
+        checkLoadErrorInCaseOfNoCallback();
 
         angular.element(document.getElementsByTagName('body')[0]).append(img);
       }, function () {
