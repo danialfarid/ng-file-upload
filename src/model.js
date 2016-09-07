@@ -84,7 +84,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     if (!resizeVal || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
     if (resizeVal instanceof Function) {
       var defer = $q.defer();
-      resizeVal(files).then(function (p) {
+      return resizeVal(files).then(function (p) {
         resizeWithParams(p, files, attr, scope).then(function (r) {
           defer.resolve(r);
         }, function (e) {

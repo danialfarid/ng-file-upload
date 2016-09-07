@@ -229,7 +229,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         }
       }
 
-      var promises = [upload.emptyPromise()];
+      var promises = [upload.emptyPromise(true)];
       if (files) {
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
@@ -260,14 +260,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         });
       }
       var deffer = $q.defer();
-      $q.all(promises).then(function (value) {
-        if (value) {
-          ngModel.$ngfValidations.push({name: name, valid: true});
-          deffer.resolve(true);
-        } else {
-          ngModel.$ngfValidations.push({name: name, valid: false});
-          deffer.resolve(false);
+      $q.all(promises).then(function (values) {
+        var isValid = true;
+        for (var i = 0; i < values.length; i++) {
+          if (!values[i]) {
+            isValid = false;
+            break;
+          }
         }
+        ngModel.$ngfValidations.push({name: name, valid: isValid});
+        deffer.resolve(isValid);
       });
       return deffer.promise;
     }

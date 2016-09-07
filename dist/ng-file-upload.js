@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.2.6
+ * @version 12.2.7
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.2.6';
+ngFileUpload.version = '12.2.7';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -485,7 +485,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     if (!resizeVal || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
     if (resizeVal instanceof Function) {
       var defer = $q.defer();
-      resizeVal(files).then(function (p) {
+      return resizeVal(files).then(function (p) {
         resizeWithParams(p, files, attr, scope).then(function (r) {
           defer.resolve(r);
         }, function (e) {
@@ -1415,7 +1415,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         }
       }
 
-      var promises = [upload.emptyPromise()];
+      var promises = [upload.emptyPromise(true)];
       if (files) {
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
@@ -1446,14 +1446,16 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         });
       }
       var deffer = $q.defer();
-      $q.all(promises).then(function (value) {
-        if (value) {
-          ngModel.$ngfValidations.push({name: name, valid: true});
-          deffer.resolve(true);
-        } else {
-          ngModel.$ngfValidations.push({name: name, valid: false});
-          deffer.resolve(false);
+      $q.all(promises).then(function (values) {
+        var isValid = true;
+        for (var i = 0; i < values.length; i++) {
+          if (!values[i]) {
+            isValid = false;
+            break;
+          }
         }
+        ngModel.$ngfValidations.push({name: name, valid: isValid});
+        deffer.resolve(isValid);
       });
       return deffer.promise;
     }
