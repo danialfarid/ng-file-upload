@@ -205,10 +205,11 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
               if (!runAllValidation) {
                 files.splice(files.indexOf(file), 1);
               }
+              defer.resolve(false);
             } else {
               files.splice(files.indexOf(file), 1);
+              defer.resolve(true);
             }
-            defer.resolve(false);
           } else {
             defer.resolve(true);
           }
