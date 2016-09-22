@@ -203,11 +203,13 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
                 invalidFiles.push(file);
               }
               if (!runAllValidation) {
-                files.splice(files.indexOf(file), 1);
+                var i = files.indexOf(file);
+                if (i > -1) files.splice(i, 1);
               }
               defer.resolve(false);
             } else {
-              files.splice(files.indexOf(file), 1);
+              var j = files.indexOf(file);
+              if (j > -1) files.splice(j, 1);
               defer.resolve(true);
             }
           } else {

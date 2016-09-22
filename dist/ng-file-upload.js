@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.2.9
+ * @version 12.2.10
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.2.9';
+ngFileUpload.version = '12.2.10';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1390,11 +1390,13 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
                 invalidFiles.push(file);
               }
               if (!runAllValidation) {
-                files.splice(files.indexOf(file), 1);
+                var i = files.indexOf(file);
+                if (i > -1) files.splice(i, 1);
               }
               defer.resolve(false);
             } else {
-              files.splice(files.indexOf(file), 1);
+              var j = files.indexOf(file);
+              if (j > -1) files.splice(j, 1);
               defer.resolve(true);
             }
           } else {
