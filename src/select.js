@@ -65,21 +65,25 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
         fileElem.attr('accept', attrGetter('ngfAccept', scope));
       }));
     }
-    attr.$observe('accept', function () {
+    unwatches.push(attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
-    });
-    unwatches.push(function () {
-      if (attr.$$observers) delete attr.$$observers.accept;
-    });
-    function bindAttrToFileInput(fileElem) {
+    }));
+    function bindAttrToFileInput(fileElem, label) {
+      function updateId(val) {
+        fileElem.attr('id', 'ngf-' + val);
+        label.attr('id', 'ngf-label-' + val);
+      }
+
       for (var i = 0; i < elem[0].attributes.length; i++) {
         var attribute = elem[0].attributes[i];
         if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'style') {
-          if (attribute.value == null || attribute.value === '') {
-            if (attribute.name === 'required') attribute.value = 'required';
-            if (attribute.name === 'multiple') attribute.value = 'multiple';
+          if (attribute.name === 'id') {
+            updateId(attribute.value);
+            unwatches.push(attr.$observe('id', updateId));
+          } else {
+            fileElem.attr(attribute.name, (!attribute.value && (attribute.name === 'required' ||
+            attribute.name === 'multiple')) ? attribute.name : attribute.value);
           }
-          fileElem.attr(attribute.name, attribute.name === 'id' ? 'ngf-' + attribute.value : attribute.value);
         }
       }
     }
@@ -91,15 +95,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
 
       var fileElem = angular.element('<input type="file">');
 
-      bindAttrToFileInput(fileElem);
-
       var label = angular.element('<label>upload</label>');
       label.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      if (elem.attr('id')) {
-        label.attr('id', 'ngf-label-' + elem.attr('id'));
-      }
+      bindAttrToFileInput(fileElem, label);
+
       generatedElems.push({el: elem, ref: label});
 
       document.body.appendChild(label.append(fileElem)[0]);
@@ -124,7 +125,8 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
           document.body.appendChild(fileElem.parent()[0]);
           fileElem.bind('change', changeFn);
         }
-      } catch(e){/*ignore*/}
+      } catch (e) {/*ignore*/
+      }
 
       if (isDelayedClickSupported(navigator.userAgent)) {
         setTimeout(function () {
@@ -154,7 +156,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
             var currentX = touches[0].clientX;
             var currentY = touches[0].clientY;
             if ((Math.abs(currentX - initialTouchStartX) > 20) ||
-            (Math.abs(currentY - initialTouchStartY) > 20)) {
+              (Math.abs(currentY - initialTouchStartY) > 20)) {
               evt.stopPropagation();
               evt.preventDefault();
               return false;

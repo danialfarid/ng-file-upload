@@ -16,9 +16,17 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
 
   $scope.invalidFiles = [];
 
+  // make invalidFiles array for not multiple to be able to be used in ng-repeat in the ui
+  $scope.$watch('invalidFiles', function (invalidFiles) {
+    if (invalidFiles != null && !angular.isArray(invalidFiles)) {
+      $timeout(function () {$scope.invalidFiles = [invalidFiles];});
+    }
+  });
+
   $scope.$watch('files', function (files) {
     $scope.formUpload = false;
     if (files != null) {
+      // make files array for not multiple to be able to be used in ng-repeat in the ui
       if (!angular.isArray(files)) {
         $timeout(function () {
           $scope.files = files = [files];
@@ -26,9 +34,6 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
         return;
       }
       for (var i = 0; i < files.length; i++) {
-        Upload.imageDimensions(files[i]).then(function (d) {
-          $scope.d = d;
-        });
         $scope.errorMsg = null;
         (function (f) {
           $scope.upload(f, true);
@@ -44,7 +49,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     }
   };
 
-  $scope.upload = function(file, resumable) {
+  $scope.upload = function (file, resumable) {
     $scope.errorMsg = null;
     if ($scope.howToSend === 1) {
       uploadUsingUpload(file, resumable);
@@ -57,7 +62,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
 
   $scope.isResumeSupported = Upload.isResumeSupported();
 
-  $scope.restart = function(file) {
+  $scope.restart = function (file) {
     if (Upload.isResumeSupported()) {
       $http.get('https://angular-file-upload-cors-srv.appspot.com/upload?restart=true&name=' + encodeURIComponent(file.name)).then(function () {
         $scope.upload(file, true);
@@ -150,11 +155,10 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
   }
 
   $scope.generateSignature = function () {
-    $http.post('/s3sign?aws-secret-key=' + encodeURIComponent($scope.AWSSecretKey), $scope.jsonPolicy).
-      success(function (data) {
-        $scope.policy = data.policy;
-        $scope.signature = data.signature;
-      });
+    $http.post('/s3sign?aws-secret-key=' + encodeURIComponent($scope.AWSSecretKey), $scope.jsonPolicy).success(function (data) {
+      $scope.policy = data.policy;
+      $scope.signature = data.signature;
+    });
   };
 
   if (localStorage) {
@@ -245,7 +249,7 @@ app.controller('MyCtrl', ['$scope', '$http', '$timeout', '$compile', 'Upload', f
     $scope.keep = localStorage.getItem('keep' + version) == 'true' || false;
     $scope.keepDistinct = localStorage.getItem('keepDistinct' + version) == 'true' || false;
     $scope.orientation = localStorage.getItem('orientation' + version) == 'true' || false;
-    $scope.runAllValidations = localStorage.getItem('runAllValidations' + version)  == 'true' || false;
+    $scope.runAllValidations = localStorage.getItem('runAllValidations' + version) == 'true' || false;
     $scope.resize = localStorage.getItem('resize' + version) || "{width: 1000, height: 1000, centerCrop: true}";
     $scope.resizeIf = localStorage.getItem('resizeIf' + version) || "$width > 5000 || $height > 5000";
     $scope.dimensions = localStorage.getItem('dimensions' + version) || "$width < 12000 || $height < 12000";

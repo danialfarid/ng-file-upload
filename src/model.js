@@ -79,13 +79,13 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     return $q.all(promises);
   }
 
-  function resize(files, attr, scope) {
+  function resizeFile(files, attr, scope, ngModel) {
     var resizeVal = upload.attrGetter('ngfResize', attr, scope);
     if (!resizeVal || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
     if (resizeVal instanceof Function) {
       var defer = $q.defer();
       return resizeVal(files).then(function (p) {
-        resizeWithParams(p, files, attr, scope).then(function (r) {
+        resizeWithParams(p, files, attr, scope, ngModel).then(function (r) {
           defer.resolve(r);
         }, function (e) {
           defer.reject(e);
@@ -94,11 +94,11 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         defer.reject(e);
       });
     } else {
-      return resizeWithParams(resizeVal, files, attr, scope);
+      return resizeWithParams(resizeVal, files, attr, scope, ngModel);
     }
   }
 
-  function resizeWithParams(params, files, attr, scope) {
+  function resizeWithParams(params, files, attr, scope, ngModel) {
     var promises = [upload.emptyPromise()];
 
     function handleFile(f, i) {
@@ -114,7 +114,10 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
           files.splice(i, 1, resizedFile);
         }, function (e) {
           f.$error = 'resize';
+          (f.$errorMessages = (f.$errorMessages || {})).resize = true;
           f.$errorParam = (e ? (e.message ? e.message : e) + ': ' : '') + (f && f.name);
+          ngModel.$ngfValidations.push({name: 'resize', valid: false});
+          upload.applyModelValidation(ngModel, files);
         });
       }
     }
@@ -210,7 +213,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         }, options && options.debounce ? options.debounce.change || options.debounce : 0);
       }
 
-      resize(validateAfterResize ? allNewFiles : valids, attr, scope).then(function () {
+      var resizingFiles = validateAfterResize ? allNewFiles : valids;
+      resizeFile(resizingFiles, attr, scope, ngModel).then(function () {
         if (validateAfterResize) {
           upload.validate(allNewFiles, keep ? prevValidFiles.length : 0, ngModel, attr, scope)
             .then(function (validationResult) {
@@ -221,8 +225,18 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         } else {
           updateModel();
         }
-      }, function (e) {
-        throw 'Could not resize files ' + e;
+      }, function () {
+        for (var i = 0; i < resizingFiles.length; i++) {
+          var f = resizingFiles[i];
+          if (f.$error === 'resize') {
+            var index = valids.indexOf(f);
+            if (index > -1) {
+              valids.splice(index, 1);
+              invalids.push(f);
+            }
+            updateModel();
+          }
+        }
       });
     }
 
