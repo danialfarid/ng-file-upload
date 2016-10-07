@@ -42,7 +42,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: 'dist/',
           src: '*',
-          dest: 'demo/src/main/webapp/js/',
+          dest: 'demo/',
           flatten: true,
           filter: 'isFile'
         }]
@@ -53,29 +53,12 @@ module.exports = function (grunt) {
           'dist/FileAPI.js': 'src/FileAPI.js'
         }
       },
-      bower: {
-        files: [{
-          expand: true,
-          cwd: 'dist/',
-          src: '*',
-          dest: '../angular-file-upload-bower/',
-          flatten: true,
-          filter: 'isFile'
-        }, {
-          expand: true,
-          cwd: 'dist/',
-          src: '*',
-          dest: '../angular-file-upload-shim-bower/',
-          flatten: true,
-          filter: 'isFile'
-        }]
-      }
     },
     serve: {
       options: {
         port: 9000
       },
-      'path': 'demo/src/main/webapp'
+      'path': 'demo/'
     },
     watch: {
       js: {
@@ -97,7 +80,7 @@ module.exports = function (grunt) {
     },
     replace: {
       version: {
-        src: ['nuget/Package.nuspec', '../angular-file-upload-bower/package.js'],
+        src: ['nuget/Package.nuspec', 'package.js'],
         overwrite: true,
         replacements: [{
           from: /"version" *: *".*"/g,
@@ -123,6 +106,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('dev', ['jshint:all', 'concat:all', 'uglify', 'copy:build', 'watch']);
   grunt.registerTask('default', ['jshint:all', 'clean:dist', 'concat:all',
-    'copy:fileapi', 'uglify', 'copy:build', 'copy:bower', 'replace:version']);
+    'copy:fileapi', 'uglify', 'copy:build', 'replace:version']);
 
 };

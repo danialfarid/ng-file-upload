@@ -26,35 +26,31 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
-    imageElement.setAttribute('style', 'visibility:hidden;position:fixed;z-index:-100000');
-    document.body.appendChild(imageElement);
 
     imageElement.onload = function () {
-      var imgWidth = imageElement.width, imgHeight = imageElement.height;
-      imageElement.parentNode.removeChild(imageElement);
-      if (resizeIf != null && resizeIf(imgWidth, imgHeight) === false) {
+      if (resizeIf != null && resizeIf(imageElement.width, imageElement.height) === false) {
         deferred.reject('resizeIf');
         return;
       }
       try {
         if (ratio) {
           var ratioFloat = upload.ratioToFloat(ratio);
-          var imgRatio = imgWidth / imgHeight;
+          var imgRatio = imageElement.width / imageElement.height;
           if (imgRatio < ratioFloat) {
-            width = imgWidth;
+            width = imageElement.width;
             height = width / ratioFloat;
           } else {
-            height = imgHeight;
+            height = imageElement.height;
             width = height * ratioFloat;
           }
         }
         if (!width) {
-          width = imgWidth;
+          width = imageElement.width;
         }
         if (!height) {
-          height = imgHeight;
+          height = imageElement.height;
         }
-        var dimensions = calculateAspectRatioFit(imgWidth, imgHeight, width, height, centerCrop);
+        var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height, centerCrop);
         canvasElement.width = Math.min(dimensions.width, width);
         canvasElement.height = Math.min(dimensions.height, height);
         var context = canvasElement.getContext('2d');
@@ -67,7 +63,6 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       }
     };
     imageElement.onerror = function () {
-      imageElement.parentNode.removeChild(imageElement);
       deferred.reject();
     };
     imageElement.src = imagen;
@@ -104,15 +99,14 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, options) {
+  upload.resize = function (file, width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, options.width, options.height, options.quality, options.type || file.type,
-        options.ratio, options.centerCrop, options.resizeIf)
+      resize(url, width, height, quality, type || file.type, ratio, centerCrop, resizeIf)
         .then(function (dataUrl) {
-          if (file.type === 'image/jpeg' && options.restoreExif !== false) {
+          if (file.type === 'image/jpeg' && restoreExif) {
             try {
               dataUrl = upload.restoreExif(url, dataUrl);
             } catch (e) {

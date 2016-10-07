@@ -25,7 +25,7 @@
             window.HTMLCanvasElement.prototype,
         hasBlobConstructor = window.Blob && (function () {
             try {
-                return Boolean(new Blob());
+                return Boolean(new BlobUtil());
             } catch (e) {
                 return false;
             }
@@ -33,7 +33,7 @@
         hasArrayBufferViewSupport = hasBlobConstructor && window.Uint8Array &&
             (function () {
                 try {
-                    return new Blob([new Uint8Array(100)]).size === 100;
+                    return new BlobUtil([new Uint8Array(100)]).size === 100;
                 } catch (e) {
                     return false;
                 }
@@ -65,7 +65,7 @@
                 mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
                 // Write the ArrayBuffer (or ArrayBufferView) to a blob:
                 if (hasBlobConstructor) {
-                    return new Blob(
+                    return new BlobUtil(
                         [hasArrayBufferViewSupport ? intArray : arrayBuffer],
                         {type: mimeString}
                     );

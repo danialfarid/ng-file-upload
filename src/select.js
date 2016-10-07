@@ -1,254 +1,190 @@
-ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload', function ($parse, $timeout, $compile, Upload) {
-  var generatedElems = [];
-
-  function isDelayedClickSupported(ua) {
-    // fix for android native browser < 4.4 and safari windows
-    var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
-    if (m && m.length > 2) {
-      var v = Upload.defaults.androidFixMinorVersion || 4;
-      return parseInt(m[1]) < 4 || (parseInt(m[1]) === v && parseInt(m[2]) < v);
-    }
-
-    // safari on windows
-    return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
-  }
-
-  function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, upload) {
-    /** @namespace attr.ngfSelect */
-    /** @namespace attr.ngfChange */
-    /** @namespace attr.ngModel */
-    /** @namespace attr.ngfModelOptions */
-    /** @namespace attr.ngfMultiple */
-    /** @namespace attr.ngfCapture */
-    /** @namespace attr.ngfValidate */
-    /** @namespace attr.ngfKeep */
-    var attrGetter = function (name, scope) {
-      return upload.attrGetter(name, attr, scope);
-    };
-
-    function isInputTypeFile() {
-      return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
-    }
-
-    function fileChangeAttr() {
-      return attrGetter('ngfChange') || attrGetter('ngfSelect');
-    }
-
-    function changeFn(evt) {
-      if (upload.shouldUpdateOn('change', attr, scope)) {
-        var fileList = evt.__files_ || (evt.target && evt.target.files), files = [];
-        /* Handle duplicate call in  IE11 */
-        if (!fileList) return;
-        for (var i = 0; i < fileList.length; i++) {
-          files.push(fileList[i]);
-        }
-        upload.updateModel(ngModel, attr, scope, fileChangeAttr(),
-          files.length ? files : null, evt);
-      }
-    }
-
-    upload.registerModelChangeValidator(ngModel, attr, scope);
-
-    var unwatches = [];
-    if (attrGetter('ngfMultiple')) {
-      unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function () {
-        fileElem.attr('multiple', attrGetter('ngfMultiple', scope));
-      }));
-    }
-    if (attrGetter('ngfCapture')) {
-      unwatches.push(scope.$watch(attrGetter('ngfCapture'), function () {
-        fileElem.attr('capture', attrGetter('ngfCapture', scope));
-      }));
-    }
-    if (attrGetter('ngfAccept')) {
-      unwatches.push(scope.$watch(attrGetter('ngfAccept'), function () {
-        fileElem.attr('accept', attrGetter('ngfAccept', scope));
-      }));
-    }
-    unwatches.push(attr.$observe('accept', function () {
-      fileElem.attr('accept', attrGetter('accept'));
-    }));
-    function bindAttrToFileInput(fileElem, label) {
-      function updateId(val) {
-        fileElem.attr('id', 'ngf-' + val);
-        label.attr('id', 'ngf-label-' + val);
-      }
-
-      for (var i = 0; i < elem[0].attributes.length; i++) {
-        var attribute = elem[0].attributes[i];
-        if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'style') {
-          if (attribute.name === 'id') {
-            updateId(attribute.value);
-            unwatches.push(attr.$observe('id', updateId));
-          } else {
-            fileElem.attr(attribute.name, (!attribute.value && (attribute.name === 'required' ||
-            attribute.name === 'multiple')) ? attribute.name : attribute.value);
-          }
-        }
-      }
-    }
-
-    function createFileInput() {
-      if (isInputTypeFile()) {
-        return elem;
-      }
-
-      var fileElem = angular.element('<input type="file">');
-
-      var label = angular.element('<label>upload</label>');
-      label.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
-        .css('width', '0px').css('height', '0px').css('border', 'none')
-        .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      bindAttrToFileInput(fileElem, label);
-
-      generatedElems.push({el: elem, ref: label});
-
-      document.body.appendChild(label.append(fileElem)[0]);
-
-      return fileElem;
-    }
-
-    function clickHandler(evt) {
-      if (elem.attr('disabled')) return false;
-      if (attrGetter('ngfSelectDisabled', scope)) return;
-
-      var r = detectSwipe(evt);
-      // prevent the click if it is a swipe
-      if (r != null) return r;
-
-      resetModel(evt);
-
-      // fix for md when the element is removed from the DOM and added back #460
-      try {
-        if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
-          generatedElems.push({el: elem, ref: fileElem.parent()});
-          document.body.appendChild(fileElem.parent()[0]);
-          fileElem.bind('change', changeFn);
-        }
-      } catch (e) {/*ignore*/
-      }
-
-      if (isDelayedClickSupported(navigator.userAgent)) {
-        setTimeout(function () {
-          fileElem[0].click();
-        }, 0);
-      } else {
-        fileElem[0].click();
-      }
-
-      return false;
-    }
-
-
-    var initialTouchStartY = 0;
-    var initialTouchStartX = 0;
-
-    function detectSwipe(evt) {
-      var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
-      if (touches) {
-        if (evt.type === 'touchstart') {
-          initialTouchStartX = touches[0].clientX;
-          initialTouchStartY = touches[0].clientY;
-          return true; // don't block event default
-        } else {
-          // prevent scroll from triggering event
-          if (evt.type === 'touchend') {
-            var currentX = touches[0].clientX;
-            var currentY = touches[0].clientY;
-            if ((Math.abs(currentX - initialTouchStartX) > 20) ||
-              (Math.abs(currentY - initialTouchStartY) > 20)) {
-              evt.stopPropagation();
-              evt.preventDefault();
-              return false;
+"use strict";
+var __ngfGeneratedElems__ = [];
+var Select = (function () {
+    function Select(el, attrGetter) {
+        var _this = this;
+        this.isInputTypeFile = function () {
+            return _this.elem.tagName.toLowerCase() === 'input' &&
+                _this.elem.getAttribute('type') && _this.elem.getAttribute('type').toLowerCase() === 'file';
+        };
+        this.changeFn = function (evt) {
+            if (_this.attrGetter('selectDisabled'))
+                return;
+            var fileList = evt.target && evt.target.files, files = [];
+            for (var i = 0; i < fileList.length; i++) {
+                files.push(fileList[i]);
             }
-          }
-          return true;
+            _this.elem.dispatchEvent(new CustomEvent('fileSelect', { detail: { files: files.length ? files : null, origEvent: evt } }));
+        };
+        this.updateId = function (val) {
+            _this.fileElem.setAttribute('id', 'ngf-' + val);
+            _this.label.setAttribute('id', 'ngf-label-' + val);
+        };
+        this.clickHandler = function (evt) {
+            if (_this.elem.getAttribute('disabled'))
+                return false;
+            if (_this.attrGetter('ngfSelectDisabled'))
+                return;
+            var r = _this.detectSwipe(evt);
+            // prevent the click if it is a swipe
+            if (r != null)
+                return r;
+            _this.resetModel(evt);
+            // fix for md when the element is removed from the DOM and added back #460
+            try {
+                if (!_this.isInputTypeFile() && !document.body.contains(_this.fileElem)) {
+                    __ngfGeneratedElems__.push({ el: _this.elem, ref: _this.fileElem.parentNode });
+                    document.body.appendChild(_this.fileElem.parentNode);
+                    _this.fileElem.addEventListener('change', _this.changeFn);
+                }
+            }
+            catch (e) {
+            }
+            if (Select.isDelayedClickSupported(navigator.userAgent)) {
+                setTimeout(function (fileElem) {
+                    fileElem.click();
+                }, 0, _this.fileElem);
+            }
+            else {
+                _this.fileElem.click();
+            }
+            return false;
+        };
+        this.initialTouchStartY = 0;
+        this.initialTouchStartX = 0;
+        this.detectSwipe = function (evt) {
+            var touches = evt.changedTouches || (evt.originalEvent && evt.originalEvent.changedTouches);
+            if (touches) {
+                if (evt.type === 'touchstart') {
+                    _this.initialTouchStartX = touches[0].clientX;
+                    _this.initialTouchStartY = touches[0].clientY;
+                    return true; // don't block event default
+                }
+                else {
+                    // prevent scroll from triggering event
+                    if (evt.type === 'touchend') {
+                        var currentX = touches[0].clientX;
+                        var currentY = touches[0].clientY;
+                        if ((Math.abs(currentX - _this.initialTouchStartX) > 20) ||
+                            (Math.abs(currentY - _this.initialTouchStartY) > 20)) {
+                            evt.stopPropagation();
+                            evt.preventDefault();
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+        };
+        this.resetModel = function (evt) {
+            if (_this.attrGetter('clickDisabled'))
+                return;
+            if (_this.fileElem.value) {
+                _this.fileElem.value = null;
+                _this.elem.dispatchEvent(new CustomEvent('fileSelect', { detail: { files: null, origEvent: evt } }));
+            }
+        };
+        this.ie10SameFileSelectFix = function (evt) {
+            if (_this.fileElem && !_this.fileElem.getAttribute('__ngf_ie10_Fix_')) {
+                if (!_this.fileElem.parentNode) {
+                    _this.fileElem = null;
+                    return;
+                }
+                evt.preventDefault();
+                evt.stopPropagation();
+                var clone = _this.fileElem.cloneNode();
+                _this.fileElem.parentNode.insertBefore(clone, _this.fileElem);
+                _this.fileElem.parentNode.removeChild(_this.fileElem);
+                _this.fileElem = clone;
+                _this.fileElem.setAttribute('__ngf_ie10_Fix_', 'true');
+                _this.fileElem.addEventListener('change', _this.changeFn);
+                _this.fileElem.addEventListener('click', _this.ie10SameFileSelectFix);
+                _this.fileElem.click();
+                return false;
+            }
+            else {
+                _this.fileElem.removeAttribute('__ngf_ie10_Fix_');
+            }
+        };
+        this.elem = el;
+        this.attrGetter = attrGetter;
+        this.createFileInput();
+        this.fileElem.addEventListener('change', this.changeFn);
+        if (!this.isInputTypeFile()) {
+            this.elem.addEventListener('click', this.clickHandler);
+            this.elem.addEventListener('touchstart', this.clickHandler);
+            this.elem.addEventListener('touchend', this.clickHandler);
         }
-      }
-    }
-
-    var fileElem = elem;
-
-    function resetModel(evt) {
-      if (upload.shouldUpdateOn('click', attr, scope) && fileElem.val()) {
-        fileElem.val(null);
-        upload.updateModel(ngModel, attr, scope, fileChangeAttr(), null, evt, true);
-      }
-    }
-
-    if (!isInputTypeFile()) {
-      fileElem = createFileInput();
-    }
-    fileElem.bind('change', changeFn);
-
-    if (!isInputTypeFile()) {
-      elem.bind('click touchstart touchend', clickHandler);
-    } else {
-      elem.bind('click', resetModel);
-    }
-
-    function ie10SameFileSelectFix(evt) {
-      if (fileElem && !fileElem.attr('__ngf_ie10_Fix_')) {
-        if (!fileElem[0].parentNode) {
-          fileElem = null;
-          return;
+        else {
+            this.elem.addEventListener('click', this.resetModel);
         }
-        evt.preventDefault();
-        evt.stopPropagation();
-        fileElem.unbind('click');
-        var clone = fileElem.clone();
-        fileElem.replaceWith(clone);
-        fileElem = clone;
-        fileElem.attr('__ngf_ie10_Fix_', 'true');
-        fileElem.bind('change', changeFn);
-        fileElem.bind('click', ie10SameFileSelectFix);
-        fileElem[0].click();
-        return false;
-      } else {
-        fileElem.removeAttr('__ngf_ie10_Fix_');
-      }
-    }
-
-    if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
-      fileElem.bind('click', ie10SameFileSelectFix);
-    }
-
-    if (ngModel) ngModel.$formatters.push(function (val) {
-      if (val == null || val.length === 0) {
-        if (fileElem.val()) {
-          fileElem.val(null);
+        if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
+            this.fileElem.addEventListener('click', this.ie10SameFileSelectFix);
         }
-      }
-      return val;
-    });
-
-    scope.$on('$destroy', function () {
-      if (!isInputTypeFile()) fileElem.parent().remove();
-      angular.forEach(unwatches, function (unwatch) {
-        unwatch();
-      });
-    });
-
-    $timeout(function () {
-      for (var i = 0; i < generatedElems.length; i++) {
-        var g = generatedElems[i];
-        if (!document.body.contains(g.el[0])) {
-          generatedElems.splice(i, 1);
-          g.ref.remove();
+        setTimeout(function () {
+            for (var i = 0; i < __ngfGeneratedElems__.length; i++) {
+                var g = __ngfGeneratedElems__[i];
+                if (!document.body.contains(g.el)) {
+                    __ngfGeneratedElems__.splice(i, 1);
+                    g.ref.parentNode.removeChild(g.ref);
+                }
+            }
+        }, 0);
+        // if (ngModel) ngModel.$formatters.push(function (val) {
+        //     if (val == null || val.length === 0) {
+        //         if (fileElem.val()) {
+        //             fileElem.val(null);
+        //         }
+        //     }
+        //     return val;
+        // });
+        // upload.registerModelChangeValidator(ngModel, attr, scope);
+        // unwatches.push(attr.$observe('id', this.updateId));
+    }
+    Select.isDelayedClickSupported = function (ua) {
+        // fix for android native browser < 4.4 and safari windows
+        var m = ua.match(/Android[^\d]*(\d+)\.(\d+)/);
+        if (m && m.length > 2) {
+            return parseInt(m[1]) < 4 || (parseInt(m[1]) === 4 && parseInt(m[2]) < 4);
         }
-      }
-    });
-
-    if (window.FileAPI && window.FileAPI.ngfFixIE) {
-      window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
-    }
-  }
-
-  return {
-    restrict: 'AEC',
-    require: '?ngModel',
-    link: function (scope, elem, attr, ngModel) {
-      linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, Upload);
-    }
-  };
-}]);
+        // safari on windows
+        return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*!/.test(ua);
+    };
+    Select.prototype.bindAttrToFileInput = function () {
+        for (var i = 0; i < this.elem.attributes.length; i++) {
+            var attribute = this.elem.attributes[i];
+            if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'style') {
+                if (attribute.name === 'id') {
+                    this.updateId(attribute.value);
+                }
+                else {
+                    this.fileElem.setAttribute(attribute.name, (!attribute.value && (attribute.name === 'required' ||
+                        attribute.name === 'multiple')) ? attribute.name : attribute.value);
+                }
+            }
+        }
+    };
+    Select.prototype.createFileInput = function () {
+        if (this.isInputTypeFile()) {
+            return this.fileElem = this.elem;
+        }
+        this.fileElem = document.createElement('input');
+        this.fileElem.setAttribute('type', 'file');
+        this.label = document.createElement('label');
+        this.bindAttrToFileInput();
+        this.label.setAttribute('style', 'visibility: hidden;position:absolute;' +
+            'overflow:hidden;width:0px;height:0px;border:none;margin:0px;padding:0px');
+        this.label.setAttribute('tabindex', '-1');
+        __ngfGeneratedElems__.push({ el: this.elem, ref: this.label });
+        this.label.appendChild(this.fileElem);
+        document.body.appendChild(this.label);
+    };
+    Select.prototype.destroy = function () {
+        if (!this.isInputTypeFile()) {
+            this.fileElem.parentNode.parentNode.removeChild(this.fileElem.parentNode);
+        }
+    };
+    return Select;
+}());
+exports.Select = Select;
+//# sourceMappingURL=select.js.map

@@ -67,15 +67,13 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     if (ngModel) {
       ngModel.$formatters.push(function (files) {
         if (ngModel.$dirty) {
-          var filesArray = files;
           if (files && !angular.isArray(files)) {
-            filesArray = [files];
+            files = [files];
           }
-          upload.validate(filesArray, 0, ngModel, attr, scope).then(function () {
-            upload.applyModelValidation(ngModel, filesArray);
+          upload.validate(files, 0, ngModel, attr, scope).then(function () {
+            upload.applyModelValidation(ngModel, files);
           });
         }
-        return files;
       });
     }
   };
@@ -125,15 +123,11 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return upload.attrGetter(name, attr, scope, params);
     };
 
-    var ignoredErrors = (upload.attrGetter('ngfIgnoreInvalid', attr, scope) || '').split(' ');
-    var runAllValidation = upload.attrGetter('ngfRunAllValidations', attr, scope);
-
     if (files == null || files.length === 0) {
-      return upload.emptyPromise({'validFiles': files, 'invalidFiles': []});
+      return upload.emptyPromise(ngModel);
     }
 
     files = files.length === undefined ? [files] : files.slice(0);
-    var invalidFiles = [];
 
     function validateSync(name, validationName, fn) {
       if (files) {
@@ -144,20 +138,11 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
             var val = upload.getValidationAttr(attr, scope, name, validationName, file);
             if (val != null) {
               if (!fn(file, val, i)) {
-                if (ignoredErrors.indexOf(name) === -1) {
-                  file.$error = name;
-                  (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
-                  file.$errorParam = val;
-                  if (invalidFiles.indexOf(file) === -1) {
-                    invalidFiles.push(file);
-                  }
-                  if (!runAllValidation) {
-                    files.splice(i, 1);
-                  }
-                  valid = false;
-                } else {
-                  files.splice(i, 1);
-                }
+                file.$error = name;
+                (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
+                file.$errorParam = val;
+                files.splice(i, 1);
+                valid = false;
               }
             }
           }
@@ -168,6 +153,9 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
     }
 
+    validateSync('maxFiles', null, function (file, val, i) {
+      return prevLength + i < val;
+    });
     validateSync('pattern', null, upload.validatePattern);
     validateSync('minSize', 'size.min', function (file, val) {
       return file.size + 0.1 >= upload.translateScalars(val);
@@ -190,58 +178,44 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     });
 
     if (!files.length) {
-      return upload.emptyPromise({'validFiles': [], 'invalidFiles': invalidFiles});
+      return upload.emptyPromise(ngModel, ngModel.$ngfValidations);
     }
 
     function validateAsync(name, validationName, type, asyncFn, fn) {
       function resolveResult(defer, file, val) {
-        function resolveInternal(fn) {
-          if (fn()) {
-            if (ignoredErrors.indexOf(name) === -1) {
+        if (val != null) {
+          asyncFn(file, val).then(function (d) {
+            if (!fn(d, val)) {
               file.$error = name;
               (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
               file.$errorParam = val;
-              if (invalidFiles.indexOf(file) === -1) {
-                invalidFiles.push(file);
-              }
-              if (!runAllValidation) {
-                var i = files.indexOf(file);
-                if (i > -1) files.splice(i, 1);
-              }
-              defer.resolve(false);
+              defer.reject();
             } else {
-              var j = files.indexOf(file);
-              if (j > -1) files.splice(j, 1);
-              defer.resolve(true);
+              defer.resolve();
             }
-          } else {
-            defer.resolve(true);
-          }
-        }
-
-        if (val != null) {
-          asyncFn(file, val).then(function (d) {
-            resolveInternal(function () {
-              return !fn(d, val);
-            });
           }, function () {
-            resolveInternal(function () {
-              return attrGetter('ngfValidateForce', {$file: file});
-            });
+            if (attrGetter('ngfValidateForce', {$file: file})) {
+              file.$error = name;
+              (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
+              file.$errorParam = val;
+              defer.reject();
+            } else {
+              defer.resolve();
+            }
           });
         } else {
-          defer.resolve(true);
+          defer.resolve();
         }
       }
 
-      var promises = [upload.emptyPromise(true)];
+      var promises = [upload.emptyPromise()];
       if (files) {
         files = files.length === undefined ? [files] : files;
         angular.forEach(files, function (file) {
           var defer = $q.defer();
           promises.push(defer.promise);
           if (type && (file.type == null || file.type.search(type) !== 0)) {
-            defer.resolve(true);
+            defer.resolve();
             return;
           }
           if (name === 'dimensions' && upload.attrGetter('ngfDimensions', attr) != null) {
@@ -249,120 +223,96 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
               resolveResult(defer, file,
                 attrGetter('ngfDimensions', {$file: file, $width: d.width, $height: d.height}));
             }, function () {
-              defer.resolve(false);
+              defer.reject();
             });
           } else if (name === 'duration' && upload.attrGetter('ngfDuration', attr) != null) {
             upload.mediaDuration(file).then(function (d) {
               resolveResult(defer, file,
                 attrGetter('ngfDuration', {$file: file, $duration: d}));
             }, function () {
-              defer.resolve(false);
+              defer.reject();
             });
           } else {
             resolveResult(defer, file,
               upload.getValidationAttr(attr, scope, name, validationName, file));
           }
         });
+        return $q.all(promises).then(function () {
+          ngModel.$ngfValidations.push({name: name, valid: true});
+        }, function () {
+          ngModel.$ngfValidations.push({name: name, valid: false});
+        });
       }
-      var deffer = $q.defer();
-      $q.all(promises).then(function (values) {
-        var isValid = true;
-        for (var i = 0; i < values.length; i++) {
-          if (!values[i]) {
-            isValid = false;
-            break;
-          }
-        }
-        ngModel.$ngfValidations.push({name: name, valid: isValid});
-        deffer.resolve(isValid);
-      });
-      return deffer.promise;
     }
 
     var deffer = $q.defer();
     var promises = [];
 
-    promises.push(validateAsync('maxHeight', 'height.max', /image/,
+    promises.push(upload.happyPromise(validateAsync('maxHeight', 'height.max', /image/,
       this.imageDimensions, function (d, val) {
         return d.height <= val;
-      }));
-    promises.push(validateAsync('minHeight', 'height.min', /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('minHeight', 'height.min', /image/,
       this.imageDimensions, function (d, val) {
         return d.height >= val;
-      }));
-    promises.push(validateAsync('maxWidth', 'width.max', /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('maxWidth', 'width.max', /image/,
       this.imageDimensions, function (d, val) {
         return d.width <= val;
-      }));
-    promises.push(validateAsync('minWidth', 'width.min', /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('minWidth', 'width.min', /image/,
       this.imageDimensions, function (d, val) {
         return d.width >= val;
-      }));
-    promises.push(validateAsync('dimensions', null, /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('dimensions', null, /image/,
       function (file, val) {
         return upload.emptyPromise(val);
       }, function (r) {
         return r;
-      }));
-    promises.push(validateAsync('ratio', null, /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('ratio', null, /image/,
       this.imageDimensions, function (d, val) {
         var split = val.toString().split(','), valid = false;
         for (var i = 0; i < split.length; i++) {
-          if (Math.abs((d.width / d.height) - upload.ratioToFloat(split[i])) < 0.01) {
+          if (Math.abs((d.width / d.height) - upload.ratioToFloat(split[i])) < 0.0001) {
             valid = true;
           }
         }
         return valid;
-      }));
-    promises.push(validateAsync('maxRatio', 'ratio.max', /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('maxRatio', 'ratio.max', /image/,
       this.imageDimensions, function (d, val) {
         return (d.width / d.height) - upload.ratioToFloat(val) < 0.0001;
-      }));
-    promises.push(validateAsync('minRatio', 'ratio.min', /image/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('minRatio', 'ratio.min', /image/,
       this.imageDimensions, function (d, val) {
         return (d.width / d.height) - upload.ratioToFloat(val) > -0.0001;
-      }));
-    promises.push(validateAsync('maxDuration', 'duration.max', /audio|video/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('maxDuration', 'duration.max', /audio|video/,
       this.mediaDuration, function (d, val) {
         return d <= upload.translateScalars(val);
-      }));
-    promises.push(validateAsync('minDuration', 'duration.min', /audio|video/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('minDuration', 'duration.min', /audio|video/,
       this.mediaDuration, function (d, val) {
         return d >= upload.translateScalars(val);
-      }));
-    promises.push(validateAsync('duration', null, /audio|video/,
+      })));
+    promises.push(upload.happyPromise(validateAsync('duration', null, /audio|video/,
       function (file, val) {
         return upload.emptyPromise(val);
       }, function (r) {
         return r;
-      }));
+      })));
 
-    promises.push(validateAsync('validateAsyncFn', null, null,
+    promises.push(upload.happyPromise(validateAsync('validateAsyncFn', null, null,
       function (file, val) {
         return val;
       }, function (r) {
         return r === true || r === null || r === '';
-      }));
+      })));
 
-    $q.all(promises).then(function () {
-
-      if (runAllValidation) {
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          if (file.$error) {
-            files.splice(i--, 1);
-          }
-        }
-      }
-
-      runAllValidation = false;
-      validateSync('maxFiles', null, function (file, val, i) {
-        return prevLength + i < val;
-      });
-
-      deffer.resolve({'validFiles': files, 'invalidFiles': invalidFiles});
+    return $q.all(promises).then(function () {
+      deffer.resolve(ngModel, ngModel.$ngfValidations);
     });
-    return deffer.promise;
   };
 
   upload.imageDimensions = function (file) {
@@ -387,8 +337,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           .css('max-width', 'none !important').css('max-height', 'none !important');
 
         function success() {
-          var width = img[0].naturalWidth || img[0].clientWidth;
-          var height = img[0].naturalHeight || img[0].clientHeight;
+          var width = img[0].clientWidth;
+          var height = img[0].clientHeight;
           img.remove();
           file.$ngfWidth = width;
           file.$ngfHeight = height;
@@ -402,23 +352,23 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         img.on('load', success);
         img.on('error', error);
+        var count = 0;
 
-        var secondsCounter = 0;
-        function checkLoadErrorInCaseOfNoCallback() {
+        function checkLoadError() {
           $timeout(function () {
             if (img[0].parentNode) {
               if (img[0].clientWidth) {
                 success();
-              } else if (secondsCounter++ > 10) {
+              } else if (count > 10) {
                 error();
               } else {
-                checkLoadErrorInCaseOfNoCallback();
+                checkLoadError();
               }
             }
           }, 1000);
         }
 
-        checkLoadErrorInCaseOfNoCallback();
+        checkLoadError();
 
         angular.element(document.getElementsByTagName('body')[0]).append(img);
       }, function () {

@@ -1,5 +1,5 @@
 /**!
- * AngularJS file upload directives and services. Supports: file upload/drop/paste, resume, cancel/abort,
+ * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
@@ -219,7 +219,7 @@
       };
     };
 
-    window.Blob = Blob = function (b) {
+    window.Blob = BlobUtil = function (b) {
       return {
         data: b,
         __isFileAPIBlobShim: true

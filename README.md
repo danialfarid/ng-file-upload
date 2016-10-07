@@ -10,9 +10,9 @@ ng-file-upload
 
 Lightweight Angular directive to upload files.
 
-**See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md#full-reference)
+**See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md)
 
-**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0) [version 10.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/10.0.0) [version 11.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/11.0.0) [version 12.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/12.0.0) [version 12.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/12.1.0) [version 12.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/12.2.3)
+**Migration notes**: [version 3.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0) [version 3.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/3.2.3) [version 4.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/4.0.0) [version 5.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/5.0.0) [version 6.x.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.0.0) [version 6.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/6.2.0) [version 7.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.0.0) [version 7.2.x](https://github.com/danialfarid/ng-file-upload/releases/tag/7.2.0) [version 8.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/8.0.1) [version 9.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/9.0.0) [version 10.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/10.0.0) [version 11.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/11.0.0) [version 12.0.x](https://github.com/danialfarid/ng-file-upload/releases/tag/12.0.0)
 
 
 
@@ -34,7 +34,7 @@ Table of Content:
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
 * file drag and drop (html5 only) 
-* image paste from clipboard and drag and drop from browser pages (html5 only).
+* image paste form clipboard and drag and drop from browser pages (html5 only).
 * image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/danialfarid/xxo3sk41/590/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only) 
@@ -162,7 +162,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
     // called when files are selected, dropped, or cleared
   ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
-  ngf-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
+  ng-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
     // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. 
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
@@ -225,7 +225,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
               // validate as form.file.$error.maxSize=true and file.$error='maxSize'
               // ngf-max-total-size is for multiple file select and validating the total size of all files.
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
-              // validate error names: minHeight, maxHeight, minWidth, maxWidth
+              // validate error name: maxHeight
   ngf-ratio="8:10,1.6" // list of comma separated valid aspect ratio of images in float or 2:3 format
               // validate error name: ratio
   ngf-min-ratio, ngf-max-ratio="8:10" // min or max allowed aspect ratio for the image.
@@ -246,11 +246,6 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
               // values for validations cannot be calculated for example image load error or unsupported video by the browser.
               // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
-  ngf-ignore-invalid="'pattern maxSize'" // ignore the files that fail the specified validations. They will 
-              // just be ignored and will not show up in ngf-model-invalid or make the form invalid.
-              // space separated list of validate error names.
-  ngf-run-all-validations="boolean" // default false. Runs all the specified validate directives. By default
-              // once a validation fails for a file it would stop running other validations for that file.
 
 >Upload/Drop</div>
 
@@ -375,9 +370,8 @@ Upload.imageDimensions(file).then(function(dimensions){console.log(dimensions.wi
 Upload.mediaDuration(file).then(function(durationInSeconds){...});
 
 /* Resizes an image. Returns a promise */
-// options: width, height, quality, type, ratio, centerCrop, resizeIf, restoreExif
-//resizeIf(width, height) returns boolean. See ngf-resize directive for more details of options.
-Upload.resize(file, options).then(function(resizedFile){...});
+//resizeIf(width, height) returns boolean
+Upload.resize(file, width, height, quality, type, ratio, centerCrop, resizeIf).then(function(resizedFile){...});
 
 /* returns boolean showing if image resize is supported by this browser*/
 Upload.isResizeSupported()
@@ -414,7 +408,7 @@ you can access the value of the validation using `myForm.myFileInputName.$error.
 for example `form.file.$error.pattern`.
 If multiple file selection is allowed you can specify `ngf-model-invalid="invalidFiles"` to assing the invalid files to 
 a model and find the error of each individual file with `file.$error` and description of it with `file.$errorParam`.
-You can use angular ngf-model-options to allow invalid files to be set to the ng-model  `ngf-model-options="{allowInvalid: true}"`.
+You can use angular ng-model-options to allow invalid files to be set to the ng-model  `ng-model-options="{allowInvalid: true}"`.  
 
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) you have an array of files or more than one file in your `data` to 
 send them all in one request . Non-html5 browsers due to flash limitation will upload each file one by one in a separate request. 

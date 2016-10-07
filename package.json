@@ -1,39 +1,54 @@
 {
-  "name": "ng-file-upload",
-  "version": "12.2.12",
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-jshint": "^0.11.0",
-    "grunt-contrib-uglify": "^0.8.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-text-replace": "~0.3.12",
-    "grunt-git": "~0.2.14",
-    "grunt-serve": "^0.1.6",
-    "jshint-stylish": "^1.0.0",
-    "load-grunt-tasks": "^3.1.0"
-  },
-  "description": "An AngularJS directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers",
-  "main": "index.js",
+  "name": "ng2-file-upload",
+  "version": "0.0.1",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
+    "lite": "lite-server",
+    "postinstall": "typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "typings": "typings"
   },
+  "dependencies": {
+    "@angular/common": "~2.0.1",
+    "@angular/compiler": "~2.0.1",
+    "@angular/core": "~2.0.1",
+    "@angular/forms": "~2.0.1",
+    "@angular/http": "~2.0.1",
+    "@angular/platform-browser": "~2.0.1",
+    "@angular/platform-browser-dynamic": "~2.0.1",
+    "@angular/router": "~3.0.1",
+    "@angular/upgrade": "~2.0.1",
+    "angular-in-memory-web-api": "~0.1.1",
+    "bootstrap": "^3.3.7",
+    "core-js": "^2.4.1",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": "5.0.0-beta.12",
+    "systemjs": "0.19.39",
+    "zone.js": "^0.6.25"
+  },
+  "devDependencies": {
+    "concurrently": "^3.0.0",
+    "lite-server": "^2.2.2",
+    "typescript": "^2.0.3",
+    "typings":"^1.4.0"
+  },
+  "description": "An Angular 2 directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/danialfarid/ng-file-upload.git"
+    "url": "https://github.com/danialfarid/ng2-file-upload.git"
   },
   "keywords": [
-    "angularjs",
-    "ng-file-upload",
+    "angular2",
+    "ng2-file-upload",
     "file-upload",
     "javascript"
   ],
   "author": "danial.farid@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/danialfarid/ng-file-upload/issues"
+    "url": "https://github.com/danialfarid/ng2-file-upload/issues"
   },
-  "homepage": "https://github.com/danialfarid/ng-file-upload"
+  "homepage": "https://github.com/danialfarid/ng2-file-upload"
 }
