@@ -1,0 +1,15 @@
+<h2>ng-file-upload Demo</h2>
+<h3>
+  Visit <a href="https://github.com/danialfarid/ng-file-upload">ng-file-upload</a> on github
+</h3>
+
+Examples:
+<a (click)="currSample = 'form'" href="#">Upload file with validation and form submit</a>
+<a (click)="currSample = 'multiple'" href="#">Multiple files upload with validations</a>
+<ngf-form *ngIf="currSample == 'form'"></ngf-form>
+<ngf-multiple *ngIf="currSample == 'multiple'"></ngf-multiple>
+
+<a style="position:fixed;bottom:28px;right:10px;font-size:smaller;" target="_blank"
+   href="https://angular-file-upload.appspot.com/donate.html">donate</a>
+<a style="position:fixed;bottom:45px;right:10px;font-size:smaller;"
+   href="https://github.com/danialfarid/angular-file-upload/issues/new">Feedback/Issues</a>

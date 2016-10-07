@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<cross-domain-policy>
+	<site-control permitted-cross-domain-policies="all" />
+	<allow-access-from domain="*" secure="false" />
+	<allow-access-from domain="angular-file-upload-cors.appspot.com" />
+	<allow-access-from domain="angular-file-upload-cors-srv.appspot.com" />
+	<allow-http-request-headers-from domain="*" headers="*" secure="false" />
+</cross-domain-policy>

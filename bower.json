@@ -1,0 +1,14 @@
+{
+  "name": "ng2-file-upload",
+  "main": "ng2-file-upload.js",
+  "homepage": "https://github.com/danialfarid/ng2-file-upload",
+  "dependencies": {
+    "angular2": ">2.0.1"
+  },
+  "authors": [
+    "danialf <danial.farid@gmail.com>"
+  ],
+  "description": "Lightweight Angular 2 directive to upload files. Support drag&drop, paste image, progress and abort",
+  "ignore": [],
+  "license": "MIT"
+ }

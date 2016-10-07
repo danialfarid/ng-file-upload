@@ -1,0 +1,222 @@
+body {
+    font-family: Helvetica, arial, freesans, clean, sans-serif;
+}
+
+/* object {
+	border: 3px solid red;
+} */
+
+.upload-buttons input[type="file"] {
+    width: 6.3em \0/ IE9;
+}
+
+.upload-button {
+    Height: 26px;
+    line-height: 30px;
+    padding: 0 10px;
+    background: #CCC;
+    appearance: button;
+    -moz-appearance: button; /* Firefox */
+    -webkit-appearance: button; /* Safari and Chrome */
+    position: relative;
+    text-align: center;
+    top: 7px;
+    cursor: pointer;
+}
+
+.sel-file {
+    padding: 1px 5px;
+    font-size: smaller;
+    color: grey;
+}
+
+.response {
+    padding: 0;
+    padding-top: 10px;
+    margin: 3px 0;
+    clear: both;
+    list-style: none;
+}
+
+.response .sel-file li, .response .reqh {
+    color: blue;
+    padding-bottom: 5px;
+}
+
+fieldset {
+    border: 1px solid #DDD;
+    width: 620px;
+    padding: 10px;
+    line-height: 23px;
+}
+
+fieldset label {
+    /*font-size: smaller;*/
+}
+
+.progress {
+    display: inline-block;
+    width: 100px;
+    border: 3px groove #CCC;
+}
+
+.progress div {
+    font-size: smaller;
+    background: orange;
+    width: 0;
+}
+
+.drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 170px;
+    text-align: center;
+    padding: 50px 10px;
+    margin-left: 10px;
+}
+
+.up-buttons {
+    float: right;
+}
+
+.drop-box.dragover {
+    border: 5px dashed blue;
+}
+
+.drop-box.dragover-err {
+    border: 5px dashed red;
+}
+
+/* for IE*/
+.js-fileapi-wrapper {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+button {
+    padding: 1px 5px;
+    font-size: smaller;
+    margin: 0 3px;
+}
+
+.ng-v {
+    float: right;
+}
+
+.thumb {
+    float: left;
+    width: 18px;
+    height: 18px;
+    padding-right: 10px;
+}
+
+form .thumb {
+    width: 24px;
+    height: 24px;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+
+form .progress {
+    line-height: 15px;
+}
+
+.edit-area {
+    font-size: 14px;
+    background: black;
+    color: #f9f9f9;
+    padding: 5px 1px;
+}
+
+#htmlEdit {
+    margin-bottom: 25px;
+}
+
+.edit-div {
+    font-size: smaller;
+}
+
+.CodeMirror {
+    font-size: 14px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+}
+
+form button {
+    padding: 3px 10px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.sub {
+    font-size: smaller;
+    color: #777;
+    padding-top: 5px;
+    padding-left: 25px;
+}
+
+.err {
+    font-size: 12px;
+    color: #C53F00;
+    margin: 15px;
+    padding: 15px;
+    background-color: #F0F0F0;
+    border: 1px solid black;
+}
+
+.s3 {
+    font-size: smaller;
+    color: #333;
+    margin-left: 20px;
+}
+
+.s3 fieldset {
+    border: 1px solid #AAA;
+}
+
+.s3 label {
+    width: 180px;
+    display: inline-block;
+}
+
+.s3 input {
+    width: 300px;
+}
+
+.s3 .helper {
+    margin-left: 5px;
+}
+
+.howto {
+    margin-left: 10px;
+    line-height: 20px;
+}
+
+.server {
+    margin-bottom: 20px;
+}
+
+.srv-title {
+    font-weight: bold;
+    padding: 5px 0 10px 0;
+}
+
+:not(output):-moz-ui-invalid {
+    box-shadow: none;
+}
+
+.preview {
+    clear: both;
+}
+
+.preview img, .preview audio, .preview video {
+    max-width: 300px;
+    max-height: 150px;
+    float: right;
+}
+
+.custom {
+    font-size: 14px;
+    margin-left: 20px;
+}

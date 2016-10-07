@@ -1,0 +1,23 @@
+<form #myForm="ngForm">
+  <fieldset>
+    <legend>Upload on form submit</legend>
+    Username:
+    <input type="text" [(ngModel)]="username" #userName="ngModel" name="userName" size="39" required>
+    <i [hidden]="userName.valid || !userName.errors.required">*required</i><br/>
+    Profile Picture:
+    <input type="file" ngfSelect [(ngModel)]="picFile" name="file" #file="ngModel"
+           accept="image/*" ngfPattern="image/*" ngfMaxSize="2MB" ngfMinSize="100KB" required>
+    <i [hidden]="file.valid || !file.errors?.required">*required</i>
+    <i [hidden]="file.valid || !file.errors?.maxSize">*max file size 2MB</i>
+    <i [hidden]="file.valid || !file.errors?.minSize">*min file size 100KB</i>
+    <br/>
+
+    <button [disabled]="!myForm.valid" (click)="uploadPic(picFile)">Submit</button>
+    <img [hidden]="!picFile" [src]="picFile" class="thumb">
+    <span class="progress" *ngIf="picFile?.progress > 0">
+                  <div style="width:{{picFile?.progress}}%">{{picFile?.progress}}%</div>
+    </span>
+    <span [hidden]="!picFile?.result">Upload Successful</span>
+  </fieldset>
+  <br/>
+</form>
