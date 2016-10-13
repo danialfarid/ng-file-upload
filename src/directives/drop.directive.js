@@ -13,7 +13,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
+var core_1 = require("@angular/core");
 var drop_js_1 = require("../drop.js");
 var attr_directive_1 = require("./attr.directive");
 var DropDirective = (function (_super) {
@@ -21,6 +21,7 @@ var DropDirective = (function (_super) {
     function DropDirective(el) {
         var _this = this;
         _super.call(this);
+        this.ngfDragOver = new core_1.EventEmitter();
         this.ngfChange = new core_1.EventEmitter();
         this.ngfDrop = new core_1.EventEmitter();
         this.ngfDropAvailable = new core_1.EventEmitter();
@@ -31,6 +32,12 @@ var DropDirective = (function (_super) {
         el.nativeElement.addEventListener('fileDrop', function (e) {
             _this.ngfDrop.emit(e.detail);
             _this.ngfChange.emit(e.detail);
+        });
+        el.nativeElement.addEventListener('filedragover', function (e) {
+            _this.ngfDragOver.emit(e.detail);
+        });
+        el.nativeElement.addEventListener('filedragleave', function (e) {
+            _this.ngfDragOver.emit(-1);
         });
     }
     DropDirective.prototype.ngOnDestroy = function () {
@@ -55,10 +62,6 @@ var DropDirective = (function (_super) {
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfDragOverClass", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
     ], DropDirective.prototype, "ngfMaxFiles", void 0);
     __decorate([
         core_1.Input(), 
@@ -68,6 +71,18 @@ var DropDirective = (function (_super) {
         core_1.Input(), 
         __metadata('design:type', Object)
     ], DropDirective.prototype, "ngfIncludeDir", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], DropDirective.prototype, "ngfPattern", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], DropDirective.prototype, "ngfDragPattern", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], DropDirective.prototype, "ngfDragOver", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)

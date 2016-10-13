@@ -7,23 +7,9 @@ export class MediaValidator extends DimensionValidator {
         super(files, attrGetter);
     }
 
-    public validate() {
-        if (!this.files.length || !this.hasAny(['maxDuration', 'minDuration', 'duration',
-                'maxVideoHeight', 'minVideoHeight', 'maxVideoWidth', 'minVideoWidth',
-                'videoRatio', 'maxVideoRatio', 'minVideoRatio', 'videoDimensions'])) {
-            return Util.emptyPromise(this.result);
-        }
-
-        for (var i = 0; i < this.files.length; i++) {
-            this.validateFile(i);
-        }
-
-        return this.result;
-    };
-
     validateFile(i) {
         var file = this.files[i];
-        this.mediaDuration(file).then((res) => {
+        return MediaValidator.mediaDuration(file).then((res) => {
             this.validateMinMax(i, 'Duration', res.duration, 0);
             if (res.width) {
                 this.validateMinMax(i, 'Width', res.width, 0);
@@ -45,7 +31,7 @@ export class MediaValidator extends DimensionValidator {
         });
     }
 
-    mediaDuration(file) {
+    public static mediaDuration(file) {
         if (file.$ngfDuration) {
             return Util.emptyPromise(file.$ngfDuration);
         }
@@ -96,9 +82,7 @@ export class MediaValidator extends DimensionValidator {
             }, function (e) {
                 reject('load error\n' + e);
             });
-        }).then(()=> {
-            delete file.$ngfDurationPromise;
-        }).catch(()=> {
+        })['finally'](()=> {
             delete file.$ngfDurationPromise;
         });
     }

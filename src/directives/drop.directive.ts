@@ -1,5 +1,4 @@
-import {Directive, ElementRef, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
-
+import {Directive, ElementRef, Input, Output, EventEmitter, OnDestroy} from "@angular/core";
 import {Drop} from "../drop.js";
 import {AttrDirective} from "./attr.directive";
 
@@ -7,17 +6,18 @@ import {AttrDirective} from "./attr.directive";
     selector: '[ngfDrop]',
 })
 export class DropDirective extends AttrDirective implements OnDestroy {
-
     @Input() ngfStopPropagation;
     @Input() ngfAllowDir;
     @Input() ngfMultiple;
     @Input() ngfEnableFirefoxPaste;
-    @Input() ngfDragOverClass;
     @Input() ngfMaxFiles;
     @Input() ngfMaxTotalSize;
     @Input() ngfIncludeDir;
-    @Output() ngfChange=new EventEmitter();
-    @Output() ngfDrop=new EventEmitter();
+    @Input() ngfPattern;
+    @Input() ngfDragPattern;
+    @Output() ngfDragOver = new EventEmitter();
+    @Output() ngfChange = new EventEmitter();
+    @Output() ngfDrop = new EventEmitter();
     @Output() ngfDropAvailable = new EventEmitter();
 
     constructor(el: ElementRef) {
@@ -29,6 +29,12 @@ export class DropDirective extends AttrDirective implements OnDestroy {
         el.nativeElement.addEventListener('fileDrop', (e) => {
             this.ngfDrop.emit(e.detail);
             this.ngfChange.emit(e.detail);
+        });
+        el.nativeElement.addEventListener('filedragover', (e) => {
+            this.ngfDragOver.emit(e.detail);
+        });
+        el.nativeElement.addEventListener('filedragleave', (e) => {
+            this.ngfDragOver.emit(-1);
         });
     }
 

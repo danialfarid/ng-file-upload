@@ -1,57 +1,18 @@
-<fieldset>
-  <legend>Play with options</legend>
-  <div class="up-buttons">
-    <div ngfSelect ngfDrop [(ngModel)]="files"
-         [multiple]="multiple" [ngfPattern]="pattern" accept="acceptSelect"
-         [disabled]="disabled" [capture]="capture"
-         [ngfDragOverClass]="dragOverClassObj"
-         [ngfValidate]="validateObj"
-         [ngfResize]="resizeObj"
-         [ngfResizeIf]="resizeIfFn($file, $width, $height)"
-         [ngfDimensions]="dimensionsFn($file, $width, $height)"
-         [ngfDuration]="durationFn($file, $duration)"
-         [ngfKeep]="keepDistinct ? 'distinct' : keep"
-         [ngfFixOrientation]="orientation"
-         [ngfMaxFiles]="maxFiles"
-         [ngfIgnoreInvalid]="ignoreInvalid"
-         [ngfRunAllValidations]="runAllValidations"
-         [ngfAllowDir]="allowDir"
-         (ngfDropAvailable)="dropAvailable=$event"
-         class="drop-box">Select File
-        <span [hidden]="!dropAvailable"> or Drop File</span>
-    </div>
-  </div>
-  <div class="custom">
-    <label>accept (for select browser dependent): <input type="text" ng-model="acceptSelect"></label><br/>
-    <label>capture (for mobile): <input type="text" ng-model="capture"></label><br/>
-    <label>ngfPattern (validate file model): <input type="text" ng-model="pattern"></label><br/>
-    <label>ngf-resize: <input type="text" size="43" ng-model="resize"></label><br/>
-    <label>ngf-resize-if: <input type="text" size="43" ng-model="resizeIf"></label><br/>
-    <label>ngf-dimensions: <input type="text" size="43" ng-model="dimensions"></label><br/>
-    <label>ngf-duration: <input type="text" size="43" ng-model="duration"></label><br/>
-    <label>ngf-max-files: <input type="text" size="43" ng-model="maxFiles"></label><br/>
-    <label>ngf-ignore-invalid: <input type="text" size="43" ng-model="ignoreInvalid"></label><br/>
-    <label><input type="checkbox" ng-model="multiple">ngf-multiple (allow multiple files)</label>
-    <label><input type="checkbox" ng-model="disabled">ng-disabled</label><br/>
-    <label><input type="checkbox" ng-model="allowDir">ngf-allow-dir (allow directory drop Chrome
-      only)</label><br/>
-    <label><input type="checkbox" ng-model="keep">ngf-keep (keep the previous model values in
-      ng-model)</label><br/>
-    <label><input type="checkbox" ng-model="keepDistinct">ngf-keep="distinct" (do not allow
-      duplicates)</label><br/>
-    <label><input type="checkbox" ng-model="orientation">ngf-fix-orientation (for exif jpeg files)</label><br/>
-    <label><input type="checkbox" ng-model="runAllValidations">ngf-run-all-validations</label><br/>
-    <label>Upload resumable chunk size: <input type="text" ng-model="chunkSize"></label><br/>
-    <label><input type="checkbox" ng-model="clickDisabled">ngf-keep="distinct" (do not allow
-  </div>
-
-  <div class="preview">
-    <div>Preview image/audio/video:</div>
-    <img ngf-src="!files[0].$error && files[0]">
-    <audio controls ngf-src="!files[0].$error && files[0]"></audio>
-    <video controls ngf-src="!files[0].$error && files[0]"></video>
-  </div>
-</fieldset>
+<!--<div ngfSelect ngfDrop [(ngModel)]="files"-->
+     <!--ngfMultiple="true" ngfPattern="images/*" ngfAccept="images/*"-->
+     <!--[disabled]="false" [ngfCapture]="camera"-->
+     <!--[ngfDragOverClass]="{}"-->
+     <!--[ngfDimensions]="width > 100 && height > 100"-->
+     <!--[ngfMaxFiles]="100"-->
+     <!--ngfFixOrientation="orientation"-->
+     <!--class="button">Select File-->
+<!--</div>-->
+<!--<div class="preview">-->
+  <!--<div>Preview image/audio/video:</div>-->
+  <!--<img ngf-src="!files[0].$error && files[0]">-->
+  <!--<audio controls ngf-src="!files[0].$error && files[0]"></audio>-->
+  <!--<video controls ngf-src="!files[0].$error && files[0]"></video>-->
+<!--</div>-->
 
 <!--<ul style="clear:both" class="response">-->
 <!--<li class="sel-file" ng-repeat="f in files">-->

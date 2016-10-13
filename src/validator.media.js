@@ -12,22 +12,10 @@ var MediaValidator = (function (_super) {
     function MediaValidator(files, attrGetter) {
         _super.call(this, files, attrGetter);
     }
-    MediaValidator.prototype.validate = function () {
-        if (!this.files.length || !this.hasAny(['maxDuration', 'minDuration', 'duration',
-            'maxVideoHeight', 'minVideoHeight', 'maxVideoWidth', 'minVideoWidth',
-            'videoRatio', 'maxVideoRatio', 'minVideoRatio', 'videoDimensions'])) {
-            return util_1.Util.emptyPromise(this.result);
-        }
-        for (var i = 0; i < this.files.length; i++) {
-            this.validateFile(i);
-        }
-        return this.result;
-    };
-    ;
     MediaValidator.prototype.validateFile = function (i) {
         var _this = this;
         var file = this.files[i];
-        this.mediaDuration(file).then(function (res) {
+        return MediaValidator.mediaDuration(file).then(function (res) {
             _this.validateMinMax(i, 'Duration', res.duration, 0);
             if (res.width) {
                 _this.validateMinMax(i, 'Width', res.width, 0);
@@ -48,7 +36,7 @@ var MediaValidator = (function (_super) {
             }
         });
     };
-    MediaValidator.prototype.mediaDuration = function (file) {
+    MediaValidator.mediaDuration = function (file) {
         if (file.$ngfDuration) {
             return util_1.Util.emptyPromise(file.$ngfDuration);
         }
@@ -98,9 +86,7 @@ var MediaValidator = (function (_super) {
             }, function (e) {
                 reject('load error\n' + e);
             });
-        }).then(function () {
-            delete file.$ngfDurationPromise;
-        }).catch(function () {
+        })['finally'](function () {
             delete file.$ngfDurationPromise;
         });
     };

@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -13,48 +8,77 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
+var core_1 = require("@angular/core");
 var select_js_1 = require("../select.js");
-var attr_directive_1 = require("./attr.directive");
-var SelectDirective = (function (_super) {
-    __extends(SelectDirective, _super);
-    function SelectDirective(el) {
+var SelectComponent = (function () {
+    function SelectComponent(el) {
         var _this = this;
-        _super.call(this);
         this.ngfSelect = new core_1.EventEmitter();
         this.ngfChange = new core_1.EventEmitter();
-        this.select = new select_js_1.Select(el.nativeElement, this.attrGetter);
-        el.nativeElement.addEventListener('fileSelect', function (e) {
-            _this.ngfSelect.emit(e.detail);
-            _this.ngfChange.emit(e.detail);
+        this.elem = el.nativeElement;
+        this.select = new select_js_1.Select(el.nativeElement, this.ngfResetOnClick);
+        el.nativeElement.addEventListener('chnge', function (e) {
+            _this.ngfSelect.emit(e.target && e.target.files);
+            _this.ngfChange.emit(e.target && e.target.files);
         });
+        this.ngfHtml = this.elem.innerHTML;
     }
-    SelectDirective.prototype.ngOnDestroy = function () {
+    SelectComponent.prototype.ngOnDestroy = function () {
         this.select.destroy();
+    };
+    SelectComponent.prototype.ngOnChange = function (changes) {
+        //had to manually set capture since angular doesn't know of capture on input
+        if (changes['ngfCapture']) {
+            this.elem.setAttribute('capture', changes['ngfCapture'].currentValue);
+        }
     };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], SelectDirective.prototype, "ngfSelect", void 0);
+    ], SelectComponent.prototype, "ngfSelect", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], SelectDirective.prototype, "ngfChange", void 0);
+    ], SelectComponent.prototype, "ngfChange", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
-    ], SelectDirective.prototype, "ngfSelectDisabled", void 0);
+    ], SelectComponent.prototype, "ngfText", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
-    ], SelectDirective.prototype, "ngfClickDisabled", void 0);
-    SelectDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngfSelect]',
+    ], SelectComponent.prototype, "ngfHtml", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SelectComponent.prototype, "ngfResetOnClick", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SelectComponent.prototype, "ngfCapture", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SelectComponent.prototype, "ngfMultiple", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SelectComponent.prototype, "ngfAccept", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SelectComponent.prototype, "disabled", void 0);
+    SelectComponent = __decorate([
+        core_1.Component({
+            selector: 'ngf-select',
+            template: '<label><input style="visibility:hidden;position:absolute;' +
+                'overflow:hidden;width:0px;height:0px;border:none;margin:0px;padding:0px" tabindex="-1" ' +
+                'type="file" [accept]="ngfAccept" ' +
+                '[multiple]="ngfMultiple">{{ngfText}}<div *ngIf="ngfHtml" [innerHTML]="ngfHtml"></div></label>'
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef])
-    ], SelectDirective);
-    return SelectDirective;
-}(attr_directive_1.AttrDirective));
-exports.SelectDirective = SelectDirective;
+    ], SelectComponent);
+    return SelectComponent;
+}());
+exports.SelectComponent = SelectComponent;
 //# sourceMappingURL=select.directive.js.map

@@ -12,21 +12,10 @@ var ImageValidator = (function (_super) {
     function ImageValidator(files, attrGetter) {
         _super.call(this, files, attrGetter);
     }
-    ImageValidator.prototype.validate = function () {
-        if (!this.files.length || !this.hasAny(['maxHeight', 'minHeight', 'maxWidth', 'minWidth',
-            'ratio', 'maxRatio', 'minRatio', 'dimensions'])) {
-            return util_1.Util.emptyPromise(this.result);
-        }
-        for (var i = 0; i < this.files.length; i++) {
-            this.validateFile(i);
-        }
-        return this.result;
-    };
-    ;
     ImageValidator.prototype.validateFile = function (i) {
         var _this = this;
         var file = this.files[i];
-        ImageValidator.imageDimensions(file).then(function (d) {
+        return ImageValidator.imageDimensions(file).then(function (d) {
             _this.validateMinMax(i, 'Height', d.height, 0);
             _this.validateMinMax(i, 'Width', d.width, 0);
             _this.validateDimensions(d);
@@ -86,10 +75,8 @@ var ImageValidator = (function (_super) {
             }, function (e) {
                 reject('load error\n' + e);
             });
-        }).then(function () {
-            delete file.$ngfDimensionPromise;
-        }).catch(function () {
-            delete file.$ngfDimensionPromise;
+        })['finally'](function () {
+            delete file.$ngfDurationPromise;
         });
     };
     ;

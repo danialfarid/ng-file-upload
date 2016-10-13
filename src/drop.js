@@ -1,6 +1,6 @@
 "use strict";
-var blob_util_js_1 = require('./blob.util.js');
-var uploader_js_1 = require('./uploader.js');
+var blob_util_js_1 = require("./blob.util.js");
+var uploader_js_1 = require("./uploader.js");
 var pattern_1 = require("./pattern");
 var Drop = (function () {
     function Drop(elem, attrGetter) {
@@ -38,12 +38,10 @@ var Drop = (function () {
         };
         this.elem = elem;
         this.attrGetter = attrGetter;
-        // if (attrGetter('ngfSelect') == null) {
-        //   upload.registerModelChangeValidator(ngModel, attr, scope);
-        // }
-        var leaveTimeout = null;
-        var dragOverDelay = 1;
-        var actualDragOverClass;
+        var isDragging, clearLeaveTimeout, dragLeave = function () {
+            elem.dispatchEvent(new CustomEvent('filedragleave'));
+            isDragging = false;
+        };
         elem.addEventListener('dragover', function (evt) {
             if (_this.isDisabled() || attrGetter('dropDisabled'))
                 return;
@@ -55,10 +53,10 @@ var Drop = (function () {
                 var b = evt.dataTransfer.effectAllowed;
                 evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
             }
-            clearTimeout(leaveTimeout);
-            if (!actualDragOverClass) {
-                actualDragOverClass = _this.calculateDragOverClass(evt, _this.attrGetter('ngfDragOverClass', { $event: evt }));
-                Drop.addClass(elem, actualDragOverClass);
+            clearTimeout(clearLeaveTimeout);
+            if (!isDragging) {
+                isDragging = true;
+                elem.dispatchEvent(new CustomEvent('filedragover', { detail: _this.draggingFilesNo(evt) }));
             }
         }, false);
         elem.addEventListener('dragenter', function (evt) {
@@ -74,12 +72,7 @@ var Drop = (function () {
             evt.preventDefault();
             if (_this.attrGetter('stopPropagation'))
                 evt.stopPropagation();
-            leaveTimeout = function () {
-                if (actualDragOverClass)
-                    Drop.removeClass(elem, actualDragOverClass);
-                actualDragOverClass = null;
-            };
-            setTimeout(leaveTimeout, dragOverDelay || 100);
+            clearLeaveTimeout = setTimeout(dragLeave, 100);
         }, false);
         elem.addEventListener('drop', function (evt) {
             if (_this.isDisabled() || attrGetter('dropDisabled'))
@@ -87,9 +80,7 @@ var Drop = (function () {
             evt.preventDefault();
             if (attrGetter('stopPropagation'))
                 evt.stopPropagation();
-            if (actualDragOverClass)
-                Drop.removeClass(elem, actualDragOverClass);
-            actualDragOverClass = null;
+            dragLeave();
             var items = evt.dataTransfer.items;
             var html;
             try {
@@ -143,33 +134,19 @@ var Drop = (function () {
             });
         }
     }
-    Drop.prototype.calculateDragOverClass = function (evt, obj) {
-        var dClass = 'dragover';
-        if (typeof obj === 'string') {
-            dClass = obj;
-        }
-        else if (obj) {
-            if (obj.accept || obj.reject) {
-                var items = evt.dataTransfer.items;
-                if (items == null || !items.length) {
-                    dClass = obj.accept;
-                }
-                else {
-                    var pattern = obj.pattern || this.attrGetter('ngfPattern', { $event: evt });
-                    var len = items.length;
-                    while (len--) {
-                        if (!pattern_1.Pattern.validatePattern(items[len], pattern)) {
-                            dClass = obj.reject;
-                            break;
-                        }
-                        else {
-                            dClass = obj.accept;
-                        }
-                    }
+    Drop.prototype.draggingFilesNo = function (evt) {
+        var items = evt.dataTransfer.items, valids = items.length;
+        if (items && items.length) {
+            var pattern = this.attrGetter('dragPattern', { $event: evt }) ||
+                this.attrGetter('pattern', { $event: evt });
+            var len = items.length;
+            while (len--) {
+                if (!pattern_1.Pattern.validatePattern(items[len], pattern)) {
+                    valids--;
                 }
             }
         }
-        return dClass;
+        return valids;
     };
     Drop.prototype.extractFiles = function (items, fileList, allowDir, multiple) {
         var maxFiles = this.attrGetter('maxFiles');
@@ -248,7 +225,9 @@ var Drop = (function () {
                 }
             });
         }
-        var promises = [new Promise(function (resolve) { resolve(); })];
+        var promises = [new Promise(function (resolve) {
+                resolve();
+            })];
         if (items && items.length > 0 && window.location.protocol !== 'file:') {
             for (var i = 0; i < items.length; i++) {
                 if (items[i].webkitGetAsEntry && items[i].webkitGetAsEntry() && items[i].webkitGetAsEntry().isDirectory) {
@@ -305,17 +284,6 @@ var Drop = (function () {
     Drop.dropAvailable = function () {
         var div = document.createElement('div');
         return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
-    };
-    Drop.addClass = function (elem, c) {
-        if (!elem.className.match(new RegExp('(\\s|^)' + c + '(\\s|$)'))) {
-            elem.className += ' ' + c;
-        }
-    };
-    Drop.removeClass = function (elem, c) {
-        var regexp = new RegExp('(\\s|^)' + c + '(\\s|$)');
-        if (elem.className.match(regexp)) {
-            elem.className += elem.className.replace(regexp, ' ');
-        }
     };
     return Drop;
 }());

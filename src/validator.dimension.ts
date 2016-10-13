@@ -5,6 +5,21 @@ export class DimensionValidator extends Validator {
         super(files, attrGetter);
     }
 
+    public validate() {
+        var promises = [Util.emptyPromise()];
+        for (var i = 0; i < this.files.length; i++) {
+            promises.push(this.validateFile(i));
+        }
+
+        return Promise.all(promises).then(() => {
+            return this.result;
+        });
+    };
+
+    protected validateFile(index): Promise<any> {
+        return null;
+    };
+
     protected validateDimensions(dimensions, prefix?) {
         prefix = prefix || '';
         var ratioName = this.addPrefix('ratio', prefix),
@@ -26,7 +41,7 @@ export class DimensionValidator extends Validator {
         var dimName = this.addPrefix('dimensions', prefix),
             dimensionsExpr = this.attrGetter(dimName);
         if (dimensionsExpr) {
-            var ngfDimFn:Function = null;
+            var ngfDimFn: Function = null;
             eval('var ngfDimFn = function(width, height){ return ' + dimensionsExpr + ';}');
             if (!ngfDimFn(dimensions.width, dimensions.height)) {
                 this.markFileError(i, dimName, false);
@@ -37,6 +52,7 @@ export class DimensionValidator extends Validator {
     private addPrefix(str, prefix) {
         return prefix + this.capitalize(str);
     }
+
     private capitalize(str: string) {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : str;
     }

@@ -11,6 +11,21 @@ var DimensionValidator = (function (_super) {
     function DimensionValidator(files, attrGetter) {
         _super.call(this, files, attrGetter);
     }
+    DimensionValidator.prototype.validate = function () {
+        var _this = this;
+        var promises = [util_1.Util.emptyPromise()];
+        for (var i = 0; i < this.files.length; i++) {
+            promises.push(this.validateFile(i));
+        }
+        return Promise.all(promises).then(function () {
+            return _this.result;
+        });
+    };
+    ;
+    DimensionValidator.prototype.validateFile = function (index) {
+        return null;
+    };
+    ;
     DimensionValidator.prototype.validateDimensions = function (dimensions, prefix) {
         prefix = prefix || '';
         var ratioName = this.addPrefix('ratio', prefix), expectedRatio = this.attrGetter(ratioName), actualRatio = dimensions.width / dimensions.height;

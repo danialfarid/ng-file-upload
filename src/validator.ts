@@ -5,7 +5,8 @@ export class Validator {
     protected result = {};
 
     constructor(files, attrGetter) {
-        this.files = files == null ? [] : (files.length === undefined ? [files] : files.slice(0));
+        this.files = files == null ? [] : (files.length === undefined ? [files] :
+            Array.prototype.slice.call(files, 0));
         this.attrGetter = attrGetter;
     }
 
@@ -21,7 +22,7 @@ export class Validator {
     protected markFileError(i: any, name: any, actual: any) {
         var file = this.files[i];
         (file.errors = (file.errors || {}))[name] = {expected: this.attrGetter(name), actual: actual};
-        this.result[name] =  true;
+        this.result[name] = true;
     }
 
 

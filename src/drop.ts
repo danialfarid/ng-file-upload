@@ -1,5 +1,5 @@
-import {BlobUtil} from './blob.util.js'
-import {Uploader} from './uploader.js'
+import {BlobUtil} from "./blob.util.js";
+import {Uploader} from "./uploader.js";
 import {Pattern} from "./pattern";
 
 export class Drop {
@@ -10,13 +10,10 @@ export class Drop {
         this.elem = elem;
         this.attrGetter = attrGetter;
 
-        // if (attrGetter('ngfSelect') == null) {
-        //   upload.registerModelChangeValidator(ngModel, attr, scope);
-        // }
-
-        var leaveTimeout = null;
-        var dragOverDelay = 1;
-        var actualDragOverClass;
+        var isDragging, clearLeaveTimeout, dragLeave = function () {
+            elem.dispatchEvent(new CustomEvent('filedragleave'));
+            isDragging = false;
+        };
 
         elem.addEventListener('dragover', (evt) => {
             if (this.isDisabled() || attrGetter('dropDisabled')) return;
@@ -27,11 +24,10 @@ export class Drop {
                 var b = evt.dataTransfer.effectAllowed;
                 evt.dataTransfer.dropEffect = ('move' === b || 'linkMove' === b) ? 'move' : 'copy';
             }
-            clearTimeout(leaveTimeout);
-            if (!actualDragOverClass) {
-                actualDragOverClass  = this.calculateDragOverClass(evt,
-                    this.attrGetter('ngfDragOverClass', {$event: evt}));
-                Drop.addClass(elem, actualDragOverClass);
+            clearTimeout(clearLeaveTimeout);
+            if (!isDragging) {
+                isDragging = true;
+                elem.dispatchEvent(new CustomEvent('filedragover', {detail: this.draggingFilesNo(evt)}));
             }
         }, false);
         elem.addEventListener('dragenter', (evt) => {
@@ -39,22 +35,17 @@ export class Drop {
             evt.preventDefault();
             if (this.attrGetter('stopPropagation')) evt.stopPropagation();
         }, false);
-        elem.addEventListener('dragleave',  (evt) => {
+        elem.addEventListener('dragleave', (evt) => {
             if (this.isDisabled() || attrGetter('dropDisabled')) return;
             evt.preventDefault();
             if (this.attrGetter('stopPropagation')) evt.stopPropagation();
-            leaveTimeout = function () {
-                if (actualDragOverClass) Drop.removeClass(elem, actualDragOverClass);
-                actualDragOverClass = null;
-            };
-            setTimeout(leaveTimeout, dragOverDelay || 100);
+            clearLeaveTimeout = setTimeout(dragLeave, 100);
         }, false);
-        elem.addEventListener('drop',  (evt)  =>{
+        elem.addEventListener('drop', (evt) => {
             if (this.isDisabled() || attrGetter('dropDisabled')) return;
             evt.preventDefault();
             if (attrGetter('stopPropagation')) evt.stopPropagation();
-            if (actualDragOverClass) Drop.removeClass(elem, actualDragOverClass);
-            actualDragOverClass = null;
+            dragLeave();
             var items = evt.dataTransfer.items;
             var html;
             try {
@@ -63,7 +54,7 @@ export class Drop {
             }
 
             this.extractFiles(items, evt.dataTransfer.files, attrGetter('allowDir') !== false,
-                attrGetter('multiple')).then((files:Array<any>) => {
+                attrGetter('multiple')).then((files: Array<any>) => {
                 if (files.length) {
                     elem.dispatchEvent(new CustomEvent('fileDrop', {detail: {files: files, origEvent: evt}}))
                 } else {
@@ -73,7 +64,7 @@ export class Drop {
                 }
             });
         }, false);
-        elem.addEventListener('paste',  (evt:any) => {
+        elem.addEventListener('paste', (evt: any) => {
             if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
                 attrGetter('enableFirefoxPaste')) {
                 evt.preventDefault();
@@ -115,7 +106,7 @@ export class Drop {
             });
         }
         var urls = [];
-        html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, (m, n, src:string) => {
+        html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, (m, n, src: string) => {
             urls.push(src);
             return src;
         });
@@ -136,30 +127,19 @@ export class Drop {
         });
     };
 
-    calculateDragOverClass(evt, obj) {
-        var dClass = 'dragover';
-        if (typeof obj === 'string') {
-            dClass = obj;
-        } else if (obj) {
-            if (obj.accept || obj.reject) {
-                var items = evt.dataTransfer.items;
-                if (items == null || !items.length) {
-                    dClass = obj.accept;
-                } else {
-                    var pattern = obj.pattern || this.attrGetter('ngfPattern', {$event: evt});
-                    var len = items.length;
-                    while (len--) {
-                        if (!Pattern.validatePattern(items[len], pattern)) {
-                            dClass = obj.reject;
-                            break;
-                        } else {
-                            dClass = obj.accept;
-                        }
-                    }
+    draggingFilesNo(evt) {
+        var items = evt.dataTransfer.items, valids = items.length;
+        if (items && items.length) {
+            var pattern = this.attrGetter('dragPattern', {$event: evt}) ||
+                this.attrGetter('pattern', {$event: evt});
+            var len = items.length;
+            while (len--) {
+                if (!Pattern.validatePattern(items[len], pattern)) {
+                    valids--;
                 }
             }
         }
-        return dClass;
+        return valids;
     }
 
     extractFiles(items, fileList, allowDir, multiple) {
@@ -180,7 +160,7 @@ export class Drop {
                     if (entry.isDirectory) {
                         var promises = [];
                         if (includeDir) {
-                            var file:any = {type: 'directory'};
+                            var file: any = {type: 'directory'};
                             file.name = file.path = (path || '') + entry.name;
                             files.push(file);
                         }
@@ -236,7 +216,9 @@ export class Drop {
             });
         }
 
-        var promises = [new Promise((resolve) => {resolve();})];
+        var promises = [new Promise((resolve) => {
+            resolve();
+        })];
 
         if (items && items.length > 0 && window.location.protocol !== 'file:') {
             for (var i = 0; i < items.length; i++) {
@@ -294,18 +276,5 @@ export class Drop {
     public static dropAvailable() {
         var div = document.createElement('div');
         return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
-    }
-
-    static addClass(elem, c) {
-        if (!elem.className.match(new RegExp('(\\s|^)' + c + '(\\s|$)'))) {
-            elem.className += ' ' + c;
-        }
-    }
-
-    static removeClass(elem, c) {
-        var regexp = new RegExp('(\\s|^)' + c + '(\\s|$)');
-        if (elem.className.match(regexp)) {
-            elem.className += elem.className.replace(regexp, ' ');
-        }
     }
 }

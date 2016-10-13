@@ -67,6 +67,7 @@ fieldset label {
 }
 
 .drop-box {
+    display: inline-block;
     background: #F8F8F8;
     border: 5px dashed #DDD;
     width: 170px;
@@ -116,6 +117,12 @@ form .thumb {
     float: none;
     position: relative;
     top: 7px;
+}
+
+form i {
+    font-family: 'sans-serif';
+    color: red;
+    padding-left: 5px;
 }
 
 form .progress {

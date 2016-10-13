@@ -13,8 +13,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var forms_1 = require('@angular/forms');
+var core_1 = require("@angular/core");
+var forms_1 = require("@angular/forms");
 var validator_file_1 = require("../validator.file");
 var attr_directive_1 = require("./attr.directive");
 var FileValidatorDirective = (function (_super) {
@@ -79,7 +79,7 @@ var FileValidatorDirective = (function (_super) {
     ], FileValidatorDirective.prototype, "ngfPattern", void 0);
     FileValidatorDirective = __decorate([
         core_1.Directive({
-            selector: '[ngfDrop],[ngfSelect]',
+            selector: '[ngfDrop],[ngfSelect],ngf-select,input[type=file]',
             providers: [{ provide: forms_1.NG_VALIDATORS, useExisting: FileValidatorDirective, multi: true }]
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef])

@@ -1,19 +1,24 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule }   from '@angular/forms';
+import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 import { AppComponent }   from './app.component';
 import {FormDemoComponent} from "./form.component";
+import {FormFullDemoComponent} from "./form.full.component";
 import {MultipleDemoComponent} from "./multiple.component";
-import {DropDirective, FileModelDirective, SelectDirective, FileValidatorDirective} from "../../src/index";
+import {DropDirective, FileModelDirective, SelectComponent, ClickForwardDirective
+    FileValidatorDirective, ImageValidatorDirective, MediaValidatorDirective,
+    QueueDirective} from "../../src/index";
 
 
 @NgModule({
-    imports:      [ BrowserModule, FormsModule ] ,
+    imports:      [ BrowserModule, FormsModule, ReactiveFormsModule ] ,
     declarations: [
-        AppComponent, FormDemoComponent, MultipleDemoComponent,
-        SelectDirective,
+        AppComponent, FormDemoComponent, FormFullDemoComponent, MultipleDemoComponent,
+        SelectComponent, ClickForwardDirective,
         DropDirective,
-        FileModelDirective, FileValidatorDirective
+        FileModelDirective, FileValidatorDirective,
+        ImageValidatorDirective, MediaValidatorDirective,
+        QueueDirective
     ],
     bootstrap:    [ AppComponent ]
 })

@@ -7,7 +7,6 @@ export class FileValidator extends Validator {
 
     constructor(files, attrGetter, prevLength) {
         super(files, attrGetter);
-        this.files = files == null ? [] : (files.length === undefined ? [files] : files.slice(0));
         this.attrGetter = attrGetter;
         this.prevLength = prevLength;
     }
@@ -38,7 +37,7 @@ export class FileValidator extends Validator {
         var file = this.files[i];
 
         if (!Pattern.validatePattern(file, this.attrGetter('pattern'))) {
-            this.markFileError(i, 'pattern', file.type + '|' + file.name);
+            this.markFileError(i, 'pattern', file.type + ' ' + file.name);
         }
         this.validateMinMax(i, 'Size', file.size, 0.1);
 

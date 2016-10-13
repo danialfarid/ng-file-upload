@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
     templateUrl: 'form.component.html'
 })
 export class FormDemoComponent {
-    public picFile = null;
-    public username = null;
+    json(str) {
+        return JSON.stringify(str);
+    }
 }

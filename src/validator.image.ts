@@ -7,22 +7,9 @@ export class ImageValidator extends DimensionValidator {
         super(files, attrGetter);
     }
 
-    public validate() {
-        if (!this.files.length || !this.hasAny(['maxHeight', 'minHeight', 'maxWidth', 'minWidth',
-                'ratio', 'maxRatio', 'minRatio', 'dimensions'])) {
-            return Util.emptyPromise(this.result);
-        }
-
-        for (var i = 0; i < this.files.length; i++) {
-            this.validateFile(i);
-        }
-
-        return this.result;
-    };
-
     validateFile(i) {
         var file = this.files[i];
-        ImageValidator.imageDimensions(file).then((d) => {
+        return ImageValidator.imageDimensions(file).then((d) => {
             this.validateMinMax(i, 'Height', d.height, 0);
             this.validateMinMax(i, 'Width', d.width, 0);
             this.validateDimensions(d);
@@ -43,7 +30,7 @@ export class ImageValidator extends DimensionValidator {
             if (file.type.indexOf('image') !== 0) {
                 return reject('not image');
             }
-            BlobUtil.dataUrl(file).then(function (dataUrl) {
+            BlobUtil.dataUrl(file).then((dataUrl) => {
                 var img = document.createElement('img');
                 img.setAttribute('src', dataUrl);
                 img.setAttribute('style', 'visibility: hidden; position: fixed; ' +
@@ -85,10 +72,8 @@ export class ImageValidator extends DimensionValidator {
             }, function (e) {
                 reject('load error\n' + e);
             });
-        }).then(()=> {
-            delete file.$ngfDimensionPromise;
-        }).catch(()=> {
-            delete file.$ngfDimensionPromise;
+        })['finally'](()=> {
+            delete file.$ngfDurationPromise;
         });
     };
 }

@@ -1,6 +1,19 @@
 "use strict";
 var util_1 = require("./util");
 var defaults_1 = require("./defaults");
+if (!Promise.prototype['finally']) {
+    Promise.prototype['finally'] = function (fn) {
+        var _this = this;
+        this.then(function (r) {
+            fn.call(_this, r);
+            return r;
+        }).catch(function (e) {
+            fn.call(_this, e);
+            return e;
+        });
+        return this;
+    };
+}
 var BlobUtil = (function () {
     function BlobUtil() {
     }
@@ -92,10 +105,8 @@ var BlobUtil = (function () {
                 };
                 fileReader.readAsDataURL(file);
             }
-        }).then(function () {
-            delete file.$$ngfDataUrlPromise;
-        }).catch(function () {
-            delete file.$$ngfDataUrlPromise;
+        })['finally'](function () {
+            delete file.$ngfDurationPromise;
         });
     };
     BlobUtil.clearBlobUrlsCache = function () {

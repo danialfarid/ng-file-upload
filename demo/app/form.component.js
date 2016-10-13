@@ -11,9 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var FormDemoComponent = (function () {
     function FormDemoComponent() {
-        this.picFile = null;
-        this.username = null;
     }
+    FormDemoComponent.prototype.json = function (str) {
+        return JSON.stringify(str);
+    };
     FormDemoComponent = __decorate([
         core_1.Component({
             moduleId: module.id,

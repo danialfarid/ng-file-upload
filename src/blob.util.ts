@@ -1,5 +1,18 @@
 import {Util} from "./util";
 import {Defaults} from "./defaults";
+
+if (!Promise.prototype['finally']) {
+    Promise.prototype['finally'] = function (fn) {
+        this.then(r => {
+            fn.call(this, r);
+            return r
+        }).catch(e => {
+            fn.call(this, e);
+            return e;
+        });
+        return this;
+    };
+}
 export class BlobUtil {
     private static blobUrls = [];
     private static blobUrlsTotalSize = 0;
@@ -37,7 +50,7 @@ export class BlobUtil {
         });
     };
 
-    public static dataUrl(file:any, disallowObjectUrl?:boolean) {
+    public static dataUrl(file: any, disallowObjectUrl?: boolean) {
         if (!file) return Util.emptyPromise(file);
         if ((disallowObjectUrl && file.$ngfDataUrl != null) || (!disallowObjectUrl && file.$ngfBlobUrl != null)) {
             return Util.emptyPromise(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
@@ -53,7 +66,7 @@ export class BlobUtil {
             }
             //prefer URL.createObjectURL for handling refrences to files of all sizes
             //since it doesn´t build a large string in memory
-            var w:any = window;
+            var w: any = window;
             var URL = w.URL || w.webkitURL;
             if (URL && URL.createObjectURL && !disallowObjectUrl) {
                 var url;
@@ -74,7 +87,7 @@ export class BlobUtil {
                 }, 0);
             } else {
                 var fileReader = new FileReader();
-                fileReader.onload = function (e:any) {
+                fileReader.onload = function (e: any) {
                     setTimeout(function () {
                         file.$ngfDataUrl = e.target.result;
                         resolve(e.target.result);
@@ -91,10 +104,8 @@ export class BlobUtil {
                 };
                 fileReader.readAsDataURL(file);
             }
-        }).then(() => {
-            delete file.$$ngfDataUrlPromise
-        }).catch(() => {
-            delete file.$$ngfDataUrlPromise
+        })['finally'](()=> {
+            delete file.$ngfDurationPromise;
         });
     }
 

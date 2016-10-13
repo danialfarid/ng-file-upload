@@ -11,7 +11,6 @@ var FileValidator = (function (_super) {
     __extends(FileValidator, _super);
     function FileValidator(files, attrGetter, prevLength) {
         _super.call(this, files, attrGetter);
-        this.files = files == null ? [] : (files.length === undefined ? [files] : files.slice(0));
         this.attrGetter = attrGetter;
         this.prevLength = prevLength;
     }
@@ -38,7 +37,7 @@ var FileValidator = (function (_super) {
     FileValidator.prototype.validateFile = function (i) {
         var file = this.files[i];
         if (!pattern_1.Pattern.validatePattern(file, this.attrGetter('pattern'))) {
-            this.markFileError(i, 'pattern', file.type + '|' + file.name);
+            this.markFileError(i, 'pattern', file.type + ' ' + file.name);
         }
         this.validateMinMax(i, 'Size', file.size, 0.1);
         var validateFnResult = this.attrGetter('validateFn', file);

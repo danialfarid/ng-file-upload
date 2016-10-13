@@ -1,9 +1,9 @@
-import {Directive, ElementRef, Input} from '@angular/core';
-import {Validator, AbstractControl, NG_VALIDATORS} from '@angular/forms';
+import {Directive, ElementRef, Input} from "@angular/core";
+import {Validator, AbstractControl, NG_VALIDATORS} from "@angular/forms";
 import {FileValidator} from "../validator.file";
 import {AttrDirective} from "./attr.directive";
 @Directive({
-    selector: '[ngfDrop],[ngfSelect]',
+    selector: '[ngfDrop],[ngfSelect],ngf-select,input[type=file]',
     providers: [{provide: NG_VALIDATORS, useExisting: FileValidatorDirective, multi: true}]
 })
 export class FileValidatorDirective extends AttrDirective implements Validator {
