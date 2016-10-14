@@ -14,19 +14,7 @@ export class FileValidatorDirective extends AttrDirective implements Validator {
     @Input() ngfValidateFn;
     @Input() ngfPattern;
 
-    constructor(el: ElementRef) {
-        super();
-        // upload.registerModelChangeValidator(ngModel, attr, scope);
-        // unwatches.push(attr.$observe('id', this.updateId));
-        // scope.$on('$destroy', function () {
-        // });
-        //     if (window.FileAPI && window.FileAPI.ngfFixIE) {
-        //         window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
-        //     }
-    }
-
     validate(c: AbstractControl): {} {
-        // self value
         var files = c.value;
         return new FileValidator(files, this.attrGetter, 0).validate();
         // // control vlaue

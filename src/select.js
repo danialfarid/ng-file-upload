@@ -1,13 +1,13 @@
 "use strict";
 var Select = (function () {
-    function Select(el, resetOnClick) {
+    function Select(el, fileElem, attrGetter) {
         var _this = this;
-        this.resetModel = function (evt) {
-            if (!_this.resetOnClick)
+        this.resetModel = function (e) {
+            if (!_this.attrGetter('resetOnClick'))
                 return;
-            if (_this.elem.value) {
-                _this.elem.value = null;
-                _this.elem.dispatchEvent(new CustomEvent('change', { detail: { files: null, origEvent: evt } }));
+            if (_this.fileElem.value) {
+                _this.fileElem.value = null;
+                _this.elem.dispatchEvent(new CustomEvent('change', { detail: { files: null, origEvent: e } }));
             }
         };
         this.ie10SameFileSelectFix = function (evt) {
@@ -23,7 +23,7 @@ var Select = (function () {
                 _this.elem.parentNode.removeChild(_this.elem);
                 _this.elem = clone;
                 _this.elem.setAttribute('__ngf_ie10_Fix_', 'true');
-                _this.elem.addEventListener('click', _this.ie10SameFileSelectFix);
+                _this.elem.addEventListener('click', _this.ie10SameFileSelectFix, false);
                 _this.elem.click();
                 return false;
             }
@@ -32,13 +32,14 @@ var Select = (function () {
             }
         };
         this.elem = el;
-        this.resetOnClick = resetOnClick;
+        this.fileElem = fileElem;
+        this.attrGetter = attrGetter;
         this.init();
     }
     Select.prototype.init = function () {
-        this.elem.addEventListener('click', this.resetModel);
+        this.elem.addEventListener('click', this.resetModel, false);
         if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
-            this.elem.addEventListener('click', this.ie10SameFileSelectFix);
+            this.elem.addEventListener('click', this.ie10SameFileSelectFix, false);
         }
     };
     Select.prototype.destroy = function () {

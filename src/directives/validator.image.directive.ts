@@ -16,10 +16,6 @@ export class ImageValidatorDirective extends AttrDirective implements Validator 
     @Input() ngfMinRatio;
     @Input() ngfMaxRatio;
 
-    constructor() {
-        super();
-    }
-
     validate(c: AbstractControl): {} {
         var files = c.value;
         return new ImageValidator(files, this.attrGetter).validate();

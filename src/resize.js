@@ -86,7 +86,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     return window.atob && elem.getContext && elem.getContext('2d') && window.Blob;
   };
 
-  if (upload.isResizeSupported()) {
+  if (ImageResizer.isResizeSupported()) {
     // add name getter to the blob constructor prototype
     Object.defineProperty(window.Blob.prototype, 'name', {
       get: function () {

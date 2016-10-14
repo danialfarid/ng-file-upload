@@ -8,10 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var platform_browser_1 = require('@angular/platform-browser');
-var forms_1 = require('@angular/forms');
-var app_component_1 = require('./app.component');
+var core_1 = require("@angular/core");
+var platform_browser_1 = require("@angular/platform-browser");
+var forms_1 = require("@angular/forms");
+var app_component_1 = require("./app.component");
 var form_component_1 = require("./form.component");
 var image_component_1 = require("./image.component");
 var multiple_component_1 = require("./multiple.component");
@@ -27,8 +27,9 @@ var AppModule = (function () {
                 index_1.SelectComponent, index_1.ClickForwardDirective,
                 index_1.DropDirective,
                 index_1.FileModelDirective, index_1.FileValidatorDirective,
-                index_1.ImageValidatorDirective, index_1.MediaValidatorDirective,
-                index_1.QueueDirective
+                index_1.ImageValidatorDirective, index_1.MediaValidatorDirective, index_1.ThumbnailDirective,
+                index_1.ImageResizeDirective,
+                index_1.ImageOrientationDirective
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 

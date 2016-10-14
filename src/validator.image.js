@@ -15,6 +15,8 @@ var ImageValidator = (function (_super) {
     ImageValidator.prototype.validateFile = function (i) {
         var _this = this;
         var file = this.files[i];
+        if (file._ngfImageValidated_)
+            return false;
         return ImageValidator.imageDimensions(file).then(function (d) {
             _this.validateMinMax(i, 'Height', d.height, 0);
             _this.validateMinMax(i, 'Width', d.width, 0);
@@ -23,7 +25,7 @@ var ImageValidator = (function (_super) {
             if (e !== 'not image' && _this.attrGetter('validateForce')) {
                 _this.markFileError(i, 'loadError', e);
             }
-        });
+        })['finally'](function () { return file._ngfImageValidated_ = true; });
     };
     ImageValidator.imageDimensions = function (file) {
         if (file.$ngfWidth && file.$ngfHeight) {

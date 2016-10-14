@@ -5,8 +5,7 @@ export class Validator {
     protected result = {};
 
     constructor(files, attrGetter) {
-        this.files = files == null ? [] : (files.length === undefined ? [files] :
-            Array.prototype.slice.call(files, 0));
+        this.files = files ? (files instanceof Array ? Array.prototype.slice.call(files, 0) : [files]) : [];
         this.attrGetter = attrGetter;
     }
 

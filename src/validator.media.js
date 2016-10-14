@@ -15,6 +15,8 @@ var MediaValidator = (function (_super) {
     MediaValidator.prototype.validateFile = function (i) {
         var _this = this;
         var file = this.files[i];
+        if (file._ngfMediaValidated_)
+            return false;
         return MediaValidator.mediaDuration(file).then(function (res) {
             _this.validateMinMax(i, 'Duration', res.duration, 0);
             if (res.width) {
@@ -34,7 +36,7 @@ var MediaValidator = (function (_super) {
             if (e !== 'not audio or video' && _this.attrGetter('validateForce')) {
                 _this.markFileError(i, 'loadError', e);
             }
-        });
+        })['finally'](function () { return file._ngfMediaValidated_ = true; });
     };
     MediaValidator.mediaDuration = function (file) {
         if (file.$ngfDuration) {

@@ -35,6 +35,7 @@ export class FileValidator extends Validator {
 
     private validateFile(i: number) {
         var file = this.files[i];
+        if (file._ngfFileValidated_) return;
 
         if (!Pattern.validatePattern(file, this.attrGetter('pattern'))) {
             this.markFileError(i, 'pattern', file.type + ' ' + file.name);
@@ -45,6 +46,7 @@ export class FileValidator extends Validator {
         if (validateFnResult && (validateFnResult === false || validateFnResult.length > 0)) {
             this.markFileError(i, 'validateFn', validateFnResult);
         }
+        file._ngfFileValidated_ = true;
         //todo validateFn and validateFnAsync
     }
 }

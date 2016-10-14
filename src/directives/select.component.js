@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,21 +16,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var select_js_1 = require("../select.js");
 var click_forward_1 = require("../click.forward");
-var SelectComponent = (function () {
+var attr_directive_1 = require("./attr.directive");
+var SelectComponent = (function (_super) {
+    __extends(SelectComponent, _super);
     function SelectComponent(el) {
-        var _this = this;
+        _super.call(this);
         this.ngfSelect = new core_1.EventEmitter();
         this.ngfChange = new core_1.EventEmitter();
         this.elem = el.nativeElement;
-        this.select = new select_js_1.Select(el.nativeElement, this.ngfResetOnClick);
-        this.elem.addEventListener('chnge', function (e) {
-            _this.ngfSelect.emit(e.target && e.target.files);
-            _this.ngfChange.emit(e.target && e.target.files);
-        });
         this.ngfHtml = this.elem.innerHTML;
     }
     SelectComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.select = new select_js_1.Select(this.elem, this.elem.firstChild.firstChild, this.attrGetter);
+        this.elem.addEventListener('change', function (e) {
+            _this.ngfSelect.emit(e.target && e.target.files);
+            _this.ngfChange.emit(e.target && e.target.files);
+        }, false);
         new click_forward_1.ClickForward(this.elem, this.elem.firstChild);
+        // this.elem.firstChild.firstChild.addEventListener('change', (e:any) => {
+        //     this.elem.dispatchEvent(new CustomEvent('change',
+        //         e.detail ? e.detail : {detail: {files: e.target.files, origEvent: e}}));
+        // });
     };
     SelectComponent.prototype.ngOnDestroy = function () {
         this.select.destroy();
@@ -83,6 +95,6 @@ var SelectComponent = (function () {
         __metadata('design:paramtypes', [core_1.ElementRef])
     ], SelectComponent);
     return SelectComponent;
-}());
+}(attr_directive_1.AttrDirective));
 exports.SelectComponent = SelectComponent;
 //# sourceMappingURL=select.component.js.map

@@ -9,6 +9,7 @@ export class ImageValidator extends DimensionValidator {
 
     validateFile(i) {
         var file = this.files[i];
+        if (file._ngfImageValidated_) return false;
         return ImageValidator.imageDimensions(file).then((d) => {
             this.validateMinMax(i, 'Height', d.height, 0);
             this.validateMinMax(i, 'Width', d.width, 0);
@@ -17,7 +18,7 @@ export class ImageValidator extends DimensionValidator {
             if (e !== 'not image' && this.attrGetter('validateForce')) {
                 this.markFileError(i, 'loadError', e);
             }
-        });
+        })['finally'](() => file._ngfImageValidated_ = true);
     }
 
     public static imageDimensions(file) {

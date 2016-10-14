@@ -9,14 +9,13 @@ var ClickForward = (function () {
             // prevent the click if it is a swipe
             if (r != null)
                 return r;
-            if (ClickForward.isDelayedClickSupported(navigator.userAgent)) {
-                setTimeout(function (el) {
-                    el.click();
-                }, 0, _this.target);
-            }
-            else {
-                _this.target.click();
-            }
+            // if (ClickForward.isDelayedClickSupported(navigator.userAgent)) {
+            setTimeout(function (el) {
+                el.click();
+            }, 0, _this.target);
+            // } else {
+            //     this.target.click();
+            // }
             if (_this.elem.contains(_this.target))
                 evt.stopPropagation();
             return false;
@@ -49,9 +48,9 @@ var ClickForward = (function () {
         };
         this.target = target;
         this.elem = el;
-        el.addEventListener('click', this.clickHandler);
-        el.addEventListener('touchstart', this.clickHandler);
-        el.addEventListener('touchend', this.clickHandler);
+        el.addEventListener('click', this.clickHandler, false);
+        el.addEventListener('touchstart', this.clickHandler, false);
+        el.addEventListener('touchend', this.clickHandler, false);
     }
     ClickForward.isDelayedClickSupported = function (ua) {
         // fix for android native browser < 4.4 and safari windows

@@ -1,25 +1,34 @@
 <div>Upload Images</div>
 <ngf-select [(ngModel)]="imageFiles" class="drop-box" name="images" #images="ngModel"
             ngfMultiple="true"
-            ngfAccept="image/*" ngfPattern="image/*,!gif"
+            ngfAccept="image/*" ngfPattern="!gif,!svg,!tiff"
             ngfMinSize="10KB" ngfMaxSize="20MB"
-            ngfMinHeigh="1000" ngfMaxHeight="10000"
+            ngfMinHeigh="1000" ngfMaxHeight="1400"
             ngfMinWidth="1000" ngfMaxWidth="10000"
             ngfMinRatio=".3" ngfMaxRatio=".7"
             ngfRatio="1:1,2:3,3:5,1:2,4:5"
             (ngfDragOver)="dragCount = $event"
+            ngfResetOnClick="true"
             [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
+            [ngfResize]="{width:2000, restoreExif: true}" ngfFixOrientation="true"
+            (ngfOnProcessing)="isResizing = $event" ngfProcessChunk="1" ngfProcessDelay="100"
+            ngfKeep="distinct"
             ngfText="Select Or Drop Images"></ngf-select>
+<i [hidden]="!isResizing">Processing...</i>
 <i [hidden]="!images.pending">validating...</i>
 <i *ngFor="let key of keys(images?.errors)">
   invalid {{key}}
 </i>
 <ul>
   <li *ngFor="let image of imageFiles">
+    <img [ngfThumbnail]="image" src="{{'favicon.ico'}}"
+         [ngfResize]="{width:30, height:30, centerCrop: true}">
     {{image.name}}
     <i *ngFor="let key of keys(image?.errors)">
       invalid {{key}} expected {{image?.errors[key]?.expected}} but was {{image?.errors[key]?.actual}}
     </i>
+    <i [hidden]="!image?.resizeError">image?.resizeError</i>
+    <i [hidden]="!image?.orientationError">image?.orientationError</i>
   </li>
 </ul>
 <button (click)="upload(files)">Submit</button>

@@ -36,6 +36,8 @@ var FileValidator = (function (_super) {
     };
     FileValidator.prototype.validateFile = function (i) {
         var file = this.files[i];
+        if (file._ngfFileValidated_)
+            return;
         if (!pattern_1.Pattern.validatePattern(file, this.attrGetter('pattern'))) {
             this.markFileError(i, 'pattern', file.type + ' ' + file.name);
         }
@@ -44,6 +46,7 @@ var FileValidator = (function (_super) {
         if (validateFnResult && (validateFnResult === false || validateFnResult.length > 0)) {
             this.markFileError(i, 'validateFn', validateFnResult);
         }
+        file._ngfFileValidated_ = true;
         //todo validateFn and validateFnAsync
     };
     return FileValidator;

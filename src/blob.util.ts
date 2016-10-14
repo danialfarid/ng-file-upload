@@ -17,7 +17,7 @@ export class BlobUtil {
     private static blobUrls = [];
     private static blobUrlsTotalSize = 0;
 
-    static dataUrltoBlob(dataurl, name, origSize) {
+    static dataUrltoBlob(dataurl, name, origSize?) {
         var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
         while (n--) {

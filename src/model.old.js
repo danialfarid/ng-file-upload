@@ -81,7 +81,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
 
   function resize(files, attr, scope) {
     var resizeVal = upload.attrGetter('ngfResize', attr, scope);
-    if (!resizeVal || !upload.isResizeSupported() || !files.length) return upload.emptyPromise();
+    if (!resizeVal || !ImageResizer.isResizeSupported() || !files.length) return upload.emptyPromise();
     if (resizeVal instanceof Function) {
       var defer = $q.defer();
       resizeVal(files).then(function (p) {
@@ -272,7 +272,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         } else {
           valids = allNewFiles;
         }
-        if (upload.attrGetter('ngfFixOrientation', attr, scope) && upload.isExifSupported()) {
+        if (upload.attrGetter('ngfFixOrientation', attr, scope) && ExifUtil.isExifSupported()) {
           applyExifRotations(valids, attr, scope).then(function () {
             resizeAndUpdate();
           });

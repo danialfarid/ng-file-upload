@@ -5,9 +5,9 @@ export class ClickForward {
     constructor(el: HTMLElement, target: HTMLElement) {
         this.target = target;
         this.elem = el;
-        el.addEventListener('click', this.clickHandler);
-        el.addEventListener('touchstart', this.clickHandler);
-        el.addEventListener('touchend', this.clickHandler);
+        el.addEventListener('click', this.clickHandler, false);
+        el.addEventListener('touchstart', this.clickHandler, false);
+        el.addEventListener('touchend', this.clickHandler, false);
     }
 
     private static isDelayedClickSupported(ua) {
@@ -27,13 +27,13 @@ export class ClickForward {
         // prevent the click if it is a swipe
         if (r != null) return r;
 
-        if (ClickForward.isDelayedClickSupported(navigator.userAgent)) {
+        // if (ClickForward.isDelayedClickSupported(navigator.userAgent)) {
             setTimeout(function (el) {
                 el.click();
             }, 0, this.target);
-        } else {
-            this.target.click();
-        }
+        // } else {
+        //     this.target.click();
+        // }
         if (this.elem.contains(this.target)) evt.stopPropagation();
         return false;
     };

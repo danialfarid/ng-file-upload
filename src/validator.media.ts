@@ -9,6 +9,7 @@ export class MediaValidator extends DimensionValidator {
 
     validateFile(i) {
         var file = this.files[i];
+        if (file._ngfMediaValidated_) return false;
         return MediaValidator.mediaDuration(file).then((res) => {
             this.validateMinMax(i, 'Duration', res.duration, 0);
             if (res.width) {
@@ -28,7 +29,7 @@ export class MediaValidator extends DimensionValidator {
             if (e !== 'not audio or video' && this.attrGetter('validateForce')) {
                 this.markFileError(i, 'loadError', e);
             }
-        });
+        })['finally'](() => file._ngfMediaValidated_ = true);
     }
 
     public static mediaDuration(file) {

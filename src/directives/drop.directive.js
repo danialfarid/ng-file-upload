@@ -32,13 +32,13 @@ var DropDirective = (function (_super) {
         el.nativeElement.addEventListener('fileDrop', function (e) {
             _this.ngfDrop.emit(e.detail);
             _this.ngfChange.emit(e.detail);
-        });
+        }, false);
         el.nativeElement.addEventListener('filedragover', function (e) {
             _this.ngfDragOver.emit(e.detail);
-        });
+        }, false);
         el.nativeElement.addEventListener('filedragleave', function (e) {
             _this.ngfDragOver.emit(-1);
-        });
+        }, false);
     }
     DropDirective.prototype.ngOnDestroy = function () {
         //todo remove event listeners

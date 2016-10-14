@@ -20,7 +20,7 @@ var validator_media_1 = require("../validator.media");
 var MediaValidatorDirective = (function (_super) {
     __extends(MediaValidatorDirective, _super);
     function MediaValidatorDirective() {
-        _super.call(this);
+        _super.apply(this, arguments);
     }
     MediaValidatorDirective.prototype.validate = function (c) {
         var files = c.value;

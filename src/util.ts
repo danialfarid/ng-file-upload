@@ -48,4 +48,20 @@ export class Util {
             })
         });
     };
+
+    public static ratioToFloat(val) {
+        var r = val.toString(), xIndex = r.search(/[x:]/i);
+        if (xIndex > -1) {
+            r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
+        } else {
+            r = parseFloat(r);
+        }
+        return r;
+    };
+
+    public static isCanvasSupported() {
+        var elem = document.createElement('canvas');
+        return elem.getContext && elem.getContext('2d') && typeof Blob !== 'undefined';
+    };
+
 }

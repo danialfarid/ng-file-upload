@@ -3,8 +3,7 @@ var util_1 = require("./util");
 var Validator = (function () {
     function Validator(files, attrGetter) {
         this.result = {};
-        this.files = files == null ? [] : (files.length === undefined ? [files] :
-            Array.prototype.slice.call(files, 0));
+        this.files = files ? (files instanceof Array ? Array.prototype.slice.call(files, 0) : [files]) : [];
         this.attrGetter = attrGetter;
     }
     Validator.prototype.validateMinMax = function (i, name, val, delta) {

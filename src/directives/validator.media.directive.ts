@@ -19,11 +19,6 @@ export class MediaValidatorDirective extends AttrDirective implements Validator 
     @Input() ngfVideoMinRatio;
     @Input() ngfVideoMaxRatio;
 
-
-    constructor() {
-        super();
-    }
-
     validate(c: AbstractControl): {} {
         var files = c.value;
         return new MediaValidator(files, this.attrGetter).validate();

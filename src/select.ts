@@ -1,18 +1,21 @@
 export class Select {
-    private elem: HTMLInputElement;
-    private resetOnClick: boolean;
+    private elem: HTMLElement;
+    private fileElem: HTMLInputElement;
+    private attrGetter;
 
-    constructor(el: HTMLInputElement, resetOnClick: boolean) {
+    constructor(el: HTMLElement, fileElem: HTMLInputElement, attrGetter) {
         this.elem = el;
-        this.resetOnClick = resetOnClick;
+        this.fileElem = fileElem;
+        this.attrGetter = attrGetter;
         this.init();
     }
 
-    resetModel = (evt) => {
-        if (!this.resetOnClick) return;
-        if (this.elem.value) {
-            this.elem.value = null;
-            this.elem.dispatchEvent(new CustomEvent('change', {detail: {files: null, origEvent: evt}}))
+    resetModel = (e) => {
+        if (!this.attrGetter('resetOnClick')) return;
+        if (this.fileElem.value) {
+            this.fileElem.value = null;
+            this.elem.dispatchEvent(
+                new CustomEvent('change', {detail: {files: null, origEvent: e}}));
         }
     };
 
@@ -30,7 +33,7 @@ export class Select {
             this.elem.parentNode.removeChild(this.elem);
             this.elem = <HTMLInputElement>clone;
             this.elem.setAttribute('__ngf_ie10_Fix_', 'true');
-            this.elem.addEventListener('click', this.ie10SameFileSelectFix);
+            this.elem.addEventListener('click', this.ie10SameFileSelectFix, false);
             this.elem.click();
             return false;
         } else {
@@ -39,9 +42,9 @@ export class Select {
     };
 
     init() {
-        this.elem.addEventListener('click', this.resetModel);
+        this.elem.addEventListener('click', this.resetModel, false);
         if (navigator.appVersion.indexOf('MSIE 10') !== -1) {
-            this.elem.addEventListener('click', this.ie10SameFileSelectFix);
+            this.elem.addEventListener('click', this.ie10SameFileSelectFix, false);
         }
     }
 

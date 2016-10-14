@@ -20,7 +20,7 @@ var validator_image_1 = require("../validator.image");
 var ImageValidatorDirective = (function (_super) {
     __extends(ImageValidatorDirective, _super);
     function ImageValidatorDirective() {
-        _super.call(this);
+        _super.apply(this, arguments);
     }
     ImageValidatorDirective.prototype.validate = function (c) {
         var files = c.value;

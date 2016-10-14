@@ -19,18 +19,10 @@ var validator_file_1 = require("../validator.file");
 var attr_directive_1 = require("./attr.directive");
 var FileValidatorDirective = (function (_super) {
     __extends(FileValidatorDirective, _super);
-    function FileValidatorDirective(el) {
-        _super.call(this);
-        // upload.registerModelChangeValidator(ngModel, attr, scope);
-        // unwatches.push(attr.$observe('id', this.updateId));
-        // scope.$on('$destroy', function () {
-        // });
-        //     if (window.FileAPI && window.FileAPI.ngfFixIE) {
-        //         window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
-        //     }
+    function FileValidatorDirective() {
+        _super.apply(this, arguments);
     }
     FileValidatorDirective.prototype.validate = function (c) {
-        // self value
         var files = c.value;
         return new validator_file_1.FileValidator(files, this.attrGetter, 0).validate();
         // // control vlaue
@@ -82,7 +74,7 @@ var FileValidatorDirective = (function (_super) {
             selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
             providers: [{ provide: forms_1.NG_VALIDATORS, useExisting: FileValidatorDirective, multi: true }]
         }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
+        __metadata('design:paramtypes', [])
     ], FileValidatorDirective);
     return FileValidatorDirective;
 }(attr_directive_1.AttrDirective));

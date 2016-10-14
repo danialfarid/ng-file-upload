@@ -15,7 +15,9 @@ var DimensionValidator = (function (_super) {
         var _this = this;
         var promises = [util_1.Util.emptyPromise()];
         for (var i = 0; i < this.files.length; i++) {
-            promises.push(this.validateFile(i));
+            var promise = this.validateFile(i);
+            if (promise)
+                promises.push(promise);
         }
         return Promise.all(promises).then(function () {
             return _this.result;
@@ -33,7 +35,7 @@ var DimensionValidator = (function (_super) {
         if (expectedRatio) {
             var split = expectedRatio.toString().split(','), ratioMatch;
             for (var i = 0; i < split.length; i++) {
-                if (Math.abs(actualRatio - DimensionValidator.ratioToFloat(split[i])) < 0.01) {
+                if (Math.abs(actualRatio - util_1.Util.ratioToFloat(split[i])) < 0.01) {
                     ratioMatch = true;
                     break;
                 }
@@ -57,17 +59,6 @@ var DimensionValidator = (function (_super) {
     DimensionValidator.prototype.capitalize = function (str) {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : str;
     };
-    DimensionValidator.ratioToFloat = function (val) {
-        var r = val.toString(), xIndex = r.search(/[x:]/i);
-        if (xIndex > -1) {
-            r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
-        }
-        else {
-            r = parseFloat(r);
-        }
-        return r;
-    };
-    ;
     return DimensionValidator;
 }(validator_1.Validator));
 exports.DimensionValidator = DimensionValidator;

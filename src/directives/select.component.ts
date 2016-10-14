@@ -1,6 +1,7 @@
 import {Component, ElementRef, Input, Output, EventEmitter, SimpleChanges, OnDestroy} from "@angular/core";
 import {Select} from "../select.js";
 import {ClickForward} from "../click.forward";
+import {AttrDirective} from "./attr.directive";
 
 @Component({
     selector: 'ngf-select',
@@ -9,7 +10,7 @@ import {ClickForward} from "../click.forward";
     'type="file" [accept]="ngfAccept" ' +
     '[multiple]="ngfMultiple">{{ngfText}}<div *ngIf="ngfHtml" [innerHTML]="ngfHtml"></div></label>'
 })
-export class SelectComponent implements OnDestroy {
+export class SelectComponent extends AttrDirective implements OnDestroy {
     @Output() ngfSelect = new EventEmitter();
     @Output() ngfChange = new EventEmitter();
     @Input() ngfText;
@@ -24,17 +25,22 @@ export class SelectComponent implements OnDestroy {
     private elem;
 
     constructor(el: ElementRef) {
+        super();
         this.elem = el.nativeElement;
-        this.select = new Select(el.nativeElement, this.ngfResetOnClick);
-        this.elem.addEventListener('chnge', (e) => {
-            this.ngfSelect.emit(e.target && e.target.files);
-            this.ngfChange.emit(e.target && e.target.files);
-        });
         this.ngfHtml = this.elem.innerHTML;
     }
 
     ngOnInit() {
+        this.select = new Select(this.elem, this.elem.firstChild.firstChild, this.attrGetter);
+        this.elem.addEventListener('change', (e) => {
+            this.ngfSelect.emit(e.target && e.target.files);
+            this.ngfChange.emit(e.target && e.target.files);
+        }, false);
         new ClickForward(this.elem, this.elem.firstChild);
+        // this.elem.firstChild.firstChild.addEventListener('change', (e:any) => {
+        //     this.elem.dispatchEvent(new CustomEvent('change',
+        //         e.detail ? e.detail : {detail: {files: e.target.files, origEvent: e}}));
+        // });
     }
 
     ngOnDestroy() {

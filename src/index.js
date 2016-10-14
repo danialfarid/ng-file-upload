@@ -17,8 +17,12 @@ var validator_media_directive_1 = require('./directives/validator.media.directiv
 exports.MediaValidatorDirective = validator_media_directive_1.MediaValidatorDirective;
 var queue_directive_1 = require('./directives/queue.directive');
 exports.QueueDirective = queue_directive_1.QueueDirective;
-var queue_1 = require('./queue');
-exports.FileQueue = queue_1.FileQueue;
+var thumbnail_directive_1 = require('./directives/thumbnail.directive');
+exports.ThumbnailDirective = thumbnail_directive_1.ThumbnailDirective;
+var image_orientation_directive_1 = require('./directives/image.orientation.directive');
+exports.ImageOrientationDirective = image_orientation_directive_1.ImageOrientationDirective;
+var image_resize_directive_1 = require('./directives/image.resize.directive');
+exports.ImageResizeDirective = image_resize_directive_1.ImageResizeDirective;
 //export * from  './components/file-drop';
 //export * from  './components/upload';
 //export * from  './components/validate';

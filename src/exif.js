@@ -3,7 +3,7 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
   var upload = UploadResize;
 
   upload.isExifSupported = function () {
-    return window.FileReader && new FileReader().readAsArrayBuffer && upload.isResizeSupported();
+    return window.FileReader && new FileReader().readAsArrayBuffer && ImageResizer.isResizeSupported();
   };
 
   function applyTransform(ctx, orientation, width, height) {

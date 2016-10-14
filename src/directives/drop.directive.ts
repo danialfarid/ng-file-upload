@@ -29,13 +29,13 @@ export class DropDirective extends AttrDirective implements OnDestroy {
         el.nativeElement.addEventListener('fileDrop', (e) => {
             this.ngfDrop.emit(e.detail);
             this.ngfChange.emit(e.detail);
-        });
+        }, false);
         el.nativeElement.addEventListener('filedragover', (e) => {
             this.ngfDragOver.emit(e.detail);
-        });
+        }, false);
         el.nativeElement.addEventListener('filedragleave', (e) => {
             this.ngfDragOver.emit(-1);
-        });
+        }, false);
     }
 
     ngOnDestroy(): void {
