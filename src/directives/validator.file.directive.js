@@ -79,7 +79,7 @@ var FileValidatorDirective = (function (_super) {
     ], FileValidatorDirective.prototype, "ngfPattern", void 0);
     FileValidatorDirective = __decorate([
         core_1.Directive({
-            selector: '[ngfDrop],[ngfSelect],ngf-select,input[type=file]',
+            selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
             providers: [{ provide: forms_1.NG_VALIDATORS, useExisting: FileValidatorDirective, multi: true }]
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef])

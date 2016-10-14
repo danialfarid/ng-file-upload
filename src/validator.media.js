@@ -43,7 +43,7 @@ var MediaValidator = (function (_super) {
         if (file.$ngfDurationPromise)
             return file.$ngfDurationPromise;
         return file.$ngfDurationPromise = new Promise(function (resolve, reject) {
-            if (!file.type.startsWith('video') || !file.type.startsWith('audio')) {
+            if (!file.type.startsWith('video') && !file.type.startsWith('audio')) {
                 return reject('not audio or video');
             }
             blob_util_1.BlobUtil.dataUrl(file).then(function (dataUrl) {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Pipe} from "@angular/core";
 
 @Component({
     moduleId: module.id,
@@ -6,10 +6,4 @@ import { Component } from '@angular/core';
     templateUrl: 'app.component.html'
 })
 export class AppComponent {
-    aa(a) {
-        console.log(a);
-    }
-    json(val) {
-        return JSON.stringify(val);
-    }
 }

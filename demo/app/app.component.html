@@ -4,11 +4,11 @@
 </h3>
 
 Examples:
-<a (click)="currSample = 'form'" href="#">Form validation simple</a>
-<a (click)="currSample = 'form.full'" href="#">Form validation full</a>
+<a (click)="currSample = 'form'" href="#">Form validation sample</a>
+<a (click)="currSample = 'image'" href="#">Image sample</a>
 <a (click)="currSample = 'multiple'" href="#">Multiple files upload with validations</a>
-<ngf-form *ngIf="currSample == 'form'"></ngf-form>
-<ngf-form-full *ngIf="currSample == 'form.full'"></ngf-form-full>
+<ngf-form-sample *ngIf="currSample == 'form'"></ngf-form-sample>
+<ngf-image-sample *ngIf="currSample == 'image'"></ngf-image-sample>
 <ngf-multiple *ngIf="currSample == 'multiple'"></ngf-multiple>
 
 <a style="position:fixed;bottom:28px;right:10px;font-size:smaller;" target="_blank"

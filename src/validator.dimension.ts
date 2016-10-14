@@ -29,7 +29,7 @@ export class DimensionValidator extends Validator {
         if (expectedRatio) {
             var split = expectedRatio.toString().split(','), ratioMatch;
             for (var i = 0; i < split.length; i++) {
-                if (Math.abs(actualRatio - Util.ratioToFloat(split[i])) < 0.01) {
+                if (Math.abs(actualRatio - DimensionValidator.ratioToFloat(split[i])) < 0.01) {
                     ratioMatch = true;
                     break;
                 }
@@ -56,4 +56,14 @@ export class DimensionValidator extends Validator {
     private capitalize(str: string) {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : str;
     }
+
+    private static ratioToFloat(val) {
+        var r = val.toString(), xIndex = r.search(/[x:]/i);
+        if (xIndex > -1) {
+            r = parseFloat(r.substring(0, xIndex)) / parseFloat(r.substring(xIndex + 1));
+        } else {
+            r = parseFloat(r);
+        }
+        return r;
+    };
 }

@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import {Component} from "@angular/core";
 
 @Component({
     moduleId: module.id,
-    selector: 'ngf-form',
+    selector: 'ngf-form-sample',
     templateUrl: 'form.component.html'
 })
 export class FormDemoComponent {
-    json(str) {
-        return JSON.stringify(str);
+    keys(obj) {
+        if (!obj) return obj;
+        return Object.keys(obj).filter((k) => !k.startsWith('_'));
     }
 }

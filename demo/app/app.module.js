@@ -13,7 +13,7 @@ var platform_browser_1 = require('@angular/platform-browser');
 var forms_1 = require('@angular/forms');
 var app_component_1 = require('./app.component');
 var form_component_1 = require("./form.component");
-var form_full_component_1 = require("./form.full.component");
+var image_component_1 = require("./image.component");
 var multiple_component_1 = require("./multiple.component");
 var index_1 = require("../../src/index");
 var AppModule = (function () {
@@ -23,7 +23,7 @@ var AppModule = (function () {
         core_1.NgModule({
             imports: [platform_browser_1.BrowserModule, forms_1.FormsModule, forms_1.ReactiveFormsModule],
             declarations: [
-                app_component_1.AppComponent, form_component_1.FormDemoComponent, form_full_component_1.FormFullDemoComponent, multiple_component_1.MultipleDemoComponent,
+                app_component_1.AppComponent, form_component_1.FormDemoComponent, image_component_1.ImageDemoComponent, multiple_component_1.MultipleDemoComponent,
                 index_1.SelectComponent, index_1.ClickForwardDirective,
                 index_1.DropDirective,
                 index_1.FileModelDirective, index_1.FileValidatorDirective,

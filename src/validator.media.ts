@@ -37,7 +37,7 @@ export class MediaValidator extends DimensionValidator {
         }
         if (file.$ngfDurationPromise) return file.$ngfDurationPromise;
         return file.$ngfDurationPromise = new Promise((resolve, reject) => {
-            if (!file.type.startsWith('video') || !file.type.startsWith('audio')) {
+            if (!file.type.startsWith('video') && !file.type.startsWith('audio')) {
                 return reject('not audio or video');
             }
             BlobUtil.dataUrl(file).then(function (dataUrl) {

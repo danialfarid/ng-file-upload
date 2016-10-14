@@ -23,7 +23,6 @@ var ImageValidatorDirective = (function (_super) {
         _super.call(this);
     }
     ImageValidatorDirective.prototype.validate = function (c) {
-        // self value
         var files = c.value;
         return new validator_image_1.ImageValidator(files, this.attrGetter).validate();
     };
@@ -61,7 +60,7 @@ var ImageValidatorDirective = (function (_super) {
     ], ImageValidatorDirective.prototype, "ngfMaxRatio", void 0);
     ImageValidatorDirective = __decorate([
         core_1.Directive({
-            selector: '[ngfDrop],[ngfSelect],ngf-select,input[type=file]',
+            selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
             providers: [{ provide: forms_1.NG_ASYNC_VALIDATORS, useExisting: ImageValidatorDirective, multi: true }]
         }), 
         __metadata('design:paramtypes', [])

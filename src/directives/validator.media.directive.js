@@ -23,7 +23,6 @@ var MediaValidatorDirective = (function (_super) {
         _super.call(this);
     }
     MediaValidatorDirective.prototype.validate = function (c) {
-        // self value
         var files = c.value;
         return new validator_media_1.MediaValidator(files, this.attrGetter).validate();
     };
@@ -31,6 +30,14 @@ var MediaValidatorDirective = (function (_super) {
         core_1.Input(), 
         __metadata('design:type', Object)
     ], MediaValidatorDirective.prototype, "ngfDuration", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], MediaValidatorDirective.prototype, "ngfMinDuration", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], MediaValidatorDirective.prototype, "ngfMaxDuration", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -65,7 +72,7 @@ var MediaValidatorDirective = (function (_super) {
     ], MediaValidatorDirective.prototype, "ngfVideoMaxRatio", void 0);
     MediaValidatorDirective = __decorate([
         core_1.Directive({
-            selector: '[ngModel][ngfDrop],ngf-select[ngModel],input[type=file][ngModel]',
+            selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
             providers: [{ provide: forms_1.NG_ASYNC_VALIDATORS, useExisting: MediaValidatorDirective, multi: true }]
         }), 
         __metadata('design:paramtypes', [])

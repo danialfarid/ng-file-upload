@@ -1,11 +1,10 @@
 import {Directive, ElementRef, Input} from "@angular/core";
-import {AttrDirective} from "./attr.directive";
 import {ClickForward} from "../click.forward";
 
 @Directive({
     selector: '[ngfClickForward]',
 })
-export class ClickForwardDirective extends AttrDirective {
+export class ClickForwardDirective {
     @Input() ngfClickForward;
     private elem;
     private targetEl;
@@ -13,7 +12,6 @@ export class ClickForwardDirective extends AttrDirective {
 
     constructor(el: ElementRef) {
         this.elem = el.nativeElement;
-        super();
     }
 
     ngOnChanges() {

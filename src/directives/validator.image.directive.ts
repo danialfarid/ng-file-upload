@@ -3,7 +3,7 @@ import {Validator, AbstractControl, NG_ASYNC_VALIDATORS} from "@angular/forms";
 import {AttrDirective} from "./attr.directive";
 import {ImageValidator} from "../validator.image";
 @Directive({
-    selector: '[ngfDrop],[ngfSelect],ngf-select,input[type=file]',
+    selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
     providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: ImageValidatorDirective, multi: true}]
 })
 export class ImageValidatorDirective extends AttrDirective implements Validator {
@@ -21,7 +21,6 @@ export class ImageValidatorDirective extends AttrDirective implements Validator 
     }
 
     validate(c: AbstractControl): {} {
-        // self value
         var files = c.value;
         return new ImageValidator(files, this.attrGetter).validate();
     }

@@ -6,6 +6,7 @@ import {AttrDirective} from "./attr.directive";
 })
 export class QueueDirective extends AttrDirective {
     @Input() ngfQueue;
+    @Input() ngfSource;
 
     constructor(el: ElementRef) {
         super();
@@ -13,6 +14,6 @@ export class QueueDirective extends AttrDirective {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log(changes['ngfQueue']);
+        changes['ngfSource'].currentValue;
     }
 }

@@ -8,17 +8,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
+var core_1 = require("@angular/core");
 var FormDemoComponent = (function () {
     function FormDemoComponent() {
     }
-    FormDemoComponent.prototype.json = function (str) {
-        return JSON.stringify(str);
+    FormDemoComponent.prototype.keys = function (obj) {
+        if (!obj)
+            return obj;
+        return Object.keys(obj).filter(function (k) { return !k.startsWith('_'); });
     };
     FormDemoComponent = __decorate([
         core_1.Component({
             moduleId: module.id,
-            selector: 'ngf-form',
+            selector: 'ngf-form-sample',
             templateUrl: 'form.component.html'
         }), 
         __metadata('design:paramtypes', [])

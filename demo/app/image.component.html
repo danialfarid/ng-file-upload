@@ -1,0 +1,25 @@
+<div>Upload Images</div>
+<ngf-select [(ngModel)]="imageFiles" class="drop-box" name="images" #images="ngModel"
+            ngfMultiple="true"
+            ngfAccept="image/*" ngfPattern="image/*,!gif"
+            ngfMinSize="10KB" ngfMaxSize="20MB"
+            ngfMinHeigh="1000" ngfMaxHeight="10000"
+            ngfMinWidth="1000" ngfMaxWidth="10000"
+            ngfMinRatio=".3" ngfMaxRatio=".7"
+            ngfRatio="1:1,2:3,3:5,1:2,4:5"
+            (ngfDragOver)="dragCount = $event"
+            [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
+            ngfText="Select Or Drop Images"></ngf-select>
+<i [hidden]="!images.pending">validating...</i>
+<i *ngFor="let key of keys(images?.errors)">
+  invalid {{key}}
+</i>
+<ul>
+  <li *ngFor="let image of imageFiles">
+    {{image.name}}
+    <i *ngFor="let key of keys(image?.errors)">
+      invalid {{key}} expected {{image?.errors[key]?.expected}} but was {{image?.errors[key]?.actual}}
+    </i>
+  </li>
+</ul>
+<button (click)="upload(files)">Submit</button>

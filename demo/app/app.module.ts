@@ -3,9 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 import { AppComponent }   from './app.component';
 import {FormDemoComponent} from "./form.component";
-import {FormFullDemoComponent} from "./form.full.component";
+import {ImageDemoComponent} from "./image.component";
 import {MultipleDemoComponent} from "./multiple.component";
-import {DropDirective, FileModelDirective, SelectComponent, ClickForwardDirective
+import {DropDirective, FileModelDirective, SelectComponent, ClickForwardDirective,
     FileValidatorDirective, ImageValidatorDirective, MediaValidatorDirective,
     QueueDirective} from "../../src/index";
 
@@ -13,7 +13,7 @@ import {DropDirective, FileModelDirective, SelectComponent, ClickForwardDirectiv
 @NgModule({
     imports:      [ BrowserModule, FormsModule, ReactiveFormsModule ] ,
     declarations: [
-        AppComponent, FormDemoComponent, FormFullDemoComponent, MultipleDemoComponent,
+        AppComponent, FormDemoComponent, ImageDemoComponent, MultipleDemoComponent,
         SelectComponent, ClickForwardDirective,
         DropDirective,
         FileModelDirective, FileValidatorDirective,

@@ -22,12 +22,16 @@ var QueueDirective = (function (_super) {
         // el.nativeElement.dispatchEvent(new CustomEvent('fileQueue', {detail: e.detail}));
     }
     QueueDirective.prototype.ngOnChanges = function (changes) {
-        console.log(changes['ngfQueue']);
+        changes['ngfSource'].currentValue;
     };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
     ], QueueDirective.prototype, "ngfQueue", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], QueueDirective.prototype, "ngfSource", void 0);
     QueueDirective = __decorate([
         core_1.Directive({
             selector: '[ngfQueue]',
