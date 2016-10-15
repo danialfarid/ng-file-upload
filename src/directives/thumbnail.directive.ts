@@ -21,28 +21,28 @@ export class ThumbnailDirective {
     ngOnChanges(changes: SimpleChanges) {
         this.ngfOnProcessing.emit(true);
         if (changes['ngfThumbnail']) {
-            ImagePreview.toDataUrl(this.elem, changes['ngfThumbnail'].currentValue, this.ngfResize || {})
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue, this.ngfResize || {})
                 .then(url => {
                     this.ngfOnProcessing.emit(false);
                     ImagePreview.setSrc(this.elem, url);
                 });
         }
         if (changes['ngfThumbBackground']) {
-            ImagePreview.toDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
                 this.ngfResize || {}).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url, true);
             });
         }
         if (changes['ngfSrc']) {
-            ImagePreview.toDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
                 this.ngfResize).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url);
             });
         }
         if (changes['ngfBackground']) {
-            ImagePreview.toDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
                 this.ngfResize).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url, true);

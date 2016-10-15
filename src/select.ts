@@ -1,12 +1,5 @@
 export class Select {
-    private elem: HTMLElement;
-    private fileElem: HTMLInputElement;
-    private attrGetter;
-
-    constructor(el: HTMLElement, fileElem: HTMLInputElement, attrGetter) {
-        this.elem = el;
-        this.fileElem = fileElem;
-        this.attrGetter = attrGetter;
+    constructor(private elem: HTMLElement, private fileElem: HTMLInputElement, private attrGetter) {
         this.init();
     }
 

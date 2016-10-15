@@ -1,12 +1,9 @@
 import {BlobUtil} from "./blob.util.js";
-import {Uploader} from "./uploader.js";
 import {Pattern} from "./pattern";
+import {FormDataHelper} from "./form-data";
 
 export class Drop {
-    private elem: HTMLElement;
-    private attrGetter: Function;
-
-    constructor(elem: HTMLElement, attrGetter: Function) {
+    constructor(private elem: HTMLElement, private attrGetter: Function) {
         this.elem = elem;
         this.attrGetter = attrGetter;
 
@@ -200,7 +197,7 @@ export class Drop {
                             try {
                                 file.path = (path ? path : '') + file.name;
                                 if (includeDir) {
-                                    file = Uploader.rename(file, file.path);
+                                    file = FormDataHelper.rename(file, file.path);
                                 }
                                 files.push(file);
                                 totalSize += file.size;

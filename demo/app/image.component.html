@@ -1,4 +1,4 @@
-<div>Upload Images</div>
+<h4>Upload Images</h4>
 <ngf-select [(ngModel)]="imageFiles" class="drop-box" name="images" #images="ngModel"
             ngfMultiple="true"
             ngfAccept="image/*" ngfPattern="!gif,!svg,!tiff"
@@ -10,8 +10,6 @@
             (ngfDragOver)="dragCount = $event"
             ngfResetOnClick="true"
             [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
-            [ngfResize]="{width:2000, restoreExif: true}" ngfFixOrientation="true"
-            (ngfOnProcessing)="isResizing = $event" ngfProcessChunk="1" ngfProcessDelay="100"
             ngfKeep="distinct"
             ngfText="Select Or Drop Images"></ngf-select>
 <i [hidden]="!isResizing">Processing...</i>
@@ -31,4 +29,9 @@
     <i [hidden]="!image?.orientationError">image?.orientationError</i>
   </li>
 </ul>
-<button (click)="upload(files)">Submit</button>
+<button (click)="upload(imageFiles)">Submit</button>
+
+<span class="progress" *ngIf="progress >= 0">
+					<div [style.width]="progress + '%'">{{progress}}%</div>
+				</span>
+{{result}}

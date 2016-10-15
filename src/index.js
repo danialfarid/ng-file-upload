@@ -23,6 +23,12 @@ var image_orientation_directive_1 = require('./directives/image.orientation.dire
 exports.ImageOrientationDirective = image_orientation_directive_1.ImageOrientationDirective;
 var image_resize_directive_1 = require('./directives/image.resize.directive');
 exports.ImageResizeDirective = image_resize_directive_1.ImageResizeDirective;
+var form_data_1 = require('./form-data');
+exports.FormDataHelper = form_data_1.FormDataHelper;
+var progress_hack_1 = require('./progress.hack');
+exports.ProgressHelper = progress_hack_1.ProgressHelper;
+var image_preview_1 = require('./image.preview');
+exports.ImagePreview = image_preview_1.ImagePreview;
 //export * from  './components/file-drop';
 //export * from  './components/upload';
 //export * from  './components/validate';

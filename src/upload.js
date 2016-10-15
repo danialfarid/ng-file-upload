@@ -275,9 +275,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           formData.append(key, file, file.ngfName || file.name);
         } else {
           if (angular.isObject(val)) {
-            if (val.$$ngfCircularDetection) throw 'ngFileUpload: Circular reference in config.data. Make sure specified data for Upload.upload() has no circular reference: ' + key;
+            if (val.__ngfCircularDetection__) throw 'ngFileUpload: Circular reference in config.data. Make sure specified data for Upload.upload() has no circular reference: ' + key;
 
-            val.$$ngfCircularDetection = true;
+            val.__ngfCircularDetection__ = true;
             try {
               for (var k in val) {
                 if (val.hasOwnProperty(k) && k !== '$$ngfCircularDetection') {
@@ -289,7 +289,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
                 }
               }
             } finally {
-              delete val.$$ngfCircularDetection;
+              delete val.__ngfCircularDetection__;
             }
           } else {
             formData.append(key, val);

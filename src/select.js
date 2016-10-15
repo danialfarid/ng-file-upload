@@ -1,7 +1,10 @@
 "use strict";
 var Select = (function () {
-    function Select(el, fileElem, attrGetter) {
+    function Select(elem, fileElem, attrGetter) {
         var _this = this;
+        this.elem = elem;
+        this.fileElem = fileElem;
+        this.attrGetter = attrGetter;
         this.resetModel = function (e) {
             if (!_this.attrGetter('resetOnClick'))
                 return;
@@ -31,9 +34,6 @@ var Select = (function () {
                 _this.elem.removeAttribute('__ngf_ie10_Fix_');
             }
         };
-        this.elem = el;
-        this.fileElem = fileElem;
-        this.attrGetter = attrGetter;
         this.init();
     }
     Select.prototype.init = function () {

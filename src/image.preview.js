@@ -6,6 +6,8 @@ var ImagePreview = (function () {
     function ImagePreview() {
     }
     ImagePreview.getElementDimentions = function (el) {
+        if (el._ngfOrigSize_)
+            return el._ngfOrigSize_;
         var size = { width: el.clientWidth, height: el.clientHeight };
         if (size.width === 0 && window.getComputedStyle) {
             var style = getComputedStyle(el);
@@ -14,15 +16,10 @@ var ImagePreview = (function () {
                 height: parseInt(style.height.slice(0, -2))
             };
         }
+        el._ngfOrigSize_ = size;
         return size;
     };
-    ImagePreview.addBackground = function (el, file) {
-        blob_util_1.BlobUtil.dataUrl(file).then();
-    };
-    ImagePreview.addSrc = function (el, file) {
-        blob_util_1.BlobUtil.dataUrl(file).then();
-    };
-    ImagePreview.toDataUrl = function (el, file, resizeOptions) {
+    ImagePreview.resizeToDataUrl = function (el, file, resizeOptions) {
         if (!file || typeof file === 'string')
             return util_1.Util.emptyPromise(file);
         if (resizeOptions && image_resize_1.ImageResizer.isResizeSupported()) {

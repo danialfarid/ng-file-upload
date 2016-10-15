@@ -3,6 +3,7 @@ import {ImageResizer} from "./image.resize";
 import {Util} from "./util";
 export class ImagePreview {
     static getElementDimentions(el) {
+        if (el._ngfOrigSize_) return el._ngfOrigSize_;
         var size = {width: el.clientWidth, height: el.clientHeight};
         if (size.width === 0 && window.getComputedStyle) {
             var style = getComputedStyle(el);
@@ -11,18 +12,11 @@ export class ImagePreview {
                 height: parseInt(style.height.slice(0, -2))
             };
         }
+        el._ngfOrigSize_ = size;
         return size;
     }
 
-    static addBackground(el, file) {
-        BlobUtil.dataUrl(file).then(url =>);
-    }
-
-    static addSrc(el, file) {
-        BlobUtil.dataUrl(file).then(url =>);
-    }
-
-    static toDataUrl(el, file, resizeOptions) {
+    static resizeToDataUrl(el, file, resizeOptions) {
         if (!file || typeof file === 'string') return Util.emptyPromise(file);
         if (resizeOptions && ImageResizer.isResizeSupported()) {
             var options: any = Object.assign({}, resizeOptions);

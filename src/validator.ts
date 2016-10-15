@@ -1,4 +1,5 @@
 import {Util} from "./util";
+
 export class Validator {
     protected files;
     protected attrGetter;

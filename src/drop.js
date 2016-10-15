@@ -1,10 +1,12 @@
 "use strict";
 var blob_util_js_1 = require("./blob.util.js");
-var uploader_js_1 = require("./uploader.js");
 var pattern_1 = require("./pattern");
+var form_data_1 = require("./form-data");
 var Drop = (function () {
     function Drop(elem, attrGetter) {
         var _this = this;
+        this.elem = elem;
+        this.attrGetter = attrGetter;
         this.extractFilesFromHtml = function (updateOn, html) {
             if (_this.attrGetter(updateOn + 'Disabled') || typeof html !== 'string') {
                 return new Promise(function (resolve, reject) {
@@ -209,7 +211,7 @@ var Drop = (function () {
                             try {
                                 file.path = (path ? path : '') + file.name;
                                 if (includeDir) {
-                                    file = uploader_js_1.Uploader.rename(file, file.path);
+                                    file = form_data_1.FormDataHelper.rename(file, file.path);
                                 }
                                 files.push(file);
                                 totalSize += file.size;
