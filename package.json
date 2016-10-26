@@ -16,7 +16,10 @@
     "load-grunt-tasks": "^3.1.0"
   },
   "description": "An AngularJS directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers",
-  "main": "index.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
