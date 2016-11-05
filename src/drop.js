@@ -106,23 +106,7 @@
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
-      var items = evt.dataTransfer.items;
-      var html;
-      try {
-        html = evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html');
-      } catch (e) {/* Fix IE11 that throw error calling getData */
-      }
-
-      extractFiles(items, evt.dataTransfer.files, attrGetter('ngfAllowDir', scope) !== false,
-        attrGetter('multiple') || attrGetter('ngfMultiple', scope)).then(function (files) {
-        if (files.length) {
-          updateModel(files, evt);
-        } else {
-          extractFilesFromHtml('dropUrl', html).then(function (files) {
-            updateModel(files, evt);
-          });
-        }
-      });
+      extractFilesAndUpdateModel(evt.dataTransfer, evt, 'dropUrl');
     }, false);
     elem[0].addEventListener('paste', function (evt) {
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -130,22 +114,7 @@
         evt.preventDefault();
       }
       if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
-      var files = [];
-      var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
-      if (clipboard && clipboard.items) {
-        for (var k = 0; k < clipboard.items.length; k++) {
-          if (clipboard.items[k].type.indexOf('image') !== -1) {
-            files.push(clipboard.items[k].getAsFile());
-          }
-        }
-      }
-      if (files.length) {
-        updateModel(files, evt);
-      } else {
-        extractFilesFromHtml('pasteUrl', clipboard).then(function (files) {
-          updateModel(files, evt);
-        });
-      }
+      extractFilesAndUpdateModel(evt.clipboardData || evt.originalEvent.clipboardData, evt, 'pasteUrl');
     }, false);
 
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -154,6 +123,27 @@
       elem.on('keypress', function (e) {
         if (!e.metaKey && !e.ctrlKey) {
           e.preventDefault();
+        }
+      });
+    }
+
+    function extractFilesAndUpdateModel(source, evt, updateOnType) {
+      if (!source) return;
+      // html needs to be calculated on the same process otherwise the data will be wiped
+      // after promise resolve or setTimeout.
+      var html;
+      try {
+        html = source && source.getData && source.getData('text/html');
+      } catch (e) {/* Fix IE11 that throw error calling getData */
+      }
+      extractFiles(source.items, source.files, attrGetter('ngfAllowDir', scope) !== false,
+        attrGetter('multiple') || attrGetter('ngfMultiple', scope)).then(function (files) {
+        if (files.length) {
+          updateModel(files, evt);
+        } else {
+          extractFilesFromHtml(updateOnType, html).then(function (files) {
+            updateModel(files, evt);
+          });
         }
       });
     }
