@@ -1,32 +1,34 @@
-export class Resumable {
-    private uploadPromise;
+
+export abstract class CancellableUpload<T> extends Promise<T> {
+    private progressListener;
+    protected abstract xhr(progressListener: Function);
+    cancel() {
+        this.xhr(fn).abort();
+    }
+    progress(fn) {
+        this.progressListener = fn;
+    }
+}
+
+export abstract class FileUploader {
+    protected abstract xhrUpload(file: Blob): any;
+    upload(file: Blob) {
+        return this.xhrUpload(file);
+    }
+}
+
+export abstract class ResumableUploader implements FileUploader {
     private resumeSizePromise;
-    private chunkSize;
 
     private begin;
     private isPaused = false;
-    private chunkDelay;
 
-    constructor(private file: Blob|File|any) {
-        if (!Resumable.isResumeSupported()) throw 'Resumable upload is not supported: File.slice()';
+    constructor(private chunkSize, private chunkDelay) {
+        if (!ResumableUploader.isResumeSupported()) throw 'Resumable upload is not supported: File.slice()';
     }
 
-    withUploadPromise(fn: <T>(file: Blob, extraParams?: any) => Promise<T>) {
-        this.uploadPromise = fn;
-    }
-
-    // '/uploaded/size/url?file=' + file.name // uploaded file size so far on the server.
-    withUploadedSizePromise(fn: () => Promise<number>) {
-        this.resumeSizePromise = fn;
-    }
-
-    withChunkSize(chunkSize: number) {
-        this.chunkSize = chunkSize;
-    }
-
-    withDelayBetweenChunks(chunkDelay: number) {
-        this.chunkDelay = chunkDelay;
-    }
+    abstract resumeSize();
+    abstract init(file);
 
     uploadChunk() {
         if (this.isPaused || this.begin >= this.file.size) return;

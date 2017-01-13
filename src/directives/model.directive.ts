@@ -59,15 +59,14 @@ export class FileModelDirective implements ControlValueAccessor {
     };
 
     private fireChange(files: any) {
-        if (!this.ngfMultiple && this.multiple === undefined) {
-            files = files && files.length ? files[0] : files;
-        }
+        if (this.ngfKeep && (!files || !files.length)) return;
         if (this.ngfKeep) {
             files = this.prevFiles.concat(files || []);
         }
-        if (this.prevFiles.length != files.length) {
-            this.prevFiles = files || [];
-            if (this.modelChangeFn) this.modelChangeFn(files);
+        this.prevFiles = files || [];
+        if (this.modelChangeFn) {
+            var isMultiple = this.ngfMultiple || this.multiple !== undefined;
+            this.modelChangeFn(isMultiple ? files : files[0] || null);
         }
         return files;
     }

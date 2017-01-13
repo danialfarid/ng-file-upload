@@ -2,10 +2,10 @@ import {Directive, Input, Output, EventEmitter, SimpleChanges, ElementRef} from 
 import {ImagePreview} from "../image.preview";
 
 @Directive({
-    selector: '[ngfThumbnail],[ngfSrc],[ngfBackground],[ngfThumbBackground]',
+    selector: '[ngfThumb],[ngfSrc],[ngfBackground],[ngfThumbBackground]',
 })
-export class ThumbnailDirective {
-    @Input() ngfThumbnail;
+export class ThumbDirective {
+    @Input() ngfThumb;
     @Input() ngfThumbBackground;
     @Input() ngfSrc;
     @Input() ngfBackground;
@@ -20,29 +20,29 @@ export class ThumbnailDirective {
 
     ngOnChanges(changes: SimpleChanges) {
         this.ngfOnProcessing.emit(true);
-        if (changes['ngfThumbnail']) {
-            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue, this.ngfResize || {})
+        if (changes['ngfThumb']) {
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumb'].currentValue, this.ngfResize || {})
                 .then(url => {
                     this.ngfOnProcessing.emit(false);
                     ImagePreview.setSrc(this.elem, url);
                 });
         }
         if (changes['ngfThumbBackground']) {
-            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbBackground'].currentValue,
                 this.ngfResize || {}).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url, true);
             });
         }
         if (changes['ngfSrc']) {
-            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfSrc'].currentValue,
                 this.ngfResize).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url);
             });
         }
         if (changes['ngfBackground']) {
-            ImagePreview.resizeToDataUrl(this.elem, changes['ngfThumbnail'].currentValue,
+            ImagePreview.resizeToDataUrl(this.elem, changes['ngfBackground'].currentValue,
                 this.ngfResize).then((url) => {
                 this.ngfOnProcessing.emit(false);
                 ImagePreview.setSrc(this.elem, url, true);

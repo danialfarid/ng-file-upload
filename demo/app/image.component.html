@@ -1,4 +1,4 @@
-<h4>Upload Images</h4>
+<h4>Upload multiple images with validations</h4>
 <ngf-select [(ngModel)]="imageFiles" class="drop-box" name="images" #images="ngModel"
             ngfMultiple="true"
             ngfAccept="image/*" ngfPattern="!gif,!svg,!tiff"
@@ -19,19 +19,15 @@
 </i>
 <ul>
   <li *ngFor="let image of imageFiles">
-    <img [ngfThumbnail]="image" src="{{'favicon.ico'}}"
-         [ngfResize]="{width:30, height:30, centerCrop: true}">
+    <img [ngfThumb]="image" src="{{'favicon.ico'}}" class="thumb">
     {{image.name}}
-    <i *ngFor="let key of keys(image?.errors)">
-      invalid {{key}} expected {{image?.errors[key]?.expected}} but was {{image?.errors[key]?.actual}}
-    </i>
+    <demo-list-errors [errors]="image?.errors"></demo-list-errors>
     <i [hidden]="!image?.resizeError">image?.resizeError</i>
     <i [hidden]="!image?.orientationError">image?.orientationError</i>
   </li>
 </ul>
 <button (click)="upload(imageFiles)">Submit</button>
 
-<span class="progress" *ngIf="progress >= 0">
-					<div [style.width]="progress + '%'">{{progress}}%</div>
-				</span>
-{{result}}
+<demo-progress [progress]="progress"></demo-progress>
+<demo-response [result]="result" [error]="err" class="response"></demo-response>
+

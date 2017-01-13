@@ -43,23 +43,7 @@ export class Drop {
             evt.preventDefault();
             if (attrGetter('stopPropagation')) evt.stopPropagation();
             dragLeave();
-            var items = evt.dataTransfer.items;
-            var html;
-            try {
-                html = evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html');
-            } catch (e) {/* Fix IE11 that throw error calling getData */
-            }
-
-            this.extractFiles(items, evt.dataTransfer.files, attrGetter('allowDir') !== false,
-                attrGetter('multiple')).then((files: Array<any>) => {
-                if (files.length) {
-                    elem.dispatchEvent(new CustomEvent('fileDrop', {detail: {files: files, origEvent: evt}}))
-                } else {
-                    this.extractFilesFromHtml('dropUrl', html).then((files) => {
-                        elem.dispatchEvent(new CustomEvent('fileDrop', {detail: {files: files, origEvent: evt}}))
-                    });
-                }
-            });
+            this.extractFilesAndUpdateModel(evt.dataTransfer, evt, 'dropUrl');
         }, false);
         elem.addEventListener('paste', (evt: any) => {
             if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -67,22 +51,7 @@ export class Drop {
                 evt.preventDefault();
             }
             if (this.isDisabled() || attrGetter('pasteDisabled')) return;
-            var files = [];
-            var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
-            if (clipboard && clipboard.items) {
-                for (var k = 0; k < clipboard.items.length; k++) {
-                    if (clipboard.items[k].type.indexOf('image') !== -1) {
-                        files.push(clipboard.items[k].getAsFile());
-                    }
-                }
-            }
-            if (files.length) {
-                elem.dispatchEvent(new CustomEvent('fileDrop', {detail: {files: files, origEvent: evt}}))
-            } else {
-                this.extractFilesFromHtml('pasteUrl', clipboard).then((files) => {
-                    elem.dispatchEvent(new CustomEvent('fileDrop', {detail: {files: files, origEvent: evt}}))
-                });
-            }
+            this.extractFilesAndUpdateModel(evt.clipboardData || evt.originalEvent.clipboardData, evt, 'pasteUrl');
         }, false);
 
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -96,7 +65,28 @@ export class Drop {
         }
     }
 
-    extractFilesFromHtml = (updateOn, html) => {
+    extractFilesAndUpdateModel = (source, evt, updateOnType) => {
+        if (!source) return;
+        this.extractFiles(source.items, evt.dataTransfer.files, this.attrGetter('allowDir') !== false,
+            this.attrGetter('multiple')).then((files: Array<any>) => {
+            if (files.length) {
+                this.elem.dispatchEvent(new CustomEvent('fileDrop',
+                    {detail: {files: files, origEvent: evt}}))
+            } else {
+                this.extractFilesFromHtml(updateOnType, source).then((files) => {
+                    this.elem.dispatchEvent(new CustomEvent('fileDrop',
+                        {detail: {files: files, origEvent: evt}}))
+                });
+            }
+        });
+    };
+
+    extractFilesFromHtml = (updateOn, source) => {
+        var html;
+        try {
+            html = source && source.getData && source.getData('text/html');
+        } catch (e) {/* Fix IE11 that throw error calling getData */
+        }
         if (this.attrGetter(updateOn + 'Disabled') || typeof html !== 'string') {
             return new Promise((resolve, reject) => {
                 reject([])

@@ -4,16 +4,25 @@ import {AttrDirective} from "./attr.directive";
 @Directive({
     selector: '[ngfQueue]',
 })
-export class QueueDirective extends AttrDirective {
+export class QueueDirective {
     @Input() ngfQueue;
+    @Input() ngfAllowDuplicates;
+    @Input() ngModel;
     @Input() ngfSource;
 
-    constructor(el: ElementRef) {
-        super();
-        // el.nativeElement.dispatchEvent(new CustomEvent('fileQueue', {detail: e.detail}));
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['ngfSource']) this.mergeFiles(this.ngfQueue, this.ngfSource);
+        if (changes['ngModel']) this.mergeFiles(this.ngfQueue, this.ngModel);
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        changes['ngfSource'].currentValue;
+    private mergeFiles(list: any, neFiles: any) {
+        if (this.ngfAllowDuplicates) {
+            files = (files || []).filter(f => !this.isInPrevFiles(f))
+        }
+        Array.prototype.push.apply(list, neFiles);
+    }
+
+    private isInPrevFiles(f) {
+        return this.prevFiles.find(pf => FileModelDirective.areFilesEqual(pf, f) || undefined);
     }
 }

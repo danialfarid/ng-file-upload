@@ -36,6 +36,8 @@ body {
     margin: 3px 0;
     clear: both;
     list-style: none;
+    font-size: smaller;
+    color: grey;
 }
 
 .response .sel-file li, .response .reqh {
@@ -102,13 +104,6 @@ button {
 
 .ng-v {
     float: right;
-}
-
-.thumb {
-    float: left;
-    width: 18px;
-    height: 18px;
-    padding-right: 10px;
 }
 
 form .thumb {
@@ -226,4 +221,10 @@ form button {
 .custom {
     font-size: 14px;
     margin-left: 20px;
+}
+
+.thumb {
+    width: 28px;
+    height: 28px;
+    padding-right: 10px;
 }

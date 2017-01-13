@@ -15,7 +15,7 @@ export class SelectComponent extends AttrDirective implements OnDestroy {
     @Output() ngfChange = new EventEmitter();
     @Input() ngfText;
     @Input() ngfHtml;
-    @Input() ngfResetOnClick;
+    @Input() ngfResetOnClick = true;
     @Input() ngfCapture;
     @Input() ngfMultiple;
     @Input() ngfAccept;

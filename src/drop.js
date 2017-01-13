@@ -7,7 +7,27 @@ var Drop = (function () {
         var _this = this;
         this.elem = elem;
         this.attrGetter = attrGetter;
-        this.extractFilesFromHtml = function (updateOn, html) {
+        this.extractFilesAndUpdateModel = function (source, evt, updateOnType) {
+            if (!source)
+                return;
+            _this.extractFiles(source.items, evt.dataTransfer.files, _this.attrGetter('allowDir') !== false, _this.attrGetter('multiple')).then(function (files) {
+                if (files.length) {
+                    _this.elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
+                }
+                else {
+                    _this.extractFilesFromHtml(updateOnType, source).then(function (files) {
+                        _this.elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
+                    });
+                }
+            });
+        };
+        this.extractFilesFromHtml = function (updateOn, source) {
+            var html;
+            try {
+                html = source && source.getData && source.getData('text/html');
+            }
+            catch (e) {
+            }
             if (_this.attrGetter(updateOn + 'Disabled') || typeof html !== 'string') {
                 return new Promise(function (resolve, reject) {
                     reject([]);
@@ -83,23 +103,7 @@ var Drop = (function () {
             if (attrGetter('stopPropagation'))
                 evt.stopPropagation();
             dragLeave();
-            var items = evt.dataTransfer.items;
-            var html;
-            try {
-                html = evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html');
-            }
-            catch (e) {
-            }
-            _this.extractFiles(items, evt.dataTransfer.files, attrGetter('allowDir') !== false, attrGetter('multiple')).then(function (files) {
-                if (files.length) {
-                    elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
-                }
-                else {
-                    _this.extractFilesFromHtml('dropUrl', html).then(function (files) {
-                        elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
-                    });
-                }
-            });
+            _this.extractFilesAndUpdateModel(evt.dataTransfer, evt, 'dropUrl');
         }, false);
         elem.addEventListener('paste', function (evt) {
             if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
@@ -108,23 +112,7 @@ var Drop = (function () {
             }
             if (_this.isDisabled() || attrGetter('pasteDisabled'))
                 return;
-            var files = [];
-            var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
-            if (clipboard && clipboard.items) {
-                for (var k = 0; k < clipboard.items.length; k++) {
-                    if (clipboard.items[k].type.indexOf('image') !== -1) {
-                        files.push(clipboard.items[k].getAsFile());
-                    }
-                }
-            }
-            if (files.length) {
-                elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
-            }
-            else {
-                _this.extractFilesFromHtml('pasteUrl', clipboard).then(function (files) {
-                    elem.dispatchEvent(new CustomEvent('fileDrop', { detail: { files: files, origEvent: evt } }));
-                });
-            }
+            _this.extractFilesAndUpdateModel(evt.clipboardData || evt.originalEvent.clipboardData, evt, 'pasteUrl');
         }, false);
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
             attrGetter('enableFirefoxPaste')) {

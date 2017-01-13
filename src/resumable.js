@@ -1,25 +1,41 @@
 "use strict";
-var Resumable = (function () {
-    function Resumable(file) {
-        this.file = file;
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var CancellableUpload = (function (_super) {
+    __extends(CancellableUpload, _super);
+    function CancellableUpload() {
+        _super.apply(this, arguments);
+    }
+    CancellableUpload.prototype.cancel = function () {
+        this.xhr(fn).abort();
+    };
+    CancellableUpload.prototype.progress = function (fn) {
+        this.progressListener = fn;
+    };
+    return CancellableUpload;
+}(Promise));
+exports.CancellableUpload = CancellableUpload;
+var FileUploader = (function () {
+    function FileUploader() {
+    }
+    FileUploader.prototype.upload = function (file) {
+        return this.xhrUpload(file);
+    };
+    return FileUploader;
+}());
+exports.FileUploader = FileUploader;
+var ResumableUploader = (function () {
+    function ResumableUploader(chunkSize, chunkDelay) {
+        this.chunkSize = chunkSize;
+        this.chunkDelay = chunkDelay;
         this.isPaused = false;
-        if (!Resumable.isResumeSupported())
+        if (!ResumableUploader.isResumeSupported())
             throw 'Resumable upload is not supported: File.slice()';
     }
-    Resumable.prototype.withUploadPromise = function (fn) {
-        this.uploadPromise = fn;
-    };
-    // '/uploaded/size/url?file=' + file.name // uploaded file size so far on the server.
-    Resumable.prototype.withUploadedSizePromise = function (fn) {
-        this.resumeSizePromise = fn;
-    };
-    Resumable.prototype.withChunkSize = function (chunkSize) {
-        this.chunkSize = chunkSize;
-    };
-    Resumable.prototype.withDelayBetweenChunks = function (chunkDelay) {
-        this.chunkDelay = chunkDelay;
-    };
-    Resumable.prototype.uploadChunk = function () {
+    ResumableUploader.prototype.uploadChunk = function () {
         var _this = this;
         if (this.isPaused || this.begin >= this.file.size)
             return;
@@ -44,7 +60,7 @@ var Resumable = (function () {
             }
         });
     };
-    Resumable.prototype.start = function () {
+    ResumableUploader.prototype.start = function () {
         var _this = this;
         this.isPaused = false;
         if (!this.begin) {
@@ -57,10 +73,10 @@ var Resumable = (function () {
             this.uploadChunk();
         }
     };
-    Resumable.prototype.pause = function () {
+    ResumableUploader.prototype.pause = function () {
         this.isPaused = true;
     };
-    Resumable.prototype.totalProgress = function (progress) {
+    ResumableUploader.prototype.totalProgress = function (progress) {
         return {
             loaded: ((progress && progress.loaded) || 0) + this.begin,
             total: (this.file && this.file.size) || progress.total,
@@ -68,10 +84,10 @@ var Resumable = (function () {
             lengthComputable: true, target: (progress && progress.target)
         };
     };
-    Resumable.isResumeSupported = function () {
+    ResumableUploader.isResumeSupported = function () {
         return typeof Blob !== undefined && Blob.prototype.slice;
     };
-    return Resumable;
+    return ResumableUploader;
 }());
-exports.Resumable = Resumable;
+exports.ResumableUploader = ResumableUploader;
 //# sourceMappingURL=resumable.js.map

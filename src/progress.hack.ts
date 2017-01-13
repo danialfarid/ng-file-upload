@@ -14,10 +14,9 @@ export class ProgressHelper {
         var origMethod = http[method];
         http[method] = function () {
             var observable = origMethod.apply(http, arguments);
-            var origSubscribe = observable.subscribe;
-            observable.subscribe = function () {
-                http._backend._browserXHR.currentCallback = arguments[3];
-                return origSubscribe.apply(observable, arguments);
+            observable.progress = function (fn) {
+                http._backend._browserXHR.currentCallback = fn;
+                return observable;
             };
             return observable;
         };

@@ -15,6 +15,7 @@
            ngfMinSize="100KB" ngfMaxSize="2MB"
            required>
   </label>
+  <img [hidden]="!picFile" [ngfThumb]="picFile" class="thumb">
   <i [hidden]="file.pristine || !file.errors?.required">required</i>
   <i [hidden]="!file.errors?.pattern">gif files are not allowed</i>
   <i [hidden]="!file.errors?.maxSize">max file size 2MB</i>
@@ -26,19 +27,21 @@
     <ngf-select name="audio" #audio="ngModel"
                 [(ngModel)]="audioFile"
                 ngfAccept="audio/*" ngfPattern="audio/*"
-                ngfMinDuration="1s" ngfMaxDuration="10s"
+                ngfMinDuration="1s" ngfMaxDuration="1m"
                 ngfMaxSize="20MB" required
                 ngfText="Select Audio"></ngf-select>
   </button>
   {{audioFile?.name}}
-  <i [hidden]="!video.pending">validating...</i>
+  <i [hidden]="!audio.pending">validating...</i>
   <i [hidden]="audio.pristine || !audio.errors?.required">required</i>
   <i [hidden]="!audio.errors?.pattern">invalid file type {{audioFile?.type}}</i>
   <i [hidden]="!audio.errors?.maxSize">max audio file size must be {{audioFile?.errors?.maxSize?.expected}} but was
     {{audioFile?.errors?.maxSize?.actual / 1048576}}MB</i>
-  <i [hidden]="!audio.errors?.maxDuration">max audio duration must be {{audioFile?.errors?.maxDuration?.expected}} but was
+  <i [hidden]="!audio.errors?.maxDuration">max audio duration must be {{audioFile?.errors?.maxDuration?.expected}} but
+    was
     {{audioFile?.errors?.maxDuration?.actual}}s</i>
-  <i [hidden]="!audio.errors?.minDuration">min audio duration must be {{audioFile?.errors?.minDuration?.expected}} but was
+  <i [hidden]="!audio.errors?.minDuration">min audio duration must be {{audioFile?.errors?.minDuration?.expected}} but
+    was
     {{audioFile?.errors?.minDuration?.actual}}s</i>
   <br/>
   <br/>
@@ -46,7 +49,7 @@
   <ngf-select ngfDrop name="video" #video="ngModel" class="drop-box"
               [(ngModel)]="videoFile"
               ngfAccept="video/*" ngfPattern="video/*"
-              ngfMinDuration="1m" ngfMaxDuration="1m"
+              ngfMinDuration="5s" ngfMaxDuration="5m"
               ngfMaxSize="200MB"
               (ngfDragOver)="dragCount = $event"
               [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
@@ -55,15 +58,10 @@
   {{videoFile?.name}}
   <i [hidden]="!video.pending">validating...</i>
   <i [hidden]="video.pristine || !video.errors?.required">required</i>
-  <i *ngFor="let key of keys(videoFile?.errors)">
-    invalid {{key}} expected {{videoFile?.errors[key]?.expected}} but was {{videoFile?.errors[key]?.actual}}
-  </i>
+  <demo-list-errors [errors]="videoFile?.errors"></demo-list-errors>
   <br/>
 
-  <button [disabled]="!myForm.valid" (click)="uploadPic(picFile)">Submit</button>
-  <img [hidden]="!picFile" [src]="picFile" class="thumb">
-  <span class="progress" *ngIf="picFile?.progress > 0">
-                  <div style="width:{{picFile?.progress}}%">{{picFile?.progress}}%</div>
-    </span>
-  <span [hidden]="!picFile?.result">Upload Successful</span>
+  <button [disabled]="!myForm.valid" (click)="submit(myForm)">Submit</button>
+  <demo-progress [progress]="progress"></demo-progress>
+  <demo-response class="response" [result]="result" [error]="err"></demo-response>
 </form>

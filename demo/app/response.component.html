@@ -1,0 +1,16 @@
+<span *ngIf="result">Success: <a href="javascript:void(0)" (click)="showDetail = !showDetail">details</a></span>
+<div *ngIf="showDetail">
+  <br/>
+
+  <div *ngIf="result.result == null">{{result}}</div>
+  <ul>
+    <li *ngFor="let item of result.result">
+      <div [hidden]="!item.name">file name: {{item.name}}</div>
+      <div [hidden]="!item.fieldName">name: {{item.fieldName}}</div>
+      <div [hidden]="!item.size">size on the serve: {{item.size}}</div>
+      <div [hidden]="!item.value">value: {{item.value}}</div>
+    </li>
+  </ul>
+  <div *ngIf="result.requestHeaders" class="reqh">request headers: {{result.requestHeaders | json}}</div>
+</div>
+<div *ngIf="error" class="err">{{error}}</div>

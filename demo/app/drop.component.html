@@ -19,9 +19,9 @@
          (ngfDropAvailable)="dropAvailable=$event"
          [hidden]="!dropAvailable"
          class="drop-box">
-        <span>Drop Image file, Paste or Drag&Drop Image from other tabs</span></div>
-    </div>
-    <div [hidden]="dropAvailable">Your browser does not support drop</div>
+      <span>Drop Image file, Paste or Drag&Drop Image from other tabs</span></div>
+  </div>
+  <div [hidden]="dropAvailable">Your browser does not support drop</div>
   <div class="custom">
     <label>ngfDragOverClass (chrome): <input size="31" type="text" ng-model="dragOverClass"></label><br/>
     <label>ngfPattern (validate file model): <input type="text" ng-model="pattern"></label><br/>

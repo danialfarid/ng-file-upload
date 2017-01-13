@@ -23,6 +23,7 @@ var SelectComponent = (function (_super) {
         _super.call(this);
         this.ngfSelect = new core_1.EventEmitter();
         this.ngfChange = new core_1.EventEmitter();
+        this.ngfResetOnClick = true;
         this.elem = el.nativeElement;
         this.ngfHtml = this.elem.innerHTML;
     }

@@ -12,11 +12,15 @@ var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var forms_1 = require("@angular/forms");
 var http_1 = require("@angular/http");
+var index_1 = require("../../src/index");
 var app_component_1 = require("./app.component");
 var form_component_1 = require("./form.component");
 var image_component_1 = require("./image.component");
 var multiple_component_1 = require("./multiple.component");
-var index_1 = require("../../src/index");
+var response_component_1 = require("./response.component");
+var mapToIterable_pipe_1 = require("./mapToIterable.pipe");
+var list_errors_component_1 = require("./list.errors.component");
+var progress_component_1 = require("./progress.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -25,10 +29,9 @@ var AppModule = (function () {
             imports: [platform_browser_1.BrowserModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, http_1.HttpModule],
             declarations: [
                 app_component_1.AppComponent, form_component_1.FormDemoComponent, image_component_1.ImageDemoComponent, multiple_component_1.MultipleDemoComponent,
-                index_1.SelectComponent, index_1.ClickForwardDirective,
-                index_1.DropDirective,
-                index_1.FileModelDirective, index_1.FileValidatorDirective,
-                index_1.ImageValidatorDirective, index_1.MediaValidatorDirective, index_1.ThumbnailDirective,
+                response_component_1.ResponseComponent, mapToIterable_pipe_1.MapToIterable, list_errors_component_1.ListErrorsComponent, progress_component_1.ProgressComponent,
+                index_1.SelectComponent, index_1.ClickForwardDirective, index_1.DropDirective, index_1.FileModelDirective, index_1.FileValidatorDirective,
+                index_1.ImageValidatorDirective, index_1.MediaValidatorDirective, index_1.ThumbDirective,
                 index_1.ImageResizeDirective,
                 index_1.ImageOrientationDirective
             ],

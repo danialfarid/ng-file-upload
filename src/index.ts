@@ -7,7 +7,7 @@ export {FileValidatorDirective} from  './directives/validator.file.directive';
 export {ImageValidatorDirective} from  './directives/validator.image.directive';
 export {MediaValidatorDirective} from  './directives/validator.media.directive';
 export {QueueDirective} from  './directives/queue.directive';
-export {ThumbnailDirective} from  './directives/thumbnail.directive';
+export {ThumbDirective} from  './directives/thumb.directive';
 export {ImageOrientationDirective} from  './directives/image.orientation.directive';
 export {ImageResizeDirective} from  './directives/image.resize.directive';
 export {FormDataHelper} from  './form-data';

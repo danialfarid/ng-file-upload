@@ -7,10 +7,12 @@ export class ImagePreview {
         var size = {width: el.clientWidth, height: el.clientHeight};
         if (size.width === 0 && window.getComputedStyle) {
             var style = getComputedStyle(el);
-            size = {
-                width: parseInt(style.width.slice(0, -2)),
-                height: parseInt(style.height.slice(0, -2))
-            };
+            if (style.width && style.width.indexOf('px') > -1 && style.height && style.height.indexOf('px') > -1) {
+                size = {
+                    width: parseInt(style.width.slice(0, -2)),
+                    height: parseInt(style.height.slice(0, -2))
+                };
+            }
         }
         el._ngfOrigSize_ = size;
         return size;

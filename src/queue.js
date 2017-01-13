@@ -1,29 +1,45 @@
 "use strict";
 var FileQueue = (function () {
-    function FileQueue(config) {
+    function FileQueue(attrGetter, uploadFn) {
+        this.attrGetter = attrGetter;
+        this.uploadFn = uploadFn;
         this.files = [];
         this.isPaused = true;
-        this.uploadConfig = {};
-        this.uploadConfig = config;
+        this.currIndex = 0;
     }
     FileQueue.prototype.add = function (files) {
-        if (files instanceof Array) {
-            this.files = this.files.concat(files);
+        var _this = this;
+        files = files instanceof Array ? files : (files ? [files] : []);
+        if (!this.attrGetter('allowDuplicates')) {
+            files = (files || []).filter(function (f) { return !_this.isInPrevFiles(f); });
         }
-        else {
-            if (files) {
-                this.files.push(files);
-            }
-        }
+        this.files = this.files.concat(files);
         this.upload();
     };
+    FileQueue.prototype.isInPrevFiles = function (f) {
+        return this.files.find(function (pf) { return FileQueue.areFilesEqual(pf, f) || undefined; });
+    };
+    FileQueue.areFilesEqual = function (f1, f2) {
+        return f1.name === f2.name && (f1.$ngfOrigSize || f1.size) === (f2.$ngfOrigSize || f2.size) &&
+            f1.type === f2.type;
+    };
     FileQueue.prototype.remove = function (index) {
-        this.files.splice(index, 1);
+        this.files = this.files.slice(0, index).concat(this.files.slice(index + 1, this.files.length));
     };
     FileQueue.prototype.clear = function () {
         this.files = [];
     };
     FileQueue.prototype.start = function () {
+        var _this = this;
+        var upFiles = this.files.slice(this.currIndex, this.currIndex += this.attrGetter('chunkSize'));
+        upFiles.forEach(function (f, i) {
+            _this.uploadFn(f).then(function () {
+                _this.stats[i] = 'success';
+            }).catch(function () {
+                _this.stats[i] =
+                ;
+            });
+        });
     };
     FileQueue.prototype.resume = function () {
         this.start();
@@ -37,4 +53,19 @@ var FileQueue = (function () {
     return FileQueue;
 }());
 exports.FileQueue = FileQueue;
+var FileUploadEntry = (function () {
+    function FileUploadEntry() {
+        this.stat = 'init';
+    }
+    return FileUploadEntry;
+}());
+var FileStat = (function () {
+    function FileStat() {
+    }
+    FileStat.added = 0;
+    FileStat.uploading = 0;
+    FileStat.success = 0;
+    FileStat.success = 0;
+    return FileStat;
+}());
 //# sourceMappingURL=queue.js.map

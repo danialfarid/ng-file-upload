@@ -14,20 +14,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var form_component_1 = require("./form.component");
 var http_1 = require("@angular/http");
 var index_1 = require("../../src/index");
+var upload_progress_1 = require("./upload.progress");
 var ImageDemoComponent = (function (_super) {
     __extends(ImageDemoComponent, _super);
     function ImageDemoComponent(http) {
-        _super.call(this);
-        this.http = http;
-        this.uploadUrl = 'http://angular-file-upload.appspot.com/upload';
+        _super.call(this, http);
     }
     ImageDemoComponent.prototype.upload = function (images) {
-        var _this = this;
-        var http = index_1.ProgressHelper.progressEnabled(this.http);
-        http.post(this.uploadUrl, index_1.FormDataHelper.toFormData({ images: images })).subscribe(function (res) { return _this.result = res.text(); }, function (err) { return _this.result = err.name; }, function () { }, function (e) { return _this.progress = e.percent; });
+        _super.prototype.upload.call(this, index_1.FormDataHelper.toFormData({ images: images }));
     };
     ImageDemoComponent = __decorate([
         core_1.Component({
@@ -38,6 +34,6 @@ var ImageDemoComponent = (function (_super) {
         __metadata('design:paramtypes', [http_1.Http])
     ], ImageDemoComponent);
     return ImageDemoComponent;
-}(form_component_1.FormDemoComponent));
+}(upload_progress_1.UploadWithProgress));
 exports.ImageDemoComponent = ImageDemoComponent;
 //# sourceMappingURL=image.component.js.map

@@ -1,58 +1,28 @@
-<!--<div ngfSelect ngfDrop [(ngModel)]="files"-->
-     <!--ngfMultiple="true" ngfPattern="images/*" ngfAccept="images/*"-->
-     <!--[disabled]="false" [ngfCapture]="camera"-->
-     <!--[ngfDragOverClass]="{}"-->
-     <!--[ngfDimensions]="width > 100 && height > 100"-->
-     <!--[ngfMaxFiles]="100"-->
-     <!--ngfFixOrientation="orientation"-->
-     <!--class="button">Select File-->
-<!--</div>-->
-<!--<div class="preview">-->
-  <!--<div>Preview image/audio/video:</div>-->
-  <!--<img ngf-src="!files[0].$error && files[0]">-->
-  <!--<audio controls ngf-src="!files[0].$error && files[0]"></audio>-->
-  <!--<video controls ngf-src="!files[0].$error && files[0]"></video>-->
-<!--</div>-->
-
-<!--<ul style="clear:both" class="response">-->
-<!--<li class="sel-file" ng-repeat="f in files">-->
-<!--<div>-->
-<!--<img ngf-thumbnail="!f.$error && f" class="thumb">-->
-<!--<span class="progress" ng-show="f.progress >= 0">-->
-<!--<div style="width:{{f.progress}}%">{{f.progress}}%</div>-->
-<!--</span>-->
-<!--<button class="button" ng-click="f.upload.abort();f.upload.aborted=true"-->
-<!--ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">-->
-<!--Abort<span ng-show="isResumeSupported">/Pause</span>-->
-<!--</button>-->
-<!--<button class="button" ng-click="upload(f, true);f.upload.aborted=false"-->
-<!--ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume-->
-<!--</button>-->
-<!--<button class="button" ng-click="restart(f);f.upload.aborted=false"-->
-<!--ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart-->
-<!--</button>-->
-<!--{{f.name}} - size: {{f.size}}B - type: {{f.type}}-->
-<!--<a ng-show="f.result" href="javascript:void(0)" ng-click="f.showDetail = !f.showDetail">details</a>-->
-
-<!--<div ng-show="f.showDetail">-->
-<!--<br/>-->
-
-<!--<div data-ng-show="f.result.result == null">{{f.result}}</div>-->
-<!--<ul>-->
-<!--<li ng-repeat="item in f.result.result">-->
-<!--<div data-ng-show="item.name">file name: {{item.name}}</div>-->
-<!--<div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>-->
-<!--<div data-ng-show="item.size">size on the serve: {{item.size}}</div>-->
-<!--<div data-ng-show="item.value">value: {{item.value}}</div>-->
-<!--</li>-->
-<!--</ul>-->
-<!--<div data-ng-show="f.result.requestHeaders" class="reqh">request headers: {{f.result.requestHeaders}}</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</li>-->
-<!--<li class="sel-file" ng-repeat="f in invalidFiles">-->
-<!--<div>Invalid File: {{f.$errorMessages}} {{f.$errorParam}}, {{f.name}} - size: {{f.size}}B - type:-->
-<!--{{f.type}}-->
-<!--</div>-->
-<!--</li>-->
-<!--</ul>-->
+<h4>Upload multiple images with resize and fix orientation</h4>
+<ngf-select [(ngModel)]="imageFiles" class="drop-box" name="images" #images="ngModel"
+            ngfMultiple="true"
+            ngfAccept="image/*" ngfPattern="!gif,!svg,!tiff"
+            [ngfResize]="{width:1000, height:1000, centerCrop: true}"
+            [ngfResize]="{ratio:'1:2', centerCrop: true}"
+            [ngfResize]="{width:1000, height:1000, quality:.5, restoreExit:true}"
+            [ngfFixOrientation]="true"
+            (ngfDragOver)="dragCount = $event"
+            [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
+            ngfText="Select Or Drop Images"></ngf-select>
+<i [hidden]="!isResizing">Processing...</i>
+<i [hidden]="!images.pending">validating...</i>
+<i *ngFor="let entry of images?.errors | mapToIterable">
+  <span *ngIf="entry.value == true">invalid {{entry.key}}</span>
+</i>
+<ul>
+  <li *ngFor="let image of imageFiles">
+    <img [ngfThumb]="image" src="{{'favicon.ico'}}" class="thumb">
+    {{image.name}}
+    <demo-list-errors [errors]="image?.errors"></demo-list-errors>
+    <i [hidden]="!image?.resizeError">image?.resizeError</i>
+    <i [hidden]="!image?.orientationError">image?.orientationError</i>
+  </li>
+</ul>
+<button (click)="upload(imageFiles)">Submit</button>
+<demo-progress [progress]="progress"></demo-progress>
+<demo-response [result]="result" [error]="err" class="response"></demo-response>
