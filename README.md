@@ -33,11 +33,11 @@ Table of Content:
 
 ##<a name="features"></a> Features
 * file upload progress, cancel/abort
-* file drag and drop (html5 only) 
+* file drag and drop (html5 only)
 * image paste from clipboard and drag and drop from browser pages (html5 only).
 * image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/danialfarid/xxo3sk41/590/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
-* resumable uploads: pause/resume upload (html5 only) 
+* resumable uploads: pause/resume upload (html5 only)
 * native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable custom sync or async validations.
 * show thumbnail or preview of selected images/audio/videos
 * supports CORS and direct upload of file's binary data using `Upload.$http()`
@@ -84,7 +84,7 @@ Upload on form submit or button click
 <form ng-app="fileUpload" ng-controller="MyCtrl" name="form">
   Single Image with validations
   <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
-    ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100" 
+    ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"
     ngf-resize="{width: 100, height: 100}">Select</div>
   Multiple files
   <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
@@ -97,7 +97,7 @@ Upload right away after file selection:
 <div class="button" ngf-select="uploadFiles($files)" multiple="multiple">Upload on file select</div>
   Drop File:
 <div ngf-drop="uploadFiles($files)" class="drop-box"
-  ngf-drag-over-class="'dragover'" ngf-multiple="true" 
+  ngf-drag-over-class="'dragover'" ngf-multiple="true"
   ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
 <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
@@ -163,32 +163,32 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ng-model="myFiles" // binds the valid selected/dropped file or files to the scope model
     // could be an array or single file depending on ngf-multiple and ngf-keep values.
   ngf-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
-    // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. 
+    // updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc.
     // allowInvalid default is false could allow invalid files in the model
     // debouncing will postpone model update (miliseconds). See angular ng-model-options for more details.
   ngf-model-invalid="invalidFile(s)" // binds the invalid selected/dropped file or files to this model.
-  ngf-before-model-change="beforeChange($files, ...)" // called after file select/drop and before 
+  ngf-before-model-change="beforeChange($files, ...)" // called after file select/drop and before
     // model change, validation and resize is processed
   ng-disabled="boolean" // disables this element
   ngf-select-disabled="boolean" // default false, disables file select on this element
   ngf-drop-disabled="boolean" // default false, disables file drop on this element
   ngf-multiple="boolean" // default false, allows selecting multiple files
-  ngf-keep="true|false|'distinct'" // default false, keep the previous ng-model files and 
+  ngf-keep="true|false|'distinct'" // default false, keep the previous ng-model files and
     // append the new files. "'distinct'" removes duplicate files
     // $newFiles and $duplicateFiles are set in ngf-change/select/drop functions.
   ngf-fix-orientation="boolean" //default false, would rotate the jpeg image files that have
-    // exif orientation data. See #745. Could be a boolean function like shouldFixOrientation($file) 
+    // exif orientation data. See #745. Could be a boolean function like shouldFixOrientation($file)
     // to decide wethere to fix that file or not.
-  
+
   *ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
   *ngf-accept="'image/*'" // standard HTML accept attr, browser specific select popup window
-  
+
   +ngf-allow-dir="boolean" // default true, allow dropping files only for Chrome webkit browser
-  +ngf-include-dir="boolean" //default false, include directories in the dropped file array. 
+  +ngf-include-dir="boolean" //default false, include directories in the dropped file array.
     //You can detect if they are directory or not by checking the type === 'directory'.
-  +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}" 
+  +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}"
                     or "'myDragOverClass'" or "calcDragOverClass($event)"
-    // default "dragover". drag over css class behaviour. could be a string, a function 
+    // default "dragover". drag over css class behaviour. could be a string, a function
     // returning class name or a json object.
     // accept/reject class only works in Chrome, validating only the file mime type.
     // if pattern is not specified ngf-pattern will be used. See following docs for more info.
@@ -201,21 +201,21 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   +ngf-enable-firefox-paste="boolean" // *experimental* default false, enable firefox image paste by making element contenteditable
 
-  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg', 
-               ratio: '1:2', centerCrop: true, pattern='.jpg', restoreExif: false}" 
+  ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg',
+               ratio: '1:2', centerCrop: true, pattern='.jpg', restoreExif: false}"
                or resizeOptions() // a function returning a promise which resolves into the options.
-    // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), 
+    // resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0),
     // type is optional convert it to the given image type format.
-    // centerCrop true will center crop the image if it does not fit within the given width/height or ratio. 
-    // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio 
+    // centerCrop true will center crop the image if it does not fit within the given width/height or ratio.
+    // centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio
     // so the resulting image width (or height) could be less than given width (or height).
     // pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
     // restoreExif boolean default true, will restore exif info on the resized image.
   ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
     // apply ngf-resize only if this function returns true. To filter specific images to be resized.
-  ngf-validate-after-resize="boolean" // default false, if true all validation will be run after 
+  ngf-validate-after-resize="boolean" // default false, if true all validation will be run after
     // the images are being resized, so any validation error before resize will be ignored.
-          
+
   //validations:
   ngf-max-files="10" // maximum number of files allowed to be selected or dropped, validate error name: maxFiles
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed
@@ -246,7 +246,7 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   ngf-validate-force="boolean" // default false, if true file.$error will be set if the dimension or duration
               // values for validations cannot be calculated for example image load error or unsupported video by the browser.
               // by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser.
-  ngf-ignore-invalid="'pattern maxSize'" // ignore the files that fail the specified validations. They will 
+  ngf-ignore-invalid="'pattern maxSize'" // ignore the files that fail the specified validations. They will
               // just be ignored and will not show up in ngf-model-invalid or make the form invalid.
               // space separated list of validate error names.
   ngf-run-all-validations="boolean" // default false. Runs all the specified validate directives. By default
@@ -294,14 +294,14 @@ var upload = Upload.upload({
   *data: {key: file, otherInfo: uploadInfo},
   /*
   This is to accommodate server implementations expecting nested data object keys in .key or [key] format.
-  Example: data: {rec: {name: 'N', pic: file}} sent as: rec[name] -> N, rec[pic] -> file  
-     data: {rec: {name: 'N', pic: file}}, objectKey: '.k' sent as: rec.name -> N, rec.pic -> file */  
+  Example: data: {rec: {name: 'N', pic: file}} sent as: rec[name] -> N, rec[pic] -> file
+     data: {rec: {name: 'N', pic: file}}, objectKey: '.k' sent as: rec.name -> N, rec.pic -> file */
   objectKey: '[k]' or '.k' // default is '[k]'
   /*
-  This is to accommodate server implementations expecting array data object keys in '[i]' or '[]' or 
+  This is to accommodate server implementations expecting array data object keys in '[i]' or '[]' or
   ''(multiple entries with same key) format.
-  Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...  
-    data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/  
+  Example: data: {rec: [file[0], file[1], ...]} sent as: rec[0] -> file[0], rec[1] -> file[1],...
+    data: {rec: {rec: [f[0], f[1], ...], arrayKey: '[]'} sent as: rec[] -> f[0], rec[] -> f[1],...*/
   arrayKey: '[i]' or '[]' or '.i' or '' //default is '[i]'
   method: 'POST' or 'PUT'(html5), default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
@@ -338,7 +338,7 @@ upload.xhr(function(xhr){
 /* cancel/abort the upload in progress. */
 upload.abort();
 
-/* 
+/*
 alternative way of uploading, send the file binary with the file's content-type.
 Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed.
 This is equivalent to angular $http() but allow you to listen to the progress event for HTML5 browsers.*/
@@ -353,14 +353,14 @@ Upload.http({
 /* Set the default values for ngf-select and ngf-drop directives*/
 Upload.setDefaults({ngfMinSize: 20000, ngfMaxSize:20000000, ...})
 
-// These two defaults could be decreased if you experience out of memory issues 
+// These two defaults could be decreased if you experience out of memory issues
 // or could be increased if your app needs to show many images on the page.
 // Each image in ngf-src, ngf-background or ngf-thumbnail is stored and referenced as a blob url
 // and will only be released if the max value of the followings is reached.
 Upload.defaults.blobUrlsMaxMemory = 268435456 // default max total size of files stored in blob urls.
 Upload.defaults.blobUrlsMaxQueueSize = 200 // default max number of blob urls stored by this application.
 
-/* Convert a single file or array of files to a single or array of 
+/* Convert a single file or array of files to a single or array of
 base64 data url representation of the file(s).
 Could be used to send file in base64 format inside json to the databases */
 Upload.base64DataUrl(files).then(function(urls){...});
@@ -386,7 +386,7 @@ Upload.isResumeSupported()
 
 /* returns a file which will be uploaded with the newName instead of original file name */
 Upload.rename(file, newName)
-/* converts the object to a Blob object with application/json content type 
+/* converts the object to a Blob object with application/json content type
 for jsob byte streaming support #359 (html5 only)*/
 Upload.jsonBlob(obj)
 /* converts the value to json to send data as json string. Same as angular.toJson(obj) */
@@ -412,19 +412,19 @@ The model value will be a single file instead of an array if all of the followin
 When any of the validation directives specified the form validation will take place and
 you can access the value of the validation using `myForm.myFileInputName.$error.<validate error name>`
 for example `form.file.$error.pattern`.
-If multiple file selection is allowed you can specify `ngf-model-invalid="invalidFiles"` to assing the invalid files to 
+If multiple file selection is allowed you can specify `ngf-model-invalid="invalidFiles"` to assing the invalid files to
 a model and find the error of each individual file with `file.$error` and description of it with `file.$errorParam`.
 You can use angular ngf-model-options to allow invalid files to be set to the ng-model  `ngf-model-options="{allowInvalid: true}"`.
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) you have an array of files or more than one file in your `data` to 
-send them all in one request . Non-html5 browsers due to flash limitation will upload each file one by one in a separate request. 
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) you have an array of files or more than one file in your `data` to
+send them all in one request . Non-html5 browsers due to flash limitation will upload each file one by one in a separate request.
 You should iterate over the files and send them one by one for a cross browser solution.
 
-**drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone. 
+**drag and drop styling**: For file drag and drop, `ngf-drag-over-class` could be used to style the drop zone.
 It can be a function that returns a class name based on the $event. Default is "dragover" string.
-Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', pattern: 'image/*', delay: 10}` that specify the 
-class name for the accepted or rejected drag overs. The `pattern` specified or `ngf-pattern` will be used to validate the file's `mime-type` 
-since that is the only property of the file that is reported by the browser on drag. So you cannot validate 
+Only in chrome It could be a json object `{accept: 'a', 'reject': 'r', pattern: 'image/*', delay: 10}` that specify the
+class name for the accepted or rejected drag overs. The `pattern` specified or `ngf-pattern` will be used to validate the file's `mime-type`
+since that is the only property of the file that is reported by the browser on drag. So you cannot validate
 the file name/extension, size or other validations on drag. There is also some limitation on some file types which are not reported by Chrome.
 `delay` default is 100, and is used to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
@@ -432,28 +432,28 @@ the file name/extension, size or other validations on drag. There is also some l
 If you have many file selects or drops you can set the default values for the directives by calling `Upload.setDefaults(options)`. `options` would be a json object with directive names in camelcase and their default values.
 
 **Resumable Uploads:**
-The plugin supports resumable uploads for large files. 
+The plugin supports resumable uploads for large files.
 On your server you need to keep track of what files are being uploaded and how much of the file is uploaded.
  * `url` upload endpoint need to reassemble the file chunks by appending uploading content to the end of the file or correct chunk position if it already exists.
- * `resumeSizeUrl` server endpoint to return uploaded file size so far on the server to be able to resume the upload from 
- where it is ended. It should return zero if the file has not been uploaded yet. <br/>A GET request will be made to that 
+ * `resumeSizeUrl` server endpoint to return uploaded file size so far on the server to be able to resume the upload from
+ where it is ended. It should return zero if the file has not been uploaded yet. <br/>A GET request will be made to that
  url for each upload to determine if part of the file is already uploaded or not. You need a unique way of identifying the file
   on the server so you can pass the file name or generated id for the file as a request parameter.<br/>
- By default it will assume that the response 
- content is an integer or a json object with `size` integer property. If you return other formats from the endpoint you can specify 
- `resumeSizeResponseReader` function to return the size value from the response. Alternatively instead of `resumeSizeUrl` you can use 
+ By default it will assume that the response
+ content is an integer or a json object with `size` integer property. If you return other formats from the endpoint you can specify
+ `resumeSizeResponseReader` function to return the size value from the response. Alternatively instead of `resumeSizeUrl` you can use
  `resumeSize` function which returns a promise that resolves to the size of the uploaded file so far.
- Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size 
- if you want to let the user to upload the same file again. Or optionally you could have a restart endpoint to 
+ Make sure when the file is fully uploaded without any error/abort this endpoint returns zero for the file size
+ if you want to let the user to upload the same file again. Or optionally you could have a restart endpoint to
  set that back to zero to allow re-uploading the same file.
- * `resumeChunkSize` optionally you can specify this to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have 
+ * `resumeChunkSize` optionally you can specify this to upload the file in chunks to the server. This will allow uploading to GAE or other servers that have
  file size limitation and trying to upload the whole request before passing it for internal processing.<br/>
- If this option is set the requests will have the following extra fields: 
- `_chunkSize`, `_currentChunkSize`, `_chunkNumber` (zero starting), and `_totalSize` to help the server to write the uploaded chunk to 
+ If this option is set the requests will have the following extra fields:
+ `_chunkSize`, `_currentChunkSize`, `_chunkNumber` (zero starting), and `_totalSize` to help the server to write the uploaded chunk to
  the correct position.
  Uploading in chunks could slow down the overall upload time specially if the chunk size is too small.
  When you provide `resumeChunkSize` option one of the `resumeSizeUrl` or `resumeSize` is mandatory to know how much of the file is uploaded so far.
- 
+
 
 
 
@@ -504,10 +504,10 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 provided by [Coshx Labs](http://www.coshx.com/).
   * **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 * <a name="php"></a>**PHP**
-[Wiki Sample] (https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/ng-file-upload/issues/475)
+[Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files](https://github.com/danialfarid/ng-file-upload/issues/475)
 * <a name="net"></a>**.Net**
   * [Demo](https://github.com/stewartm83/angular-fileupload-sample) showing how to use ng-file-upload with Asp.Net Web Api.
-  * Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
+  * Sample client and server code [demo/C#](https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 ##<a name="cors"></a>CORS
 To support CORS upload your server needs to allow cross domain requests. You can achieve that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
@@ -528,7 +528,7 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 ```
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
-For Amazon authentication version 4 [see this comment](https://github.com/danialfarid/ng-file-upload/issues/1128#issuecomment-196203268) 
+For Amazon authentication version 4 [see this comment](https://github.com/danialfarid/ng-file-upload/issues/1128#issuecomment-196203268)
 
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
 Here is a sample config options:
