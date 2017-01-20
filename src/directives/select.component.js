@@ -20,12 +20,13 @@ var attr_directive_1 = require("./attr.directive");
 var SelectComponent = (function (_super) {
     __extends(SelectComponent, _super);
     function SelectComponent(el) {
-        _super.call(this);
-        this.ngfSelect = new core_1.EventEmitter();
-        this.ngfChange = new core_1.EventEmitter();
-        this.ngfResetOnClick = true;
-        this.elem = el.nativeElement;
-        this.ngfHtml = this.elem.innerHTML;
+        var _this = _super.call(this) || this;
+        _this.ngfSelect = new core_1.EventEmitter();
+        _this.ngfChange = new core_1.EventEmitter();
+        _this.ngfResetOnClick = true;
+        _this.elem = el.nativeElement;
+        _this.ngfHtml = _this.elem.innerHTML;
+        return _this;
     }
     SelectComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -49,53 +50,53 @@ var SelectComponent = (function (_super) {
             this.elem.setAttribute('capture', changes['ngfCapture'].currentValue);
         }
     };
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfSelect", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfChange", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfText", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfHtml", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfResetOnClick", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfCapture", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfMultiple", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "ngfAccept", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], SelectComponent.prototype, "disabled", void 0);
-    SelectComponent = __decorate([
-        core_1.Component({
-            selector: 'ngf-select',
-            template: '<label><input style="visibility:hidden;position:absolute;' +
-                'overflow:hidden;width:0px;height:0px;border:none;margin:0px;padding:0px" tabindex="-1" ' +
-                'type="file" [accept]="ngfAccept" ' +
-                '[multiple]="ngfMultiple">{{ngfText}}<div *ngIf="ngfHtml" [innerHTML]="ngfHtml"></div></label>'
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], SelectComponent);
     return SelectComponent;
 }(attr_directive_1.AttrDirective));
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfSelect", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfChange", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfText", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfHtml", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfResetOnClick", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfCapture", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfMultiple", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "ngfAccept", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], SelectComponent.prototype, "disabled", void 0);
+SelectComponent = __decorate([
+    core_1.Component({
+        selector: 'ngf-select',
+        template: '<label><input style="visibility:hidden;position:absolute;' +
+            'overflow:hidden;width:0px;height:0px;border:none;margin:0px;padding:0px" tabindex="-1" ' +
+            'type="file" [accept]="ngfAccept" ' +
+            '[multiple]="ngfMultiple">{{ngfText}}<div *ngIf="ngfHtml" [innerHTML]="ngfHtml"></div></label>'
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], SelectComponent);
 exports.SelectComponent = SelectComponent;
 //# sourceMappingURL=select.component.js.map

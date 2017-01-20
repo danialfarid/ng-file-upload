@@ -13,23 +13,22 @@ var ResponseComponent = (function () {
     function ResponseComponent() {
         this.showDetail = false;
     }
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ResponseComponent.prototype, "result", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ResponseComponent.prototype, "error", void 0);
-    ResponseComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'demo-response',
-            templateUrl: 'response.component.html'
-        }), 
-        __metadata('design:paramtypes', [])
-    ], ResponseComponent);
     return ResponseComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ResponseComponent.prototype, "result", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ResponseComponent.prototype, "error", void 0);
+ResponseComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'demo-response',
+        templateUrl: 'response.component.html'
+    })
+], ResponseComponent);
 exports.ResponseComponent = ResponseComponent;
 //# sourceMappingURL=response.component.js.map

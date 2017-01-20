@@ -32,7 +32,7 @@ var Util = (function () {
         var _this = this;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         return new Promise(function (resolve) {
             setTimeout(function () {
@@ -45,7 +45,7 @@ var Util = (function () {
         var _this = this;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         return new Promise(function (resolve, reject) {
             setTimeout(function () {

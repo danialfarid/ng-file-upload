@@ -112,12 +112,12 @@ var ExifRestorer = (function () {
         return buf;
     };
     ;
-    ExifRestorer.KEY_STR = 'ABCDEFGHIJKLMNOP' +
-        'QRSTUVWXYZabcdef' +
-        'ghijklmnopqrstuv' +
-        'wxyz0123456789+/' +
-        '=';
     return ExifRestorer;
 }());
+ExifRestorer.KEY_STR = 'ABCDEFGHIJKLMNOP' +
+    'QRSTUVWXYZabcdef' +
+    'ghijklmnopqrstuv' +
+    'wxyz0123456789+/' +
+    '=';
 exports.ExifRestorer = ExifRestorer;
 //# sourceMappingURL=image.exif.restorer.js.map

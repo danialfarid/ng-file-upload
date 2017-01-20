@@ -20,20 +20,20 @@ var form_data_1 = require("../../src/form-data");
 var FormDemoComponent = (function (_super) {
     __extends(FormDemoComponent, _super);
     function FormDemoComponent(http) {
-        _super.call(this, http);
+        return _super.call(this, http) || this;
     }
     FormDemoComponent.prototype.submit = function (form) {
         _super.prototype.upload.call(this, form_data_1.FormDataHelper.toFormData(form.value));
     };
-    FormDemoComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'ngf-form-sample',
-            templateUrl: 'form.component.html'
-        }), 
-        __metadata('design:paramtypes', [http_1.Http])
-    ], FormDemoComponent);
     return FormDemoComponent;
 }(upload_progress_1.UploadWithProgress));
+FormDemoComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'ngf-form-sample',
+        templateUrl: 'form.component.html'
+    }),
+    __metadata("design:paramtypes", [http_1.Http])
+], FormDemoComponent);
 exports.FormDemoComponent = FormDemoComponent;
 //# sourceMappingURL=form.component.js.map

@@ -10,7 +10,7 @@ var validator_dimension_1 = require("./validator.dimension");
 var ImageValidator = (function (_super) {
     __extends(ImageValidator, _super);
     function ImageValidator(files, attrGetter) {
-        _super.call(this, files, attrGetter);
+        return _super.call(this, files, attrGetter) || this;
     }
     ImageValidator.prototype.validateFile = function (i) {
         var _this = this;

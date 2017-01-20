@@ -9,13 +9,15 @@
             ngfRatio="1:1,2:3,3:5,1:2,4:5"
             (ngfDragOver)="dragCount = $event"
             ngfResetOnClick="true"
+            [ngfResize]="{width:20, restoreExif: true}" ngfFixOrientation="true"
+            (ngfOnProcessing)="isResizing = $event" ngfProcessChunk="1" ngfProcessDelay="100"
             [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
             ngfKeep="distinct"
             ngfText="Select Or Drop Images"></ngf-select>
 <i [hidden]="!isResizing">Processing...</i>
 <i [hidden]="!images.pending">validating...</i>
-<i *ngFor="let key of keys(images?.errors)">
-  invalid {{key}}
+<i *ngFor="let entry of images?.errors | mapToIterable">
+  invalid {{entry.key}}
 </i>
 <ul>
   <li *ngFor="let image of imageFiles">

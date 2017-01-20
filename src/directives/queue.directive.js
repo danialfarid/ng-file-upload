@@ -18,39 +18,37 @@ var QueueDirective = (function () {
         if (changes['ngModel'])
             this.mergeFiles(this.ngfQueue, this.ngModel);
     };
-    QueueDirective.prototype.mergeFiles = function (list, neFiles) {
-        var _this = this;
-        if (this.ngfAllowDuplicates) {
-            files = (files || []).filter(function (f) { return !_this.isInPrevFiles(f); });
-        }
-        Array.prototype.push.apply(list, neFiles);
+    QueueDirective.prototype.mergeFiles = function (list, newFiles) {
+        // if (this.ngfAllowDuplicates) {
+        //     files = (files || []).filter(f => !this.isInPrevFiles(f))
+        // }
+        // Array.prototype.push.apply(list, newFiles);
     };
     QueueDirective.prototype.isInPrevFiles = function (f) {
-        return this.prevFiles.find(function (pf) { return FileModelDirective.areFilesEqual(pf, f) || undefined; });
+        // return this.prevFiles.find(pf => FileModelDirective.areFilesEqual(pf, f) || undefined);
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], QueueDirective.prototype, "ngfQueue", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], QueueDirective.prototype, "ngfAllowDuplicates", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], QueueDirective.prototype, "ngModel", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], QueueDirective.prototype, "ngfSource", void 0);
-    QueueDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngfQueue]',
-        }), 
-        __metadata('design:paramtypes', [])
-    ], QueueDirective);
     return QueueDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], QueueDirective.prototype, "ngfQueue", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], QueueDirective.prototype, "ngfAllowDuplicates", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], QueueDirective.prototype, "ngModel", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], QueueDirective.prototype, "ngfSource", void 0);
+QueueDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngfQueue]',
+    })
+], QueueDirective);
 exports.QueueDirective = QueueDirective;
 //# sourceMappingURL=queue.directive.js.map

@@ -18,6 +18,12 @@ export class ProgressHelper {
                 http._backend._browserXHR.currentCallback = fn;
                 return observable;
             };
+            observable.abort = function() {
+                http._backend._browserXHR.abort();
+            };
+            observable.xhr = function(fn) {
+                fn(http._backend._browserXHR);
+            };
             return observable;
         };
     }

@@ -24,21 +24,21 @@ var ImageResizeDirective = (function () {
             return;
         this.elem.__ngfModelDirective__.formatters.splice(0, 0, this.resizePromise);
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ImageResizeDirective.prototype, "ngfResize", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], ImageResizeDirective.prototype, "ngfOnResize", void 0);
-    ImageResizeDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngModel][ngfResize]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], ImageResizeDirective);
     return ImageResizeDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ImageResizeDirective.prototype, "ngfResize", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], ImageResizeDirective.prototype, "ngfOnResize", void 0);
+ImageResizeDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngModel][ngfResize]',
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], ImageResizeDirective);
 exports.ImageResizeDirective = ImageResizeDirective;
 //# sourceMappingURL=image.resize.directive.js.map

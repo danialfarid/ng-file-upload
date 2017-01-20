@@ -26,17 +26,17 @@ var ClickForwardDirective = (function () {
         return el.getElementsByTagName('ngf-select').length &&
             el.getElementsByTagName('ngf-select')[0].firstChild;
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ClickForwardDirective.prototype, "ngfClickForward", void 0);
-    ClickForwardDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngfClickForward]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], ClickForwardDirective);
     return ClickForwardDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ClickForwardDirective.prototype, "ngfClickForward", void 0);
+ClickForwardDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngfClickForward]',
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], ClickForwardDirective);
 exports.ClickForwardDirective = ClickForwardDirective;
 //# sourceMappingURL=click.forward.directive.js.map

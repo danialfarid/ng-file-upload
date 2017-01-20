@@ -34,14 +34,14 @@ export class FileQueue {
     }
 
     start() {
-        var upFiles = this.files.slice(this.currIndex, this.currIndex += this.attrGetter('chunkSize'));
-        upFiles.forEach((f, i) => {
-            this.uploadFn(f).then(() => {
-                this.stats[i] = 'success';
-            }).catch(() => {
-                this.stats[i] =
-            });
-        });
+        // var upFiles = this.files.slice(this.currIndex, this.currIndex += this.attrGetter('chunkSize'));
+        // upFiles.forEach((f, i) => {
+        //     this.uploadFn(f).then(() => {
+        //         this.stats[i] = 'success';
+        //     }).catch(() => {
+        //         this.stats[i] =
+        //     });
+        // });
     }
 
     resume() {

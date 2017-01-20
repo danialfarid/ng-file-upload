@@ -1,6 +1,5 @@
 import {Directive, Input, Output, EventEmitter, ElementRef} from "@angular/core";
 import {ImageResizer} from "../image.resize";
-import {Util} from "../util";
 
 @Directive({
     selector: '[ngModel][ngfResize]',

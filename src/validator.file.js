@@ -10,9 +10,10 @@ var pattern_1 = require("./pattern");
 var FileValidator = (function (_super) {
     __extends(FileValidator, _super);
     function FileValidator(files, attrGetter, prevLength) {
-        _super.call(this, files, attrGetter);
-        this.attrGetter = attrGetter;
-        this.prevLength = prevLength;
+        var _this = _super.call(this, files, attrGetter) || this;
+        _this.attrGetter = attrGetter;
+        _this.prevLength = prevLength;
+        return _this;
     }
     FileValidator.prototype.validate = function () {
         if (!this.files.length) {

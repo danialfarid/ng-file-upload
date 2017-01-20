@@ -15,14 +15,14 @@ export class QueueDirective {
         if (changes['ngModel']) this.mergeFiles(this.ngfQueue, this.ngModel);
     }
 
-    private mergeFiles(list: any, neFiles: any) {
-        if (this.ngfAllowDuplicates) {
-            files = (files || []).filter(f => !this.isInPrevFiles(f))
-        }
-        Array.prototype.push.apply(list, neFiles);
+    private mergeFiles(list: any, newFiles: any) {
+        // if (this.ngfAllowDuplicates) {
+        //     files = (files || []).filter(f => !this.isInPrevFiles(f))
+        // }
+        // Array.prototype.push.apply(list, newFiles);
     }
 
     private isInPrevFiles(f) {
-        return this.prevFiles.find(pf => FileModelDirective.areFilesEqual(pf, f) || undefined);
+        // return this.prevFiles.find(pf => FileModelDirective.areFilesEqual(pf, f) || undefined);
     }
 }

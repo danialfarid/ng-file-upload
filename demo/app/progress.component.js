@@ -12,19 +12,18 @@ var core_1 = require("@angular/core");
 var ProgressComponent = (function () {
     function ProgressComponent() {
     }
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ProgressComponent.prototype, "progress", void 0);
-    ProgressComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'demo-progress',
-            templateUrl: 'progress.component.html'
-        }), 
-        __metadata('design:paramtypes', [])
-    ], ProgressComponent);
     return ProgressComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ProgressComponent.prototype, "progress", void 0);
+ProgressComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'demo-progress',
+        templateUrl: 'progress.component.html'
+    })
+], ProgressComponent);
 exports.ProgressComponent = ProgressComponent;
 //# sourceMappingURL=progress.component.js.map

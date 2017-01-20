@@ -10,7 +10,7 @@ var validator_dimension_1 = require("./validator.dimension");
 var MediaValidator = (function (_super) {
     __extends(MediaValidator, _super);
     function MediaValidator(files, attrGetter) {
-        _super.call(this, files, attrGetter);
+        return _super.call(this, files, attrGetter) || this;
     }
     MediaValidator.prototype.validateFile = function (i) {
         var _this = this;

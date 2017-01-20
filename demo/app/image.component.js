@@ -20,20 +20,20 @@ var upload_progress_1 = require("./upload.progress");
 var ImageDemoComponent = (function (_super) {
     __extends(ImageDemoComponent, _super);
     function ImageDemoComponent(http) {
-        _super.call(this, http);
+        return _super.call(this, http) || this;
     }
     ImageDemoComponent.prototype.upload = function (images) {
         _super.prototype.upload.call(this, index_1.FormDataHelper.toFormData({ images: images }));
     };
-    ImageDemoComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'ngf-image-sample',
-            templateUrl: 'image.component.html',
-        }), 
-        __metadata('design:paramtypes', [http_1.Http])
-    ], ImageDemoComponent);
     return ImageDemoComponent;
 }(upload_progress_1.UploadWithProgress));
+ImageDemoComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'ngf-image-sample',
+        templateUrl: 'image.component.html',
+    }),
+    __metadata("design:paramtypes", [http_1.Http])
+], ImageDemoComponent);
 exports.ImageDemoComponent = ImageDemoComponent;
 //# sourceMappingURL=image.component.js.map

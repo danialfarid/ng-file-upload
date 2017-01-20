@@ -12,19 +12,18 @@ var core_1 = require("@angular/core");
 var ListErrorsComponent = (function () {
     function ListErrorsComponent() {
     }
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ListErrorsComponent.prototype, "errors", void 0);
-    ListErrorsComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'demo-list-errors',
-            templateUrl: 'list.errors.component.html'
-        }), 
-        __metadata('design:paramtypes', [])
-    ], ListErrorsComponent);
     return ListErrorsComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ListErrorsComponent.prototype, "errors", void 0);
+ListErrorsComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'demo-list-errors',
+        templateUrl: 'list.errors.component.html'
+    })
+], ListErrorsComponent);
 exports.ListErrorsComponent = ListErrorsComponent;
 //# sourceMappingURL=list.errors.component.js.map

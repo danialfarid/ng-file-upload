@@ -6,7 +6,7 @@ export class MapToIterable {
     transform(dict: Object): Array<any> {
         var a = [];
         for (var key in dict) {
-            if (dict.hasOwnProperty(key)) {
+            if (dict.hasOwnProperty(key) && key.indexOf("__zone_") == -1) {
                 a.push({key: key, value: dict[key]});
             }
         }

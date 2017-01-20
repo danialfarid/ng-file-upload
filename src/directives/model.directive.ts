@@ -66,7 +66,7 @@ export class FileModelDirective implements ControlValueAccessor {
         this.prevFiles = files || [];
         if (this.modelChangeFn) {
             var isMultiple = this.ngfMultiple || this.multiple !== undefined;
-            this.modelChangeFn(isMultiple ? files : files[0] || null);
+            this.modelChangeFn(isMultiple ? files : (files ? files[0] : null));
         }
         return files;
     }

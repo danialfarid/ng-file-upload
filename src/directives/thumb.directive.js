@@ -44,37 +44,37 @@ var ThumbDirective = (function () {
             });
         }
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfThumb", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfThumbBackground", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfSrc", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfBackground", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfResize", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], ThumbDirective.prototype, "ngfOnProcessing", void 0);
-    ThumbDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngfThumb],[ngfSrc],[ngfBackground],[ngfThumbBackground]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], ThumbDirective);
     return ThumbDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfThumb", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfThumbBackground", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfSrc", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfBackground", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfResize", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], ThumbDirective.prototype, "ngfOnProcessing", void 0);
+ThumbDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngfThumb],[ngfSrc],[ngfBackground],[ngfThumbBackground]',
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], ThumbDirective);
 exports.ThumbDirective = ThumbDirective;
 //# sourceMappingURL=thumb.directive.js.map

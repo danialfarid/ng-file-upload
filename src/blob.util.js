@@ -119,9 +119,9 @@ var BlobUtil = (function () {
             BlobUtil.blobUrlsTotalSize -= obj.size;
         }
     };
-    BlobUtil.blobUrls = [];
-    BlobUtil.blobUrlsTotalSize = 0;
     return BlobUtil;
 }());
+BlobUtil.blobUrls = [];
+BlobUtil.blobUrlsTotalSize = 0;
 exports.BlobUtil = BlobUtil;
 //# sourceMappingURL=blob.util.js.map

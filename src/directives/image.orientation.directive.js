@@ -23,21 +23,21 @@ var ImageOrientationDirective = (function () {
             return;
         this.elem.__ngfModelDirective__.formatters.push(this.orientationPromise);
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], ImageOrientationDirective.prototype, "ngfFixOrientation", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], ImageOrientationDirective.prototype, "ngfOnFixOrientation", void 0);
-    ImageOrientationDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngModel][ngfFixOrientation]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], ImageOrientationDirective);
     return ImageOrientationDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ImageOrientationDirective.prototype, "ngfFixOrientation", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], ImageOrientationDirective.prototype, "ngfOnFixOrientation", void 0);
+ImageOrientationDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngModel][ngfFixOrientation]',
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], ImageOrientationDirective);
 exports.ImageOrientationDirective = ImageOrientationDirective;
 //# sourceMappingURL=image.orientation.directive.js.map

@@ -19,16 +19,15 @@ var attr_directive_1 = require("./attr.directive");
 var DropDirective = (function (_super) {
     __extends(DropDirective, _super);
     function DropDirective(el) {
-        var _this = this;
-        _super.call(this);
-        this.ngfDragOver = new core_1.EventEmitter();
-        this.ngfChange = new core_1.EventEmitter();
-        this.ngfDrop = new core_1.EventEmitter();
-        this.ngfDropAvailable = new core_1.EventEmitter();
-        new drop_js_1.Drop(el.nativeElement, this.attrGetter);
+        var _this = _super.call(this) || this;
+        _this.ngfDragOver = new core_1.EventEmitter();
+        _this.ngfChange = new core_1.EventEmitter();
+        _this.ngfDrop = new core_1.EventEmitter();
+        _this.ngfDropAvailable = new core_1.EventEmitter();
+        new drop_js_1.Drop(el.nativeElement, _this.attrGetter);
         setTimeout(function (drop) {
             drop.ngfDropAvailable.emit(drop_js_1.Drop.dropAvailable());
-        }, 0, this);
+        }, 0, _this);
         el.nativeElement.addEventListener('fileDrop', function (e) {
             _this.ngfDrop.emit(e.detail);
             _this.ngfChange.emit(e.detail);
@@ -39,69 +38,70 @@ var DropDirective = (function (_super) {
         el.nativeElement.addEventListener('filedragleave', function (e) {
             _this.ngfDragOver.emit(-1);
         }, false);
+        return _this;
     }
     DropDirective.prototype.ngOnDestroy = function () {
         //todo remove event listeners
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfStopPropagation", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfAllowDir", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfMultiple", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfEnableFirefoxPaste", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfMaxFiles", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfMaxTotalSize", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfIncludeDir", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfPattern", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfDragPattern", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfDragOver", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfChange", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfDrop", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], DropDirective.prototype, "ngfDropAvailable", void 0);
-    DropDirective = __decorate([
-        core_1.Directive({
-            selector: '[ngfDrop]',
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], DropDirective);
     return DropDirective;
 }(attr_directive_1.AttrDirective));
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfStopPropagation", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfAllowDir", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfMultiple", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfEnableFirefoxPaste", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfMaxFiles", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfMaxTotalSize", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfIncludeDir", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfPattern", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfDragPattern", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfDragOver", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfChange", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfDrop", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], DropDirective.prototype, "ngfDropAvailable", void 0);
+DropDirective = __decorate([
+    core_1.Directive({
+        selector: '[ngfDrop]',
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], DropDirective);
 exports.DropDirective = DropDirective;
 //# sourceMappingURL=drop.directive.js.map

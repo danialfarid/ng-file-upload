@@ -5,8 +5,8 @@ var Defaults = (function () {
     Defaults.set = function (obj) {
         this.defaults = obj;
     };
-    Defaults.defaults = {};
     return Defaults;
 }());
+Defaults.defaults = {};
 exports.Defaults = Defaults;
 //# sourceMappingURL=defaults.js.map

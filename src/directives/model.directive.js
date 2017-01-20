@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
-var FileModelDirective = (function () {
+var FileModelDirective = FileModelDirective_1 = (function () {
     function FileModelDirective(el) {
         var _this = this;
         this.ngfOnProcessing = new core_1.EventEmitter();
@@ -62,12 +62,12 @@ var FileModelDirective = (function () {
         this.prevFiles = files || [];
         if (this.modelChangeFn) {
             var isMultiple = this.ngfMultiple || this.multiple !== undefined;
-            this.modelChangeFn(isMultiple ? files : files[0] || null);
+            this.modelChangeFn(isMultiple ? files : (files ? files[0] : null));
         }
         return files;
     };
     FileModelDirective.prototype.isInPrevFiles = function (f) {
-        return this.prevFiles.find(function (pf) { return FileModelDirective.areFilesEqual(pf, f) || undefined; });
+        return this.prevFiles.find(function (pf) { return FileModelDirective_1.areFilesEqual(pf, f) || undefined; });
     };
     FileModelDirective.prototype.runFileChunks = function (files, start, chunk) {
         var _this = this;
@@ -120,38 +120,39 @@ var FileModelDirective = (function () {
     FileModelDirective.prototype.registerOnTouched = function (fn) {
         this.modelTouchFn = fn;
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Boolean)
-    ], FileModelDirective.prototype, "ngfMultiple", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileModelDirective.prototype, "multiple", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileModelDirective.prototype, "ngfProcessChunk", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileModelDirective.prototype, "ngfProcessDelay", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileModelDirective.prototype, "ngfKeep", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], FileModelDirective.prototype, "ngfOnProcessing", void 0);
-    FileModelDirective = __decorate([
-        core_1.Directive({
-            selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
-            providers: [{ provide: forms_1.NG_VALUE_ACCESSOR, useExisting: core_1.forwardRef(function () { return FileModelDirective; }), multi: true }]
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], FileModelDirective);
     return FileModelDirective;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Boolean)
+], FileModelDirective.prototype, "ngfMultiple", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileModelDirective.prototype, "multiple", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileModelDirective.prototype, "ngfProcessChunk", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileModelDirective.prototype, "ngfProcessDelay", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileModelDirective.prototype, "ngfKeep", void 0);
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], FileModelDirective.prototype, "ngfOnProcessing", void 0);
+FileModelDirective = FileModelDirective_1 = __decorate([
+    core_1.Directive({
+        selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
+        providers: [{ provide: forms_1.NG_VALUE_ACCESSOR, useExisting: core_1.forwardRef(function () { return FileModelDirective_1; }), multi: true }]
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef])
+], FileModelDirective);
 exports.FileModelDirective = FileModelDirective;
+var FileModelDirective_1;
 //# sourceMappingURL=model.directive.js.map

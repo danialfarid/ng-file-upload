@@ -20,20 +20,20 @@ var upload_progress_1 = require("./upload.progress");
 var MultipleDemoComponent = (function (_super) {
     __extends(MultipleDemoComponent, _super);
     function MultipleDemoComponent(http) {
-        _super.call(this, http);
+        return _super.call(this, http) || this;
     }
     MultipleDemoComponent.prototype.upload = function (images) {
         _super.prototype.upload.call(this, index_1.FormDataHelper.toFormData({ images: images }));
     };
-    MultipleDemoComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'ngf-multiple',
-            templateUrl: 'multiple.component.html'
-        }), 
-        __metadata('design:paramtypes', [http_1.Http])
-    ], MultipleDemoComponent);
     return MultipleDemoComponent;
 }(upload_progress_1.UploadWithProgress));
+MultipleDemoComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'ngf-multiple',
+        templateUrl: 'multiple.component.html'
+    }),
+    __metadata("design:paramtypes", [http_1.Http])
+], MultipleDemoComponent);
 exports.MultipleDemoComponent = MultipleDemoComponent;
 //# sourceMappingURL=multiple.component.js.map

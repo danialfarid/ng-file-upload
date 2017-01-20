@@ -17,10 +17,10 @@ var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var validator_file_1 = require("../validator.file");
 var attr_directive_1 = require("./attr.directive");
-var FileValidatorDirective = (function (_super) {
+var FileValidatorDirective = FileValidatorDirective_1 = (function (_super) {
     __extends(FileValidatorDirective, _super);
     function FileValidatorDirective() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     FileValidatorDirective.prototype.validate = function (c) {
         var files = c.value;
@@ -45,38 +45,38 @@ var FileValidatorDirective = (function (_super) {
         // }
         // return null;
     };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfMaxSize", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfMinSize", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfMaxFiles", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfMaxTotalSize", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfValidateFn", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], FileValidatorDirective.prototype, "ngfPattern", void 0);
-    FileValidatorDirective = __decorate([
-        core_1.Directive({
-            selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
-            providers: [{ provide: forms_1.NG_VALIDATORS, useExisting: FileValidatorDirective, multi: true }]
-        }), 
-        __metadata('design:paramtypes', [])
-    ], FileValidatorDirective);
     return FileValidatorDirective;
 }(attr_directive_1.AttrDirective));
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfMaxSize", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfMinSize", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfMaxFiles", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfMaxTotalSize", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfValidateFn", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], FileValidatorDirective.prototype, "ngfPattern", void 0);
+FileValidatorDirective = FileValidatorDirective_1 = __decorate([
+    core_1.Directive({
+        selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
+        providers: [{ provide: forms_1.NG_VALIDATORS, useExisting: FileValidatorDirective_1, multi: true }]
+    })
+], FileValidatorDirective);
 exports.FileValidatorDirective = FileValidatorDirective;
+var FileValidatorDirective_1;
 //# sourceMappingURL=validator.file.directive.js.map

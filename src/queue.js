@@ -30,16 +30,14 @@ var FileQueue = (function () {
         this.files = [];
     };
     FileQueue.prototype.start = function () {
-        var _this = this;
-        var upFiles = this.files.slice(this.currIndex, this.currIndex += this.attrGetter('chunkSize'));
-        upFiles.forEach(function (f, i) {
-            _this.uploadFn(f).then(function () {
-                _this.stats[i] = 'success';
-            }).catch(function () {
-                _this.stats[i] =
-                ;
-            });
-        });
+        // var upFiles = this.files.slice(this.currIndex, this.currIndex += this.attrGetter('chunkSize'));
+        // upFiles.forEach((f, i) => {
+        //     this.uploadFn(f).then(() => {
+        //         this.stats[i] = 'success';
+        //     }).catch(() => {
+        //         this.stats[i] =
+        //     });
+        // });
     };
     FileQueue.prototype.resume = function () {
         this.start();
@@ -53,19 +51,4 @@ var FileQueue = (function () {
     return FileQueue;
 }());
 exports.FileQueue = FileQueue;
-var FileUploadEntry = (function () {
-    function FileUploadEntry() {
-        this.stat = 'init';
-    }
-    return FileUploadEntry;
-}());
-var FileStat = (function () {
-    function FileStat() {
-    }
-    FileStat.added = 0;
-    FileStat.uploading = 0;
-    FileStat.success = 0;
-    FileStat.success = 0;
-    return FileStat;
-}());
 //# sourceMappingURL=queue.js.map

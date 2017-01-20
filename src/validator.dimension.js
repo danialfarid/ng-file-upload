@@ -9,7 +9,7 @@ var validator_1 = require("./validator");
 var DimensionValidator = (function (_super) {
     __extends(DimensionValidator, _super);
     function DimensionValidator(files, attrGetter) {
-        _super.call(this, files, attrGetter);
+        return _super.call(this, files, attrGetter) || this;
     }
     DimensionValidator.prototype.validate = function () {
         var _this = this;

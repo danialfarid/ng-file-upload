@@ -2,8 +2,8 @@
 var DemoServer = (function () {
     function DemoServer() {
     }
-    DemoServer.url = 'http://angular-file-upload.appspot.com/upload';
     return DemoServer;
 }());
+DemoServer.url = 'http://angular-file-upload.appspot.com/upload';
 exports.DemoServer = DemoServer;
 //# sourceMappingURL=server.js.map
