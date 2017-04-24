@@ -154,103 +154,104 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 
 ```html
 <div|button|input type="file"|ngf-select|ngf-drop...
-  ngf-select="" or "upload($files, ...)" <!--  called when files are selected or cleared -->
-  ngf-drop="" or "upload($files, ...)" <!--  called when files being dropped -->
-    <!--  You can use ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select -->
-    <!--  function parameters are the same as ngf-change -->
+  ngf-select="" or "upload($files, ...)"  <!-- called when files are selected or cleared -->
+  ngf-drop="" or "upload($files, ...)" <!--  called when files being dropped
+    You can use ng-model or ngf-change instead of specifying function for ngf-drop and ngf-select
+    function parameters are the same as ngf-change -->
   ngf-change="upload($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
     <!--  called when files are selected, dropped, or cleared -->
-  ng-model="myFiles" <!--  binds the valid selected/dropped file or files to the scope model -->
-    <!--  could be an array or single file depending on ngf-multiple and ngf-keep values. -->
+  ng-model="myFiles" <!--  binds the valid selected/dropped file or files to the scope model
+    could be an array or single file depending on ngf-multiple and ngf-keep values. -->
   ngf-model-options="{updateOn: 'change click drop dropUrl paste', allowInvalid: false, debounce: 0}"
-    <!--  updateOn could be used to disable resetting on click, or updating on paste, browser image drop, etc. -->
-    <!--  allowInvalid default is false could allow invalid files in the model -->
-    <!--  debouncing will postpone model update (miliseconds). See angular ng-model-options for more details. -->
+    <!--  updateOn could be used to disable resetting on click, or updating on paste, browser 
+    image drop, etc. allowInvalid default is false could allow invalid files in the model
+    debouncing will postpone model update (miliseconds). See angular ng-model-options for more details. -->
   ngf-model-invalid="invalidFile(s)" <!--  binds the invalid selected/dropped file or files to this model. -->
-  ngf-before-model-change="beforeChange($files, ...)" <!--  called after file select/drop and before -->
-    <!--  model change, validation and resize is processed -->
+  ngf-before-model-change="beforeChange($files, ...)" <!--  called after file select/drop and before
+    model change, validation and resize is processed -->
   ng-disabled="boolean" <!--  disables this element -->
   ngf-select-disabled="boolean" <!--  default false, disables file select on this element -->
   ngf-drop-disabled="boolean" <!--  default false, disables file drop on this element -->
   ngf-multiple="boolean" <!--  default false, allows selecting multiple files -->
-  ngf-keep="true|false|'distinct'" <!--  default false, keep the previous ng-model files and -->
-    <!--  append the new files. "'distinct'" removes duplicate files -->
-    <!--  $newFiles and $duplicateFiles are set in ngf-change/select/drop functions. -->
-  ngf-fix-orientation="boolean" <!-- default false, would rotate the jpeg image files that have -->
-    <!--  exif orientation data. See #745. Could be a boolean function like shouldFixOrientation($file) -->
-    <!--  to decide wethere to fix that file or not. -->
+  ngf-keep="true|false|'distinct'" <!--  default false, keep the previous ng-model files and 
+    append the new files. "'distinct'" removes duplicate files
+    $newFiles and $duplicateFiles are set in ngf-change/select/drop functions. -->
+  ngf-fix-orientation="boolean" <!-- default false, would rotate the jpeg image files that have
+    exif orientation data. See #745. Could be a boolean function like shouldFixOrientation($file)
+    to decide wethere to fix that file or not. -->
 
   *ngf-capture="'camera'" or "'other'" <!--  allows mobile devices to capture using camera -->
   *ngf-accept="'image/*'" <!--  standard HTML accept attr, browser specific select popup window -->
 
   +ngf-allow-dir="boolean" <!--  default true, allow dropping files only for Chrome webkit browser -->
-  +ngf-include-dir="boolean" <!-- default false, include directories in the dropped file array. -->
-    <!-- You can detect if they are directory or not by checking the type === 'directory'. -->
+  +ngf-include-dir="boolean" <!-- default false, include directories in the dropped file array.
+    You can detect if they are directory or not by checking the type === 'directory'. -->
   +ngf-drag-over-class="{pattern: 'image/*', accept:'acceptClass', reject:'rejectClass', delay:100}"
                     or "'myDragOverClass'" or "calcDragOverClass($event)"
-    <!--  default "dragover". drag over css class behaviour. could be a string, a function -->
-    <!--  returning class name or a json object. -->
-    <!--  accept/reject class only works in Chrome, validating only the file mime type. -->
-    <!--  if pattern is not specified ngf-pattern will be used. See following docs for more info. -->
-  +ngf-drag="drag($isDragging, $class, $event)" <!--  function called on drag over/leave events. -->
-    <!--  $isDragging: boolean true if is dragging over(dragover), false if drag has left (dragleave) -->
-    <!--  $class is the class that is being set for the element calculated by ngf-drag-over-class -->
-  +ngf-drop-available="dropSupported" <!--  set the value of scope model to true or false based on file -->
-                                     <!--  drag&drop support for this browser -->
+    <!--  default "dragover". drag over css class behaviour. could be a string, a function
+    returning class name or a json object.
+    accept/reject class only works in Chrome, validating only the file mime type.
+    if pattern is not specified ngf-pattern will be used. See following docs for more info. -->
+  +ngf-drag="drag($isDragging, $class, $event)" <!--  function called on drag over/leave events.
+    $isDragging: boolean true if is dragging over(dragover), false if drag has left (dragleave)
+    $class is the class that is being set for the element calculated by ngf-drag-over-class -->
+  +ngf-drop-available="dropSupported" <!--  set the value of scope model to true or false 
+    based on file drag&drop support for this browser -->
   +ngf-stop-propagation="boolean" <!--  default false, whether to propagate drag/drop events. -->
   +ngf-hide-on-drop-not-available="boolean" <!--  default false, hides element if file drag&drop is not -->
-  +ngf-enable-firefox-paste="boolean" <!--  *experimental* default false, enable firefox image paste by making element contenteditable -->
+  +ngf-enable-firefox-paste="boolean" <!--  *experimental* default false, enable firefox image paste 
+    by making element contenteditable -->
 
   ngf-resize="{width: 100, height: 100, quality: .8, type: 'image/jpeg',
                ratio: '1:2', centerCrop: true, pattern='.jpg', restoreExif: false}"
-               or resizeOptions() <!--  a function returning a promise which resolves into the options. -->
-    <!--  resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0), -->
-    <!--  type is optional convert it to the given image type format. -->
-    <!--  centerCrop true will center crop the image if it does not fit within the given width/height or ratio. -->
-    <!--  centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio -->
-    <!--  so the resulting image width (or height) could be less than given width (or height). -->
-    <!--  pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern. -->
-    <!--  restoreExif boolean default true, will restore exif info on the resized image. -->
+               or resizeOptions() <!--  a function returning a promise which resolves into the options.
+    resizes the image to the given width/height or ratio. Quality is optional between 0.1 and 1.0),
+    type is optional convert it to the given image type format.
+    centerCrop true will center crop the image if it does not fit within the given width/height or ratio.
+    centerCrop false (default) will not crop the image and will fit it within the given width/height or ratio
+    so the resulting image width (or height) could be less than given width (or height).
+    pattern is to resize only the files that their name or type matches the pattern similar to ngf-pattern.
+    restoreExif boolean default true, will restore exif info on the resized image. -->
   ngf-resize-if="$width > 1000 || $height > 1000" or "resizeCondition($file, $width, $height)"
     <!--  apply ngf-resize only if this function returns true. To filter specific images to be resized. -->
-  ngf-validate-after-resize="boolean" <!--  default false, if true all validation will be run after -->
-    <!--  the images are being resized, so any validation error before resize will be ignored. -->
+  ngf-validate-after-resize="boolean" <!--  default false, if true all validation will be run after
+    the images are being resized, so any validation error before resize will be ignored. -->
 
   <!-- validations: -->
   ngf-max-files="10" <!--  maximum number of files allowed to be selected or dropped, validate error name: maxFiles -->
-  ngf-pattern="'.pdf,.jpg,video/*,!.jog'" <!--  comma separated wildcard to filter file names and types allowed -->
-              <!--  you can exclude specific files by ! at the beginning. -->
-              <!--  validate error name: pattern -->
+  ngf-pattern="'.pdf,.jpg,video/*,!.jog'" <!--  comma separated wildcard to filter file names and 
+    types allowed you can exclude specific files by ! at the beginning. validate error name: pattern -->
   ngf-min-size, ngf-max-size, ngf-max-total-size="100" in bytes or "'10KB'" or "'10MB'" or "'10GB'"
-              <!--  validate as form.file.$error.maxSize=true and file.$error='maxSize' -->
-              <!--  ngf-max-total-size is for multiple file select and validating the total size of all files. -->
+    <!--  validate as form.file.$error.maxSize=true and file.$error='maxSize'
+    ngf-max-total-size is for multiple file select and validating the total size of all files. -->
   ngf-min-height, ngf-max-height, ngf-min-width, ngf-max-width="1000" in pixels only images
-              <!--  validate error names: minHeight, maxHeight, minWidth, maxWidth -->
-  ngf-ratio="8:10,1.6" <!--  list of comma separated valid aspect ratio of images in float or 2:3 format -->
-              <!--  validate error name: ratio -->
+    <!--  validate error names: minHeight, maxHeight, minWidth, maxWidth -->
+  ngf-ratio="8:10,1.6" <!--  list of comma separated valid aspect ratio of images in float or 2:3 format
+    validate error name: ratio -->
   ngf-min-ratio, ngf-max-ratio="8:10" <!--  min or max allowed aspect ratio for the image. -->
   ngf-dimensions="$width > 1000 || $height > 1000" or "validateDimension($file, $width, $height)"
-              <!--  validate the image dimensions, validate error name: dimensions -->
+    <!--  validate the image dimensions, validate error name: dimensions -->
   ngf-min-duration, ngf-max-duration="100.5" in seconds or "'10s'" or "'10m'" or "'10h'" only audio, video
-              <!--  validate error name: maxDuration -->
+    <!--  validate error name: maxDuration -->
   ngf-duration="$duration > 1000" or "validateDuration($file, $duration)"
-              <!--  validate the media duration, validate error name: duration -->
+    <!--  validate the media duration, validate error name: duration -->
 
   ngf-validate="{size: {min: 10, max: '20MB'}, width: {min: 100, max:10000}, height: {min: 100, max: 300}
                 ratio: '2x1', duration: {min: '10s', max: '5m'}, pattern: '.jpg'}"
-                shorthand form for above validations in one place.
-  ngf-validate-fn="validate($file)" <!--  custom validation function, return boolean or string containing the error. -->
-              <!--  validate error name: validateFn -->
-  ngf-validate-async-fn="validate($file)" <!--  custom validation function, return a promise that resolve to -->
-              <!--  boolean or string containing the error. validate error name: validateAsyncFn -->
-  ngf-validate-force="boolean" <!--  default false, if true file.$error will be set if the dimension or duration -->
-              <!--  values for validations cannot be calculated for example image load error or unsupported video by the browser. -->
-              <!--  by default it would assume the file is valid if the duration or dimension cannot be calculated by the browser. -->
-  ngf-ignore-invalid="'pattern maxSize'" <!--  ignore the files that fail the specified validations. They will -->
-              <!--  just be ignored and will not show up in ngf-model-invalid or make the form invalid. -->
-              <!--  space separated list of validate error names. -->
-  ngf-run-all-validations="boolean" <!--  default false. Runs all the specified validate directives. By default -->
-              <!--  once a validation fails for a file it would stop running other validations for that file. -->
+    <!-- shorthand form for above validations in one place. -->
+  ngf-validate-fn="validate($file)" <!--  custom validation function, return boolean or string 
+    containing the error. validate error name: validateFn -->
+  ngf-validate-async-fn="validate($file)" <!--  custom validation function, return a promise that 
+    resolve to boolean or string containing the error. validate error name: validateAsyncFn -->
+  ngf-validate-force="boolean" <!--  default false, if true file.$error will be set if 
+    the dimension or duration values for validations cannot be calculated for example 
+    image load error or unsupported video by the browser. by default it would assume the file 
+    is valid if the duration or dimension cannot be calculated by the browser. -->
+  ngf-ignore-invalid="'pattern maxSize'" <!--  ignore the files that fail the specified validations. 
+    They will just be ignored and will not show up in ngf-model-invalid or make the form invalid.
+    space separated list of validate error names. -->
+  ngf-run-all-validations="boolean" <!--  default false. Runs all the specified validate directives. 
+    By default once a validation fails for a file it would stop running other validations for that file. -->
 
 >Upload/Drop</div>
 
@@ -265,9 +266,10 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
 <img|audio|video|div
   *ngf-src="file" <!-- To preview the selected file, sets src attribute to the file data url. -->
   *ngf-background="file" <!-- sets background-image style to the file data url. -->
-  ngf-resize="{width: 20, height: 20, quality: 0.9}" <!--  only for image resizes the image before setting it -->
-             <!--  as src or background image. quality is optional. -->
-  ngf-no-object-url="true or false" <!--  see #887 to force base64 url generation instead of object url. Default false -->
+  ngf-resize="{width: 20, height: 20, quality: 0.9}" <!--  only for image resizes the image 
+    before setting it as src or background image. quality is optional. -->
+  ngf-no-object-url="true or false" <!--  see #887 to force base64 url generation instead of 
+    object url. Default false -->
 >
 
 <div|span|...
