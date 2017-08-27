@@ -1,4 +1,5 @@
 import {Defaults} from "../defaults";
+
 export class AttrDirective {
     attrGetter = (name) => {
         var n = 'ngf' + name.charAt(0).toUpperCase() + name.substring(1);

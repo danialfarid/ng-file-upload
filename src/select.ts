@@ -1,3 +1,6 @@
+/**
+ * Extends the input type file element functionality to be able to select and reset the input.
+ */
 export class Select {
     constructor(private elem: HTMLElement, private fileElem: HTMLInputElement, private attrGetter) {
         this.init();

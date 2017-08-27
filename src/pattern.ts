@@ -1,3 +1,14 @@
+/**
+ * File pattern for validation in the wild card format.
+ * The pattern will be matched against file's name and type.
+ * You can also exclude types or name using `!` symbol.
+ * @example
+ * .jpg,.png,.gif  //image of type jpg, png, or gif
+ * image/*,application/pdf  //image or pdf
+ * audio/*,video/*  //all audio and videos
+ * image/*,!.gif,!.tiff     //all images except gif and tiff
+ * @typedef {string} FilePattern
+ */
 export class Pattern {
     public static validatePattern(file, str) {
         if (!str) return true;

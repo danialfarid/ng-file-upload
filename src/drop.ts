@@ -2,6 +2,9 @@ import {BlobUtil} from "./blob.util.js";
 import {Pattern} from "./pattern";
 import {FormDataHelper} from "./form-data";
 
+/**
+ * Enable file dorp on an html element.
+ */
 export class Drop {
     constructor(private elem: HTMLElement, private attrGetter: Function) {
         this.elem = elem;

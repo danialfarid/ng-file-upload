@@ -1,6 +1,16 @@
 import {Directive, Input, Output, EventEmitter, ElementRef, forwardRef} from "@angular/core";
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
 
+/**
+ * Two way binding of the selected/dropped files on the current element to the model.
+ * @prop ngfModel {object=} model object.
+ *
+ * @example
+ * <div ngfDrop [(ngModel)]="files"></div>
+ * <input type="file" [(ngModel)]="files"></div>
+ * <ngf-select [(ngModel)]="files"></ngf-select>
+ * @name FileModelDirective [ngModel]
+ */
 @Directive({
     selector: 'ngf-select[ngModel],input[type=file][ngModel],[ngfDrop][ngModel],[ngfQueue][ngModel]',
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => FileModelDirective), multi: true}]

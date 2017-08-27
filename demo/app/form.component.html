@@ -22,44 +22,50 @@
   <i [hidden]="!file.errors?.minSize">min file size 100KB</i>
   <br/>
   <br/>
-  Audio file:
-  <button ngfClickForward>
-    <ngf-select name="audio" #audio="ngModel"
-                [(ngModel)]="audioFile"
-                ngfAccept="audio/*" ngfPattern="audio/*"
-                ngfMinDuration="1s" ngfMaxDuration="1m"
-                ngfMaxSize="20MB" required
-                ngfText="Select Audio"></ngf-select>
-  </button>
-  {{audioFile?.name}}
-  <i [hidden]="!audio.pending">validating...</i>
-  <i [hidden]="audio.pristine || !audio.errors?.required">required</i>
-  <i [hidden]="!audio.errors?.pattern">invalid file type {{audioFile?.type}}</i>
-  <i [hidden]="!audio.errors?.maxSize">max audio file size must be {{audioFile?.errors?.maxSize?.expected}} but was
-    {{audioFile?.errors?.maxSize?.actual / 1048576}}MB</i>
-  <i [hidden]="!audio.errors?.maxDuration">max audio duration must be {{audioFile?.errors?.maxDuration?.expected}} but
-    was
-    {{audioFile?.errors?.maxDuration?.actual}}s</i>
-  <i [hidden]="!audio.errors?.minDuration">min audio duration must be {{audioFile?.errors?.minDuration?.expected}} but
-    was
-    {{audioFile?.errors?.minDuration?.actual}}s</i>
+  <a href="#" (click)="moreFields = !moreFields">more fields</a>
   <br/>
   <br/>
-  Video file:
-  <ngf-select ngfDrop name="video" #video="ngModel" class="drop-box"
-              [(ngModel)]="videoFile"
-              ngfAccept="video/*" ngfPattern="video/*"
-              ngfMinDuration="5s" ngfMaxDuration="5m"
-              ngfMaxSize="200MB"
-              (ngfDragOver)="dragCount = $event"
-              [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
-              ngfText="Select or Drop Video files here" required>
-  </ngf-select>
-  {{videoFile?.name}}
-  <i [hidden]="!video.pending">validating...</i>
-  <i [hidden]="video.pristine || !video.errors?.required">required</i>
-  <demo-list-errors [errors]="videoFile?.errors"></demo-list-errors>
-  <br/>
+  <div *ngIf="moreFields">
+    <br/>
+    Audio file:
+    <button ngfClickForward>
+      <ngf-select name="audio" #audio="ngModel"
+                  [(ngModel)]="audioFile"
+                  ngfAccept="audio/*" ngfPattern="audio/*"
+                  ngfMinDuration="1s" ngfMaxDuration="1m"
+                  ngfMaxSize="20MB" required
+                  ngfText="Select Audio"></ngf-select>
+    </button>
+    {{audioFile?.name}}
+    <i [hidden]="!audio.pending">validating...</i>
+    <i [hidden]="audio.pristine || !audio.errors?.required">required</i>
+    <i [hidden]="!audio.errors?.pattern">invalid file type {{audioFile?.type}}</i>
+    <i [hidden]="!audio.errors?.maxSize">max audio file size must be {{audioFile?.errors?.maxSize?.expected}} but was
+      {{audioFile?.errors?.maxSize?.actual / 1048576}}MB</i>
+    <i [hidden]="!audio.errors?.maxDuration">max audio duration must be {{audioFile?.errors?.maxDuration?.expected}} but
+      was
+      {{audioFile?.errors?.maxDuration?.actual}}s</i>
+    <i [hidden]="!audio.errors?.minDuration">min audio duration must be {{audioFile?.errors?.minDuration?.expected}} but
+      was
+      {{audioFile?.errors?.minDuration?.actual}}s</i>
+    <br/>
+    <br/>
+    Video file:
+    <ngf-select ngfDrop name="video" #video="ngModel" class="drop-box"
+                [(ngModel)]="videoFile"
+                ngfAccept="video/*" ngfPattern="video/*"
+                ngfMinDuration="5s" ngfMaxDuration="5m"
+                ngfMaxSize="200MB"
+                (ngfDragOver)="dragCount = $event"
+                [ngClass]="{'dragover': dragCount > 0, 'dragover-err': dragCount == 0}"
+                ngfText="Select or Drop Video files here" required>
+    </ngf-select>
+    {{videoFile?.name}}
+    <i [hidden]="!video.pending">validating...</i>
+    <i [hidden]="video.pristine || !video.errors?.required">required</i>
+    <demo-list-errors [errors]="videoFile?.errors"></demo-list-errors>
+    <br/>
+  </div>
 
   <button [disabled]="!myForm.valid" (click)="submit(myForm)">Submit</button>
   <demo-progress [progress]="progress"></demo-progress>

@@ -42,10 +42,10 @@ export class FileValidator extends Validator {
         }
         this.validateMinMax(i, 'Size', file.size, 0.1);
 
-        var validateFnResult = this.attrGetter('validateFn', file);
-        if (validateFnResult && (validateFnResult === false || validateFnResult.length > 0)) {
-            this.markFileError(i, 'validateFn', validateFnResult);
-        }
+        // var validateFnResult = this.attrGetter('validateFn', file);
+        // if (validateFnResult && (validateFnResult === false || validateFnResult.length > 0)) {
+        //     this.markFileError(i, 'validateFn', validateFnResult);
+        // }
         file._ngfFileValidated_ = true;
         //todo validateFn and validateFnAsync
     }

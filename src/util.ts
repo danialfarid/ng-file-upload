@@ -1,3 +1,7 @@
+/**
+ * File size with one of these prefixes `KB`, `MB`, `GB` or a number indicating file size in bytes.
+ * @typedef {(string|number)} FileSize
+ */
 export class Util {
     public static translateScalars(str) {
         if (typeof str === 'string') {

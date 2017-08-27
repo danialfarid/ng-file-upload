@@ -74,7 +74,7 @@ export class ImageValidator extends DimensionValidator {
                 reject('load error\n' + e);
             });
         })['finally'](()=> {
-            delete file.$ngfDurationPromise;
+            delete file.$ngfDimensionPromise;
         });
     };
 }

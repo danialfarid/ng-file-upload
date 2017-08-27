@@ -5,10 +5,10 @@
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 [![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?label=donate)](https://gratipay.com/ng-file-upload/)
 
-ng-file-upload
+ngf-upload
 ===================
 
-Angular directive to upload files.
+Angular 2 directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md)
 
@@ -605,4 +605,8 @@ You can also have a look at [https://github.com/nukulb/s3-angular-file-upload](h
 
 
 
+### Development
 
+To generate `docs` install [jsdoc2md](https://github.com/jsdoc2md/jsdoc-to-markdown) then run `node_modules/.bin/jsdoc2md src/directives/*`
+To upload to `plunkr` install [plunk](https://www.npmjs.com/package/plunk) then run `node_modules/.bin/plunk --dir demo/ --desc "ngf-upload angular2 file upload examples" --tags "ngf-upload,javascript,angular2,file-upload"`
+`

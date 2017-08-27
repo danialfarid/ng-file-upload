@@ -1,6 +1,5 @@
-import {QueueDirective} from "./directives/queue.directive";
 export class FileQueue {
-    private files:Array<any> = [];
+    private files: Array<any> = [];
     private isPaused = true;
     private currIndex = 0;
 

@@ -56,11 +56,6 @@ export class ImageResizer {
             var canvasElement = document.createElement('canvas');
             var imgEl = document.createElement('img');
             imgEl.onload = function () {
-                if (options.resizeIf != null) {
-                    var ngfResizeIfFn: Function = null;
-                    eval('var ngfResizeIfFn = function(width, height, file){ return ' + options.resizeIf + ';}');
-                    if (ngfResizeIfFn(imgEl.width, imgEl.height) === false) return reject('resizeIf');
-                }
                 try {
                     var width = options.width, height = options.height;
                     if (options.ratio) {
