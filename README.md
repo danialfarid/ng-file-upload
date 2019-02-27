@@ -31,7 +31,7 @@ Table of Content:
   * [CORS](#cors)
   * [Amazon S3 Upload](#s3)
 
-##<a name="features"></a> Features
+## <a name="features"></a> Features
 * file upload progress, cancel/abort
 * file drag and drop (html5 only)
 * image paste from clipboard and drag and drop from browser pages (html5 only).
@@ -46,7 +46,7 @@ Table of Content:
 * HTML5 FileReader.readAsDataURL shim for IE8-9
 * available on [npm](https://www.npmjs.com/package/ng-file-upload), [bower](https://libraries.io/bower/ng-file-upload), [meteor](https://atmospherejs.com/danialf/ng-file-upload), [nuget](https://www.nuget.org/packages/angular-file-upload)
 
-##<a name="install"></a> Install
+## <a name="install"></a> Install
 
 * <a name="manual"></a>**Manual**: download latest from [here](https://github.com/danialfarid/ng-file-upload-bower/releases/latest)
 * <a name="bower"></a>**Bower**:
@@ -60,9 +60,9 @@ Table of Content:
 <script src="ng-file-upload(.min).js"></script>
 ```
 
-##<a name="usage"></a> Usage
+## <a name="usage"></a> Usage
 
-###Samples:
+### Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/1118/](http://jsfiddle.net/danialfarid/maqbzv15/1118/)
 * Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/136/](http://jsfiddle.net/danialfarid/2vq88rfs/136/)
@@ -459,7 +459,7 @@ On your server you need to keep track of what files are being uploaded and how m
 
 
 
-##<a name="old_browsers"></a> Old browsers
+## <a name="old_browsers"></a> Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used.
 **Note**: You need Flash installed on your browser since `FileAPI` uses Flash to upload files.
@@ -491,7 +491,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 * In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/ng-file-upload/issues/310)
 * Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/ng-file-upload/issues/261)
 
-##<a name="server"></a>Server Side
+## <a name="server"></a>Server Side
 
 * <a name="java"></a>**Java**
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/)
@@ -511,7 +511,7 @@ provided by [Coshx Labs](http://www.coshx.com/).
   * [Demo](https://github.com/stewartm83/angular-fileupload-sample) showing how to use ng-file-upload with Asp.Net Web Api.
   * Sample client and server code [demo/C#](https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
-##<a name="cors"></a>CORS
+## <a name="cors"></a>CORS
 To support CORS upload your server needs to allow cross domain requests. You can achieve that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
 ([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/CORSFilter.java))
 ```java
